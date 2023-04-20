@@ -21,7 +21,7 @@ export default function LoginPage() {
                         <h3>Welcome to Ontario Federation of Snowmobile Clubs</h3>
                     </div>
 
-                    <div className="mt-3">Permits and Gift Cards are only valid for "motorized snow vehicles":<br />
+                    <div className="mt-3">Permits and Gift Cards are only valid for &quot;motorized snow vehicles&quot;:<br />
                         <Link href="https://www.ontario.ca/laws/statute/90m44">https://www.ontario.ca/laws/statute/90m44</Link>
                     </div>
 
