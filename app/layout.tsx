@@ -6,22 +6,22 @@ import '@fortawesome/fontawesome-free/css/solid.css'
 import './globals.css'
 
 import { Updater, useImmer } from 'use-immer'
-import { IAppContextData, AppContext, appContextData, IAppContextDetails } from './AppContext'
+import { IAppContextValues, AppContext, appContextValues, IAppContextData } from './AppContext'
 
 export default function RootLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    const [appContextDetails, updateAppContextDetails] = useImmer(appContextData.data);
+    const [appContextDetails, updateAppContextDetails] = useImmer(appContextValues.data);
 
-    const appContextValues: IAppContextData = {
-        data: appContextDetails as IAppContextDetails,
-        updater: updateAppContextDetails as Updater<IAppContextDetails>,
+    const appContextValuesObj: IAppContextValues = {
+        data: appContextDetails as IAppContextData,
+        updater: updateAppContextDetails as Updater<IAppContextData>,
     };
 
     return (
-        <AppContext.Provider value={appContextValues}>
+        <AppContext.Provider value={appContextValuesObj}>
             {children}
         </AppContext.Provider >
     )

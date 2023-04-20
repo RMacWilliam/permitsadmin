@@ -41,7 +41,7 @@ export default function PublicLayout({
         <meta name="description" content="" />
       </head>
 
-      <body className="d-flex flex-column h-100 bg-body-tertiary">
+      <body className="d-flex flex-column h-100 body-background-color">
         <header>
           <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white">
             <div className="container-fluid">
@@ -51,30 +51,26 @@ export default function PublicLayout({
                     <img src="./ofsc.png" alt="Logo" width="60" height="60" />
                   </a>
 
-                  <div>
+                  <div className="d-flex flex-column justify-content-between">
                     <h4>Ontario Federation of Snowmobile Clubs</h4>
+
+                    <div className="d-none d-sm-none d-md-block">
+                      Logged in as {appContext.data.email}.
+
+                      <span className="ms-2">
+                        <Link className="text-decoration-none" href="" onClick={e => doLogout()}>Logout</Link>
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="d-flex">
-                  <div className="d-flex flex-column justify-content-between align-items-end px-3 px-sm-3 px-md-0">
-                    <div className="text-nowrap">
-                      <i className="fa-solid fa-cart-shopping"></i>
-                      {appContext.data.cartItems > 0 && <span className="badge text-bg-danger rounded-pill align-text-bottom ms-1">
-                        {appContext.data.cartItems}
-                      </span>
-                      }
-                    </div>
-
-                    <div className="d-flex d-none d-sm-none d-md-flex text-nowrap w-100">
-                      <div>
-                        Logged in as {appContext.data.email}
-                      </div>
-
-                      <div className="ms-2">
-                        <Link className="text-decoration-none" href="" onClick={e => doLogout()}>Logout</Link>
-                      </div>
-                    </div>
+                <div className="d-flex align-items-center">
+                  <div className="text-nowrap px-3 px-sm-3 px-md-0">
+                    <i className="fa-solid fa-cart-shopping fa-xl"></i>
+                    {appContext.data.cartItems > 0 && <span className="badge text-bg-danger rounded-pill align-text-bottom ms-1">
+                      {appContext.data.cartItems}
+                    </span>
+                    }
                   </div>
 
                   <div className="d-block d-sm-block d-md-none">
@@ -88,37 +84,38 @@ export default function PublicLayout({
               <div className="collapse navbar-collapse" id="navbarCollapse">
                 <ul className="navbar-nav me-auto mb-2 mb-md-0 d-block d-sm-block d-md-none">
                   <li className="nav-item">
-                    <a className="nav-link active" aria-current="page" href="#">
+                    <Link className="nav-link" aria-current="page" href="/home">
                       <i className="fa-solid fa-house me-2"></i>
                       Home
-                    </a>
+                    </Link>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link active" aria-current="page" href="#">
+                    <Link className="nav-link" aria-current="page" href="/contact">
                       <i className="fa-regular fa-address-card me-2"></i>
                       Contact Information
-                    </a>
+                    </Link>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link active" aria-current="page" href="#">
+                    <Link className="nav-link" aria-current="page" href="/permits">
                       <i className="fa-solid fa-snowflake me-2"></i>
                       Snowmobiles &amp; Permits
-                    </a>
+                    </Link>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link active" aria-current="page" href="#">
+                    <Link className="nav-link" aria-current="page" href="/gift-cards">
                       <i className="fa-solid fa-gift me-2"></i>
                       Gift Cards
-                    </a>
+                    </Link>
                   </li>
                   <li>
                     <hr className="dropdown-divider my-2" style={{ backgroundColor: 'white', height: 1 }} />
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link active" aria-current="page" href="#">
-                      <i className="fa-solid fa-user me-2"></i>
-                      Logged in as {appContext.data.email}
-                    </a>
+                    <i className="fa-solid fa-user me-2"></i>
+                    Logged in as {appContext.data.email}.
+                    <span className="ms-2">
+                      <Link className="text-decoration-none" href="" onClick={e => doLogout()}>Logout</Link>
+                    </span>
                   </li>
                 </ul>
               </div>
