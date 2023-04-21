@@ -34,11 +34,11 @@ export default function IndexLayout({
                 <meta name="description" content="" />
             </head>
 
-            <body className="d-flex flex-column h-100 bg-body-tertiary">
+            <body className="bg-body-tertiary">
                 <header>
-                    <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white">
+                    <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white" style={{ maxHeight: 86, overflow: 'hidden' }}>
                         <div className="container-fluid">
-                            <div className="d-flex justify-content-start align-items-center w-100">
+                            <div className="d-flex justify-content-start align-items-start align-items-sm-start align-items-md-center w-100">
                                 <a className="navbar-brand" href="#">
                                     <img src="./ofsc.png" alt="Logo" width="60" height="60" />
                                 </a>
@@ -51,7 +51,7 @@ export default function IndexLayout({
                     </nav>
                 </header>
 
-                <main className="container-fluid container-md py-2">
+                <main className="container-fluid container-lg py-2">
                     {children}
                 </main>
 

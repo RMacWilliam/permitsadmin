@@ -2,8 +2,8 @@
 
 import { Inter } from 'next/font/google';
 
-import { useContext, useEffect, useRef, useState } from 'react';
-import { AppContext, IKeyValue } from '@/app/AppContext';
+import { useContext, useEffect, useState } from 'react';
+import { AppContext } from '@/app/AppContext';
 import { useRouter } from 'next/navigation';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
@@ -32,7 +32,11 @@ export default function ContactPage() {
     const [postalCode, setPostalCode] = useState("");
     const [telephone, setTelephone] = useState("");
 
-    const countryRef = useRef("");
+    const [showAccountPreferencesDialog, setShowAccountPreferencesDialog] = useState(false);
+
+    const [ofscContactPermission, setOfscContactPermission] = useState("");
+    const [riderAdvantage, setRiderAdvantage] = useState("");
+    const [volunteering, setVolunteering] = useState("");
 
     useEffect(() => {
         appContext.updater(draft => { draft.navbarPage = 'contact' });
@@ -45,7 +49,6 @@ export default function ContactPage() {
     return (
         <>
             <h4>Contact Information</h4>
-            {/* {JSON.stringify(appContext)} */}
 
             <div className="card w-100">
                 <h5 className="card-header d-flex justify-content-between align-items-center">
@@ -53,7 +56,7 @@ export default function ContactPage() {
                         {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.middleName} ${appContext.data?.contactInfo?.lastName}`}
                     </div>
                     <div>
-                        <button className="btn btn-primary" onClick={doContactInfoShow}>Edit</button>
+                        <button className="btn btn-primary" onClick={doContactInfoDialogShow}>Edit</button>
                     </div>
                 </h5>
                 <ul className="list-group list-group-flush">
@@ -76,26 +79,26 @@ export default function ContactPage() {
                         Preferences
                     </div>
                     <div>
-                        <button className="btn btn-primary">Edit</button>
+                        <button className="btn btn-primary" onClick={doAccountPreferencesDialogShow}>Edit</button>
                     </div>
                 </h5>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item">
                         <div>
-                            Consent for OFSC to contact me: <b>Yes</b>
-                            <br />Rider Advantage: <b>No</b>
-                            <br />Interested in volunteering: <b>Yes</b>
+                            <div>Consent for OFSC to contact me: <b>{appContext.data?.accountPreferences?.ofscContactPermission ? "Yes" : "No"}</b></div>
+                            <div>Rider Advantage: <b>{appContext.data?.accountPreferences?.riderAdvantage ? "Yes" : "No"}</b></div>
+                            <div>Interested in volunteering: <b>{appContext.data?.accountPreferences?.volunteering === 1 || appContext.data?.accountPreferences?.volunteering === 2 ? "Yes" : "No"}</b></div>
                         </div>
                     </li>
                 </ul>
             </div>
 
-            <Modal show={showContactInfoDialog} onHide={doContactInfoHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
+            <Modal show={showContactInfoDialog} onHide={doContactInfoDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
                 <Modal.Header closeButton>
-                    <Modal.Title>Modal title</Modal.Title>
+                    <Modal.Title>Edit Contact Information</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Container>
+                    <Container fluid>
                         <Row>
                             <Col xs={12}>
                                 <div className="form-floating mb-2">
@@ -190,14 +193,89 @@ export default function ContactPage() {
                     </Container>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Container>
+                    <Container fluid>
                         <Row>
                             <Col>
                                 <span className="text-danger me-1">*</span>= mandatory field
                             </Col>
                             <Col className="d-flex justify-content-end">
-                                <Button className="me-2" variant="secondary" onClick={doContactInfoSave}>Save</Button>
-                                <Button variant="primary" onClick={doContactInfoHide}>Cancel</Button>
+                                <Button className="me-2" variant="secondary" onClick={doContactInfoDialogSave}>Save</Button>
+                                <Button variant="primary" onClick={doContactInfoDialogHide}>Cancel</Button>
+                            </Col>
+                        </Row>
+                    </Container>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showAccountPreferencesDialog} onHide={doAccountPreferencesDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit Account Preferences</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Container fluid>
+                        <Row>
+                            <Col xs={12}>
+                                <div>
+                                    I consent to the OFSC contacting me with information regarding permits, Rider Advantage and other information related to snowmobiling.
+                                    I understand that the OFSC values my privacy and the protection of personal information, by authorizing the release of my name and address
+                                    information, I consent to the OFSC&apos;s use of this information for the purposes related to the mandate of the OFSC (www.ofsc.on.ca). I
+                                    further understand that any information provided to the OFSC is out of custody and control of the Ministry of Transportation and that the
+                                    OFSC will have sole responsibility of the information.
+                                </div>
+                                <div className="form-floating mb-2">
+                                    <select className="form-select" id="floatingSelect" aria-label="OFSC Contact Permission" value={ofscContactPermission} onChange={(e: any) => setOfscContactPermission(e.target.value)}>
+                                        <option value="" disabled>Please select a value</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                    <label className="required" htmlFor="floatingSelect">OFSC Contact Permission</label>
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col xs={12}>
+                                <div>
+                                    I would like to participate in eligible Rider Advantage programs as offered/available.
+                                </div>
+                                <div className="form-floating mb-2">
+                                    <select className="form-select" id="floatingSelect" aria-label="Rider Advantage" value={riderAdvantage} onChange={(e: any) => setRiderAdvantage(e.target.value)}>
+                                        <option value="" disabled>Please select a value</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                    <label className="required" htmlFor="floatingSelect">Rider Advantage</label>
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col xs={12}>
+                                <div>
+                                    I am interested in volunteering to support my local Snowmobile Club and I consent to the Club contacting me by phone or email.
+                                </div>
+                                <div className="form-floating mb-2">
+                                    <select className="form-select" id="floatingSelect" aria-label="Volunteering" value={volunteering} onChange={(e: any) => setVolunteering(e.target.value)}>
+                                        <option value="" disabled>Please select a value</option>
+                                        <option value="0">No, I am not interested in volunteering</option>
+                                        <option value="1">Yes, I already volunteer</option>
+                                        <option value="2">Yes, I&apos;d like to volunteer</option>
+                                    </select>
+                                    <label className="required" htmlFor="floatingSelect">Volunteering</label>
+                                </div>
+                            </Col>
+                        </Row>
+                    </Container>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Container fluid>
+                        <Row>
+                            <Col>
+                                <span className="text-danger me-1">*</span>= mandatory field
+                            </Col>
+                            <Col className="d-flex justify-content-end">
+                                <Button className="me-2" variant="secondary" onClick={doAccountPreferencesDialogSave}>Save</Button>
+                                <Button variant="primary" onClick={doAccountPreferencesDialogHide}>Cancel</Button>
                             </Col>
                         </Row>
                     </Container>
@@ -206,7 +284,7 @@ export default function ContactPage() {
         </>
     )
 
-    function doContactInfoShow(): void {
+    function doContactInfoDialogShow(): void {
         setEmail(appContext.data?.contactInfo?.email ?? "");
         setFirstName(appContext.data?.contactInfo?.firstName ?? "");
         setMiddleName(appContext.data?.contactInfo?.middleName ?? "")
@@ -222,7 +300,7 @@ export default function ContactPage() {
         setShowContactInfoDialog(true);
     }
 
-    function doContactInfoSave(): void {
+    function doContactInfoDialogSave(): void {
         appContext.updater(draft => {
             draft.contactInfo.email = email;
             draft.contactInfo.firstName = firstName;
@@ -240,7 +318,45 @@ export default function ContactPage() {
         setShowContactInfoDialog(false);
     }
 
-    function doContactInfoHide(): void {
+    function doContactInfoDialogHide(): void {
         setShowContactInfoDialog(false);
+    }
+
+    function doAccountPreferencesDialogShow(): void {
+        setOfscContactPermission(convertBooleanUndefinedToYesNoEmptyString(appContext.data?.accountPreferences?.ofscContactPermission));
+        setRiderAdvantage(convertBooleanUndefinedToYesNoEmptyString(appContext.data?.accountPreferences?.riderAdvantage));
+        setVolunteering(convertNumberUndefinedTo012EmptyString(appContext.data?.accountPreferences?.volunteering));
+
+        setShowAccountPreferencesDialog(true);
+    }
+
+    function doAccountPreferencesDialogSave(): void {
+        appContext.updater(draft => {
+            draft.accountPreferences.ofscContactPermission = convertYesNoToBoolean(ofscContactPermission);
+            draft.accountPreferences.riderAdvantage = convertYesNoToBoolean(riderAdvantage);
+            draft.accountPreferences.volunteering = convert012StringToNumber(volunteering);
+        });
+
+        setShowAccountPreferencesDialog(false);
+    }
+
+    function doAccountPreferencesDialogHide(): void {
+        setShowAccountPreferencesDialog(false);
+    }
+
+    function convertBooleanUndefinedToYesNoEmptyString(value: boolean | undefined): string {
+        return value == undefined ? "" : (value ? "Yes" : "No");
+    }
+
+    function convertYesNoToBoolean(value: string): boolean {
+        return value?.toUpperCase() === "YES" ? true : false;
+    }
+
+    function convertNumberUndefinedTo012EmptyString(value: number | undefined): string {
+        return value == undefined ? "" : (value === 2 ? "2" : (value === 1 ? "1" : "0"));
+    }
+
+    function convert012StringToNumber(value: string): number {
+        return Number(value);
     }
 }

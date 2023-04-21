@@ -22,9 +22,9 @@ export interface IContactInfo {
 }
 
 export interface IAccountPreferences {
-    ofscContactPermission: boolean;
-    riderAdvantage: boolean;
-    volunteering: number; // 0=No; 1=Yes, I already volunteer; 2=Yes, I'd like to volunteer
+    ofscContactPermission?: boolean;
+    riderAdvantage?: boolean;
+    volunteering?: number; // 0=No; 1=Yes, I already volunteer; 2=Yes, I'd like to volunteer
 }
 
 export interface IAppContextData {
@@ -73,9 +73,9 @@ export const appContextValues: IAppContextValues = {
             email: "john.smith@hotmail.com"
         },
         accountPreferences: {
-            ofscContactPermission: false,
-            riderAdvantage: false,
-            volunteering: 0
+            ofscContactPermission: true,
+            riderAdvantage: true,
+            volunteering: 2
         }
     },
     updater: () => { }
