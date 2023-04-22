@@ -21,7 +21,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="mt-3">Permits and Gift Cards are only valid for &quot;motorized snow vehicles&quot;:<br />
-                    <Link href="https://www.ontario.ca/laws/statute/90m44">https://www.ontario.ca/laws/statute/90m44</Link>
+                    <Link href="https://www.ontario.ca/laws/statute/90m44">Motorized Snow Vehicles Act, R.S.O. 1990, c. M.44</Link>
                 </div>
 
                 <div className="mt-2">
@@ -33,7 +33,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="mt-2">For more information on permits visit:<br />
-                    <Link href="https://www.ofsc.on.ca/faq">Permits - Ontario Federation of Snowmobile Clubs (ofsc.on.ca)</Link>
+                    <Link href="https://www.ofsc.on.ca/faq">Permits - Ontario Federation of Snowmobile Clubs</Link>
                 </div>
 
                 <div className="mt-2">
@@ -46,12 +46,12 @@ export default function LoginPage() {
 
                 <div className="mt-2">
                     For more information on gift cards visit:<br />
-                    <Link href="https://www.ofsc.on.ca/faq">Gift Cards - Ontario Federation of Snowmobile Clubs (ofsc.on.ca)</Link>
+                    <Link href="https://www.ofsc.on.ca/faq">Gift Cards - Ontario Federation of Snowmobile Clubs</Link>
                 </div>
             </div>
 
             <div className="d-flex justify-content-center flex-fill mt-4 mt-sm-4 mt-md-0 px-2">
-                <div className="card" style={{ width: 350 }}>
+                <div id="login-panel" className="card">
                     <div className="card-body bg-secondary bg-opacity-10">
                         <div className="text-center mt-2">
                             <i className="fa-solid fa-right-to-bracket fa-xl"></i>

@@ -13,7 +13,7 @@ export default function GiftCardsPage() {
     const router = useRouter();
 
     useEffect(() => {
-        appContext.updater(draft => { draft.navbarPage = 'gift-cards' });
+        appContext.updater(draft => { draft.navbarPage = "gift-cards" });
     }, [])
 
     if (!appContext.data.isAuthenticated) {

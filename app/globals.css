@@ -44,6 +44,16 @@ body {
   content: " *";
 }
 
+#login-panel {
+  width: 350px;
+}
+
+@media (max-width: 390px) {
+  #login-panel {
+    width: 100%;
+  }
+}
+
 
 
 /* :root {

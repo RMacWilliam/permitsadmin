@@ -2,9 +2,10 @@
 
 import { Inter } from 'next/font/google'
 
-import { useContext, useEffect } from 'react'
-import { AppContext } from '@/app/AppContext';
+import { useContext, useEffect, useState } from 'react'
+import { AppContext, ISnowmobile } from '@/app/AppContext';
 import { useRouter } from 'next/navigation';
+import { formatShortDate } from '@/app/custom/utilities';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -12,8 +13,17 @@ export default function PermitsPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
+    const snowmobiles: ISnowmobile[] = appContext.data?.snowmobiles ?? [];
+
+    const [showAddEditSnowmobileDialog, setShowAddEditSnowmobileDialog] = useState(false);
+
+    const [email, setEmail] = useState("");
+
+
+
+
     useEffect(() => {
-        appContext.updater(draft => { draft.navbarPage = 'permits' });
+        appContext.updater(draft => { draft.navbarPage = "permits" });
     }, [])
 
     if (!appContext.data.isAuthenticated) {
@@ -24,30 +34,126 @@ export default function PermitsPage() {
         <>
             <h4>Snowmobiles &amp; Permits</h4>
 
-            <div className="card w-100">
-                <h5 className="card-header d-flex justify-content-between align-items-center">
-                    <div>
-                        2010 Yamaha RS Venture GT JWMN2340928424 2AB133
-                    </div>
-                    <div>
-                        <button className="btn btn-primary">Edit</button>
-                        <button className="btn btn-success">Transfer / Replace Permit</button>
-                        <button className="btn btn-danger">Remove</button>
-                    </div>
-                </h5>
-                <ul className="list-group list-group-flush">
-                    <li className="list-group-item">
-                        <div>
-                            <b>Permit:</b> Seasonal - K0265293
-                            <br /><b>Purchased:</b> 2022-10-31
-                            <br /><b>Tracking #:</b> 292980921743_C1-92987434
+            {snowmobiles.length === 0 && (
+                <div>You have not added any snowmobiles.</div>
+            )}
+
+            {snowmobiles.length > 0 && (
+                snowmobiles.map(x => (
+                    <div className="card w-100 mb-2" key={x.id}>
+                        <div className="card-header d-flex justify-content-between align-items-center">
+                            <div className="row row-cols-lg-auto g-3">
+                                <div className="d-none d-sm-none d-md-flex">
+                                    <div className="form-floating">
+                                        <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{x.year}</div>
+                                        <label htmlFor="floatingPlaintextInput">Year</label>
+                                    </div>
+
+                                    <div className="form-floating">
+                                        <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{x.make.value}</div>
+                                        <label htmlFor="floatingPlaintextInput">Make</label>
+                                    </div>
+
+                                    <div className="form-floating">
+                                        <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{x.model}</div>
+                                        <label htmlFor="floatingPlaintextInput">Model</label>
+                                    </div>
+
+                                    <div className="form-floating">
+                                        <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{x.vin}</div>
+                                        <label htmlFor="floatingPlaintextInput">VIN</label>
+                                    </div>
+
+                                    <div className="form-floating">
+                                        <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{x.licensePlate}</div>
+                                        <label htmlFor="floatingPlaintextInput">Plate</label>
+                                    </div>
+                                </div>
+                                <div className="d-md-none">
+                                    {`${x.year} ${x.make.value} ${x.model} ${x.vin} ${x.licensePlate}`}
+                                </div>
+                            </div>
+                            <div>
+                                <button className="btn btn-primary btn-sm">Edit</button>
+                                {/* <button className="btn btn-success">Transfer / Replace Permit</button> */}
+                                <button className="btn btn-danger btn-sm ms-1">Remove</button>
+                            </div>
                         </div>
-                    </li>
-                </ul>
-                <div className="card-footer">
-                    <i className="fa-solid fa-circle-info me-2"></i>This vehicle cannot be modified as a Ministry of Transportation Ontario Snowmobile Trail Permit has been registered to it.
-                </div>
-            </div>
+
+                        <ul className="list-group list-group-flush">
+                            {x.permit != null && (
+                                <li className="list-group-item">
+                                    <div>
+                                        <div><b>Permit:</b> {x.permit?.name} - {x.permit?.number}</div>
+                                        <div><b>Purchased:</b> {formatShortDate(x.permit?.purchaseDate)}</div>
+                                        <div><b>Tracking #:</b> {x.permit?.trackingNumber}</div>
+                                    </div>
+                                </li>
+                            )}
+
+                            {x.permit == null && x.permitOptions != null && x.permitOptions.length > 0 && (
+                                <>
+                                    <li className="list-group-item">
+                                        <h5 className="card-title">Select a permit to purchase</h5>
+
+                                        <div className="form-check form-check-inline">
+                                            <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked />
+                                            <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                                None Selected
+                                            </label>
+                                        </div>
+
+                                        {x.permitOptions.map(po => (
+                                            <div className="form-check form-check-inline" key={po.id}>
+                                                <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
+                                                <label className="form-check-label" htmlFor="flexRadioDefault2">
+                                                    {po.name} - {po.price}
+                                                </label>
+                                            </div>
+                                        ))
+                                        }
+                                    </li>
+
+                                    <li className="list-group-item">
+                                        <h5 className="card-title">Select a club</h5>
+
+                                        <select className="form-select" aria-label="Default select example">
+                                            <option selected>Please select your club</option>
+                                            <option value="1">Arctic Riders Snow Club</option>
+                                            <option value="2">Ontario Snow Club</option>
+                                        </select>
+
+                                        <div className="mt-2">- OR -</div>
+
+                                        <div className="mt-2">Can&apos;t find your club? Use the Club Locator Map and enter the closest town name to get started.
+                                            <select className="form-select" aria-label="Default select example">
+                                                <option selected>Club Locator</option>
+                                                <option value="1">Arctic Riders Snow Club</option>
+                                                <option value="2">Ontario Snow Club</option>
+                                            </select>
+
+                                            <div className="mt-2 fw-bold">
+                                                By choosing a specific club when buying a permit, you&apos;re directly helping that club groom and maintain the trails you enjoy riding most often,
+                                                so please buy where you ride and make your selection above.
+                                            </div>
+                                        </div>
+                                    </li>
+                                </>
+                            )}
+                        </ul>
+
+                        {x.permit != null && (
+                            <div className="card-footer">
+                                <i className="fa-solid fa-circle-info me-2"></i>This vehicle cannot be modified as a Ministry of Transportation Ontario Snowmobile Trail Permit has been registered to it.
+                            </div>
+                        )}
+                    </div>
+                ))
+            )}
+
+            <button className="btn btn-primary mt-2">Add Snowmobile</button>
+
+            {/* <hr />
 
             <div className="card w-100 mt-2">
                 <h5 className="card-header d-flex justify-content-between align-items-center">
@@ -205,7 +311,7 @@ export default function PermitsPage() {
                 </ul>
             </div>
 
-            <button className="btn btn-primary mt-3">Add Vehicle</button>
+            <button className="btn btn-primary mt-3">Add Vehicle</button> */}
         </>
     )
 }
