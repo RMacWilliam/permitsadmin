@@ -80,47 +80,47 @@ export default function PublicLayout({
                   </div>
                 </div>
               </div>
-
-              <div className="collapse navbar-collapse" id="navbarCollapse">
-                <ul className="navbar-nav me-auto mb-2 mb-md-0 d-block d-sm-block d-md-none">
-                  <li className="nav-item">
-                    <Link className="nav-link" aria-current="page" href="/home">
-                      <i className="fa-solid fa-house me-2"></i>
-                      Home
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" aria-current="page" href="/contact">
-                      <i className="fa-regular fa-address-card me-2"></i>
-                      Contact Information
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" aria-current="page" href="/permits">
-                      <i className="fa-solid fa-snowflake me-2"></i>
-                      Snowmobiles &amp; Permits
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" aria-current="page" href="/gift-cards">
-                      <i className="fa-solid fa-gift me-2"></i>
-                      Gift Cards
-                    </Link>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider my-2" style={{ backgroundColor: 'white', height: 1 }} />
-                  </li>
-                  <li className="nav-item">
-                    <i className="fa-solid fa-user me-2"></i>
-                    Logged in as {appContext.data.email}.
-                    <span className="ms-2">
-                      <Link className="text-decoration-none" href="" onClick={(e: any) => doLogout()}>Logout</Link>
-                    </span>
-                  </li>
-                </ul>
-              </div>
             </div>
           </nav>
+
+          <div className="collapse navbar-collapse bg-dark text-white px-3 pb-1" id="navbarCollapse">
+            <ul className="navbar-nav me-auto mb-2 mb-md-0 d-block d-sm-block d-md-none">
+              <li className="nav-item">
+                <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/home'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                  <i className="fa-solid fa-house me-2"></i>
+                  Home
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/contact'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                  <i className="fa-regular fa-address-card me-2"></i>
+                  Contact Information
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/permits'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                  <i className="fa-solid fa-snowflake me-2"></i>
+                  Snowmobiles &amp; Permits
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/gift-cards'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                  <i className="fa-solid fa-gift me-2"></i>
+                  Gift Cards
+                </Link>
+              </li>
+              <li>
+                <hr className="dropdown-divider my-2" style={{ backgroundColor: 'white', height: 1 }} />
+              </li>
+              <li className="nav-item">
+                <i className="fa-solid fa-user me-2"></i>
+                Logged in as {appContext.data.email}.
+                <span className="ms-2">
+                  <Link className="text-decoration-none" href="" onClick={(e: any) => doLogout()}>Logout</Link>
+                </span>
+              </li>
+            </ul>
+          </div>
 
           <div className="nav-scroller bg-body shadow-sm d-none d-sm-none d-md-block">
             <nav className="nav" aria-label="Secondary navigation">
