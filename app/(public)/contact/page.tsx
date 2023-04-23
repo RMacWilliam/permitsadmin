@@ -53,7 +53,7 @@ export default function ContactPage() {
                         {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.middleName} ${appContext.data?.contactInfo?.lastName}`}
                     </div>
                     <div>
-                        <button className="btn btn-primary" onClick={doContactInfoDialogShow}>Edit</button>
+                        <button className="btn btn-primary" onClick={contactInfoDialogShow}>Edit</button>
                     </div>
                 </h5>
                 <ul className="list-group list-group-flush">
@@ -76,7 +76,7 @@ export default function ContactPage() {
                         Preferences
                     </div>
                     <div>
-                        <button className="btn btn-primary" onClick={doAccountPreferencesDialogShow}>Edit</button>
+                        <button className="btn btn-primary" onClick={accountPreferencesDialogShow}>Edit</button>
                     </div>
                 </h5>
                 <ul className="list-group list-group-flush">
@@ -90,7 +90,7 @@ export default function ContactPage() {
                 </ul>
             </div>
 
-            <Modal show={showContactInfoDialog} onHide={doContactInfoDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
+            <Modal show={showContactInfoDialog} onHide={contactInfoDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Contact Information</Modal.Title>
                 </Modal.Header>
@@ -99,8 +99,8 @@ export default function ContactPage() {
                         <div className="row">
                             <div className="col-12">
                                 <div className="form-floating mb-2">
-                                    <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com" value={email} onChange={(e: any) => setEmail(e.target.value)} />
-                                    <label className="required" htmlFor="floatingInput">Email address</label>
+                                    <input type="email" className="form-control" id="contact-info-email-address" placeholder="name@example.com" value={email} onChange={(e: any) => setEmail(e.target.value)} />
+                                    <label className="required" htmlFor="contact-info-email-address">Email address</label>
                                 </div>
                             </div>
                         </div>
@@ -108,20 +108,20 @@ export default function ContactPage() {
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating  mb-2">
-                                    <input type="text" className="form-control" id="floatingInput" placeholder="First Name" value={firstName} onChange={(e: any) => setFirstName(e.target.value)} />
-                                    <label className="required" htmlFor="floatingInput">First Name</label>
+                                    <input type="text" className="form-control" id="contact-info-first-name" placeholder="First Name" value={firstName} onChange={(e: any) => setFirstName(e.target.value)} />
+                                    <label className="required" htmlFor="contact-info-first-name">First Name</label>
                                 </div>
                             </div>
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="floatingInput" placeholder="Middle Name(s)" value={middleName} onChange={(e: any) => setMiddleName(e.target.value)} />
-                                    <label htmlFor="floatingInput">Middle Name(s)</label>
+                                    <input type="text" className="form-control" id="contact-info-middle-name" placeholder="Middle Name(s)" value={middleName} onChange={(e: any) => setMiddleName(e.target.value)} />
+                                    <label htmlFor="contact-info-middle-name">Middle Name(s)</label>
                                 </div>
                             </div>
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="floatingInput" placeholder="Last Name" value={lastName} onChange={(e: any) => setLastName(e.target.value)} />
-                                    <label className="required" htmlFor="floatingInput">Last Name</label>
+                                    <input type="text" className="form-control" id="contact-info-last-name" placeholder="Last Name" value={lastName} onChange={(e: any) => setLastName(e.target.value)} />
+                                    <label className="required" htmlFor="contact-info-last-name">Last Name</label>
                                 </div>
                             </div>
                         </div>
@@ -129,14 +129,14 @@ export default function ContactPage() {
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="floatingInput" placeholder="Address Line 1" value={addressLine1} onChange={(e: any) => setAddressLine1(e.target.value)} />
-                                    <label className="required" htmlFor="floatingInput">Address Line 1</label>
+                                    <input type="text" className="form-control" id="contact-info-address-line-1" placeholder="Address Line 1" value={addressLine1} onChange={(e: any) => setAddressLine1(e.target.value)} />
+                                    <label className="required" htmlFor="contact-info-address-line-1">Address Line 1</label>
                                 </div>
                             </div>
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="floatingInput" placeholder="Address Line 2" value={addressLine2} onChange={(e: any) => setAddressLine2(e.target.value)} />
-                                    <label htmlFor="floatingInput">Address Line 2</label>
+                                    <input type="text" className="form-control" id="contact-info-address-line-2" placeholder="Address Line 2" value={addressLine2} onChange={(e: any) => setAddressLine2(e.target.value)} />
+                                    <label htmlFor="contact-info-address-line-2">Address Line 2</label>
                                 </div>
                             </div>
                         </div>
@@ -144,30 +144,30 @@ export default function ContactPage() {
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="floatingInput" placeholder="City, Town, or Village" value={city} onChange={(e: any) => setCity(e.target.value)} />
-                                    <label className="required" htmlFor="floatingInput">City, Town, or Village</label>
+                                    <input type="text" className="form-control" id="contact-info-city" placeholder="City, Town, or Village" value={city} onChange={(e: any) => setCity(e.target.value)} />
+                                    <label className="required" htmlFor="contact-info-city">City, Town, or Village</label>
                                 </div>
                             </div>
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id="floatingSelect" aria-label="Province/State" value={province.key} onChange={(e: any) => setProvince(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
+                                    <select className="form-select" id="contact-info-province" aria-label="Province/State" value={province.key} onChange={(e: any) => setProvince(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
                                         <option value="" disabled>Please select a value</option>
                                         <option value="ON">One</option>
                                         <option value="PQ">Two</option>
                                         <option value="BC">Three</option>
                                     </select>
-                                    <label className="required" htmlFor="floatingSelect">Province/State</label>
+                                    <label className="required" htmlFor="contact-info-province">Province/State</label>
                                 </div>
                             </div>
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id="floatingSelect" aria-label="Country" value={country.key} onChange={(e: any) => setCountry(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
+                                    <select className="form-select" id="contact-info-country" aria-label="Country" value={country.key} onChange={(e: any) => setCountry(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
                                         <option value="" disabled>Please select a value</option>
                                         <option value="CA">Canada</option>
                                         <option value="US">United States</option>
                                         <option value="OT">Other</option>
                                     </select>
-                                    <label className="required" htmlFor="floatingSelect">Country</label>
+                                    <label className="required" htmlFor="contact-info-country">Country</label>
                                 </div>
                             </div>
                         </div>
@@ -175,15 +175,15 @@ export default function ContactPage() {
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="floatingInput" placeholder="Postal Code" value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
-                                    <label className="required" htmlFor="floatingInput">Postal Code</label>
+                                    <input type="text" className="form-control" id="contact-info-postal-code" placeholder="Postal Code" value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
+                                    <label className="required" htmlFor="contact-info-postal-code">Postal Code</label>
                                 </div>
                             </div>
 
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="floatingInput" placeholder="Telephone" value={telephone} onChange={(e: any) => setTelephone(e.target.value)} />
-                                    <label className="required" htmlFor="floatingInput">Telephone</label>
+                                    <input type="text" className="form-control" id="contact-info-telephone" placeholder="Telephone" value={telephone} onChange={(e: any) => setTelephone(e.target.value)} />
+                                    <label className="required" htmlFor="contact-info-telephone">Telephone</label>
                                 </div>
                             </div>
                         </div>
@@ -196,15 +196,15 @@ export default function ContactPage() {
                                 <span className="text-danger me-1">*</span>= mandatory field
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="secondary" onClick={doContactInfoDialogSave}>Save</Button>
-                                <Button variant="primary" onClick={doContactInfoDialogHide}>Cancel</Button>
+                                <Button className="me-2" variant="secondary" onClick={contactInfoDialogSave}>Save</Button>
+                                <Button variant="primary" onClick={contactInfoDialogHide}>Cancel</Button>
                             </div>
                         </div>
                     </div>
                 </Modal.Footer>
             </Modal>
 
-            <Modal show={showAccountPreferencesDialog} onHide={doAccountPreferencesDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
+            <Modal show={showAccountPreferencesDialog} onHide={accountPreferencesDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Account Preferences</Modal.Title>
                 </Modal.Header>
@@ -220,12 +220,12 @@ export default function ContactPage() {
                                     OFSC will have sole responsibility of the information.
                                 </div>
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id="floatingSelect" aria-label="OFSC Contact Permission" value={ofscContactPermission.toString()} onChange={(e: any) => setOfscContactPermission(Number(e.target.value))}>
+                                    <select className="form-select" id="account-preferences-ofsc-contact-permission" aria-label="OFSC Contact Permission" value={ofscContactPermission.toString()} onChange={(e: any) => setOfscContactPermission(Number(e.target.value))}>
                                         <option value="-1" disabled>Please select a value</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
                                     </select>
-                                    <label className="required" htmlFor="floatingSelect">OFSC Contact Permission</label>
+                                    <label className="required" htmlFor="account-preferences-ofsc-contact-permission">OFSC Contact Permission</label>
                                 </div>
                             </div>
                         </div>
@@ -236,12 +236,12 @@ export default function ContactPage() {
                                     I would like to participate in eligible Rider Advantage programs as offered/available.
                                 </div>
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id="floatingSelect" aria-label="Rider Advantage" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
+                                    <select className="form-select" id="account-preferences-rider-advantage" aria-label="Rider Advantage" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
                                         <option value="-1" disabled>Please select a value</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
                                     </select>
-                                    <label className="required" htmlFor="floatingSelect">Rider Advantage</label>
+                                    <label className="required" htmlFor="account-preferences-rider-advantage">Rider Advantage</label>
                                 </div>
                             </div>
                         </div>
@@ -252,13 +252,13 @@ export default function ContactPage() {
                                     I am interested in volunteering to support my local Snowmobile Club and I consent to the Club contacting me by phone or email.
                                 </div>
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id="floatingSelect" aria-label="Volunteering" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
+                                    <select className="form-select" id="account-preferences-volunteering" aria-label="Volunteering" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
                                         <option value="-1" disabled>Please select a value</option>
                                         <option value="0">No, I am not interested in volunteering</option>
                                         <option value="1">Yes, I already volunteer</option>
                                         <option value="2">Yes, I&apos;d like to volunteer</option>
                                     </select>
-                                    <label className="required" htmlFor="floatingSelect">Volunteering</label>
+                                    <label className="required" htmlFor="account-preferences-volunteering">Volunteering</label>
                                 </div>
                             </div>
                         </div>
@@ -271,8 +271,8 @@ export default function ContactPage() {
                                 <span className="text-danger me-1">*</span>= mandatory field
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="secondary" onClick={doAccountPreferencesDialogSave}>Save</Button>
-                                <Button variant="primary" onClick={doAccountPreferencesDialogHide}>Cancel</Button>
+                                <Button className="me-2" variant="secondary" onClick={accountPreferencesDialogSave}>Save</Button>
+                                <Button variant="primary" onClick={accountPreferencesDialogHide}>Cancel</Button>
                             </div>
                         </div>
                     </div>
@@ -281,7 +281,7 @@ export default function ContactPage() {
         </>
     )
 
-    function doContactInfoDialogShow(): void {
+    function contactInfoDialogShow(): void {
         setEmail(appContext.data?.contactInfo?.email ?? "");
         setFirstName(appContext.data?.contactInfo?.firstName ?? "");
         setMiddleName(appContext.data?.contactInfo?.middleName ?? "")
@@ -297,7 +297,7 @@ export default function ContactPage() {
         setShowContactInfoDialog(true);
     }
 
-    function doContactInfoDialogSave(): void {
+    function contactInfoDialogSave(): void {
         appContext.updater(draft => {
             draft.contactInfo.email = email;
             draft.contactInfo.firstName = firstName;
@@ -315,11 +315,11 @@ export default function ContactPage() {
         setShowContactInfoDialog(false);
     }
 
-    function doContactInfoDialogHide(): void {
+    function contactInfoDialogHide(): void {
         setShowContactInfoDialog(false);
     }
 
-    function doAccountPreferencesDialogShow(): void {
+    function accountPreferencesDialogShow(): void {
         setOfscContactPermission(appContext.data?.accountPreferences?.ofscContactPermission ?? -1);
         setRiderAdvantage(appContext.data?.accountPreferences?.riderAdvantage ?? -1);
         setVolunteering(appContext.data?.accountPreferences?.volunteering ?? -1);
@@ -327,7 +327,7 @@ export default function ContactPage() {
         setShowAccountPreferencesDialog(true);
     }
 
-    function doAccountPreferencesDialogSave(): void {
+    function accountPreferencesDialogSave(): void {
         appContext.updater(draft => {
             draft.accountPreferences.ofscContactPermission = ofscContactPermission;
             draft.accountPreferences.riderAdvantage = riderAdvantage;
@@ -337,7 +337,7 @@ export default function ContactPage() {
         setShowAccountPreferencesDialog(false);
     }
 
-    function doAccountPreferencesDialogHide(): void {
+    function accountPreferencesDialogHide(): void {
         setShowAccountPreferencesDialog(false);
     }
 }

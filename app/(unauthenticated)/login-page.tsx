@@ -71,15 +71,15 @@ export default function LoginPage() {
                         </div>
 
                         <div className="mt-2">
-                            <Button className="w-100" variant="primary" onClick={e => doLogin()}>Login</Button>
+                            <Button className="w-100" variant="primary" onClick={(e: any) => doLogin()}>Login</Button>
                         </div>
 
                         <div className="text-center mt-4">
-                            <Button variant="link text-decoration-none" onClick={e => doForgotPassword()}>Forgot password?</Button>
+                            <Button variant="link text-decoration-none" onClick={(e: any) => doForgotPassword()}>Forgot password?</Button>
                         </div>
 
                         <div className="mt-4 mb-2">
-                            <Button className="w-100" variant="outline-primary" onClick={e => doCreateAccount()}>Create an account</Button>
+                            <Button className="w-100" variant="outline-primary" onClick={(e: any) => doCreateAccount()}>Create an account</Button>
                         </div>
                     </div>
                 </div>

@@ -43,10 +43,10 @@ export default function PublicLayout({
 
       <body className="d-flex flex-column h-100 body-background-color">
         <header>
-          <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white">
+          <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white" style={{ maxHeight: 86, overflow: 'hidden' }}>
             <div className="container-fluid">
-              <div className="d-flex justify-content-between align-items-stretch w-100">
-                <div className="d-flex align-items-center">
+              <div className="d-flex justify-content-start align-items-start align-items-sm-start align-items-md-center w-100">
+                <div className="d-flex flex-fill">
                   <a className="navbar-brand" href="#">
                     <img src="./ofsc.png" alt="Logo" width="60" height="60" />
                   </a>
@@ -58,7 +58,7 @@ export default function PublicLayout({
                       Logged in as {appContext.data.email}.
 
                       <span className="ms-2">
-                        <Link className="text-decoration-none" href="" onClick={e => doLogout()}>Logout</Link>
+                        <Link className="text-decoration-none" href="" onClick={(e: any) => doLogout()}>Logout</Link>
                       </span>
                     </div>
                   </div>
@@ -114,7 +114,7 @@ export default function PublicLayout({
                     <i className="fa-solid fa-user me-2"></i>
                     Logged in as {appContext.data.email}.
                     <span className="ms-2">
-                      <Link className="text-decoration-none" href="" onClick={e => doLogout()}>Logout</Link>
+                      <Link className="text-decoration-none" href="" onClick={(e: any) => doLogout()}>Logout</Link>
                     </span>
                   </li>
                 </ul>
