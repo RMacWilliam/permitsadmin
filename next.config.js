@@ -6,6 +6,7 @@ const nextConfig = {
   reactStrictMode: true,
 
   output: 'export',
+  basePath: '/permitsadmin',
   images: {
     unoptimized: true
   },
