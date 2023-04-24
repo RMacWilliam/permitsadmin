@@ -1,10 +1,22 @@
-import UnauthenticatedPage from "@/components/layouts/unauthenticated-page"
-import ForgotPasswordPage from "@/components/unauthenticated/forgot-password-page"
+import UnauthenticatedPageLayout from "@/components/layouts/unauthenticated-page"
+import Head from "next/head"
 
-export default function ForgotPassword() {
+export default function ForgotPasswordPage() {
     return (
-        <UnauthenticatedPage>
-            <ForgotPasswordPage></ForgotPasswordPage>
-        </UnauthenticatedPage>
+        <UnauthenticatedPageLayout>
+            <ForgotPassword></ForgotPassword>
+        </UnauthenticatedPageLayout>
+    )
+}
+
+function ForgotPassword() {
+    return (
+        <>
+            <Head>
+                <title>Forgot Password | Ontario Federation of Snowmobile Clubs</title>
+            </Head>
+
+            <h4>Forgot Password</h4>
+        </>
     )
 }

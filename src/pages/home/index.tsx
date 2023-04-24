@@ -1,20 +1,32 @@
 import { useContext, useEffect } from 'react'
 import { AppContext } from '@/custom/app-context';
-import { useRouter } from 'next/router';
-import AuthenticatedPage from '@/components/layouts/authenticated-page';
-import HomePage from '@/components/home/home-page';
+import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
+import Head from 'next/head';
 
-export default function Home() {
+export default function HomePage() {
     const appContext = useContext(AppContext);
-    const router = useRouter();
 
     useEffect(() => {
         appContext.updater(draft => { draft.navbarPage = "home" });
     }, [appContext])
 
     return (
-        <AuthenticatedPage>
-            <HomePage></HomePage>
-        </AuthenticatedPage>
+        <AuthenticatedPageLayout>
+            <Home></Home>
+        </AuthenticatedPageLayout>
+    )
+}
+
+function Home() {
+    const appContext = useContext(AppContext);
+
+    return (
+        <>
+            <Head>
+                <title>Home | Ontario Federation of Snowmobile Clubs</title>
+            </Head>
+
+            <h4>Home</h4>
+        </>
     )
 }

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Image from 'next/image';
 
-export default function UnauthenticatedPage({ children }: { children: any }) {
+export default function UnauthenticatedPageLayout({ children }: { children: any }) {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
