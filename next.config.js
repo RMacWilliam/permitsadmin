@@ -4,10 +4,11 @@ const CopyPlugin = require("copy-webpack-plugin");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // output: 'export',
-  // images: {
-  //   unoptimized: true
-  // },
+
+  output: 'export',
+  images: {
+    unoptimized: true
+  },
 
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
