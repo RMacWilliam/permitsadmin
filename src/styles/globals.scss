@@ -1,0 +1,55 @@
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+  /* Prevent scroll on narrow devices */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 86px;
+  background-color: rgb(248, 249, 250);
+}
+
+.nav-scroller .nav {
+  color: rgba(255, 255, 255, .75);
+}
+
+.nav-scroller .nav-link {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  font-size: .875rem;
+  color: #6c757d;
+}
+
+.nav-scroller .nav-link:hover {
+  color: #007bff;
+}
+
+.nav-scroller .active {
+  font-weight: 500;
+  color: #343a40;
+}
+
+.modal-width-90-percent {
+  width: 90%;
+  max-width: none !important;
+}
+
+.required::after {
+  font-weight: bold;
+  color: red;
+  content: " *";
+}
+
+#login-panel {
+  width: 350px;
+}
+
+@media (max-width: 390px) {
+  #login-panel {
+    width: 100%;
+  }
+}
