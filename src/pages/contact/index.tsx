@@ -94,6 +94,10 @@ function Contact() {
                 </ul>
             </div>
 
+            {!appContext.data?.isContactInfoVerified && (
+                <button type="button" className="btn btn-success mt-3" onClick={() => confirmContactInfoClick()}>Confirm Contact Information</button>
+            )}
+
             <Modal show={showContactInfoDialog} onHide={contactInfoDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Contact Information</Modal.Title>
@@ -343,5 +347,9 @@ function Contact() {
 
     function accountPreferencesDialogHide(): void {
         setShowAccountPreferencesDialog(false);
+    }
+
+    function confirmContactInfoClick(): void {
+        appContext.updater(draft => { draft.isContactInfoVerified = true; });
     }
 }

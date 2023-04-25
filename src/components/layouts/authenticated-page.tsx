@@ -1,10 +1,10 @@
-import { useContext, useEffect } from 'react';
+import { ReactNode, useContext, useEffect } from 'react';
 import { AppContext } from '@/custom/app-context';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 
-export default function AuthenticatedPageLayout({ children }: { children: any }) {
+export default function AuthenticatedPageLayout({ children }: { children?: ReactNode }) {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
@@ -51,17 +51,19 @@ export default function AuthenticatedPageLayout({ children }: { children: any })
                             </div>
 
                             <div className="d-flex align-items-center">
-                                <div className="text-nowrap px-3 px-sm-3 px-md-0">
-                                    <Link className="nav-link" aria-current="page" href="/cart">
-                                        <i className="fa-solid fa-cart-shopping fa-xl"></i>
-                                        {appContext.data?.cartItems?.length > 0 && <span className="badge text-bg-danger rounded-pill align-text-bottom ms-1">
-                                            {appContext.data?.cartItems?.length}
-                                        </span>
-                                        }
-                                    </Link>
-                                </div>
+                                {appContext.data?.isContactInfoVerified && (
+                                    <div className="text-nowrap ms-3 ms-sm-3">
+                                        <Link className="nav-link" aria-current="page" href="/cart">
+                                            <i className="fa-solid fa-cart-shopping fa-xl"></i>
+                                            {appContext.data?.cartItems?.length > 0 && <span className="badge text-bg-danger rounded-pill align-text-bottom ms-1">
+                                                {appContext.data?.cartItems?.length}
+                                            </span>
+                                            }
+                                        </Link>
+                                    </div>
+                                )}
 
-                                <div className="d-block d-sm-block d-md-none">
+                                <div className="d-block d-sm-block d-md-none ms-3 ms-sm-3">
                                     <button className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                                         <span className="navbar-toggler-icon"></span>
                                     </button>
@@ -85,18 +87,22 @@ export default function AuthenticatedPageLayout({ children }: { children: any })
                                 Contact Information
                             </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/permits'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                                <i className="fa-solid fa-snowflake me-2"></i>
-                                Snowmobiles &amp; Permits
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/gift-cards'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                                <i className="fa-solid fa-gift me-2"></i>
-                                Gift Cards
-                            </Link>
-                        </li>
+                        {appContext.data?.isContactInfoVerified && (
+                            <>
+                                <li className="nav-item">
+                                    <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/permits'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                        <i className="fa-solid fa-snowflake me-2"></i>
+                                        Snowmobiles &amp; Permits
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/gift-cards'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                        <i className="fa-solid fa-gift me-2"></i>
+                                        Gift Cards
+                                    </Link>
+                                </li>
+                            </>
+                        )}
                         <li>
                             <hr className="dropdown-divider my-2" style={{ backgroundColor: 'white', height: 1 }} />
                         </li>
@@ -120,14 +126,18 @@ export default function AuthenticatedPageLayout({ children }: { children: any })
                             <i className="fa-regular fa-address-card me-2"></i>
                             Contact Information
                         </Link>
-                        <Link className={`nav-link ${appContext.data.navbarPage === 'permits' ? 'active' : ''}`} href="/permits">
-                            <i className="fa-solid fa-snowflake me-2"></i>
-                            Snowmobiles &amp; Permits
-                        </Link>
-                        <Link className={`nav-link ${appContext.data.navbarPage === 'gift-cards' ? 'active' : ''}`} href="/gift-cards">
-                            <i className="fa-solid fa-gift me-2"></i>
-                            Gift Cards
-                        </Link>
+                        {appContext.data?.isContactInfoVerified && (
+                            <>
+                                <Link className={`nav-link ${appContext.data.navbarPage === 'permits' ? 'active' : ''}`} href="/permits">
+                                    <i className="fa-solid fa-snowflake me-2"></i>
+                                    Snowmobiles &amp; Permits
+                                </Link>
+                                <Link className={`nav-link ${appContext.data.navbarPage === 'gift-cards' ? 'active' : ''}`} href="/gift-cards">
+                                    <i className="fa-solid fa-gift me-2"></i>
+                                    Gift Cards
+                                </Link>
+                            </>
+                        )}
                     </nav>
                 </div>
             </header>

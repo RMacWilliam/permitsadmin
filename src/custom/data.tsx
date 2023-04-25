@@ -1,5 +1,5 @@
 import moment from "moment";
-import { IAccountPreferences, ICartItem, IContactInfo, IKeyValue, IPermitOption, ISnowmobile } from "./app-context";
+import { IAccountPreferences, ICartItem, IContactInfo, IKeyValue, IPermitOption, IShippingMethod, ISnowmobile } from "./app-context";
 
 export const contactInfoData: IContactInfo = {
     firstName: "John",
@@ -79,6 +79,7 @@ export const snowmobilesData: ISnowmobile[] = [
             trackingNumber: "292980921743_C1-92987434"
         },
         permitOptions: undefined,
+        permitSelections: undefined,
         isEditable: false
     },
     {
@@ -92,6 +93,7 @@ export const snowmobilesData: ISnowmobile[] = [
         registeredOwner: true,
         permit: undefined,
         permitOptions: permitOptionsData,
+        permitSelections: undefined,
         isEditable: true
     }
 ];
@@ -103,3 +105,18 @@ export const cartItemsData: ICartItem[] = [
         price: 190
     }
 ];
+
+export const shippingMethodsData: IShippingMethod[] = [
+    {
+        id: "73cd7359-acc1-4c64-a691-6668586a4f27",
+        name: "Standard",
+        price: 0
+    },
+    {
+        id: "3744e5d4-3012-4c05-809d-4d8db59c8fe8",
+        name: "Tracked",
+        price: 10
+    }
+];
+
+export const transactionAndAdministrationFee: number = 7.5;

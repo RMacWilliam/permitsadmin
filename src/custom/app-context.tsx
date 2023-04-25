@@ -42,6 +42,14 @@ export interface IPermitOption {
     requiresDateRange: boolean;
 }
 
+export interface IPermitSelections {
+    permitOptionId: string; // guid
+    name: string; // Copy of IPermitOption.name
+    dateStart?: Date;
+    dateEnd?: Date;
+    clubId: string;
+}
+
 export interface ISnowmobile {
     id: string; // guid
     year: string;
@@ -53,6 +61,7 @@ export interface ISnowmobile {
     registeredOwner: boolean;
     permit?: IPermit;
     permitOptions?: IPermitOption[];
+    permitSelections?: IPermitSelections;
     isEditable: boolean;
 }
 
@@ -62,11 +71,19 @@ export interface ICartItem {
     price: number;
 }
 
+export interface IShippingMethod {
+    id: string; // guid
+    name: string;
+    price: number;
+}
+
 export interface IAppContextData {
     // Authentication
     isAuthenticated: boolean;
     email?: string;
     token?: string;
+
+    isContactInfoVerified: boolean;
 
     // Shopping Cart
     cartItems: ICartItem[];
@@ -92,6 +109,8 @@ export const appContextValues: IAppContextValues = {
         isAuthenticated: false,
         email: undefined,
         token: undefined,
+
+        isContactInfoVerified: false,
 
         cartItems: cartItemsData,
 

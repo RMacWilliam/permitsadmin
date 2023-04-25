@@ -3,7 +3,7 @@ import { AppContext } from '@/custom/app-context';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 
-export default function UnauthenticatedPageLayout({ children }: { children: ReactNode }) {
+export default function UnauthenticatedPageLayout({ children }: { children?: ReactNode }) {
     const appContext = useContext(AppContext);
     const router = useRouter();
 

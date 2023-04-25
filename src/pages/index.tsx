@@ -1,5 +1,6 @@
 import UnauthenticatedPageLayout from '@/components/layouts/unauthenticated-page'
 import { AppContext } from '@/custom/app-context';
+import { accountPreferencesData, cartItemsData, contactInfoData, snowmobilesData } from '@/custom/data';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -24,7 +25,7 @@ function Index() {
   return (
       <>
           <Head>
-              <title>Login | Ontario Federation of Snowmobile Clubs</title>
+              <title>Index | Ontario Federation of Snowmobile Clubs</title>
           </Head>
 
           <div className="d-flex justify-content-between flex-wrap flex-sm-wrap flex-md-nowrap w-100">
@@ -106,6 +107,17 @@ function Index() {
           draft.isAuthenticated = true;
           draft.email = email;
           draft.token = '12345';
+
+          draft.isContactInfoVerified = false;
+
+          draft.cartItems = cartItemsData;
+
+          draft.navbarPage = "home";
+
+          draft.contactInfo = contactInfoData;
+          draft.accountPreferences = accountPreferencesData;
+
+          draft.snowmobiles = snowmobilesData;
       });
 
       router.push('/home');
