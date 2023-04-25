@@ -78,7 +78,8 @@ export const snowmobilesData: ISnowmobile[] = [
             purchaseDate: moment("2022-10-31T18:25:43.511Z").toDate(),
             trackingNumber: "292980921743_C1-92987434"
         },
-        permitOptions: undefined
+        permitOptions: undefined,
+        isEditable: false
     },
     {
         id: "dce627b3-d0ce-4b29-b56c-600a9191d545",
@@ -90,7 +91,8 @@ export const snowmobilesData: ISnowmobile[] = [
         permitForThisSnowmobileOnly: true,
         registeredOwner: true,
         permit: undefined,
-        permitOptions: permitOptionsData
+        permitOptions: permitOptionsData,
+        isEditable: true
     }
 ];
 

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { AppContext, ISnowmobile } from '@/custom/app-context';
+import { AppContext, ICartItem, IPermit, ISnowmobile } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
 import { formatShortDate, getKeyValueFromSelect } from '@/custom/utilities';
@@ -57,59 +57,62 @@ function Permits() {
 
             <button className="btn btn-primary mb-2" onClick={() => addEditSnowmobileDialogShow()}>Add Snowmobile</button>
 
-            {snowmobiles != null && snowmobiles.length > 0 && snowmobiles.map(x => (
-                <div className="card w-100 mb-2" key={x.id}>
+            {snowmobiles != null && snowmobiles.length > 0 && snowmobiles.map(snowmobile => (
+                <div className="card w-100 mb-2" key={snowmobile.id}>
                     <div className="card-header d-flex justify-content-between align-items-center">
                         <div className="row row-cols-lg-auto g-3">
                             <div className="d-none d-sm-none d-md-flex">
                                 <div className="form-floating" style={{ minWidth: 54 }}>
-                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{x.year}</div>
+                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{snowmobile.year}</div>
                                     <label htmlFor="floatingPlaintextInput">Year</label>
                                 </div>
 
                                 <div className="form-floating" style={{ minWidth: 63 }}>
-                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{x.make.value}</div>
+                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{snowmobile.make.value}</div>
                                     <label htmlFor="floatingPlaintextInput">Make</label>
                                 </div>
 
                                 <div className="form-floating" style={{ minWidth: 70 }}>
-                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{x.model}</div>
+                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{snowmobile.model}</div>
                                     <label htmlFor="floatingPlaintextInput">Model</label>
                                 </div>
 
                                 <div className="form-floating" style={{ minWidth: 51 }}>
-                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{x.vin}</div>
+                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{snowmobile.vin}</div>
                                     <label htmlFor="floatingPlaintextInput">VIN</label>
                                 </div>
 
                                 <div className="form-floating" style={{ minWidth: 59 }}>
-                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{x.licensePlate}</div>
+                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{snowmobile.licensePlate}</div>
                                     <label htmlFor="floatingPlaintextInput">Plate</label>
                                 </div>
                             </div>
                             <div className="d-md-none">
-                                {`${x.year} ${x.make.value} ${x.model} ${x.vin} ${x.licensePlate}`}
+                                {`${snowmobile.year} ${snowmobile.make.value} ${snowmobile.model} ${snowmobile.vin} ${snowmobile.licensePlate}`}
                             </div>
                         </div>
                         <div className="d-flex justify-content-end">
-                            <button className="btn btn-primary btn-sm" onClick={() => addEditSnowmobileDialogShow(x.id)}>Edit</button>
-                            {/* <button className="btn btn-success">Transfer / Replace Permit</button> */}
-                            <button className="btn btn-danger btn-sm ms-1">Remove</button>
+                            {snowmobile.isEditable && (
+                                <>
+                                    <button className="btn btn-primary btn-sm" onClick={() => addEditSnowmobileDialogShow(snowmobile.id)}>Edit</button>
+                                    <button className="btn btn-danger btn-sm ms-1">Remove</button>
+                                </>
+                            )}
                         </div>
                     </div>
 
                     <ul className="list-group list-group-flush">
-                        {x.permit != null && (
+                        {snowmobile.permit != null && (
                             <li className="list-group-item">
                                 <div>
-                                    <div><b>Permit:</b> {x.permit?.name} - {x.permit?.number}</div>
-                                    <div><b>Purchased:</b> {formatShortDate(x.permit?.purchaseDate)}</div>
-                                    <div><b>Tracking #:</b> {x.permit?.trackingNumber}</div>
+                                    <div><b>Permit:</b> {snowmobile.permit?.name} - {snowmobile.permit?.number}</div>
+                                    <div><b>Purchased:</b> {formatShortDate(snowmobile.permit?.purchaseDate)}</div>
+                                    <div><b>Tracking #:</b> {snowmobile.permit?.trackingNumber}</div>
                                 </div>
                             </li>
                         )}
 
-                        {x.permit == null && x.permitOptions != null && x.permitOptions.length > 0 && (
+                        {snowmobile.permit == null && snowmobile.permitOptions != null && snowmobile.permitOptions.length > 0 && (
                             <>
                                 <li className="list-group-item">
                                     <h5 className="card-title">Select a permit to purchase</h5>
@@ -121,7 +124,7 @@ function Permits() {
                                         </label>
                                     </div>
 
-                                    {x.permitOptions.map(po => (
+                                    {snowmobile.permitOptions.map(po => (
                                         <div className="form-check form-check-inline" key={po.id}>
                                             <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
                                             <label className="form-check-label" htmlFor="flexRadioDefault2">
@@ -178,7 +181,12 @@ function Permits() {
                         )}
                     </ul>
 
-                    {x.permit != null && (
+                    {snowmobile.isEditable && (
+                        <div className="card-footer">
+                            <button className="btn btn-success btn-sm" onClick={() => addPermitToCartClick(snowmobile.id)}>Add to Cart</button>
+                        </div>
+                    )}
+                    {!snowmobile.isEditable && (
                         <div className="card-footer">
                             <i className="fa-solid fa-circle-info me-2"></i>This vehicle cannot be modified as a Ministry of Transportation Ontario Snowmobile Trail Permit has been registered to it.
                         </div>
@@ -481,7 +489,7 @@ function Permits() {
     function addEditSnowmobileDialogSave(): void {
         appContext.updater(draft => {
             if (editedSnowmobileId === "") {
-                let snowmobile: ISnowmobile = {
+                let item: ISnowmobile = {
                     id: uuidv4(),
                     year: year,
                     make: make,
@@ -491,23 +499,25 @@ function Permits() {
                     permitForThisSnowmobileOnly: permitForThisSnowmobileOnly,
                     registeredOwner: registeredOwner,
                     permit: undefined,
-                    permitOptions: permitOptionsData // TODO: Permit options should reflect selections
+                    permitOptions: permitOptionsData, // TODO: Permit options should reflect selections
+                    isEditable: true
                 };
 
-                draft.snowmobiles.push(snowmobile);
+                draft.snowmobiles.push(item);
             } else {
-                let snowmobile: ISnowmobile = draft.snowmobiles.filter(x => x.id === editedSnowmobileId)[0];
+                let item: ISnowmobile = draft.snowmobiles.filter(x => x.id === editedSnowmobileId)[0];
 
-                if (snowmobile != null) {
-                    snowmobile.year = year;
-                    snowmobile.make = make;
-                    snowmobile.model = model;
-                    snowmobile.vin = vin;
-                    snowmobile.licensePlate = licensePlate;
-                    snowmobile.permitForThisSnowmobileOnly = permitForThisSnowmobileOnly;
-                    snowmobile.registeredOwner = registeredOwner;
-                    snowmobile.permit = undefined;
-                    snowmobile.permitOptions = permitOptionsData; // TODO: Permit options should reflect selections
+                if (item != null) {
+                    item.year = year;
+                    item.make = make;
+                    item.model = model;
+                    item.vin = vin;
+                    item.licensePlate = licensePlate;
+                    item.permitForThisSnowmobileOnly = permitForThisSnowmobileOnly;
+                    item.registeredOwner = registeredOwner;
+                    item.permit = undefined;
+                    item.permitOptions = permitOptionsData; // TODO: Permit options should reflect selections
+                    item.isEditable = true;
                 }
             }
         });
@@ -530,6 +540,19 @@ function Permits() {
     }
 
     function clubLocatorMapDialogShow(): void {
+
+    }
+
+    function addPermitToCartClick(id: string): void {
+        //let cartItems: ICartItem[] = appContext.data?.cartItems ?? [];
+
+        // let permit: IPermit = snowmobiles.filter(x => x.id === id)[0];
+
+        // let item: ICartItem = {
+        //     id: uuidv4(),
+        //     description: 
+        // };
+
 
     }
 }

@@ -53,6 +53,7 @@ export interface ISnowmobile {
     registeredOwner: boolean;
     permit?: IPermit;
     permitOptions?: IPermitOption[];
+    isEditable: boolean;
 }
 
 export interface ICartItem {
