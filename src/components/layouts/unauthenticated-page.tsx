@@ -1,10 +1,9 @@
-import { useContext, useEffect } from 'react';
+import { ReactNode, useContext, useEffect } from 'react';
 import { AppContext } from '@/custom/app-context';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Image from 'next/image';
 
-export default function UnauthenticatedPageLayout({ children }: { children: any }) {
+export default function UnauthenticatedPageLayout({ children }: { children: ReactNode }) {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
@@ -33,7 +32,7 @@ export default function UnauthenticatedPageLayout({ children }: { children: any 
                     <div className="container-fluid">
                         <div className="d-flex justify-content-start align-items-start align-items-sm-start align-items-md-center w-100">
                             <a className="navbar-brand" href="#">
-                                <Image src="/ofsc.png" alt="Logo" width="60" height="60" />
+                                <img src="ofsc.png" alt="Logo" width="60" height="60" />
                             </a>
 
                             <div>

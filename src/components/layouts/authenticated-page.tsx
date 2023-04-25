@@ -3,7 +3,6 @@ import { AppContext } from '@/custom/app-context';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function AuthenticatedPageLayout({ children }: { children: any }) {
     const appContext = useContext(AppContext);
@@ -35,7 +34,7 @@ export default function AuthenticatedPageLayout({ children }: { children: any })
                         <div className="d-flex justify-content-start align-items-start align-items-sm-start align-items-md-center w-100">
                             <div className="d-flex flex-fill">
                                 <a className="navbar-brand" href="#">
-                                    <Image src="/ofsc.png" alt="Logo" width="60" height="60" />
+                                    <img src="ofsc.png" alt="Logo" width="60" height="60" />
                                 </a>
 
                                 <div className="d-flex flex-column justify-content-between">
