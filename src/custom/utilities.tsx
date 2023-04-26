@@ -14,10 +14,12 @@ export function getKeyValueFromSelect(e: any): IKeyValue | null {
     return result;
 }
 
-export function formatShortDate(value: string | Date): string {
-    let result: string = "";
+export function formatShortDate(value: string | Date | undefined, defaultValue: string = ""): string {
+    let result: string = defaultValue;
 
-    result = moment(value).format("D/M/YYYY");
+    if (value != undefined && value !== "") {
+        result = moment(value).format("D/M/YYYY");
+    }
 
     return result;
 }

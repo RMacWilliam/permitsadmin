@@ -39,25 +39,29 @@ export const permitOptionsData: IPermitOption[] = [
         id: "0ed573cc-2e56-4f42-8ba3-b18b06cdb83f",
         name: "Classic",
         price: 190,
-        requiresDateRange: false
+        requiresDateRange: false,
+        numberOfDays: undefined
     },
     {
         id: "cf0ffc0f-df83-4859-a91b-cd3bd0450685",
         name: "Multi Day 4",
         price: 180,
-        requiresDateRange: true
+        requiresDateRange: true,
+        numberOfDays: 4
     },
     {
         id: "6fef1835-4f88-4a0d-b076-5b305e18f6a8",
         name: "Multi Day 3",
         price: 135,
-        requiresDateRange: true
+        requiresDateRange: true,
+        numberOfDays: 3
     },
     {
         id: "32068505-5ff6-4e5d-9ae9-318dd6cca9de",
         name: "Multi Day 2",
         price: 90,
-        requiresDateRange: true
+        requiresDateRange: true,
+        numberOfDays: 2
     }
 ];
 

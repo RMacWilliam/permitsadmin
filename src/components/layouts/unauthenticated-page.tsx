@@ -52,7 +52,7 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
             <footer className="footer bg-secondary mt-auto py-2">
                 <div className="container-fluid" style={{ padding: 0 }}>
                     <div className="text-white text-center">Need help? Contact OFSC at 705-739-7669 or permits@ofsc.on.ca</div>
-                    <div className="text-white text-center">
+                    <div className="text-white text-center mt-2">
                         <a href="https://www.facebook.com/pages/The-Ontario-Federation-of-Snowmobile-Clubs-OFSC/125178027502192"><i className="fa-brands fa-facebook-f text-white"></i></a>
                         <a href="https://twitter.com/GoSnowmobiling"><i className="fa-brands fa-twitter ms-4 text-white"></i></a>
                         <a href="https://www.instagram.com/gosnowmobilingontario"><i className="fa-brands fa-instagram ms-4 text-white"></i></a>

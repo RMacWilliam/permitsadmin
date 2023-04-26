@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { forwardRef, useContext, useEffect, useState } from 'react'
 import { AppContext, ICartItem, IKeyValue, IPermitOption, ISnowmobile } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ConfirmationDialog from '@/components/confirmation-dialog';
 import moment from 'moment';
 import { useRouter } from 'next/router';
+import DatePicker from 'react-datepicker';
 
 export default function PermitsPage() {
     const appContext = useContext(AppContext);
@@ -49,6 +50,14 @@ function Permits() {
     const [showDeleteSnowmobileDialog, setShowDeleteSnowmobileDialog] = useState(false);
     const [snowmobileIdToDelete, setSnowmobileIdToDelete] = useState("");
     const [snowmobileNameToDelete, setSnowmobileNameToDelete] = useState("");
+
+    const DateRangeInput = forwardRef(({ value, snowmobile, onClick }: { value?: Date, snowmobile: ISnowmobile, onClick?: (e: any) => void }, ref: any) => (
+        <div className="form-floating mb-2">
+            <input type="text" className="form-control" id={`permit-from-${snowmobile.id}`} placeholder="From" value={formatShortDate(value)} onClick={onClick} onChange={() => null} disabled={snowmobile.isAddedToCart} readOnly={true} ref={ref} />
+            <label className="required" htmlFor={`permit-from-${snowmobile.id}`}>From</label>
+        </div>
+    ));
+    DateRangeInput.displayName = "DateRangeInput";
 
     return (
         <>
@@ -161,15 +170,12 @@ function Permits() {
 
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-6">
-                                                <div className="form-floating mb-2">
-                                                    <input type="text" className="form-control" id={`permit-from-${snowmobile.id}`} placeholder="From" value={snowmobile?.permitSelections?.dateStart?.toJSON() ?? ""} onChange={() => null} onBlur={(e: any) => permitDateRangeChange(e, snowmobile.id, 'START')} disabled={snowmobile.isAddedToCart} />
-                                                    <label className="required" htmlFor={`permit-from-${snowmobile.id}`}>From</label>
-                                                </div>
+                                                <DatePicker selected={snowmobile?.permitSelections?.dateStart} minDate={moment().toDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile.id)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
                                             </div>
 
                                             <div className="col-12 col-sm-12 col-md-6">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className="form-control" id={`permit-to-${snowmobile.id}`} placeholder="To" value={snowmobile?.permitSelections?.dateEnd?.toJSON() ?? ""} onChange={() => null} onBlur={(e: any) => permitDateRangeChange(e, snowmobile.id, 'END')} disabled={snowmobile.isAddedToCart} />
+                                                    <input type="text" className="form-control" id={`permit-to-${snowmobile.id}`} placeholder="To" value={formatShortDate(snowmobile?.permitSelections?.dateEnd)} onChange={() => null} disabled={true} />
                                                     <label className="required" htmlFor={`permit-to-${snowmobile.id}`}>To</label>
                                                 </div>
                                             </div>
@@ -479,18 +485,25 @@ function Permits() {
 
                 if (permitOption == undefined) { // None was selected
                     snowmobile.permitSelections.permitOptionId = "";
+                    snowmobile.permitSelections.dateStart = undefined;
+                    snowmobile.permitSelections.dateEnd = undefined;
                 } else {
                     snowmobile.permitSelections.permitOptionId = permitOption.id;
+                    snowmobile.permitSelections.dateStart = undefined;
+                    snowmobile.permitSelections.dateEnd = undefined;
                 }
             }
         });
     }
 
-    function permitDateRangeChange(e: any, snowmobileId: string, field: string): void {
+    function permitDateRangeChange(date: Date, snowmobileId: string): void {
+        console.log('date', date, 'snowmobileid', snowmobileId)
+
         appContext.updater(draft => {
             let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x.id === snowmobileId)[0];
+            let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x.id === snowmobile?.permitSelections?.permitOptionId)[0];
 
-            if (snowmobile != undefined) {
+            if (snowmobile != undefined && permitOption != undefined) {
                 if (snowmobile?.permitSelections == undefined) {
                     snowmobile.permitSelections = {
                         permitOptionId: "",
@@ -500,10 +513,12 @@ function Permits() {
                     };
                 }
 
-                if (field === 'START') {
-                    snowmobile.permitSelections.dateStart = moment(e?.target?.value).toDate();
-                } else if (field === 'END') {
-                    snowmobile.permitSelections.dateEnd = moment(e?.target?.value).toDate();
+                snowmobile.permitSelections.dateStart = date;
+
+                let daysToAdd: number = (permitOption?.numberOfDays ?? 0) - 1;
+
+                if (daysToAdd >= 0) {
+                    snowmobile.permitSelections.dateEnd = moment(date).add(daysToAdd, 'days').toDate();
                 }
             }
         });
@@ -561,8 +576,6 @@ function Permits() {
                     && (!permitOption.requiresDateRange
                         || (permitOption.requiresDateRange && snowmobile?.permitSelections?.dateStart != undefined && snowmobile?.permitSelections?.dateEnd != undefined))
                     && snowmobile?.permitSelections?.clubId != "";
-
-                console.log(snowmobile?.permitSelections)
             }
         }
 
@@ -578,9 +591,13 @@ function Permits() {
                 let club: IKeyValue | undefined = clubsData?.filter(x => x.key === snowmobile?.permitSelections?.clubId)[0];
 
                 if (permitOption != undefined && club != undefined) {
+                    let description: string = `${snowmobile.year} ${snowmobile.make.value} ${snowmobile.model} ${snowmobile.vin} `
+                        + `${permitOption?.name} (${formatShortDate(snowmobile?.permitSelections?.dateStart)} - ${formatShortDate(snowmobile?.permitSelections?.dateEnd)}) `
+                        + `(${club.value})`;
+
                     let cartItem: ICartItem = {
                         id: uuidv4(),
-                        description: `${snowmobile.year} ${snowmobile.make.value} ${snowmobile.model} ${snowmobile.vin} ${permitOption?.name} (${club.value})`,
+                        description: description,
                         price: permitOption?.price,
                         isPermit: true,
                         isGiftCard: false,

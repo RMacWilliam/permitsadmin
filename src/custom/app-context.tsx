@@ -40,6 +40,7 @@ export interface IPermitOption {
     name: string;
     price: number;
     requiresDateRange: boolean;
+    numberOfDays?: number;
 }
 
 export interface IPermitSelections {
