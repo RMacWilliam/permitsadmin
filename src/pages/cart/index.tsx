@@ -40,23 +40,22 @@ function Cart() {
                                     {cartItems != undefined && cartItems.length > 0 && cartItems.map(cartItem => (
                                         <tr key={cartItem.id}>
                                             <td>
-                                                <div className="d-flex justify-content-between">
+                                                <div className="d-flexx justify-content-betweenn">
                                                     <div>
                                                         {cartItem.description}
                                                     </div>
                                                     <div>
-                                                        <button className="btn btn-danger btn-sm ms-1" onClick={() => removeCartItemClick(cartItem.id)}>
-                                                            <span className="d-none d-sm-none d-md-block">Remove</span>
-                                                            <span className="d-md-none"><i className="fa-solid fa-xmark"></i></span>
+                                                        <button className="btn btn-primary btn-sm mt-2 mx-1" style={{ width: 150 }} type="button">
+                                                            Redeem Gift Card
+                                                        </button>
+                                                        <button className="btn btn-danger btn-sm mt-2 mx-1" style={{ width: 150 }} type="button" onClick={() => removeCartItemClick(cartItem.id)}>
+                                                            Remove
                                                         </button>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="text-end">
                                                 ${cartItem.price}
-                                            </td>
-                                            <td className="text-center">
-                                                <button className="btn btn-primary btn-sm" type="button">Redeem Gift Card</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -67,9 +66,6 @@ function Cart() {
                                         </td>
                                         <td className="text-end">
                                             $7.50
-                                        </td>
-                                        <td>
-                                            &nbsp;
                                         </td>
                                     </tr>
 
@@ -92,9 +88,6 @@ function Cart() {
                                         <td className="fw-bold text-end">
                                             ${getShippingPrice()}
                                         </td>
-                                        <td>
-                                            &nbsp;
-                                        </td>
                                     </tr>
 
                                     <tr>
@@ -103,9 +96,6 @@ function Cart() {
                                         </td>
                                         <td className="text-end">
                                             <b>${calculateTotal()}</b>
-                                        </td>
-                                        <td>
-                                            &nbsp;
                                         </td>
                                     </tr>
                                 </tbody>
