@@ -1,3 +1,51 @@
-@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+// Required
+@import "../../node_modules/bootstrap/scss/functions.scss";
+@import "../../node_modules/bootstrap/scss/variables.scss";
+@import "../../node_modules/bootstrap/scss/maps.scss";
+@import "../../node_modules/bootstrap/scss/mixins.scss";
+@import "../../node_modules/bootstrap/scss/utilities.scss";
 
-// Add bootstrap variables here.
+// Default variable overrides
+$card-border-color: $gray-500;
+
+// Layout & components
+//@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../../node_modules/bootstrap/scss/root.scss";
+@import "../../node_modules/bootstrap/scss/reboot.scss";
+@import "../../node_modules/bootstrap/scss/type.scss";
+@import "../../node_modules/bootstrap/scss/images.scss";
+@import "../../node_modules/bootstrap/scss/containers.scss";
+@import "../../node_modules/bootstrap/scss/grid.scss";
+@import "../../node_modules/bootstrap/scss/tables.scss";
+@import "../../node_modules/bootstrap/scss/forms.scss";
+@import "../../node_modules/bootstrap/scss/buttons.scss";
+@import "../../node_modules/bootstrap/scss/transitions.scss";
+@import "../../node_modules/bootstrap/scss/dropdown.scss";
+//@import "../../node_modules/bootstrap/scss/button-group.scss";
+@import "../../node_modules/bootstrap/scss/nav.scss";
+@import "../../node_modules/bootstrap/scss/navbar.scss";
+@import "../../node_modules/bootstrap/scss/card.scss";
+//@import "../../node_modules/bootstrap/scss/accordion.scss";
+//@import "../../node_modules/bootstrap/scss/breadcrumb.scss";
+//@import "../../node_modules/bootstrap/scss/pagination.scss";
+@import "../../node_modules/bootstrap/scss/badge.scss";
+@import "../../node_modules/bootstrap/scss/alert.scss";
+//@import "../../node_modules/bootstrap/scss/progress.scss";
+@import "../../node_modules/bootstrap/scss/list-group.scss";
+@import "../../node_modules/bootstrap/scss/close.scss";
+//@import "../../node_modules/bootstrap/scss/toasts.scss";
+@import "../../node_modules/bootstrap/scss/modal.scss";
+//@import "../../node_modules/bootstrap/scss/tooltip.scss";
+//@import "../../node_modules/bootstrap/scss/popover.scss";
+//@import "../../node_modules/bootstrap/scss/carousel.scss";
+//@import "../../node_modules/bootstrap/scss/spinners.scss";
+//@import "../../node_modules/bootstrap/scss/offcanvas.scss";
+//@import "../../node_modules/bootstrap/scss/placeholders.scss";
+
+// Helpers
+@import "../../node_modules/bootstrap/scss/helpers.scss";
+
+// Utilities
+@import "../../node_modules/bootstrap/scss/utilities/api.scss";
+
+//@import "https://cdn.jsdelivr.net/npm/bootswatch@5.2.3/dist/sandstone/bootstrap.min.css";

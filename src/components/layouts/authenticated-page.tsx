@@ -29,21 +29,21 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
             </Head>
 
             <header>
-                <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white" style={{ maxHeight: 86, overflow: 'hidden' }}>
+                <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white" style={{ minHeight: 86, maxHeight: 86, overflow: 'hidden' }}>
                     <div className="container-fluid">
-                        <div className="d-flex justify-content-start align-items-start align-items-sm-start align-items-md-center w-100">
+                        <div className="d-flex justify-content-between align-items-center w-100" style={{ maxHeight: 70 }}>
                             <div className="d-flex flex-fill">
-                                <a className="navbar-brand" href="#">
+                                <a className="navbar-brand d-none d-sm-block" href="#">
                                     <img src="ofsc.png" alt="Logo" width="60" height="60" />
                                 </a>
 
                                 <div className="d-flex flex-column justify-content-between">
-                                    <h4>Ontario Federation of Snowmobile Clubs</h4>
+                                    <h5 className="mb-0">Ontario Federation of Snowmobile Clubs</h5>
 
                                     <div className="d-none d-sm-none d-md-block">
                                         Logged in as {appContext.data.email}.
 
-                                        <span className="btn btn-link align-baseline border-0 ms-2 p-0" onClick={(e: any) => doLogout()}>
+                                        <span className="btn btn-link align-baseline border-0 ms-2 p-0" onClick={() => doLogout()}>
                                             Logout
                                         </span>
                                     </div>
@@ -52,18 +52,19 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
 
                             <div className="d-flex align-items-center">
                                 {appContext.data?.isContactInfoVerified && (
-                                    <div className="text-nowrap ms-3 ms-sm-3">
-                                        <Link className="nav-link" aria-current="page" href="/cart">
+                                    <div className="ms-3 ms-sm-3 pe-2">
+                                        <Link className="nav-link position-relative" aria-current="page" href="/cart">
                                             <i className="fa-solid fa-cart-shopping fa-xl"></i>
-                                            {appContext.data?.cartItems?.length > 0 && <span className="badge text-bg-danger rounded-pill align-text-bottom ms-1">
-                                                {appContext.data?.cartItems?.length}
-                                            </span>
-                                            }
+                                            {appContext.data?.cartItems != undefined && appContext.data.cartItems.length > 0 && (
+                                                <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                                                    {appContext.data.cartItems.length}
+                                                </span>
+                                            )}
                                         </Link>
                                     </div>
                                 )}
 
-                                <div className="d-block d-sm-block d-md-none ms-3 ms-sm-3">
+                                <div className="d-block d-sm-block d-md-none ps-3 ps-sm-3">
                                     <button className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                                         <span className="navbar-toggler-icon"></span>
                                     </button>
@@ -110,7 +111,7 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                             <i className="fa-solid fa-user me-2"></i>
                             Logged in as {appContext.data.email}.
                             <span className="ms-2">
-                                <Link className="text-decoration-none" href="" onClick={(e: any) => doLogout()}>Logout</Link>
+                                <Link className="text-decoration-none" href="" onClick={() => doLogout()}>Logout</Link>
                             </span>
                         </li>
                     </ul>
@@ -149,6 +150,13 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
             <footer className="footer bg-secondary py-3">
                 <div className="container-fluid" style={{ padding: 0 }}>
                     <div className="text-white text-center">Need help? Contact OFSC at 705-739-7669 or permits@ofsc.on.ca</div>
+                    <div className="text-white text-center">
+                        <a href="https://www.facebook.com/pages/The-Ontario-Federation-of-Snowmobile-Clubs-OFSC/125178027502192"><i className="fa-brands fa-facebook-f text-white"></i></a>
+                        <a href="https://twitter.com/GoSnowmobiling"><i className="fa-brands fa-twitter ms-3 text-white"></i></a>
+                        <a href="https://www.instagram.com/gosnowmobilingontario"><i className="fa-brands fa-instagram ms-3 text-white"></i></a>
+                        <a href="https://www.linkedin.com/company/ontario-federation-of-snowmobile-clubs"><i className="fa-brands fa-linkedin-in ms-3 text-white"></i></a>
+                        <a href="https://www.youtube.com/user/GoSnowmobiling/videos"><i className="fa-brands fa-youtube ms-3 text-white"></i></a>
+                    </div>
                 </div>
             </footer>
         </>

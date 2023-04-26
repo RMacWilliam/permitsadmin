@@ -28,15 +28,15 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
             </Head>
 
             <header>
-                <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white" style={{ maxHeight: 86, overflow: 'hidden' }}>
+                <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white" style={{ minHeight: 86, maxHeight: 86, overflow: 'hidden' }}>
                     <div className="container-fluid">
-                        <div className="d-flex justify-content-start align-items-start align-items-sm-start align-items-md-center w-100">
-                            <a className="navbar-brand" href="#">
+                        <div className="d-flex justify-content-start align-items-center w-100">
+                            <a className="navbar-brand d-none d-sm-block" href="#">
                                 <img src="ofsc.png" alt="Logo" width="60" height="60" />
                             </a>
 
                             <div>
-                                <h4>Ontario Federation of Snowmobile Clubs</h4>
+                                <h5 className="mb-0">Ontario Federation of Snowmobile Clubs</h5>
                             </div>
                         </div>
                     </div>
@@ -50,6 +50,13 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
             <footer className="footer bg-secondary py-3">
                 <div className="container-fluid" style={{ padding: 0 }}>
                     <div className="text-white text-center">Need help? Contact OFSC at 705-739-7669 or permits@ofsc.on.ca</div>
+                    <div className="text-white text-center">
+                        <a href="https://www.facebook.com/pages/The-Ontario-Federation-of-Snowmobile-Clubs-OFSC/125178027502192"><i className="fa-brands fa-facebook-f text-white"></i></a>
+                        <a href="https://twitter.com/GoSnowmobiling"><i className="fa-brands fa-twitter ms-3 text-white"></i></a>
+                        <a href="https://www.instagram.com/gosnowmobilingontario"><i className="fa-brands fa-instagram ms-3 text-white"></i></a>
+                        <a href="https://www.linkedin.com/company/ontario-federation-of-snowmobile-clubs"><i className="fa-brands fa-linkedin-in ms-3 text-white"></i></a>
+                        <a href="https://www.youtube.com/user/GoSnowmobiling/videos"><i className="fa-brands fa-youtube ms-3 text-white"></i></a>
+                    </div>
                 </div>
             </footer>
         </>

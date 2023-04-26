@@ -1,5 +1,5 @@
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
-import { AppContext, ICartItem, IShippingMethod } from "@/custom/app-context";
+import { AppContext, ICartItem, IShippingMethod, ISnowmobile } from "@/custom/app-context";
 import { shippingMethodsData, transactionAndAdministrationFee } from "@/custom/data";
 import Head from "next/head";
 import { useContext, useState } from "react";
@@ -37,7 +37,7 @@ function Cart() {
                         <div className="card-body p-1">
                             <table className="table table-bordered mb-0">
                                 <tbody>
-                                    {cartItems != null && cartItems.length > 0 && cartItems.map(cartItem => (
+                                    {cartItems != undefined && cartItems.length > 0 && cartItems.map(cartItem => (
                                         <tr key={cartItem.id}>
                                             <td>
                                                 <div className="d-flex justify-content-between">
@@ -82,7 +82,7 @@ function Cart() {
 
                                                 <div>
                                                     <select className="form-select" aria-label="Shipping" value={shipping} onChange={(e: any) => setShipping(e.target.value)}>
-                                                        {shippingMethodsData != null && shippingMethodsData.length > 0 && shippingMethodsData.map(shippingMethod => (
+                                                        {shippingMethodsData != undefined && shippingMethodsData.length > 0 && shippingMethodsData.map(shippingMethod => (
                                                             <option value={shippingMethod.id} key={shippingMethod.id}>{shippingMethod.name} - ${shippingMethod.price}</option>
                                                         ))}
                                                     </select>
@@ -145,10 +145,10 @@ function Cart() {
     function getShippingPrice(): number {
         let result: number = 0;
 
-        if (shipping != null && shippingMethodsData != null && shippingMethodsData.length > 0) {
+        if (shipping != undefined && shippingMethodsData != undefined && shippingMethodsData.length > 0) {
             let item: IShippingMethod = shippingMethodsData.filter(x => x.id === shipping)[0];
 
-            if (item != null) {
+            if (item != undefined) {
                 result = item.price;
             }
         }
@@ -159,7 +159,7 @@ function Cart() {
     function calculateTotal(): number {
         let result: number = 0;
 
-        if (cartItems != null && cartItems.length > 0) {
+        if (cartItems != undefined && cartItems.length > 0) {
             result = cartItems.reduce((subTotal, item) => subTotal + item.price, 0);
         }
 
@@ -169,9 +169,19 @@ function Cart() {
         return result;
     }
 
-    function removeCartItemClick(id: string): void {
+    function removeCartItemClick(cartItemId: string): void {
         appContext.updater(draft => {
-            draft.cartItems = draft.cartItems.filter(x => x.id !== id);
+            let cartItem: ICartItem | undefined = draft.cartItems.filter(x => x.id === cartItemId)[0];
+
+            if (cartItem != undefined) {
+                draft.cartItems = draft.cartItems.filter(x => x.id !== cartItemId);
+
+                let snowmobile: ISnowmobile | undefined = draft.snowmobiles.filter(x => x.id === cartItem?.snowmobileId)[0];
+
+                if (snowmobile != undefined) {
+                    snowmobile.isAddedToCart = false;
+                }
+            }
         });
     }
 }

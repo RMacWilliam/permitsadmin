@@ -80,7 +80,8 @@ export const snowmobilesData: ISnowmobile[] = [
         },
         permitOptions: undefined,
         permitSelections: undefined,
-        isEditable: false
+        isEditable: false,
+        isAddedToCart: false
     },
     {
         id: "dce627b3-d0ce-4b29-b56c-600a9191d545",
@@ -94,16 +95,20 @@ export const snowmobilesData: ISnowmobile[] = [
         permit: undefined,
         permitOptions: permitOptionsData,
         permitSelections: undefined,
-        isEditable: true
+        isEditable: true,
+        isAddedToCart: false
     }
 ];
 
 export const cartItemsData: ICartItem[] = [
-    {
-        id: "a7bb35b6-367e-4f4f-81ff-007ca9e4a1d7",
-        description: "2005 Yamaha Some Model DRFF2122030493 Classic (Arctic Riders Snow Club)",
-        price: 190
-    }
+    // {
+    //     id: "a7bb35b6-367e-4f4f-81ff-007ca9e4a1d7",
+    //     description: "2005 Yamaha Some Model DRFF2122030493 Classic (Arctic Riders Snow Club)",
+    //     price: 190,
+    //     isPermit: true,
+    //     isGiftCard: false,
+    //     snowmobileId: ""
+    // }
 ];
 
 export const shippingMethodsData: IShippingMethod[] = [

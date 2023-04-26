@@ -44,7 +44,6 @@ export interface IPermitOption {
 
 export interface IPermitSelections {
     permitOptionId: string; // guid
-    name: string; // Copy of IPermitOption.name
     dateStart?: Date;
     dateEnd?: Date;
     clubId: string;
@@ -63,12 +62,16 @@ export interface ISnowmobile {
     permitOptions?: IPermitOption[];
     permitSelections?: IPermitSelections;
     isEditable: boolean;
+    isAddedToCart: boolean;
 }
 
 export interface ICartItem {
     id: string; // guid
     description: string;
     price: number;
+    isPermit: boolean;
+    isGiftCard: boolean;
+    snowmobileId?: string;
 }
 
 export interface IShippingMethod {
