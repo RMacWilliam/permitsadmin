@@ -10,7 +10,7 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
 
     useEffect(() => {
         if (!appContext.data.isAuthenticated) {
-            router.push('/');
+            router.push("/");
         }
     }, [appContext.data.isAuthenticated, router])
 
@@ -77,13 +77,13 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                 <div className="collapse navbar-collapse bg-dark text-white px-3 pb-1" id="navbarCollapse">
                     <ul className="navbar-nav me-auto mb-2 mb-md-0 d-block d-sm-block d-md-none">
                         <li className="nav-item">
-                            <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/home'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                            <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/home"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                 <i className="fa-solid fa-house me-2"></i>
                                 Home
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/contact'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                            <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                 <i className="fa-regular fa-address-card me-2"></i>
                                 Contact Information
                             </Link>
@@ -91,13 +91,13 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                         {appContext.data?.isContactInfoVerified && (
                             <>
                                 <li className="nav-item">
-                                    <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/permits'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                    <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/permits"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                         <i className="fa-solid fa-snowflake me-2"></i>
                                         Snowmobiles &amp; Permits
                                     </Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push('/gift-cards'); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                    <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/gift-cards"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                         <i className="fa-solid fa-gift me-2"></i>
                                         Gift Cards
                                     </Link>
@@ -143,8 +143,8 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                 </div>
             </header>
 
-            <main className="flex-shrink-0">
-                <div className="container-fluid container-lg flex-shrink-0 py-2">
+            <main className="flex-shrink-0 py-3">
+                <div className="container-fluid container-lg">
                     {children}
                 </div>
             </main>
@@ -176,6 +176,6 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
             draft.token = undefined;
         });
 
-        router.push('/');
+        router.push("/");
     }
 }

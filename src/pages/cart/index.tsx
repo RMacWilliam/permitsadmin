@@ -1,5 +1,5 @@
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
-import { AppContext, ICartItem, IShippingMethod, ISnowmobile } from "@/custom/app-context";
+import { AppContext, IAppContextValues, ICartItem, IShippingMethod, ISnowmobile } from "@/custom/app-context";
 import { shippingMethodsData, transactionAndAdministrationFee } from "@/custom/data";
 import Head from "next/head";
 import { useContext, useState } from "react";
@@ -42,15 +42,25 @@ function Cart() {
                                             <td>
                                                 <div className="d-flexx justify-content-betweenn">
                                                     <div>
+                                                        {cartItem.isPermit && (
+                                                            <i className="fa-solid fa-snowflake me-2"></i>
+                                                        )}
+                                                        {cartItem.isGiftCard && (
+                                                            <i className="fa-solid fa-gift me-2"></i>
+                                                        )}
+
                                                         {cartItem.description}
                                                     </div>
                                                     <div>
-                                                        <button className="btn btn-primary btn-sm mt-2 mx-1" style={{ width: 150 }} type="button">
-                                                            Redeem Gift Card
-                                                        </button>
-                                                        <button className="btn btn-danger btn-sm mt-2 mx-1" style={{ width: 150 }} type="button" onClick={() => removeCartItemClick(cartItem.id)}>
+                                                        <button className="btn btn-danger btn-sm mt-2 me-2" style={{ width: 150 }} type="button" onClick={() => removeCartItemClick(cartItem.id)}>
                                                             Remove
                                                         </button>
+
+                                                        {cartItem.isPermit && (
+                                                            <button className="btn btn-primary btn-sm mt-2" style={{ width: 150 }} type="button">
+                                                                Redeem Gift Card
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </td>
@@ -174,4 +184,31 @@ function Cart() {
             }
         });
     }
+}
+
+export function getPageAlertMessage(appContext: IAppContextValues): string {
+    let result: string = "";
+
+    let permitCount: number = appContext.data?.cartItems?.filter(x => x.isPermit)?.length;
+    let giftCardCount: number = appContext.data?.cartItems?.filter(x => x.isGiftCard)?.length;
+
+    if (permitCount > 0 || giftCardCount > 0) {
+        result = "You have ";
+
+        if (permitCount > 0) {
+            result += permitCount.toString() + (permitCount === 1 ? " permit " : " permits ");
+        }
+
+        if (giftCardCount > 0) {
+            if (permitCount > 0) {
+                result += "and ";
+            }
+
+            result += giftCardCount.toString() + (giftCardCount === 1 ? " gift card " : " gift cards ");
+        }
+
+        result += "in your cart.";
+    }
+
+    return result;
 }

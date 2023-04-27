@@ -38,7 +38,7 @@ function Home({ router }: { router: NextRouter }) {
                             Please confirm your contact information and preferences to gain full access to your account.
                         </div>
                         <div>
-                            <button type="button" className="btn btn-primary btn-sm mt-2 mt-sm-2 mt-md-0" onClick={() => router.push('/contact')}>Go to Contact Information</button>
+                            <button type="button" className="btn btn-primary btn-sm mt-2 mt-sm-2 mt-md-0" onClick={() => router.push("/contact")}>Go to Contact Information</button>
                         </div>
                     </div>
                 </div >

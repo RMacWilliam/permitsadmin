@@ -120,14 +120,14 @@ function Index() {
           draft.snowmobiles = snowmobilesData;
       });
 
-      router.push('/home');
+      router.push("/home");
   }
 
   function doForgotPassword() {
-      router.push('/forgot-password')
+      router.push("/forgot-password")
   }
 
   function doCreateAccount() {
-      router.push('/create-account');
+      router.push("/create-account");
   }
 }

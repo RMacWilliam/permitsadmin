@@ -1,5 +1,5 @@
 import moment from "moment";
-import { IAccountPreferences, ICartItem, IContactInfo, IKeyValue, IPermitOption, IShippingMethod, ISnowmobile } from "./app-context";
+import { IAccountPreferences, ICartItem, IContactInfo, IGiftCardOption, IKeyValue, IPermitOption, IShippingMethod, ISnowmobile } from "./app-context";
 
 export const contactInfoData: IContactInfo = {
     firstName: "John",
@@ -101,6 +101,19 @@ export const snowmobilesData: ISnowmobile[] = [
         permitSelections: undefined,
         isEditable: true,
         isAddedToCart: false
+    }
+];
+
+export const giftCardOptionsData: IGiftCardOption[] = [
+    {
+        id: "f4305623-bd5c-4c5a-b624-7a82fb21a1b5",
+        name: "Seasonal",
+        price: 287.5
+    },
+    {
+        id: "b85f91f5-a633-450b-986a-9e2308a53e9f",
+        name: "Classic",
+        price: 197.5
     }
 ];
 

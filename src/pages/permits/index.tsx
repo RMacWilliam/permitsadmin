@@ -11,6 +11,7 @@ import ConfirmationDialog from '@/components/confirmation-dialog';
 import moment from 'moment';
 import { useRouter } from 'next/router';
 import DatePicker from 'react-datepicker';
+import { getPageAlertMessage } from '../cart';
 
 export default function PermitsPage() {
     const appContext = useContext(AppContext);
@@ -72,10 +73,10 @@ function Permits() {
                     <div className="d-flex justify-content-between align-items-center flex-wrap flex-sm-wrap flex-md-wrap flex-md-nowrap w-100">
                         <div>
                             <i className="fa-solid fa-cart-shopping fa-xl me-2"></i>
-                            You have {appContext.data.cartItems.length} {appContext.data.cartItems.length === 1 ? "item" : "items"} in your cart.
+                            {getPageAlertMessage(appContext)}
                         </div>
                         <div>
-                            <button type="button" className="btn btn-primary btn-sm mt-2 mt-sm-2 mt-md-0" onClick={() => router.push('/cart')}>Go to Cart</button>
+                            <button type="button" className="btn btn-primary btn-sm mt-2 mt-sm-2 mt-md-0" onClick={() => router.push("/cart")}>Go to Cart</button>
                         </div>
                     </div>
                 </div >
@@ -142,7 +143,7 @@ function Permits() {
                             </li>
                         )}
 
-                        {snowmobile.permit == undefined && snowmobile.permitOptions != undefined && snowmobile.permitOptions.length > 0 && (
+                        {snowmobile.permit == undefined && snowmobile?.permitOptions != undefined && snowmobile.permitOptions.length > 0 && (
                             <>
                                 <li className="list-group-item">
                                     <h6 className="card-title">Select a permit to purchase</h6>
@@ -591,9 +592,15 @@ function Permits() {
                 let club: IKeyValue | undefined = clubsData?.filter(x => x.key === snowmobile?.permitSelections?.clubId)[0];
 
                 if (permitOption != undefined && club != undefined) {
-                    let description: string = `${snowmobile.year} ${snowmobile.make.value} ${snowmobile.model} ${snowmobile.vin} `
-                        + `${permitOption?.name} (${formatShortDate(snowmobile?.permitSelections?.dateStart)} - ${formatShortDate(snowmobile?.permitSelections?.dateEnd)}) `
-                        + `(${club.value})`;
+                    let description: string = `${snowmobile.year} ${snowmobile.make.value} ${snowmobile.model} ${snowmobile.vin} `;
+
+                    if (permitOption.requiresDateRange) {
+                        description += `${permitOption?.name} (${formatShortDate(snowmobile?.permitSelections?.dateStart)} - ${formatShortDate(snowmobile?.permitSelections?.dateEnd)}) `;
+                    } else {
+                        description += `${permitOption?.name} `;
+                    }
+
+                    description += `(${club.value})`;
 
                     let cartItem: ICartItem = {
                         id: uuidv4(),

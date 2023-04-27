@@ -9,7 +9,7 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
 
     useEffect(() => {
         if (appContext.data.isAuthenticated) {
-            router.push('/home');
+            router.push("/home");
         }
     }, [appContext.data.isAuthenticated, router])
 
@@ -43,8 +43,8 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
                 </nav>
             </header>
 
-            <main className="flex-shrink-0">
-                <div className="container-fluid container-lg flex-shrink-0 py-2">
+            <main className="flex-shrink-0 py-3">
+                <div className="container-fluid container-lg">
                     {children}
                 </div>
             </main>

@@ -66,6 +66,12 @@ export interface ISnowmobile {
     isAddedToCart: boolean;
 }
 
+export interface IGiftCardOption {
+    id: string; // guid
+    name: string;
+    price: number;
+}
+
 export interface ICartItem {
     id: string; // guid
     description: string;
