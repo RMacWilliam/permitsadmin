@@ -1,5 +1,5 @@
 import moment from "moment";
-import { IAccountPreferences, ICartItem, IContactInfo, IGiftCardOption, IKeyValue, IPermitOption, IShippingMethod, ISnowmobile } from "./app-context";
+import { IAccountPreferences, ICartItem, IContactInfo, IGiftCard, IGiftCardOption, IKeyValue, IPermitOption, IShippingMethod, ISnowmobile } from "./app-context";
 
 export const contactInfoData: IContactInfo = {
     firstName: "John",
@@ -37,10 +37,24 @@ export const clubsData: IKeyValue[] = [
 export const permitOptionsData: IPermitOption[] = [
     {
         id: "0ed573cc-2e56-4f42-8ba3-b18b06cdb83f",
-        name: "Classic",
-        price: 190,
+        name: "Seasonal",
+        price: 280,
         requiresDateRange: false,
         numberOfDays: undefined
+    },
+    {
+        id: "e60c5c87-260d-4c79-91d8-52967200ab7a",
+        name: "Multi Day 6",
+        price: 270,
+        requiresDateRange: true,
+        numberOfDays: 6
+    },
+    {
+        id: "46b64fcc-bf66-4d64-89ed-e958282b72cd",
+        name: "Multi Day 5",
+        price: 225,
+        requiresDateRange: true,
+        numberOfDays: 5
     },
     {
         id: "cf0ffc0f-df83-4859-a91b-cd3bd0450685",
@@ -80,12 +94,15 @@ export const snowmobilesData: ISnowmobile[] = [
             name: "Seasonal",
             number: "K0265293",
             purchaseDate: moment("2022-10-31T18:25:43.511Z").toDate(),
-            trackingNumber: "292980921743_C1-92987434"
+            trackingNumber: "292980921743_C1-92987434",
+
+            permitOptionId: "0ed573cc-2e56-4f42-8ba3-b18b06cdb83f",
+            dateStart: undefined,
+            dateEnd: undefined,
+            clubId: "1" // Arctic Riders Snow Club
         },
         permitOptions: undefined,
-        permitSelections: undefined,
-        isEditable: false,
-        isAddedToCart: false
+        isEditable: false
     },
     {
         id: "dce627b3-d0ce-4b29-b56c-600a9191d545",
@@ -98,9 +115,7 @@ export const snowmobilesData: ISnowmobile[] = [
         registeredOwner: true,
         permit: undefined,
         permitOptions: permitOptionsData,
-        permitSelections: undefined,
-        isEditable: true,
-        isAddedToCart: false
+        isEditable: true
     }
 ];
 
@@ -114,6 +129,16 @@ export const giftCardOptionsData: IGiftCardOption[] = [
         id: "b85f91f5-a633-450b-986a-9e2308a53e9f",
         name: "Classic",
         price: 197.5
+    }
+];
+
+export const giftCardsData: IGiftCard[] = [
+    {
+        id: "3347ddc6-b6cc-479e-ab26-920c42383d02",
+        giftCardOptionId: "f4305623-bd5c-4c5a-b624-7a82fb21a1b5", // Seasonal
+        lastName: "SMITH",
+        postalCode: "M5W 1E6",
+        isEditable: false
     }
 ];
 

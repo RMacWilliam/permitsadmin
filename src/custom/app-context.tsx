@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 import { Updater } from 'use-immer';
-import { accountPreferencesData, cartItemsData, contactInfoData, snowmobilesData } from './data';
+import { accountPreferencesData, cartItemsData, contactInfoData, giftCardsData, snowmobilesData } from './data';
 
 export interface IKeyValue {
     key: string;
@@ -27,14 +27,6 @@ export interface IAccountPreferences {
     volunteering: number; // -1=Unset; 0=No; 1=Yes, I already volunteer; 2=Yes, I'd like to volunteer
 }
 
-export interface IPermit {
-    id: string; // guid
-    name: string;
-    number: string;
-    purchaseDate: Date;
-    trackingNumber: string;
-}
-
 export interface IPermitOption {
     id: string; // guid
     name: string;
@@ -43,11 +35,17 @@ export interface IPermitOption {
     numberOfDays?: number;
 }
 
-export interface IPermitSelections {
-    permitOptionId: string; // guid
+export interface IPermit {
+    id?: string; // guid
+    name?: string;
+    number?: string;
+    purchaseDate?: Date;
+    trackingNumber?: string;
+
+    permitOptionId?: string; // guid
     dateStart?: Date;
     dateEnd?: Date;
-    clubId: string;
+    clubId?: string;
 }
 
 export interface ISnowmobile {
@@ -61,9 +59,7 @@ export interface ISnowmobile {
     registeredOwner: boolean;
     permit?: IPermit;
     permitOptions?: IPermitOption[];
-    permitSelections?: IPermitSelections;
     isEditable: boolean;
-    isAddedToCart: boolean;
 }
 
 export interface IGiftCardOption {
@@ -72,13 +68,21 @@ export interface IGiftCardOption {
     price: number;
 }
 
+export interface IGiftCard {
+    id: string; // guid
+    giftCardOptionId: string;
+    lastName: string;
+    postalCode: string;
+    isEditable: boolean;
+}
+
 export interface ICartItem {
     id: string; // guid
     description: string;
     price: number;
     isPermit: boolean;
     isGiftCard: boolean;
-    snowmobileId?: string;
+    itemId?: string;
 }
 
 export interface IShippingMethod {
@@ -107,11 +111,20 @@ export interface IAppContextData {
 
     // Snowmobiles & Permits
     snowmobiles: ISnowmobile[];
+
+    // Gift Cards
+    giftCards: IGiftCard[];
+}
+
+export interface ITranslation {
+    t: any;
+    i18n: any;
 }
 
 export interface IAppContextValues {
     data: IAppContextData;
     updater: Updater<IAppContextData>;
+    translation: ITranslation;
 }
 
 export const appContextValues: IAppContextValues = {
@@ -129,9 +142,15 @@ export const appContextValues: IAppContextValues = {
         contactInfo: contactInfoData,
         accountPreferences: accountPreferencesData,
 
-        snowmobiles: snowmobilesData
+        snowmobiles: snowmobilesData,
+
+        giftCards: giftCardsData
     },
-    updater: () => { }
+    updater: () => { },
+    translation: {
+        t: undefined,
+        i18n: undefined
+    }
 };
 
 export const AppContext = createContext(appContextValues);

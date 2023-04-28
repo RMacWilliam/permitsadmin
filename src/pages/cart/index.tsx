@@ -1,5 +1,5 @@
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
-import { AppContext, IAppContextValues, ICartItem, IShippingMethod, ISnowmobile } from "@/custom/app-context";
+import { AppContext, IAppContextValues, ICartItem, IShippingMethod } from "@/custom/app-context";
 import { shippingMethodsData, transactionAndAdministrationFee } from "@/custom/data";
 import Head from "next/head";
 import { useContext, useState } from "react";
@@ -149,7 +149,7 @@ function Cart() {
             let item: IShippingMethod = shippingMethodsData.filter(x => x.id === shipping)[0];
 
             if (item != undefined) {
-                result = item.price;
+                result = item?.price ?? 0;
             }
         }
 
@@ -171,17 +171,7 @@ function Cart() {
 
     function removeCartItemClick(cartItemId: string): void {
         appContext.updater(draft => {
-            let cartItem: ICartItem | undefined = draft.cartItems.filter(x => x.id === cartItemId)[0];
-
-            if (cartItem != undefined) {
-                draft.cartItems = draft.cartItems.filter(x => x.id !== cartItemId);
-
-                let snowmobile: ISnowmobile | undefined = draft.snowmobiles.filter(x => x.id === cartItem?.snowmobileId)[0];
-
-                if (snowmobile != undefined) {
-                    snowmobile.isAddedToCart = false;
-                }
-            }
+            draft.cartItems = draft.cartItems.filter(x => x.id !== cartItemId);
         });
     }
 }
@@ -189,8 +179,8 @@ function Cart() {
 export function getPageAlertMessage(appContext: IAppContextValues): string {
     let result: string = "";
 
-    let permitCount: number = appContext.data?.cartItems?.filter(x => x.isPermit)?.length;
-    let giftCardCount: number = appContext.data?.cartItems?.filter(x => x.isGiftCard)?.length;
+    let permitCount: number = appContext.data?.cartItems?.filter(x => x.isPermit)?.length ?? 0;
+    let giftCardCount: number = appContext.data?.cartItems?.filter(x => x.isGiftCard)?.length ?? 0;
 
     if (permitCount > 0 || giftCardCount > 0) {
         result = "You have ";

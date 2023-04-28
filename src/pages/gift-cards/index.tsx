@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react'
-import { AppContext, ICartItem, IGiftCardOption } from '@/custom/app-context';
+import { AppContext, ICartItem, IGiftCard, IGiftCardOption } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
-import { giftCardOptionsData } from '@/custom/data';
+import { giftCardOptionsData, giftCardsData } from '@/custom/data';
 import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from 'next/router';
 import { getPageAlertMessage } from '../cart';
@@ -25,10 +25,7 @@ function GiftCards() {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
-    const [purchaseGiftCard, setPurchaseGiftCard] = useState(false);
-    const [giftCardType, setGiftCardType] = useState("");
-    const [giftCardLastName, setGiftCardLastName] = useState("");
-    const [giftCardPostalCode, setGiftCardPostalCode] = useState("");
+    const giftCards: IGiftCard[] = appContext.data?.giftCards ?? [];
 
     return (
         <>
@@ -67,23 +64,23 @@ function GiftCards() {
             <b>Please note that you can only purchase a maximum of 3 gift cards.</b>
 
             <div className="mt-3">
-                <button className="btn btn-primary btn-sm" onClick={() => setPurchaseGiftCard(true)} disabled={purchaseGiftCard || getGiftCardCountInCart() >= 3}>I want to purchase a gift card</button>
+                <button className="btn btn-primary btn-sm" onClick={() => purchaseGiftCardClick()} disabled={getGiftCardCount() >= 3}>I want to purchase a gift card</button>
 
-                {getGiftCardCountInCart() >= 3 && (
+                {getGiftCardCount() >= 3 && (
                     <div className="text-danger fw-semibold mt-3">You have already added the maximum number of gift cards to your cart.</div>
                 )}
             </div>
 
-            {purchaseGiftCard && (
-                <div className="card mt-3">
+            {giftCards && giftCards.length > 0 && giftCards.map(giftCard => (
+                <div className="card mt-3" key={giftCard.id}>
                     <ul className="list-group list-group-flush">
                         <li className="list-group-item">
                             <h6 className="card-title">Select a permit to purchase</h6>
 
                             {giftCardOptionsData != null && giftCardOptionsData.length > 0 && giftCardOptionsData.map(giftCardOption => (
                                 <div className="form-check form-check-inline" key={giftCardOption.id}>
-                                    <input className="form-check-input" type="radio" name={`gift-cards-${giftCardOption.id}`} id={`gift-cards-${giftCardOption.id}`} checked={giftCardType === giftCardOption.id} value={giftCardOption.id} onChange={(e: any) => setGiftCardType(e.target.value)} />
-                                    <label className="form-check-label" htmlFor={`gift-cards-${giftCardOption.id}`}>
+                                    <input className="form-check-input" type="radio" name={`gift-cards-permit-options-${giftCard.id}-${giftCardOption.id}`} id={`gift-cards-permit-options-${giftCard.id}-${giftCardOption.id}`} checked={giftCard.giftCardOptionId === giftCardOption.id} value={giftCardOption.id} onChange={(e: any) => giftCardOptionChange(e, giftCard.id)} disabled={!giftCard?.isEditable} />
+                                    <label className="form-check-label" htmlFor={`gift-cards-permit-options-${giftCard.id}-${giftCardOption.id}`}>
                                         {giftCardOption.name} - ${giftCardOption.price}
                                     </label>
                                 </div>
@@ -96,15 +93,15 @@ function GiftCards() {
                             <div className="row">
                                 <div className="col-12 col-sm-12 col-md-6">
                                     <div className="form-floating mb-2">
-                                        <input type="text" className="form-control" id="gift-cards-last-name" placeholder="Recipient's LAST Name ONLY" value={giftCardLastName} onChange={(e: any) => setGiftCardLastName(e.target.value)} />
-                                        <label className="required" htmlFor="gift-cards-last-name">Recipient&apos;s LAST Name ONLY</label>
+                                        <input type="text" className="form-control" id="gift-cards-last-name-${giftCard.id}" placeholder="Recipient's LAST Name ONLY" value={giftCard.lastName} onChange={(e: any) => giftCardLastNameChange(e, giftCard.id)} />
+                                        <label className="required" htmlFor="gift-cards-last-name-${giftCard.id}">Recipient&apos;s LAST Name ONLY</label>
                                     </div>
                                 </div>
 
                                 <div className="col-12 col-sm-12 col-md-6">
                                     <div className="form-floating mb-2">
-                                        <input type="text" className="form-control" id="gift-cards-postal-code" placeholder="Recipient's Postal Code" value={giftCardPostalCode} onChange={(e: any) => setGiftCardPostalCode(e.target.value)} />
-                                        <label className="required" htmlFor="gift-cards-postal-code">Recipient&apos;s Postal Code</label>
+                                        <input type="text" className="form-control" id="gift-cards-postal-code-${giftCard.id}" placeholder="Recipient's Postal Code" value={giftCard.postalCode} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard.id)} />
+                                        <label className="required" htmlFor="gift-cards-postal-code-${giftCard.id}">Recipient&apos;s Postal Code</label>
                                     </div>
                                 </div>
                             </div>
@@ -116,22 +113,89 @@ function GiftCards() {
                     </ul>
 
                     <div className="card-footer">
-                        <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick()} disabled={!isAddToCartButtonEnabled()}>Add to Cart</button>
-                        <button className="btn btn-primary btn-sm" onClick={() => cancelAddGiftCardToCartClick()}>Cancel</button>
+                        {giftCard.isEditable && !isGiftCardAddedToCart(giftCard.id) && (
+                            <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard.id)} disabled={!isAddToCartButtonEnabled(giftCard.id)}>Add to Cart</button>
+                        )}
+
+                        {giftCard.isEditable && isGiftCardAddedToCart(giftCard.id) && (
+                            <button className="btn btn-danger btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard.id)}>Remove from Cart</button>
+                        )}
+
+                        {!giftCard.isEditable && (
+                            <button className="btn btn-primary btn-sm" onClick={() => saveGiftCardChangesClick(giftCard.id)}>Save Changes</button>
+                        )}
+
+                        {giftCard.isEditable && !isGiftCardAddedToCart(giftCard.id) && (
+                            <button className="btn btn-primary btn-sm" onClick={() => cancelAddGiftCardClick(giftCard.id)}>Cancel</button>
+                        )}
                     </div>
                 </div>
-            )}
+            ))}
         </>
     )
 
+    function getGiftCard(giftCardId: string): IGiftCard | undefined {
+        let result: IGiftCard | undefined = undefined;
 
+        result = giftCards?.filter(x => x.id === giftCardId)[0];
 
-    function addGiftCardToCartClick(): void {
+        return result;
+    }
+
+    function purchaseGiftCardClick(): void {
+        if (giftCards.length < 3) {
+            appContext.updater(draft => {
+                let giftCard: IGiftCard = {
+                    id: uuidv4(),
+                    giftCardOptionId: "",
+                    lastName: "",
+                    postalCode: "",
+                    isEditable: true
+                };
+
+                draft.giftCards = [...draft.giftCards, giftCard];
+            });
+        }
+    }
+
+    function giftCardOptionChange(e: any, giftCardId: string): void {
         appContext.updater(draft => {
-            let giftCardOption: IGiftCardOption | undefined = giftCardOptionsData?.filter(x => x.id === giftCardType)[0];
+            let giftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x.id === giftCardId)[0];
+
+            if (giftCard != undefined) {
+                giftCard.giftCardOptionId = e?.target?.value;
+            }
+        });
+    }
+
+    function giftCardLastNameChange(e: any, giftCardId: string): void {
+        appContext.updater(draft => {
+            let giftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x.id === giftCardId)[0];
+
+            if (giftCard != undefined) {
+                giftCard.lastName = e?.target?.value;
+            }
+        });
+    }
+
+    function giftCardPostalCodeChange(e: any, giftCardId: string): void {
+        appContext.updater(draft => {
+            let giftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x.id === giftCardId)[0];
+
+            if (giftCard != undefined) {
+                giftCard.postalCode = e?.target?.value;
+            }
+        });
+    }
+
+    function addGiftCardToCartClick(giftCardId: string): void {
+        let giftCard: IGiftCard | undefined = getGiftCard(giftCardId);
+
+        if (giftCard != undefined) {
+            let giftCardOption: IGiftCardOption | undefined = giftCardOptionsData?.filter(x => x.id === giftCard?.giftCardOptionId)[0];
 
             if (giftCardOption != undefined) {
-                let description: string = `${giftCardOption?.name} Gift Card - ${giftCardLastName} - ${giftCardPostalCode}`;
+                let description: string = `${giftCardOption?.name} Gift Card - ${giftCard?.lastName} - ${giftCard?.postalCode}`;
 
                 let cartItem: ICartItem = {
                     id: uuidv4(),
@@ -139,40 +203,58 @@ function GiftCards() {
                     price: giftCardOption?.price,
                     isPermit: false,
                     isGiftCard: true,
-                    snowmobileId: undefined
+                    itemId: giftCard.id
                 };
 
-                draft.cartItems.push(cartItem);
+                appContext.updater(draft => {
+                    draft.cartItems.push(cartItem);
+                });
             }
+        }
+    }
+
+    function removeGiftCardFromCartClick(giftCardId: string): void {
+        appContext.updater(draft => {
+            draft.cartItems = draft.cartItems?.filter(x => x.itemId !== giftCardId);
         });
-
-        setPurchaseGiftCard(false);
-        setGiftCardType("");
-        setGiftCardLastName("");
-        setGiftCardPostalCode("");
     }
 
-    function cancelAddGiftCardToCartClick(): void {
-        setPurchaseGiftCard(false);
-        setGiftCardType("");
-        setGiftCardLastName("");
-        setGiftCardPostalCode("");
+    function cancelAddGiftCardClick(giftCardId: string): void {
+        appContext.updater(draft => {
+            draft.giftCards = giftCards?.filter(x => x.id !== giftCardId);
+        });
     }
 
-    function isAddToCartButtonEnabled(): boolean {
+    function saveGiftCardChangesClick(giftCardId: string): void {
+
+    }
+
+    function isAddToCartButtonEnabled(giftCardId: string): boolean {
         let result: boolean = false;
 
-        result = giftCardType !== ""
-            && giftCardLastName !== ""
-            && giftCardPostalCode !== "";
+        let giftCard: IGiftCard | undefined = getGiftCard(giftCardId);
+
+        if (giftCard != undefined) {
+            result = giftCard?.giftCardOptionId !== ""
+                && giftCard?.lastName?.trim() !== ""
+                && giftCard?.postalCode?.trim() !== "";
+        }
 
         return result;
     }
 
-    function getGiftCardCountInCart(): number {
+    function isGiftCardAddedToCart(giftCardId: string): boolean {
+        let result: boolean = false;
+
+        result = appContext.data?.cartItems?.filter(x => x.isGiftCard && x.itemId === giftCardId)?.length > 0;
+
+        return result;
+    }
+
+    function getGiftCardCount(): number {
         let result: number = 0;
 
-        result = appContext.data?.cartItems?.filter(x => x.isGiftCard)?.length;
+        result = giftCards?.length ?? 0;
 
         return result;
     }

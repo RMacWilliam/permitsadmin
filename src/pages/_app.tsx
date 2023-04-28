@@ -9,14 +9,24 @@ import type { AppProps } from 'next/app'
 
 import { Updater, useImmer } from 'use-immer'
 import { IAppContextValues, AppContext, appContextValues, IAppContextData } from '../custom/app-context'
+import '@/localization/i18n';
+
 import Script from 'next/script'
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [appContextDetails, updateAppContextDetails] = useImmer(appContextValues.data);
+  const [t, i18n] = useTranslation();
+
+  // useEffect(() => {
+  //   i18n.changeLanguage("fr");
+  // }, [])
 
   const appContextValuesObj: IAppContextValues = {
     data: appContextDetails as IAppContextData,
     updater: updateAppContextDetails as Updater<IAppContextData>,
+    translation: { t, i18n }
   };
 
   return (
