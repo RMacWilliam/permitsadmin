@@ -114,11 +114,11 @@ function GiftCards() {
 
                     <div className="card-footer">
                         {giftCard.isEditable && !isGiftCardAddedToCart(giftCard.id) && (
-                            <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard.id)} disabled={!isAddToCartButtonEnabled(giftCard.id)}>Add to Cart</button>
+                            <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard.id)} disabled={!isAddToCartButtonEnabled(giftCard.id)}>Add Gift Card to Cart</button>
                         )}
 
                         {giftCard.isEditable && isGiftCardAddedToCart(giftCard.id) && (
-                            <button className="btn btn-danger btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard.id)}>Remove from Cart</button>
+                            <button className="btn btn-danger btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard.id)}>Remove Gift Card from Cart</button>
                         )}
 
                         {!giftCard.isEditable && (

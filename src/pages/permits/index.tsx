@@ -220,12 +220,12 @@ function Permits() {
 
                     {snowmobile.isEditable && !isPermitAddedToCart(snowmobile.id) && (
                         <div className="card-footer">
-                            <button className="btn btn-success btn-sm" onClick={() => addPermitToCartClick(snowmobile.id)} disabled={!isAddToCartButtonEnabled(snowmobile.id)}>Add to Cart</button>
+                            <button className="btn btn-success btn-sm" onClick={() => addPermitToCartClick(snowmobile.id)} disabled={!isAddToCartButtonEnabled(snowmobile.id)}>Add Permit to Cart</button>
                         </div>
                     )}
                     {snowmobile.isEditable && isPermitAddedToCart(snowmobile.id) && (
                         <div className="card-footer">
-                            <button className="btn btn-danger btn-sm" onClick={() => removePermitFromCartClick(snowmobile.id)}>Remove from Cart</button>
+                            <button className="btn btn-danger btn-sm" onClick={() => removePermitFromCartClick(snowmobile.id)}>Remove Permit from Cart</button>
                         </div>
                     )}
 

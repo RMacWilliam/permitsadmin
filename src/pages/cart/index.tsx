@@ -70,14 +70,27 @@ function Cart() {
                                         </tr>
                                     ))}
 
-                                    <tr>
-                                        <td>
-                                            Transaction and Administration Fee
-                                        </td>
-                                        <td className="text-end">
-                                            $7.50
-                                        </td>
-                                    </tr>
+                                    {getPermitCount() > 0 && (
+                                        <tr>
+                                            <td>
+                                                Permit Transaction and Administration Fee
+                                            </td>
+                                            <td className="text-end">
+                                                $7.50
+                                            </td>
+                                        </tr>
+                                    )}
+
+                                    {getGiftCardCount() > 0 && (
+                                        <tr>
+                                            <td>
+                                                Gift Card Transaction and Administration Fee ($7.50 per gift card)
+                                            </td>
+                                            <td className="text-end">
+                                                ${getGiftCardCount() * 7.50}
+                                            </td>
+                                        </tr>
+                                    )}
 
                                     <tr>
                                         <td>
@@ -142,6 +155,22 @@ function Cart() {
         </>
     )
 
+    function getPermitCount(): number {
+        let result: number = 0;
+
+        result = cartItems?.filter(x => x.isPermit)?.length ?? 0;
+
+        return result;
+    }
+
+    function getGiftCardCount(): number {
+        let result: number = 0;
+
+        result = cartItems?.filter(x => x.isGiftCard)?.length ?? 0;
+
+        return result;
+    }
+
     function getShippingPrice(): number {
         let result: number = 0;
 
@@ -163,7 +192,14 @@ function Cart() {
             result = cartItems.reduce((subTotal, item) => subTotal + item.price, 0);
         }
 
-        result += transactionAndAdministrationFee;
+        if (getPermitCount() > 0) {
+            result += transactionAndAdministrationFee;
+        }
+
+        if (getGiftCardCount() > 0) {
+            result += getGiftCardCount() * transactionAndAdministrationFee;
+        }
+
         result += getShippingPrice();
 
         return result;
