@@ -1,5 +1,5 @@
 import { forwardRef, useContext, useEffect, useState } from 'react'
-import { AppContext, ICartItem, IKeyValue, IPermitOption, ISnowmobile } from '@/custom/app-context';
+import { AppContext, IAppContextValues, ICartItem, IKeyValue, IPermitOption, ISnowmobile } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
 import { formatShortDate, getKeyValueFromSelect } from '@/custom/utilities';
@@ -9,12 +9,13 @@ import Button from 'react-bootstrap/Button';
 import { v4 as uuidv4 } from 'uuid';
 import ConfirmationDialog from '@/components/confirmation-dialog';
 import moment from 'moment';
-import { useRouter } from 'next/router';
+import { NextRouter, useRouter } from 'next/router';
 import DatePicker from 'react-datepicker';
 import { getPageAlertMessage } from '../cart';
 
 export default function PermitsPage() {
     const appContext = useContext(AppContext);
+    const router = useRouter();
 
     useEffect(() => {
         appContext.updater(draft => { draft.navbarPage = "permits" });
@@ -22,15 +23,12 @@ export default function PermitsPage() {
 
     return (
         <AuthenticatedPageLayout>
-            <Permits></Permits>
+            <Permits appContext={appContext} router={router}></Permits>
         </AuthenticatedPageLayout>
     )
 }
 
-function Permits() {
-    const appContext = useContext(AppContext);
-    const router = useRouter();
-
+function Permits({ appContext, router }: { appContext: IAppContextValues, router: NextRouter }) {
     const snowmobiles: ISnowmobile[] = appContext.data?.snowmobiles ?? [];
 
     const [showAddEditSnowmobileDialog, setShowAddEditSnowmobileDialog] = useState(false);
@@ -83,7 +81,7 @@ function Permits() {
             )}
 
             {snowmobiles != undefined && snowmobiles.length === 0 && (
-                <div>You have not added any snowmobiles.</div>
+                <div className="mb-2">You have not added any snowmobiles.</div>
             )}
 
             <button className="btn btn-primary mb-3" onClick={() => addEditSnowmobileDialogShow()}>Add Snowmobile</button>
@@ -171,7 +169,7 @@ function Permits() {
 
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-6">
-                                                <DatePicker dateFormat="yyyy-MM-dd" selected={snowmobile?.permit?.dateStart} minDate={moment().toDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile.id)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
+                                                <DatePicker dateFormat="yyyy-MM-dd" selected={moment(snowmobile?.permit?.dateStart).toDate()} minDate={moment().toDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile.id)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
                                             </div>
 
                                             <div className="col-12 col-sm-12 col-md-6">
@@ -381,7 +379,7 @@ function Permits() {
 
     function addEditSnowmobileDialogSave(): void {
         if (editedSnowmobileId === "") {
-            let item: ISnowmobile = {
+            let snowmobile: ISnowmobile = {
                 id: uuidv4(),
                 year: year,
                 make: make,
@@ -396,23 +394,23 @@ function Permits() {
             };
 
             appContext.updater(draft => {
-                draft.snowmobiles.push(item);
+                draft.snowmobiles = draft.snowmobiles == undefined ? [snowmobile] : [...draft.snowmobiles, snowmobile];
             });
         } else {
             appContext.updater(draft => {
-                let item: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x.id === editedSnowmobileId)[0];
+                let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x.id === editedSnowmobileId)[0];
 
-                if (item != undefined) {
-                    item.year = year;
-                    item.make = make;
-                    item.model = model;
-                    item.vin = vin;
-                    item.licensePlate = licensePlate;
-                    item.permitForThisSnowmobileOnly = permitForThisSnowmobileOnly;
-                    item.registeredOwner = registeredOwner;
-                    item.permit = undefined;
-                    item.permitOptions = permitOptionsData; // TODO: Permit options should reflect selections
-                    item.isEditable = true;
+                if (snowmobile != undefined) {
+                    snowmobile.year = year;
+                    snowmobile.make = make;
+                    snowmobile.model = model;
+                    snowmobile.vin = vin;
+                    snowmobile.licensePlate = licensePlate;
+                    snowmobile.permitForThisSnowmobileOnly = permitForThisSnowmobileOnly;
+                    snowmobile.registeredOwner = registeredOwner;
+                    snowmobile.permit = undefined;
+                    snowmobile.permitOptions = permitOptionsData; // TODO: Permit options should reflect selections
+                    snowmobile.isEditable = true;
                 }
             });
         }
@@ -437,8 +435,8 @@ function Permits() {
 
     function deleteSnowmobileDialogYesClick(): void {
         appContext.updater(draft => {
-            draft.snowmobiles = draft.snowmobiles.filter(x => x.id !== snowmobileIdToDelete);
-            draft.cartItems = draft.cartItems.filter(x => x.itemId !== snowmobileIdToDelete);
+            draft.snowmobiles = draft?.snowmobiles?.filter(x => x.id !== snowmobileIdToDelete);
+            draft.cartItems = draft?.cartItems?.filter(x => x.itemId !== snowmobileIdToDelete);
         });
 
         setSnowmobileIdToDelete("");
@@ -599,7 +597,7 @@ function Permits() {
 
     function addPermitToCartClick(snowmobileId: string): void {
         appContext.updater(draft => {
-            let snowmobile: ISnowmobile | undefined = draft.snowmobiles.filter(x => x.id === snowmobileId)[0];
+            let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x.id === snowmobileId)[0];
 
             if (snowmobile != undefined) {
                 let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x.id === snowmobile?.permit?.permitOptionId)[0];
@@ -625,7 +623,7 @@ function Permits() {
                         itemId: snowmobile.id
                     };
 
-                    draft.cartItems.push(cartItem);
+                    draft.cartItems = draft.cartItems == undefined ? [cartItem] : [...draft.cartItems, cartItem];
                 }
             }
         });
@@ -633,14 +631,14 @@ function Permits() {
 
     function removePermitFromCartClick(snowmobileId: string): void {
         appContext.updater(draft => {
-            draft.cartItems = draft.cartItems.filter(x => x.itemId !== snowmobileId);
+            draft.cartItems = draft?.cartItems?.filter(x => x.itemId !== snowmobileId);
         })
     }
 
     function isPermitAddedToCart(snowmobileId: string): boolean {
         let result: boolean = false;
 
-        result = appContext.data?.cartItems?.filter(x => x.isPermit && x.itemId === snowmobileId)?.length > 0;
+        result = appContext.data?.cartItems?.some(x => x.isPermit && x.itemId === snowmobileId) ?? false;
 
         return result;
     }

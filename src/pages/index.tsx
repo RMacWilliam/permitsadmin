@@ -1,6 +1,6 @@
 import UnauthenticatedPageLayout from '@/components/layouts/unauthenticated-page'
 import { AppContext } from '@/custom/app-context';
-import { accountPreferencesData, cartItemsData, contactInfoData, snowmobilesData } from '@/custom/data';
+import { accountPreferencesData, cartItemsData, contactInfoData, giftCardsData, snowmobilesData } from '@/custom/data';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -106,7 +106,7 @@ function Index() {
         appContext.updater(draft => {
             draft.isAuthenticated = true;
             draft.email = email;
-            draft.token = '12345';
+            draft.token = '1234567890';
 
             draft.isContactInfoVerified = false;
 
@@ -118,6 +118,8 @@ function Index() {
             draft.accountPreferences = accountPreferencesData;
 
             draft.snowmobiles = snowmobilesData;
+
+            draft.giftCards = giftCardsData;
         });
 
         router.push("/home");

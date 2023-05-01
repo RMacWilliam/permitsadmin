@@ -11,22 +11,22 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.4.0",
     "@types/lodash": "^4.14.194",
-    "@types/node": "^18.16.2",
+    "@types/node": "^18.16.3",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.1",
     "@types/uuid": "^9.0.1",
     "bootstrap": "^5.2.3",
     "eslint": "^8.39.0",
-    "eslint-config-next": "^13.3.1",
+    "eslint-config-next": "^13.3.2",
     "i18next": "^22.4.15",
     "immer": "^10.0.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "next": "^13.3.1",
-    "react": "18.2.0",
+    "next": "^13.3.2",
+    "react": "^18.2.0",
     "react-bootstrap": "^2.7.4",
     "react-datepicker": "^4.11.0",
-    "react-dom": "18.2.0",
+    "react-dom": "^18.2.0",
     "react-i18next": "^12.2.2",
     "sharp": "^0.32.1",
     "typescript": "5.0.4",
@@ -34,7 +34,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/react-datepicker": "^4.11.0",
+    "@types/react-datepicker": "^4.11.2",
     "copy-webpack-plugin": "^11.0.0",
     "sass": "^1.62.1"
   }

@@ -1,6 +1,7 @@
 import { createContext } from 'react'
 import { Updater } from 'use-immer';
 import { accountPreferencesData, cartItemsData, contactInfoData, giftCardsData, snowmobilesData } from './data';
+import i18n from '@/localization/i18n';
 
 export interface IKeyValue {
     key: string;
@@ -100,20 +101,20 @@ export interface IAppContextData {
     isContactInfoVerified: boolean;
 
     // Shopping Cart
-    cartItems: ICartItem[];
+    cartItems?: ICartItem[];
 
     // Navbar selection
-    navbarPage: string;
+    navbarPage: string; // home, contact, permits, giftcards; admin-home
 
     // Contact Information
-    contactInfo: IContactInfo;
-    accountPreferences: IAccountPreferences;
+    contactInfo?: IContactInfo;
+    accountPreferences?: IAccountPreferences;
 
     // Snowmobiles & Permits
-    snowmobiles: ISnowmobile[];
+    snowmobiles?: ISnowmobile[];
 
     // Gift Cards
-    giftCards: IGiftCard[];
+    giftCards?: IGiftCard[];
 }
 
 export interface ITranslation {
@@ -127,7 +128,7 @@ export interface IAppContextValues {
     translation: ITranslation;
 }
 
-export const appContextValues: IAppContextValues = {
+export const initialAppContextValues: IAppContextValues = {
     data: {
         isAuthenticated: false,
         email: undefined,
@@ -135,22 +136,22 @@ export const appContextValues: IAppContextValues = {
 
         isContactInfoVerified: false,
 
-        cartItems: cartItemsData,
+        cartItems: undefined,
 
-        navbarPage: "home", // home, contact, permits, giftcards; admin-home
+        navbarPage: "home",
 
-        contactInfo: contactInfoData,
-        accountPreferences: accountPreferencesData,
+        contactInfo: undefined,
+        accountPreferences: undefined,
 
-        snowmobiles: snowmobilesData,
+        snowmobiles: undefined,
 
-        giftCards: giftCardsData
+        giftCards: undefined
     },
     updater: () => { },
     translation: {
-        t: undefined,
-        i18n: undefined
+        t: Function,
+        i18n: i18n
     }
 };
 
-export const AppContext = createContext(appContextValues);
+export const AppContext = createContext(initialAppContextValues);

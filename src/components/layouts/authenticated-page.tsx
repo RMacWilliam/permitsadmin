@@ -37,8 +37,9 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                                     <img src="ofsc.png" alt="Logo" width="60" height="60" />
                                 </a>
 
-                                <div className="d-flex flex-column justify-content-between">
-                                    <h5 className="mb-0">Ontario Federation of Snowmobile Clubs</h5>
+                                <div className="d-flex flex-column justify-content-around">
+                                    <h2 className="mb-0 d-none d-sm-block">Ontario Federation of Snowmobile Clubs</h2>
+                                    <h5 className="mb-0 d-sm-none">Ontario Federation of Snowmobile Clubs</h5>
 
                                     <div className="d-none d-sm-none d-md-block">
                                         Logged in as {appContext.data.email}.
@@ -118,22 +119,22 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                 </div>
 
                 <div className="nav-scroller bg-body shadow-sm d-none d-sm-none d-md-block">
-                    <nav className="nav" aria-label="Secondary navigation">
-                        <Link className={`nav-link ${appContext.data.navbarPage === 'home' ? 'active' : ''}`} href="/home">
+                    <nav className="nav justify-content-center" aria-label="Secondary navigation">
+                        <Link className={`nav-link fs-6 ${appContext.data.navbarPage === 'home' ? 'active' : ''}`} href="/home">
                             <i className="fa-solid fa-house me-2"></i>
                             Home
                         </Link>
-                        <Link className={`nav-link ${appContext.data.navbarPage === 'contact' ? 'active' : ''}`} href="/contact">
+                        <Link className={`nav-link fs-6 ${appContext.data.navbarPage === 'contact' ? 'active' : ''}`} href="/contact">
                             <i className="fa-regular fa-address-card me-2"></i>
                             Contact Information
                         </Link>
                         {appContext.data?.isContactInfoVerified && (
                             <>
-                                <Link className={`nav-link ${appContext.data.navbarPage === 'permits' ? 'active' : ''}`} href="/permits">
+                                <Link className={`nav-link fs-6 ${appContext.data.navbarPage === 'permits' ? 'active' : ''}`} href="/permits">
                                     <i className="fa-solid fa-snowflake me-2"></i>
                                     Snowmobiles &amp; Permits
                                 </Link>
-                                <Link className={`nav-link ${appContext.data.navbarPage === 'gift-cards' ? 'active' : ''}`} href="/gift-cards">
+                                <Link className={`nav-link fs-6 ${appContext.data.navbarPage === 'gift-cards' ? 'active' : ''}`} href="/gift-cards">
                                     <i className="fa-solid fa-gift me-2"></i>
                                     Gift Cards
                                 </Link>
@@ -158,11 +159,11 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                         <a href="https://www.instagram.com/gosnowmobilingontario"><i className="fa-brands fa-instagram ms-4 text-white"></i></a>
                         <a href="https://www.linkedin.com/company/ontario-federation-of-snowmobile-clubs"><i className="fa-brands fa-linkedin-in ms-4 text-white"></i></a>
                         <a href="https://www.youtube.com/user/GoSnowmobiling/videos"><i className="fa-brands fa-youtube ms-4 text-white"></i></a>
-                        {/* <span className="d-sm-none">XS</span>
+                        <span className="d-sm-none">XS</span>
                         <span className="d-none d-sm-block d-md-none">SM</span>
                         <span className="d-none d-md-block d-lg-none">MD</span>
                         <span className="d-none d-lg-block d-xl-none">LG</span>
-                        <span className="d-none d-xl-block d-xxl-none">XL</span> */}
+                        <span className="d-none d-xl-block d-xxl-none">XL</span>
                     </div>
                 </div>
             </footer>
@@ -174,7 +175,24 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
             draft.isAuthenticated = false;
             draft.email = undefined;
             draft.token = undefined;
+
+            draft.isContactInfoVerified = false;
+
+            draft.cartItems = undefined;
+
+            draft.navbarPage = "home";
+
+            draft.contactInfo = undefined;
+            draft.accountPreferences = undefined;
+
+            draft.snowmobiles = undefined;
+
+            draft.giftCards = undefined;
         });
+
+        if (window.localStorage) {
+            window.localStorage.removeItem("data");
+        }
 
         router.push("/");
     }

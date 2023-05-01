@@ -2,19 +2,21 @@ import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
 import { AppContext, IAppContextValues, ICartItem, IShippingMethod } from "@/custom/app-context";
 import { shippingMethodsData, transactionAndAdministrationFee } from "@/custom/data";
 import Head from "next/head";
+import { NextRouter, useRouter } from "next/router";
 import { useContext, useState } from "react";
 
 export default function CartPage() {
+    const appContext = useContext(AppContext);
+    const router = useRouter();
+
     return (
         <AuthenticatedPageLayout>
-            <Cart></Cart>
+            <Cart appContext={appContext} router={router}></Cart>
         </AuthenticatedPageLayout>
     )
 }
 
-function Cart() {
-    const appContext = useContext(AppContext);
-
+function Cart({ appContext, router }: { appContext: IAppContextValues, router: NextRouter }) {
     const cartItems: ICartItem[] = appContext.data?.cartItems ?? [];
 
     const [shipping, setShipping] = useState("");
@@ -77,17 +79,6 @@ function Cart() {
                                             </td>
                                             <td className="text-end">
                                                 $7.50
-                                            </td>
-                                        </tr>
-                                    )}
-
-                                    {getGiftCardCount() > 0 && (
-                                        <tr>
-                                            <td>
-                                                Gift Card Transaction and Administration Fee ($7.50 per gift card)
-                                            </td>
-                                            <td className="text-end">
-                                                ${getGiftCardCount() * 7.50}
                                             </td>
                                         </tr>
                                     )}
@@ -163,14 +154,6 @@ function Cart() {
         return result;
     }
 
-    function getGiftCardCount(): number {
-        let result: number = 0;
-
-        result = cartItems?.filter(x => x.isGiftCard)?.length ?? 0;
-
-        return result;
-    }
-
     function getShippingPrice(): number {
         let result: number = 0;
 
@@ -196,10 +179,6 @@ function Cart() {
             result += transactionAndAdministrationFee;
         }
 
-        if (getGiftCardCount() > 0) {
-            result += getGiftCardCount() * transactionAndAdministrationFee;
-        }
-
         result += getShippingPrice();
 
         return result;
@@ -207,7 +186,7 @@ function Cart() {
 
     function removeCartItemClick(cartItemId: string): void {
         appContext.updater(draft => {
-            draft.cartItems = draft.cartItems.filter(x => x.id !== cartItemId);
+            draft.cartItems = draft?.cartItems?.filter(x => x.id !== cartItemId);
         });
     }
 }

@@ -1,13 +1,16 @@
 import { useContext, useEffect, useState } from 'react'
-import { AppContext } from '@/custom/app-context';
+import { AppContext, IAccountPreferences, IAppContextValues, IContactInfo } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { getKeyValueFromSelect } from '@/custom/utilities';
+import { getPageAlertMessage } from '../cart';
+import { NextRouter, useRouter } from 'next/router';
 
 export default function ContactPage() {
     const appContext = useContext(AppContext);
+    const router = useRouter();
 
     useEffect(() => {
         appContext.updater(draft => { draft.navbarPage = "contact" });
@@ -15,14 +18,12 @@ export default function ContactPage() {
 
     return (
         <AuthenticatedPageLayout>
-            <Contact></Contact>
+            <Contact appContext={appContext} router={router}></Contact>
         </AuthenticatedPageLayout>
     )
 }
 
-function Contact() {
-    const appContext = useContext(AppContext);
-
+function Contact({ appContext, router }: { appContext: IAppContextValues, router: NextRouter }) {
     const [showContactInfoDialog, setShowContactInfoDialog] = useState(false);
 
     const [email, setEmail] = useState("");
@@ -50,6 +51,20 @@ function Contact() {
             </Head>
 
             <h4>Contact Information</h4>
+
+            {appContext.data?.cartItems != undefined && appContext.data?.cartItems?.length > 0 && (
+                <div className="alert alert-primary" role="alert">
+                    <div className="d-flex justify-content-between align-items-center flex-wrap flex-sm-wrap flex-md-wrap flex-md-nowrap w-100">
+                        <div>
+                            <i className="fa-solid fa-cart-shopping fa-xl me-2"></i>
+                            {getPageAlertMessage(appContext)}
+                        </div>
+                        <div>
+                            <button type="button" className="btn btn-primary btn-sm mt-2 mt-sm-2 mt-md-0" onClick={() => router.push("/cart")}>Go to Cart</button>
+                        </div>
+                    </div>
+                </div >
+            )}
 
             <div className="card w-100">
                 <h5 className="card-header d-flex justify-content-between align-items-center">
@@ -307,17 +322,21 @@ function Contact() {
 
     function contactInfoDialogSave(): void {
         appContext.updater(draft => {
-            draft.contactInfo.email = email;
-            draft.contactInfo.firstName = firstName;
-            draft.contactInfo.middleName = middleName;
-            draft.contactInfo.lastName = lastName;
-            draft.contactInfo.addressLine1 = addressLine1;
-            draft.contactInfo.addressLine2 = addressLine2;
-            draft.contactInfo.city = city;
-            draft.contactInfo.province = province;
-            draft.contactInfo.country = country;
-            draft.contactInfo.postalCode = postalCode;
-            draft.contactInfo.telephone = telephone;
+            let contactInfo: IContactInfo = {
+                email: email,
+                firstName: firstName,
+                middleName: middleName,
+                lastName: lastName,
+                addressLine1: addressLine1,
+                addressLine2: addressLine2,
+                city: city,
+                province: province,
+                country: country,
+                postalCode: postalCode,
+                telephone: telephone
+            };
+
+            draft.contactInfo = contactInfo;
         });
 
         setShowContactInfoDialog(false);
@@ -337,9 +356,13 @@ function Contact() {
 
     function accountPreferencesDialogSave(): void {
         appContext.updater(draft => {
-            draft.accountPreferences.ofscContactPermission = ofscContactPermission;
-            draft.accountPreferences.riderAdvantage = riderAdvantage;
-            draft.accountPreferences.volunteering = volunteering;
+            let accountPreferences: IAccountPreferences = {
+                ofscContactPermission: ofscContactPermission,
+                riderAdvantage: riderAdvantage,
+                volunteering: volunteering
+            };
+
+            draft.accountPreferences = accountPreferences;
         });
 
         setShowAccountPreferencesDialog(false);
