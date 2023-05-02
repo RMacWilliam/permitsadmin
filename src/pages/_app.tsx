@@ -20,10 +20,6 @@ export default function App({ Component, pageProps }: AppProps) {
   const [showApp, setShowApp] = useState(false);
   const [t, i18n] = useTranslation(); 
 
-  // useEffect(() => {
-  //   i18n.changeLanguage("fr");
-  // }, [])
-
   // Restore app context from local storage.
   useEffect(() => {
     if (window.localStorage) {
@@ -34,6 +30,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
         if (localStorageDataObj != undefined) {
           updateImmerAppContextValues(localStorageDataObj);
+
+          // Set UI language.
+          i18n.changeLanguage(localStorageDataObj?.language ?? "en");
         }
       }
     }

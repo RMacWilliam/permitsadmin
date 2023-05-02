@@ -29,13 +29,11 @@ export default function PermitsPage() {
 }
 
 function Permits({ appContext, router }: { appContext: IAppContextValues, router: NextRouter }) {
-    const snowmobiles: ISnowmobile[] = appContext.data?.snowmobiles ?? [];
-
     const [showAddEditSnowmobileDialog, setShowAddEditSnowmobileDialog] = useState(false);
     const [editedSnowmobileId, setEditedSnowmobileId] = useState("");
 
     const startYear: number = 1960; // TODO: Is this the minimum year?
-    const endYear: number = (new Date()).getFullYear(); // TODO: Is the current year the maximum year?
+    const endYear: number = moment().year(); // TODO: Is the current year the maximum year?
     const years: number[] = getYearRange(startYear, endYear);
 
     const [year, setYear] = useState("");
@@ -64,7 +62,7 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
                 <title>Permits | Ontario Federation of Snowmobile Clubs</title>
             </Head>
 
-            <h4>Snowmobiles &amp; Permits</h4>
+            <h4>{appContext.translation?.t("SNOWMOBILES_AND_PERMITS.TITLE")}</h4>
 
             {appContext.data?.cartItems != undefined && appContext.data?.cartItems?.length > 0 && (
                 <div className="alert alert-primary" role="alert">
@@ -80,13 +78,13 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
                 </div >
             )}
 
-            {snowmobiles != undefined && snowmobiles.length === 0 && (
+            {getSnowmobiles() != undefined && getSnowmobiles().length === 0 && (
                 <div className="mb-2">You have not added any snowmobiles.</div>
             )}
 
             <button className="btn btn-primary mb-3" onClick={() => addEditSnowmobileDialogShow()}>Add Snowmobile</button>
 
-            {snowmobiles != undefined && snowmobiles.length > 0 && snowmobiles.map(snowmobile => (
+            {getSnowmobiles() != undefined && getSnowmobiles().length > 0 && getSnowmobiles().map(snowmobile => (
                 <div className="card w-100 mb-2" key={snowmobile.id}>
                     <div className="card-header d-flex justify-content-between align-items-center flex-wrap flex-sm-nowrap">
                         <div className="row row-cols-lg-auto g-3">
@@ -169,7 +167,7 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
 
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-6">
-                                                <DatePicker dateFormat="yyyy-MM-dd" selected={moment(snowmobile?.permit?.dateStart).toDate()} minDate={moment().toDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile.id)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
+                                                <DatePicker dateFormat="yyyy-MM-dd" selected={getPermitDateRangeFromDate(snowmobile.id)} minDate={moment().toDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile.id)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
                                             </div>
 
                                             <div className="col-12 col-sm-12 col-md-6">
@@ -341,10 +339,18 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
         </>
     )
 
+    function getSnowmobiles(): ISnowmobile[] {
+        let result: ISnowmobile[] = [];
+
+        result = appContext.data?.snowmobiles ?? [];
+
+        return result;
+    }
+
     function getSnowmobile(snowmobileId: string): ISnowmobile | undefined {
         let result: ISnowmobile | undefined = undefined;
 
-        result = snowmobiles?.filter(x => x.id === snowmobileId)[0];
+        result = getSnowmobiles()?.filter(x => x.id === snowmobileId)[0];
 
         return result;
     }
@@ -361,7 +367,7 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
 
             setEditedSnowmobileId("");
         } else {
-            let snowmobile: ISnowmobile = snowmobiles?.filter(x => x.id === snowmobileId)[0];
+            let snowmobile: ISnowmobile = getSnowmobiles()?.filter(x => x.id === snowmobileId)[0];
 
             setYear(snowmobile?.year ?? "");
             setMake(snowmobile?.make ?? { key: "", value: "" });
@@ -497,9 +503,19 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
         });
     }
 
-    function permitDateRangeChange(date: Date, snowmobileId: string): void {
-        console.log('date', date, 'snowmobileid', snowmobileId)
+    function getPermitDateRangeFromDate(snowmobileId: string): Date | undefined {
+        let result: Date | undefined = undefined;
 
+        let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
+
+        if (snowmobile != undefined && snowmobile?.permit != undefined && snowmobile.permit?.dateStart != undefined) {
+            result = moment(snowmobile.permit.dateStart).toDate();
+        }
+
+        return result;
+    }
+
+    function permitDateRangeChange(date: Date, snowmobileId: string): void {
         appContext.updater(draft => {
             let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x.id === snowmobileId)[0];
             let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x.id === snowmobile?.permit?.permitOptionId)[0];

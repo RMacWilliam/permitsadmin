@@ -50,7 +50,7 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                 <title>Contact | Ontario Federation of Snowmobile Clubs</title>
             </Head>
 
-            <h4>Contact Information</h4>
+            <h4>{appContext.translation?.t("CONTACT_INFORMATION.TITLE")}</h4>
 
             {appContext.data?.cartItems != undefined && appContext.data?.cartItems?.length > 0 && (
                 <div className="alert alert-primary" role="alert">

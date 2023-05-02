@@ -1,7 +1,7 @@
 import { createContext } from 'react'
 import { Updater } from 'use-immer';
-import { accountPreferencesData, cartItemsData, contactInfoData, giftCardsData, snowmobilesData } from './data';
-import i18n from '@/localization/i18n';
+import { i18n } from 'i18next';
+//import i18n from '@/localization/i18n';
 
 export interface IKeyValue {
     key: string;
@@ -98,13 +98,15 @@ export interface IAppContextData {
     email?: string;
     token?: string;
 
-    isContactInfoVerified: boolean;
+    language: string;
+
+    isContactInfoVerified?: boolean;
 
     // Shopping Cart
     cartItems?: ICartItem[];
 
     // Navbar selection
-    navbarPage: string; // home, contact, permits, giftcards; admin-home
+    navbarPage?: string; // home, contact, permits, giftcards; admin-home
 
     // Contact Information
     contactInfo?: IContactInfo;
@@ -118,14 +120,14 @@ export interface IAppContextData {
 }
 
 export interface ITranslation {
-    t: any;
-    i18n: any;
+    t: Function;
+    i18n: i18n;
 }
 
 export interface IAppContextValues {
     data: IAppContextData;
     updater: Updater<IAppContextData>;
-    translation: ITranslation;
+    translation?: ITranslation;
 }
 
 export const initialAppContextValues: IAppContextValues = {
@@ -134,11 +136,13 @@ export const initialAppContextValues: IAppContextValues = {
         email: undefined,
         token: undefined,
 
-        isContactInfoVerified: false,
+        language: "en",
+
+        isContactInfoVerified: undefined,
 
         cartItems: undefined,
 
-        navbarPage: "home",
+        navbarPage: undefined,
 
         contactInfo: undefined,
         accountPreferences: undefined,
@@ -148,10 +152,7 @@ export const initialAppContextValues: IAppContextValues = {
         giftCards: undefined
     },
     updater: () => { },
-    translation: {
-        t: Function,
-        i18n: i18n
-    }
+    translation: undefined
 };
 
 export const AppContext = createContext(initialAppContextValues);

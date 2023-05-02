@@ -108,6 +108,8 @@ function Index() {
             draft.email = email;
             draft.token = '1234567890';
 
+            draft.language = draft.language ?? "en";
+
             draft.isContactInfoVerified = false;
 
             draft.cartItems = cartItemsData;

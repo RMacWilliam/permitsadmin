@@ -29,7 +29,7 @@ function GiftCards({ appContext, router }: { appContext: IAppContextValues, rout
                 <title>Gift Cards | Ontario Federation of Snowmobile Clubs</title>
             </Head>
 
-            <h4>Gift Cards</h4>
+            <h4>{appContext.translation?.t("GIFT_CARDS.TITLE")}</h4>
 
             {appContext.data?.cartItems != undefined && appContext.data?.cartItems?.length > 0 && (
                 <div className="alert alert-primary" role="alert">

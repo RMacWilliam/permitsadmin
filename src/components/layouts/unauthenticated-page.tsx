@@ -2,6 +2,7 @@ import { ReactNode, useContext, useEffect } from 'react';
 import { AppContext } from '@/custom/app-context';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import LanguageToggler from '../language-toggler';
 
 export default function UnauthenticatedPageLayout({ children }: { children?: ReactNode }) {
     const appContext = useContext(AppContext);
@@ -30,14 +31,25 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
             <header>
                 <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white" style={{ minHeight: 86, maxHeight: 86, overflow: 'hidden' }}>
                     <div className="container-fluid">
-                        <div className="d-flex justify-content-start align-items-center w-100"  style={{ maxHeight: 70 }}>
-                            <a className="navbar-brand" href="#">
-                                <img src="ofsc.png" alt="Logo" width="60" height="60" />
-                            </a>
+                        <div className="d-flex justify-content-between align-items-center w-100" style={{ maxHeight: 70 }}>
+                            <div className="d-flex flex-fill justify-content-start align-items-center">
+                                <a className="navbar-brand" href="#">
+                                    <img src="ofsc.png" alt="Logo" width="60" height="60" />
+                                </a>
+
+                                <div>
+                                    <h2 className="mb-0 d-none d-sm-block">Ontario Federation of Snowmobile Clubs</h2>
+                                    <h5 className="mb-0 d-sm-none">Ontario Federation of Snowmobile Clubs</h5>
+                                </div>
+                            </div>
 
                             <div>
-                                <h2 className="mb-0 d-none d-sm-block">Ontario Federation of Snowmobile Clubs</h2>
-                                <h5 className="mb-0 d-sm-none">Ontario Federation of Snowmobile Clubs</h5>
+                                <span className="d-none d-md-block">
+                                    <LanguageToggler isTogglerItem={false} isTextShort={false} className="ms-3"></LanguageToggler>
+                                </span>
+                                <span className="d-md-none">
+                                    <LanguageToggler isTogglerItem={false} isTextShort={true} className="ms-3"></LanguageToggler>
+                                </span>
                             </div>
                         </div>
                     </div>

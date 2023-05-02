@@ -27,7 +27,7 @@ function Cart({ appContext, router }: { appContext: IAppContextValues, router: N
                 <title>Cart | Ontario Federation of Snowmobile Clubs</title>
             </Head>
 
-            <h4>My Purchases</h4>
+            <h4>{appContext.translation?.t("CART.TITLE")}</h4>
 
             {cartItems.length === 0 && (
                 <div>You have not added any items to your cart.</div>

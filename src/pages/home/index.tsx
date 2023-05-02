@@ -27,7 +27,7 @@ function Home({ appContext, router }: { appContext: IAppContextValues, router: N
                 <title>Home | Ontario Federation of Snowmobile Clubs</title>
             </Head>
 
-            <h4>Welcome to Ontario Federation of Snowmobile Clubs</h4>
+            <h4>{appContext.translation?.t("HOME.TITLE")}</h4>
 
             {appContext.data?.cartItems != undefined && appContext.data?.cartItems?.length > 0 && (
                 <div className="alert alert-primary" role="alert">
