@@ -56,7 +56,7 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                                 <LanguageToggler isTogglerItem={false} isTextShort={false} className="ms-3 d-none d-sm-none d-md-block"></LanguageToggler>
 
                                 {appContext.data?.isContactInfoVerified && (
-                                    <div className="ms-4 me-2">
+                                    <div className="ms-3 me-2">
                                         <Link className="nav-link position-relative" aria-current="page" href="/cart">
                                             <i className="fa-solid fa-cart-shopping fa-xl"></i>
                                             {appContext.data?.cartItems != undefined && appContext.data.cartItems.length > 0 && (

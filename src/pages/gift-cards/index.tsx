@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { giftCardOptionsData } from '@/custom/data';
 import { v4 as uuidv4 } from 'uuid';
 import { NextRouter, useRouter } from 'next/router';
-import { getPageAlertMessage } from '../cart';
+import CartItemsAlert from '@/components/cart-items-alert';
 
 export default function GiftCardsPage() {
     const appContext = useContext(AppContext);
@@ -31,19 +31,7 @@ function GiftCards({ appContext, router }: { appContext: IAppContextValues, rout
 
             <h4>{appContext.translation?.t("GIFT_CARDS.TITLE")}</h4>
 
-            {appContext.data?.cartItems != undefined && appContext.data?.cartItems?.length > 0 && (
-                <div className="alert alert-primary" role="alert">
-                    <div className="d-flex justify-content-between align-items-center flex-wrap flex-sm-wrap flex-md-wrap flex-md-nowrap w-100">
-                        <div>
-                            <i className="fa-solid fa-cart-shopping fa-xl me-2"></i>
-                            {getPageAlertMessage(appContext)}
-                        </div>
-                        <div>
-                            <button type="button" className="btn btn-primary btn-sm mt-2 mt-sm-2 mt-md-0" onClick={() => router.push("/cart")}>Go to Cart</button>
-                        </div>
-                    </div>
-                </div >
-            )}
+            <CartItemsAlert></CartItemsAlert>
 
             <div className="fw-semibold">Gift Cards are ideal for those who:</div>
             <ul>
@@ -57,7 +45,7 @@ function GiftCards({ appContext, router }: { appContext: IAppContextValues, rout
                 <li>Seasonal (2000 or newer)</li>
             </ul>
 
-            <button className="btn btn-primary btn-sm mt-2" onClick={() => purchaseGiftCardClick()}>I want to purchase a gift card</button>
+            <button className="btn btn-primary btn-sm mt-2" onClick={() => addGiftCardClick()}>Add Gift Card</button>
 
             {getGiftCards() != undefined && getGiftCards().length > 0 && getGiftCards().map(giftCard => (
                 <div className="card mt-3" key={giftCard.id}>
@@ -158,7 +146,7 @@ function GiftCards({ appContext, router }: { appContext: IAppContextValues, rout
         return result;
     }
 
-    function purchaseGiftCardClick(): void {
+    function addGiftCardClick(): void {
         appContext.updater(draft => {
             let giftCard: IGiftCard = {
                 id: uuidv4(),

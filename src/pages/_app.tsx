@@ -1,6 +1,7 @@
 import '@/styles/bootstrap.scss';
 import '@fortawesome/fontawesome-free/css/fontawesome.css';
 import '@fortawesome/fontawesome-free/css/solid.css';
+import '@fortawesome/fontawesome-free/css/regular.css';
 import '@fortawesome/fontawesome-free/css/brands.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import '@/styles/globals.scss';

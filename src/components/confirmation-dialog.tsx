@@ -19,6 +19,14 @@ export default function ConfirmationDialog({ showDialog, title, message, buttons
         buttons = DialogButtons.Ok;
     }
 
+    if (icon === "question") {
+        icon = "fa-solid fa-circle-question";
+    } else if (icon === "warning") {
+        icon = "fa-solid fa-circle-exclamation";
+    } else if (icon === "information") {
+        icon = "fa-solid fa-circle-info";
+    }
+
     return (
         <Modal show={showDialog} onHide={() => closeClick()} backdrop="static" keyboard={false} dialogClassName={getDialogClassName()}>
             <Modal.Header closeButton>
@@ -30,7 +38,7 @@ export default function ConfirmationDialog({ showDialog, title, message, buttons
                         <div className="col-12">
                             <div className="d-flex align-items-center">
                                 <div>
-                                    <i className={`${icon} fa-xl`}></i>
+                                    <i className={`${icon} fa-2xl`}></i>
                                 </div>
                                 <div className="ms-3">
                                     {message == undefined && (

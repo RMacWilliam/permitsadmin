@@ -99,7 +99,9 @@ export const snowmobilesData: ISnowmobile[] = [
             permitOptionId: "0ed573cc-2e56-4f42-8ba3-b18b06cdb83f",
             dateStart: undefined,
             dateEnd: undefined,
-            clubId: "1" // Arctic Riders Snow Club
+            clubId: "1", // Arctic Riders Snow Club
+            shipToRegisteredOwnerAddress: true,
+            alternateAddress: undefined
         },
         permitOptions: undefined,
         isEditable: false
@@ -157,12 +159,14 @@ export const shippingMethodsData: IShippingMethod[] = [
     {
         id: "73cd7359-acc1-4c64-a691-6668586a4f27",
         name: "Standard",
-        price: 0
+        price: 0,
+        showConfirmation: true
     },
     {
         id: "3744e5d4-3012-4c05-809d-4d8db59c8fe8",
         name: "Tracked",
-        price: 10
+        price: 10,
+        showConfirmation: false
     }
 ];
 

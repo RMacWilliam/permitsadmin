@@ -27,6 +27,9 @@ export const resources_en = {
     },
     "CART": {
       "TITLE": "My Purchases"
+    },
+    "CHECKOUT": {
+      "TITLE": "Checkout"
     }
   }
 };

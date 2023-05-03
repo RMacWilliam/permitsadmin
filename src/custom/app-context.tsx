@@ -8,18 +8,24 @@ export interface IKeyValue {
     value: string;
 }
 
-export interface IContactInfo {
+export interface IContact {
     firstName: string;
     middleName: string;
     lastName: string;
+    telephone: string;
+    email: string;
+}
+
+export interface IAddress {
     addressLine1: string;
     addressLine2: string;
     city: string;
     province: IKeyValue;
     postalCode: string;
     country: IKeyValue;
-    telephone: string;
-    email: string;
+}
+
+export interface IContactInfo extends IContact, IAddress {
 }
 
 export interface IAccountPreferences {
@@ -47,6 +53,8 @@ export interface IPermit {
     dateStart?: Date;
     dateEnd?: Date;
     clubId?: string;
+    shipToRegisteredOwnerAddress?: boolean; // false=Alternate Address; true=Registered Address
+    alternateAddress?: IAddress
 }
 
 export interface ISnowmobile {
@@ -90,6 +98,7 @@ export interface IShippingMethod {
     id: string; // guid
     name: string;
     price: number;
+    showConfirmation: boolean;
 }
 
 export interface IAppContextData {
@@ -106,7 +115,7 @@ export interface IAppContextData {
     cartItems?: ICartItem[];
 
     // Navbar selection
-    navbarPage?: string; // home, contact, permits, giftcards; admin-home
+    navbarPage?: string; // home, contact, permits, giftcards, cart, checkout; admin-home
 
     // Contact Information
     contactInfo?: IContactInfo;

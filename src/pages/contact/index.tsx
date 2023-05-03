@@ -5,8 +5,8 @@ import Head from 'next/head';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { getKeyValueFromSelect } from '@/custom/utilities';
-import { getPageAlertMessage } from '../cart';
 import { NextRouter, useRouter } from 'next/router';
+import CartItemsAlert from '@/components/cart-items-alert';
 
 export default function ContactPage() {
     const appContext = useContext(AppContext);
@@ -52,19 +52,7 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
 
             <h4>{appContext.translation?.t("CONTACT_INFORMATION.TITLE")}</h4>
 
-            {appContext.data?.cartItems != undefined && appContext.data?.cartItems?.length > 0 && (
-                <div className="alert alert-primary" role="alert">
-                    <div className="d-flex justify-content-between align-items-center flex-wrap flex-sm-wrap flex-md-wrap flex-md-nowrap w-100">
-                        <div>
-                            <i className="fa-solid fa-cart-shopping fa-xl me-2"></i>
-                            {getPageAlertMessage(appContext)}
-                        </div>
-                        <div>
-                            <button type="button" className="btn btn-primary btn-sm mt-2 mt-sm-2 mt-md-0" onClick={() => router.push("/cart")}>Go to Cart</button>
-                        </div>
-                    </div>
-                </div >
-            )}
+            <CartItemsAlert></CartItemsAlert>
 
             <div className="card w-100">
                 <h5 className="card-header d-flex justify-content-between align-items-center">
@@ -374,5 +362,7 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
 
     function confirmContactInfoClick(): void {
         appContext.updater(draft => { draft.isContactInfoVerified = true; });
+
+        router.push("/home");
     }
 }

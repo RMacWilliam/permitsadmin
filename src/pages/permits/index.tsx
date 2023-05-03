@@ -11,7 +11,7 @@ import ConfirmationDialog from '@/components/confirmation-dialog';
 import moment from 'moment';
 import { NextRouter, useRouter } from 'next/router';
 import DatePicker from 'react-datepicker';
-import { getPageAlertMessage } from '../cart';
+import CartItemsAlert from '@/components/cart-items-alert';
 
 export default function PermitsPage() {
     const appContext = useContext(AppContext);
@@ -64,19 +64,7 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
 
             <h4>{appContext.translation?.t("SNOWMOBILES_AND_PERMITS.TITLE")}</h4>
 
-            {appContext.data?.cartItems != undefined && appContext.data?.cartItems?.length > 0 && (
-                <div className="alert alert-primary" role="alert">
-                    <div className="d-flex justify-content-between align-items-center flex-wrap flex-sm-wrap flex-md-wrap flex-md-nowrap w-100">
-                        <div>
-                            <i className="fa-solid fa-cart-shopping fa-xl me-2"></i>
-                            {getPageAlertMessage(appContext)}
-                        </div>
-                        <div>
-                            <button type="button" className="btn btn-primary btn-sm mt-2 mt-sm-2 mt-md-0" onClick={() => router.push("/cart")}>Go to Cart</button>
-                        </div>
-                    </div>
-                </div >
-            )}
+            <CartItemsAlert></CartItemsAlert>
 
             {getSnowmobiles() != undefined && getSnowmobiles().length === 0 && (
                 <div className="mb-2">You have not added any snowmobiles.</div>
@@ -142,7 +130,7 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
                         {snowmobile?.isEditable && snowmobile?.permitOptions != undefined && snowmobile.permitOptions.length > 0 && (
                             <>
                                 <li className="list-group-item">
-                                    <h6 className="card-title">Select a permit to purchase</h6>
+                                    <h6 className="card-title required">Select a permit to purchase</h6>
 
                                     <div className="form-check form-check-inline">
                                         <input className="form-check-input" type="radio" name={`permits-permit-options-${snowmobile.id}`} id={`permits-permit-options-${snowmobile.id}-none`} checked={snowmobile?.permit?.permitOptionId === ""} value="" onChange={(e: any) => permitOptionChange(e, snowmobile.id)} disabled={isPermitAddedToCart(snowmobile.id)} />
@@ -163,7 +151,7 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
 
                                 {showDateRangeForSelectedPermit(snowmobile.id) && (
                                     <li className="list-group-item">
-                                        <h6 className="card-title">Select a date range</h6>
+                                        <h6 className="card-title required">Select a date range</h6>
 
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-6">
@@ -181,7 +169,7 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
                                 )}
 
                                 <li className="list-group-item">
-                                    <h6 className="card-title">Select a club</h6>
+                                    <h6 className="card-title required">Select a club</h6>
 
                                     <div className="mb-2">
                                         By choosing a specific club when buying a permit, you&apos;re directly helping that club groom and maintain the trails you enjoy riding most often,
@@ -233,10 +221,10 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
                 </div>
             ))}
 
-            <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title="Delete Snowmobile" buttons={2} width="50"
+            <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title="Delete Snowmobile" buttons={2} icon="question" width="50"
                 yesClick={() => deleteSnowmobileDialogYesClick()} noClick={() => deleteSnowmobileDialogNoClick()} closeClick={() => deleteSnowmobileDialogNoClick()}>
                 <div className="fw-bold mb-2">{snowmobileNameToDelete}</div>
-                <div >Are you sure you want to delete this snowmobile?</div>
+                <div>Are you sure you want to delete this snowmobile?</div>
             </ConfirmationDialog>
 
             <Modal show={showAddEditSnowmobileDialog} onHide={addEditSnowmobileDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
@@ -276,21 +264,21 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="add-edit-snowmobile-model" placeholder="Model" value={model} onChange={(e: any) => setModel(e.target.value)} />
+                                    <input type="text" className="form-control" id="add-edit-snowmobile-model" placeholder="Model" value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} onBlur={(e: any) => setModel(e?.target?.value?.trim() ?? "")} />
                                     <label className="required" htmlFor="add-edit-snowmobile-model">Model</label>
                                 </div>
                             </div>
 
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="add-edit-snowmobile-vin" placeholder="VIN" value={vin} onChange={(e: any) => setVin(e.target.value)} />
+                                    <input type="text" className="form-control" id="add-edit-snowmobile-vin" placeholder="VIN" value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} onBlur={(e: any) => setVin(e?.target?.value?.trim() ?? "")} />
                                     <label className="required" htmlFor="add-edit-snowmobile-vin">VIN</label>
                                 </div>
                             </div>
 
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="add-edit-snowmobile-license-plate" placeholder="License Plate" value={licensePlate} onChange={(e: any) => setLicensePlate(e.target.value)} />
+                                    <input type="text" className="form-control" id="add-edit-snowmobile-license-plate" placeholder="License Plate" value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} onBlur={(e: any) => setLicensePlate(e?.target?.value?.trim() ?? "")} />
                                     <label className="required" htmlFor="add-edit-snowmobile-license-plate">License Plate</label>
                                 </div>
                             </div>
@@ -329,7 +317,7 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
                                 <span className="text-danger me-1">*</span>= mandatory field
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="secondary" onClick={addEditSnowmobileDialogSave}>Save</Button>
+                                <Button className="me-2" variant="secondary" onClick={addEditSnowmobileDialogSave} disabled={!isSaveSnowmobileEnabled()}>Save</Button>
                                 <Button variant="primary" onClick={addEditSnowmobileDialogHide}>Cancel</Button>
                             </div>
                         </div>
@@ -374,8 +362,8 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
             setModel(snowmobile?.model ?? "");
             setVin(snowmobile?.vin ?? "");
             setLicensePlate(snowmobile?.licensePlate ?? "");
-            setPermitForThisSnowmobileOnly(snowmobile?.permitForThisSnowmobileOnly ?? false); // TODO: should this always be false?
-            setRegisteredOwner(snowmobile?.registeredOwner ?? false); // TODO: should this always be false?
+            setPermitForThisSnowmobileOnly(false);
+            setRegisteredOwner(false);
 
             setEditedSnowmobileId(snowmobileId);
         }
@@ -422,6 +410,20 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
         }
 
         setShowAddEditSnowmobileDialog(false);
+    }
+
+    function isSaveSnowmobileEnabled(): boolean {
+        let result: boolean = false;
+
+        result = year !== ''
+            && make != undefined
+            && model.trim() !== ''
+            && vin.trim() !== ''
+            && licensePlate.trim() !== ''
+            && permitForThisSnowmobileOnly
+            && registeredOwner;
+
+        return result;
     }
 
     function addEditSnowmobileDialogHide(): void {
