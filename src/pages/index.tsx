@@ -1,4 +1,5 @@
 import UnauthenticatedPageLayout from '@/components/layouts/unauthenticated-page'
+import { IApiLoginResult, apiLogin } from '@/custom/api';
 import { AppContext } from '@/custom/app-context';
 import { accountPreferencesData, cartItemsData, contactInfoData, giftCardsData, snowmobilesData } from '@/custom/data';
 import Head from 'next/head';
@@ -21,6 +22,7 @@ function Index() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showInvalidLogin, setShowInvalidLogin] = useState(false);
 
     return (
         <>
@@ -75,17 +77,23 @@ function Index() {
 
                             <div className="mt-4">
                                 <div className="form-floating mb-2">
-                                    <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com" value={email} onChange={(e: any) => setEmail(e.target.value)} />
+                                    <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com" value={email} onChange={(e: any) => setEmail(e.target.value)} onBlur={(e: any) => setEmail(e?.target?.value?.trim() ?? "")} />
                                     <label htmlFor="floatingInput">Email address</label>
                                 </div>
                                 <div className="form-floating">
-                                    <input type="password" className="form-control" id="floatingPassword" placeholder="Password" value={password} onChange={(e: any) => setPassword(e.target.value)} />
+                                    <input type="password" className="form-control" id="floatingPassword" placeholder="Password" value={password} onChange={(e: any) => setPassword(e.target.value)} onBlur={(e: any) => setPassword(e?.target?.value?.trim() ?? "")} />
                                     <label htmlFor="floatingPassword">Password</label>
                                 </div>
                             </div>
 
                             <div className="mt-2">
-                                <Button className="w-100" variant="primary" onClick={() => doLogin()}>Login</Button>
+                                <Button className="w-100" variant="primary" disabled={!isLoginEnabled()} onClick={() => doLogin()}>Login</Button>
+
+                                {showInvalidLogin && (
+                                    <div className="text-danger text-center mt-2">
+                                        Invalid e-mail and/or password.
+                                    </div>
+                                )}
                             </div>
 
                             <div className="text-center mt-4">
@@ -102,33 +110,59 @@ function Index() {
         </>
     )
 
+    function isLoginEnabled(): boolean {
+        return email !== ""
+            && password !== "";
+    }
+
     function doLogin() {
-        appContext.updater(draft => {
-            draft.isAuthenticated = true;
-            draft.email = email;
-            draft.token = '1234567890';
+        let e: string = email;
+        let p: string = password;
 
-            draft.language = draft.language ?? "en";
+        if (email === "s") e = "sarveny@hotmail.com";
+        if (email === "b") e = "robert.macwilliam@gmail.com";
 
-            draft.isContactInfoVerified = false;
+        if (password === "s") p = "SnowTravel59!";
+        if (password === "b") p = "CrappyPassword1!";
 
-            draft.cartItems = cartItemsData;
+        apiLogin(e ?? email, p ?? password).subscribe({
+            next: (response: IApiLoginResult) => {
+                if (response.isValid) {
+                    appContext.updater(draft => {
+                        draft.isAuthenticated = true;
+                        draft.email = e ?? email; // TODO: Clean up this code!
+                        draft.token = response.token;
 
-            draft.navbarPage = "home";
+                        draft.language = draft.language ?? "en";
 
-            draft.contactInfo = contactInfoData;
-            draft.accountPreferences = accountPreferencesData;
+                        draft.isFirstLoginOfSeason = response.isFirstLoginOfSeason;
+                        draft.isContactInfoVerified = false;
 
-            draft.snowmobiles = snowmobilesData;
+                        draft.cartItems = cartItemsData;
 
-            draft.giftCards = giftCardsData;
+                        draft.navbarPage = "home";
+
+                        draft.contactInfo = contactInfoData;
+                        draft.accountPreferences = accountPreferencesData;
+
+                        draft.snowmobiles = snowmobilesData;
+
+                        draft.giftCards = giftCardsData;
+                    });
+
+                    router.push("/home");
+                } else {
+                    setShowInvalidLogin(true);
+                }
+            },
+            error: (error: any) => {
+                console.log(error);
+            }
         });
-
-        router.push("/home");
     }
 
     function doForgotPassword() {
-        router.push("/forgot-password")
+        router.push("/forgot-password");
     }
 
     function doCreateAccount() {

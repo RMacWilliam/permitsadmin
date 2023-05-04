@@ -68,7 +68,7 @@ function Home({ appContext, router }: { appContext: IAppContextValues, router: N
                                         </ul>
                                     </div>
 
-                                    <button type="button" className="btn btn-primary" onClick={() => purchasePermitClick()}>Purchase a Snowmobile Permit</button>
+                                    <button type="button" className="btn btn-primary" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchasePermitClick()}>Purchase a Snowmobile Permit</button>
                                 </div>
                             </div>
                         </div>
@@ -96,7 +96,7 @@ function Home({ appContext, router }: { appContext: IAppContextValues, router: N
                                         </div>
                                     </div>
 
-                                    <button type="button" className="btn btn-primary" onClick={() => purchaseGiftCardClick()}>Purchase a Gift Card</button>
+                                    <button type="button" className="btn btn-primary" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchaseGiftCardClick()}>Purchase a Gift Card</button>
                                 </div>
                             </div>
                         </div>
@@ -107,10 +107,14 @@ function Home({ appContext, router }: { appContext: IAppContextValues, router: N
     )
 
     function purchasePermitClick(): void {
-        router.push("/permits");
+        if (appContext.data?.isContactInfoVerified) {
+            router.push("/permits");
+        }
     }
 
     function purchaseGiftCardClick(): void {
-        router.push("/gift-cards");
+        if (appContext.data?.isContactInfoVerified) {
+            router.push("/gift-cards");
+        }
     }
 }

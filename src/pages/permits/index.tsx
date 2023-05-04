@@ -204,7 +204,7 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
 
                     {snowmobile.isEditable && !isPermitAddedToCart(snowmobile.id) && (
                         <div className="card-footer">
-                            <button className="btn btn-success btn-sm" onClick={() => addPermitToCartClick(snowmobile.id)} disabled={!isAddToCartButtonEnabled(snowmobile.id)}>Add Permit to Cart</button>
+                            <button className="btn btn-success btn-sm" onClick={() => addPermitToCartClick(snowmobile.id)} disabled={!isAddToCartEnabled(snowmobile.id)}>Add Permit to Cart</button>
                         </div>
                     )}
                     {snowmobile.isEditable && isPermitAddedToCart(snowmobile.id) && (
@@ -413,17 +413,13 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
     }
 
     function isSaveSnowmobileEnabled(): boolean {
-        let result: boolean = false;
-
-        result = year !== ''
+        return year !== ''
             && make != undefined
             && model.trim() !== ''
             && vin.trim() !== ''
             && licensePlate.trim() !== ''
             && permitForThisSnowmobileOnly
             && registeredOwner;
-
-        return result;
     }
 
     function addEditSnowmobileDialogHide(): void {
@@ -594,7 +590,7 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
 
     }
 
-    function isAddToCartButtonEnabled(snowmobileId: string): boolean {
+    function isAddToCartEnabled(snowmobileId: string): boolean {
         let result: boolean = false;
 
         let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
@@ -654,10 +650,6 @@ function Permits({ appContext, router }: { appContext: IAppContextValues, router
     }
 
     function isPermitAddedToCart(snowmobileId: string): boolean {
-        let result: boolean = false;
-
-        result = appContext.data?.cartItems?.some(x => x.isPermit && x.itemId === snowmobileId) ?? false;
-
-        return result;
+        return appContext.data?.cartItems?.some(x => x.isPermit && x.itemId === snowmobileId) ?? false;
     }
 }

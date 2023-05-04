@@ -1,31 +1,24 @@
 import { createContext } from 'react'
 import { Updater } from 'use-immer';
 import { i18n } from 'i18next';
-//import i18n from '@/localization/i18n';
 
 export interface IKeyValue {
     key: string;
     value: string;
 }
 
-export interface IContact {
+export interface IContactInfo {
     firstName: string;
     middleName: string;
     lastName: string;
-    telephone: string;
-    email: string;
-}
-
-export interface IAddress {
     addressLine1: string;
     addressLine2: string;
     city: string;
     province: IKeyValue;
     postalCode: string;
     country: IKeyValue;
-}
-
-export interface IContactInfo extends IContact, IAddress {
+    telephone: string;
+    email: string;
 }
 
 export interface IAccountPreferences {
@@ -54,7 +47,7 @@ export interface IPermit {
     dateEnd?: Date;
     clubId?: string;
     shipToRegisteredOwnerAddress?: boolean; // false=Alternate Address; true=Registered Address
-    alternateAddress?: IAddress
+    alternateAddress?: IContactInfo
 }
 
 export interface ISnowmobile {
@@ -109,13 +102,14 @@ export interface IAppContextData {
 
     language: string;
 
+    isFirstLoginOfSeason?: boolean;
     isContactInfoVerified?: boolean;
 
     // Shopping Cart
     cartItems?: ICartItem[];
 
     // Navbar selection
-    navbarPage?: string; // home, contact, permits, giftcards, cart, checkout; admin-home
+    navbarPage?: "index" | "home" | "contact" | "permits" | "gift-cards" | "cart" | "checkout" | "admin-home";
 
     // Contact Information
     contactInfo?: IContactInfo;
@@ -147,7 +141,8 @@ export const initialAppContextValues: IAppContextValues = {
 
         language: "en",
 
-        isContactInfoVerified: undefined,
+        isFirstLoginOfSeason: false,
+        isContactInfoVerified: false,
 
         cartItems: undefined,
 

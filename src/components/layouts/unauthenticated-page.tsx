@@ -30,8 +30,8 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
 
             <header>
                 <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white" style={{ minHeight: 86, maxHeight: 86, overflow: 'hidden' }}>
-                    <div className="container-fluid">
-                        <div className="d-flex justify-content-between align-items-center w-100" style={{ maxHeight: 70 }}>
+                    <div className="container-fluid" style={{ minHeight: 70, maxHeight: 70 }}>
+                        <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
                             <div className="d-flex flex-fill justify-content-start align-items-center">
                                 <a className="navbar-brand" href="#">
                                     <img src="ofsc.png" alt="Logo" width="60" height="60" />

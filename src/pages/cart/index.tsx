@@ -93,6 +93,8 @@ function Cart({ appContext, router }: { appContext: IAppContextValues, router: N
                                     Shipping
 
                                     <select className="form-select w-50 ms-2" aria-label="Shipping" value={shipping} onChange={(e: any) => shippingChange(e)}>
+                                        <option value="" disabled>Please select a value</option>
+
                                         {shippingMethodsData != undefined && shippingMethodsData.length > 0 && shippingMethodsData.map(shippingMethod => (
                                             <option value={shippingMethod.id} key={shippingMethod.id}>{shippingMethod.name} - ${shippingMethod.price}</option>
                                         ))}
@@ -153,9 +155,10 @@ function Cart({ appContext, router }: { appContext: IAppContextValues, router: N
                 </>
             )}
 
-            <ConfirmationDialog showDialog={showStandardShippingDialog} title="Shipping Acknowledgement" buttons={2} icon="information" width="50"
+            <ConfirmationDialog showDialog={showStandardShippingDialog} title="Shipping Acknowledgement" buttons={2} icon="question" width="50"
                 yesClick={() => standardShippingDialogYesClick()} noClick={() => standardShippingDialogNoClick()} closeClick={() => standardShippingDialogNoClick()}>
-                <div>By selecting standard delivery for your permit, you assume all responsibility should your permit get lost or stolen in the mail,
+                <div className="fw-bold mb-2">Are you sure you want standard shipping?</div>
+                <div className="">By selecting standard delivery for your permit, you assume all responsibility should your permit get lost or stolen in the mail,
                     or for any other reason that it is not received in the mail, and therefore agree to adhere to all Ministry of Transportation rules
                     for the issuance of a replacement permit.</div>
             </ConfirmationDialog>

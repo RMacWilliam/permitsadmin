@@ -102,7 +102,7 @@ function GiftCards({ appContext, router }: { appContext: IAppContextValues, rout
 
                     <div className="card-footer">
                         {giftCard.isEditable && !isGiftCardAddedToCart(giftCard.id) && (
-                            <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard.id)} disabled={!isAddToCartButtonEnabled(giftCard.id)}>Add Gift Card to Cart</button>
+                            <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard.id)} disabled={!isAddToCartEnabled(giftCard.id)}>Add Gift Card to Cart</button>
                         )}
 
                         {giftCard.isEditable && isGiftCardAddedToCart(giftCard.id) && (
@@ -231,7 +231,7 @@ function GiftCards({ appContext, router }: { appContext: IAppContextValues, rout
 
     }
 
-    function isAddToCartButtonEnabled(giftCardId: string): boolean {
+    function isAddToCartEnabled(giftCardId: string): boolean {
         let result: boolean = false;
 
         let giftCard: IGiftCard | undefined = getGiftCard(giftCardId);
@@ -246,10 +246,6 @@ function GiftCards({ appContext, router }: { appContext: IAppContextValues, rout
     }
 
     function isGiftCardAddedToCart(giftCardId: string): boolean {
-        let result: boolean = false;
-
-        result = appContext.data?.cartItems?.some(x => x.isGiftCard && x.itemId === giftCardId) ?? false;
-
-        return result;
+        return appContext.data?.cartItems?.some(x => x.isGiftCard && x.itemId === giftCardId) ?? false;
     }
 }

@@ -15,6 +15,7 @@ import '@/localization/i18n';
 import Script from 'next/script'
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
+import { WebApiAppContextData } from '@/custom/api';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [immerAppContextValues, updateImmerAppContextValues] = useImmer(initialAppContextValues.data);
@@ -53,6 +54,8 @@ export default function App({ Component, pageProps }: AppProps) {
     updater: updateImmerAppContextValues as Updater<IAppContextData>,
     translation: { t, i18n }
   };
+
+  WebApiAppContextData.data = immerAppContextValues as IAppContextData;
 
   return (
     <AppContext.Provider value={appContextProviderValues}>
