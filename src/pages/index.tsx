@@ -1,7 +1,6 @@
 import UnauthenticatedPageLayout from '@/components/layouts/unauthenticated-page'
-import { IApiLoginResult, apiLogin } from '@/custom/api';
+import { IApiLoginResult, WebApiAppContextData, apiLogin } from '@/custom/api';
 import { AppContext } from '@/custom/app-context';
-import { accountPreferencesData, cartItemsData, contactInfoData, giftCardsData, snowmobilesData } from '@/custom/data';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -116,38 +115,42 @@ function Index() {
     }
 
     function doLogin() {
-        let e: string = email;
-        let p: string = password;
+        let e: string = email; // TODO: Clean up this code!
+        let p: string = password; // TODO: Clean up this code!
 
-        if (email === "s") e = "sarveny@hotmail.com";
-        if (email === "b") e = "robert.macwilliam@gmail.com";
+        if (email === "s") e = "sarveny@hotmail.com"; // TODO: Clean up this code!
+        if (email === "b") e = "robert.macwilliam@gmail.com"; // TODO: Clean up this code!
 
-        if (password === "s") p = "SnowTravel59!";
-        if (password === "b") p = "CrappyPassword1!";
+        if (password === "s") p = "SnowTravel59!"; // TODO: Clean up this code!
+        if (password === "b") p = "CrappyPassword1!"; // TODO: Clean up this code!
 
-        apiLogin(e ?? email, p ?? password).subscribe({
-            next: (response: IApiLoginResult) => {
-                if (response.isValid) {
+        // Do login.
+        apiLogin(e ?? email, p ?? password).subscribe({ // TODO: Clean up this code!
+            next: (apiLoginResult: IApiLoginResult) => {
+                if (apiLoginResult.isValid) {
+                    // Set WebApi token.
+                    WebApiAppContextData.token = apiLoginResult.token;
+
                     appContext.updater(draft => {
                         draft.isAuthenticated = true;
-                        draft.email = e ?? email; // TODO: Clean up this code!
-                        draft.token = response.token;
+                        draft.email = apiLoginResult.email;
+                        draft.token = apiLoginResult.token;
 
                         draft.language = draft.language ?? "en";
 
-                        draft.isFirstLoginOfSeason = response.isFirstLoginOfSeason;
+                        draft.isFirstLoginOfSeason = apiLoginResult.isFirstLoginOfSeason;
                         draft.isContactInfoVerified = false;
 
-                        draft.cartItems = cartItemsData;
+                        draft.cartItems = undefined;
 
                         draft.navbarPage = "home";
 
-                        draft.contactInfo = contactInfoData;
-                        draft.accountPreferences = accountPreferencesData;
+                        draft.contactInfo = undefined;
+                        draft.accountPreferences = undefined;
 
-                        draft.snowmobiles = snowmobilesData;
+                        draft.snowmobiles = undefined;
 
-                        draft.giftCards = giftCardsData;
+                        draft.giftCards = undefined;
                     });
 
                     router.push("/home");

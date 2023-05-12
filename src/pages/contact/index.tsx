@@ -1,39 +1,45 @@
 import { useContext, useEffect, useState } from 'react'
-import { AppContext, IAccountPreferences, IAppContextValues, IContactInfo } from '@/custom/app-context';
+import { AppContext, IAccountPreferences, IAppContextValues, IContactInfo, IKeyValue, IParentKeyValue } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { getKeyValueFromSelect } from '@/custom/utilities';
+import { getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from '@/custom/utilities';
 import { NextRouter, useRouter } from 'next/router';
 import CartItemsAlert from '@/components/cart-items-alert';
+import { Observable, forkJoin } from 'rxjs';
+import { IApiGetCountriesResult, IApiGetProvincesResult, IApiGetUserDetailsResult, IApiGetUserPreferencesResult, apiGetCountries, apiGetProvinces, apiGetUserDetails, apiGetUserPreferences } from '@/custom/api';
+import _ from 'lodash';
 
 export default function ContactPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
+
+    // Display loading indicator.
+    const [showAlert, setShowAlert] = useState(true);
 
     useEffect(() => {
         appContext.updater(draft => { draft.navbarPage = "contact" });
     }, [appContext])
 
     return (
-        <AuthenticatedPageLayout>
-            <Contact appContext={appContext} router={router}></Contact>
+        <AuthenticatedPageLayout showAlert={showAlert}>
+            <Contact appContext={appContext} router={router} setShowAlert={setShowAlert}></Contact>
         </AuthenticatedPageLayout>
     )
 }
 
-function Contact({ appContext, router }: { appContext: IAppContextValues, router: NextRouter }) {
+function Contact({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [showContactInfoDialog, setShowContactInfoDialog] = useState(false);
 
     const [email, setEmail] = useState("");
     const [firstName, setFirstName] = useState("");
-    const [middleName, setMiddleName] = useState("");
+    const [middleInitial, setMiddleInitial] = useState("");
     const [lastName, setLastName] = useState("");
     const [addressLine1, setAddressLine1] = useState("");
     const [addressLine2, setAddressLine2] = useState("");
     const [city, setCity] = useState("");
-    const [province, setProvince] = useState({ key: "", value: "" });
+    const [province, setProvince] = useState({ parent: "", key: "", value: "" });
     const [country, setCountry] = useState({ key: "", value: "" });
     const [postalCode, setPostalCode] = useState("");
     const [telephone, setTelephone] = useState("");
@@ -41,8 +47,85 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
     const [showAccountPreferencesDialog, setShowAccountPreferencesDialog] = useState(false);
 
     const [ofscContactPermission, setOfscContactPermission] = useState(-1);
-    const [riderAdvantage, setRiderAdvantage] = useState(-1);
+    //const [riderAdvantage, setRiderAdvantage] = useState(-1);
     const [volunteering, setVolunteering] = useState(-1);
+
+    const [provincesData, setProvincesData] = useState([] as IParentKeyValue[]);
+    const [countriesData, setCountriesData] = useState([] as IKeyValue[]);
+
+    useEffect(() => {
+        // Get data from api.
+        let batchApi: Observable<any>[] = [
+            apiGetUserDetails(),
+            apiGetUserPreferences(),
+            apiGetProvinces(),
+            apiGetCountries()
+        ];
+
+        forkJoin(batchApi).subscribe({
+            next: (results: any[]) => {
+                // apiGetUserDetails
+                const apiGetUserDetailsResult: IApiGetUserDetailsResult = results[0] as IApiGetUserDetailsResult;
+
+                if (apiGetUserDetailsResult != undefined) {
+                    appContext.updater(draft => {
+                        draft.contactInfo = {
+                            personId: apiGetUserDetailsResult?.personId,
+                            firstName: apiGetUserDetailsResult?.firstName,
+                            initial: apiGetUserDetailsResult?.initial,
+                            lastName: apiGetUserDetailsResult?.lastName,
+                            addressLine1: apiGetUserDetailsResult?.addressLine1,
+                            addressLine2: apiGetUserDetailsResult?.addressLine2,
+                            city: apiGetUserDetailsResult?.city,
+                            province: apiGetUserDetailsResult?.province,
+                            postalCode: apiGetUserDetailsResult?.postalCode,
+                            country: apiGetUserDetailsResult?.country,
+                            telephone: apiGetUserDetailsResult?.telephone,
+                            email: apiGetUserDetailsResult?.email,
+                            adminUser: apiGetUserDetailsResult?.adminUser ?? false,
+                            verified: apiGetUserDetailsResult?.verified ?? false,
+                            contactConsent: apiGetUserDetailsResult?.contactConsent ?? false,
+                            volunteerStatus: apiGetUserDetailsResult?.volunteerStatus ?? 0
+                        };
+                    });
+                }
+
+                // apiGetUserPreferences
+                const apiGetUserPreferences: IApiGetUserPreferencesResult = results[1] as IApiGetUserPreferencesResult;
+
+                if (apiGetUserPreferences != undefined) {
+                    appContext.updater(draft => {
+                        draft.accountPreferences = {
+                            ofscContactPermission: apiGetUserPreferences?.ofscContactPermission ?? -1,
+                            //riderAdvantage: apiGetUserPreferences?.riderAdvantage ?? -1,
+                            volunteering: apiGetUserPreferences?.volunteering ?? -1
+                        };
+                    })
+                }
+
+                // apiGetProvinces
+                const apiGetProvincesResult: IApiGetProvincesResult[] = results[2] as IApiGetProvincesResult[];
+
+                if (apiGetProvincesResult != undefined) {
+                    setProvincesData(apiGetProvincesResult.map<IParentKeyValue>(x => ({ parent: x?.parent ?? "", key: x?.key ?? "", value: x?.value ?? "" })));
+                }
+
+                // apiGetCountries
+                const apiGetCountriesResult: IApiGetCountriesResult[] = results[3] as IApiGetCountriesResult[];
+
+                if (apiGetCountriesResult != undefined) {
+                    setCountriesData(apiGetCountriesResult.map<IKeyValue>(x => ({ key: x?.key ?? "", value: x?.value ?? "" })));
+                }
+
+                setShowAlert(false);
+            },
+            error: (error: any) => {
+                console.log(error);
+
+                setShowAlert(false);
+            }
+        });
+    }, []);
 
     return (
         <>
@@ -57,7 +140,7 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
             <div className="card w-100">
                 <h5 className="card-header d-flex justify-content-between align-items-center">
                     <div>
-                        {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.middleName} ${appContext.data?.contactInfo?.lastName}`}
+                        {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial} ${appContext.data?.contactInfo?.lastName}`}
                     </div>
                     <div>
                         <button className="btn btn-primary btn-sm" onClick={contactInfoDialogShow}>Edit</button>
@@ -66,10 +149,19 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item">
                         <div>
-                            <div>{appContext.data?.contactInfo?.addressLine1}</div>
-                            <div>{appContext.data?.contactInfo?.addressLine2}</div>
-                            <div>{appContext.data?.contactInfo?.city}, {appContext.data?.contactInfo?.province?.key}, {appContext.data?.contactInfo?.country?.key}</div>
-                            <div>{appContext.data?.contactInfo?.postalCode}</div>
+                            <span>{appContext.data?.contactInfo?.addressLine1}</span>
+
+                            {appContext.data?.contactInfo?.addressLine2 != undefined && appContext.data?.contactInfo?.addressLine2 !== "" && (
+                                <span>, {appContext.data?.contactInfo?.addressLine2}</span>
+                            )}
+
+                            <span>, {appContext.data?.contactInfo?.city}</span>
+                            <span>, {appContext.data?.contactInfo?.province?.key}</span>
+                            <span>, {appContext.data?.contactInfo?.country?.key}</span>
+                            <span>, {appContext.data?.contactInfo?.postalCode}</span>
+                        </div>
+
+                        <div>
                             <div>{appContext.data?.contactInfo?.telephone}</div>
                             <div>{appContext.data?.contactInfo?.email}</div>
                         </div>
@@ -89,9 +181,39 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item">
                         <div>
-                            <div>Consent for OFSC to contact me: <b>{appContext.data?.accountPreferences?.ofscContactPermission === 1 ? "Yes" : "No"}</b></div>
-                            <div>Rider Advantage: <b>{appContext.data?.accountPreferences?.riderAdvantage === 1 ? "Yes" : "No"}</b></div>
-                            <div>Interested in volunteering: <b>{appContext.data?.accountPreferences?.volunteering === 1 || appContext.data?.accountPreferences?.volunteering === 2 ? "Yes" : "No"}</b></div>
+                            <span className="me-1">Consent for OFSC to contact me:</span>
+
+                            {appContext.data?.accountPreferences?.ofscContactPermission === 0 && (
+                                <span className="fw-bold">No</span>
+                            )}
+
+                            {appContext.data?.accountPreferences?.ofscContactPermission === 1 && (
+                                <span className="fw-bold">Yes</span>
+                            )}
+                        </div>
+
+                        {/* <div>
+                            <span className="me-1">Rider Advantage:</span>
+
+                            {appContext.data?.accountPreferences?.riderAdvantage === 0 && (
+                                <span className="fw-bold">No</span>
+                            )}
+
+                            {appContext.data?.accountPreferences?.riderAdvantage === 1 && (
+                                <span className="fw-bold">Yes</span>
+                            )}
+                        </div> */}
+
+                        <div>
+                            <span className="me-1">Interested in volunteering:</span>
+
+                            {appContext.data?.accountPreferences?.volunteering === 0 && (
+                                <span className="fw-bold">No</span>
+                            )}
+
+                            {(appContext.data?.accountPreferences?.volunteering === 1 || appContext.data?.accountPreferences?.volunteering === 2) && (
+                                <span className="fw-bold">Yes</span>
+                            )}
                         </div>
                     </li>
                 </ul>
@@ -108,15 +230,6 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                 <Modal.Body>
                     <div className="container-fluid">
                         <div className="row">
-                            <div className="col-12">
-                                <div className="form-floating mb-2">
-                                    <input type="email" className="form-control" id="contact-info-email-address" placeholder="name@example.com" value={email} onChange={(e: any) => setEmail(e.target.value)} />
-                                    <label className="required" htmlFor="contact-info-email-address">Email address</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row">
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating  mb-2">
                                     <input type="text" className="form-control" id="contact-info-first-name" placeholder="First Name" value={firstName} onChange={(e: any) => setFirstName(e.target.value)} />
@@ -125,8 +238,8 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                             </div>
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="contact-info-middle-name" placeholder="Middle Name(s)" value={middleName} onChange={(e: any) => setMiddleName(e.target.value)} />
-                                    <label htmlFor="contact-info-middle-name">Middle Name(s)</label>
+                                    <input type="text" className="form-control" id="contact-info-middle-initial" placeholder="Middle Initial" value={middleInitial} onChange={(e: any) => setMiddleInitial(e.target.value)} />
+                                    <label htmlFor="contact-info-middle-initial">Middle Initial</label>
                                 </div>
                             </div>
                             <div className="col-12 col-sm-12 col-md-4">
@@ -161,22 +274,24 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                             </div>
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id="contact-info-province" aria-label="Province/State" value={province.key} onChange={(e: any) => setProvince(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
-                                        <option value="" disabled>Please select a value</option>
-                                        <option value="ON">One</option>
-                                        <option value="PQ">Two</option>
-                                        <option value="BC">Three</option>
+                                    <select className="form-select" id="contact-info-province" aria-label="Province/State" value={getProvinceValueForProp()} onChange={(e: any) => provinceChange(e)}>
+                                        <option value="|" disabled>Please select a value</option>
+
+                                        {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
+                                            <option value={`${country.key}|${provinceData.key}`} key={`${country.key}|${provinceData.key}`}>{provinceData.value}</option>
+                                        ))}
                                     </select>
                                     <label className="required" htmlFor="contact-info-province">Province/State</label>
                                 </div>
                             </div>
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id="contact-info-country" aria-label="Country" value={country.key} onChange={(e: any) => setCountry(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
+                                    <select className="form-select" id="contact-info-country" aria-label="Country" value={country.key} onChange={(e: any) => countryChange(e)}>
                                         <option value="" disabled>Please select a value</option>
-                                        <option value="CA">Canada</option>
-                                        <option value="US">United States</option>
-                                        <option value="OT">Other</option>
+
+                                        {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
+                                            <option value={countryData.key} key={countryData.key}>{countryData.value}</option>
+                                        ))}
                                     </select>
                                     <label className="required" htmlFor="contact-info-country">Country</label>
                                 </div>
@@ -186,8 +301,8 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="contact-info-postal-code" placeholder="Postal Code" value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
-                                    <label className="required" htmlFor="contact-info-postal-code">Postal Code</label>
+                                    <input type="text" className="form-control" id="contact-info-postal-code" placeholder="Postal/Zip Code" value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
+                                    <label className="required" htmlFor="contact-info-postal-code">Postal/Zip Code</label>
                                 </div>
                             </div>
 
@@ -195,6 +310,15 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                                 <div className="form-floating mb-2">
                                     <input type="text" className="form-control" id="contact-info-telephone" placeholder="Telephone" value={telephone} onChange={(e: any) => setTelephone(e.target.value)} />
                                     <label className="required" htmlFor="contact-info-telephone">Telephone</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col-12">
+                                <div className="form-floating mb-2">
+                                    <input type="email" className="form-control" id="contact-info-email-address" placeholder="name@example.com" value={email} onChange={(e: any) => setEmail(e.target.value)} />
+                                    <label className="required" htmlFor="contact-info-email-address">Email address</label>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +331,7 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                                 <span className="text-danger me-1">*</span>= mandatory field
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="secondary" onClick={contactInfoDialogSave}>Save</Button>
+                                <Button className="me-2" variant="secondary" disabled={!isSaveContactInfoEnabled()} onClick={contactInfoDialogSave}>Save</Button>
                                 <Button variant="primary" onClick={contactInfoDialogHide}>Cancel</Button>
                             </div>
                         </div>
@@ -241,7 +365,7 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                             </div>
                         </div>
 
-                        <div className="row">
+                        {/* <div className="row">
                             <div className="col-12">
                                 <div>
                                     I would like to participate in eligible Rider Advantage programs as offered/available.
@@ -255,7 +379,7 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                                     <label className="required" htmlFor="account-preferences-rider-advantage">Rider Advantage</label>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="row">
                             <div className="col-12">
@@ -282,7 +406,7 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
                                 <span className="text-danger me-1">*</span>= mandatory field
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="secondary" onClick={accountPreferencesDialogSave}>Save</Button>
+                                <Button className="me-2" variant="secondary" disabled={!isSaveAccountPreferencesEnabled()} onClick={accountPreferencesDialogSave}>Save</Button>
                                 <Button variant="primary" onClick={accountPreferencesDialogHide}>Cancel</Button>
                             </div>
                         </div>
@@ -292,15 +416,60 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
         </>
     )
 
+    function getProvinceValueForProp(): string {
+        let result: string = "|";
+
+        if (country != undefined && country.key != undefined && country.key !== "" && province != undefined && province.key != undefined && province.key !== "") {
+            result = country.key + "|" + province.key;
+        }
+
+        return result;
+    }
+
+    function provinceChange(e: any): void {
+        setProvince(getParentKeyValueFromSelect(e) ?? { parent: "", key: "", value: "" });
+    }
+
+    function getProvinceData(): IParentKeyValue[] {
+        let result: IParentKeyValue[] = [];
+
+        if (provincesData != undefined && provincesData.length > 0) {
+            result = sortArray(provincesData.filter(x => x.parent === country.key), ["value"]);
+        }
+
+        return result;
+    }
+
+    function countryChange(e: any): void {
+        setCountry(getKeyValueFromSelect(e) ?? { key: "", value: "" });
+        setProvince({ parent: "", key: "", value: "" });
+    }
+
+    function getCountriesData(): IKeyValue[] {
+        return countriesData;
+    }
+
+    function isSaveContactInfoEnabled(): boolean {
+        return email !== ""
+            && firstName !== ""
+            && lastName !== ""
+            && addressLine1 !== ""
+            && city !== ""
+            && (province != undefined && province.key != undefined && province.key !== "")
+            && (country != undefined && country.key != undefined && country.key !== "")
+            && postalCode !== ""
+            && telephone !== "";
+    }
+
     function contactInfoDialogShow(): void {
         setEmail(appContext.data?.contactInfo?.email ?? "");
         setFirstName(appContext.data?.contactInfo?.firstName ?? "");
-        setMiddleName(appContext.data?.contactInfo?.middleName ?? "")
+        setMiddleInitial(appContext.data?.contactInfo?.initial ?? "")
         setLastName(appContext.data?.contactInfo?.lastName ?? "");
         setAddressLine1(appContext.data?.contactInfo?.addressLine1 ?? "");
         setAddressLine2(appContext.data?.contactInfo?.addressLine2 ?? "");
         setCity(appContext.data?.contactInfo?.city ?? "");
-        setProvince(appContext.data?.contactInfo?.province ?? { key: "", value: "" });
+        setProvince(appContext.data?.contactInfo?.province ?? { parent: "", key: "", value: "" });
         setCountry(appContext.data?.contactInfo?.country ?? { key: "", value: "" });
         setPostalCode(appContext.data?.contactInfo?.postalCode ?? "");
         setTelephone(appContext.data?.contactInfo?.telephone ?? "");
@@ -310,21 +479,21 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
 
     function contactInfoDialogSave(): void {
         appContext.updater(draft => {
-            let contactInfo: IContactInfo = {
-                email: email,
-                firstName: firstName,
-                middleName: middleName,
-                lastName: lastName,
-                addressLine1: addressLine1,
-                addressLine2: addressLine2,
-                city: city,
-                province: province,
-                country: country,
-                postalCode: postalCode,
-                telephone: telephone
-            };
+            if (draft.contactInfo == undefined) {
+                draft.contactInfo = {} as IContactInfo;
+            }
 
-            draft.contactInfo = contactInfo;
+            draft.contactInfo.email = email;
+            draft.contactInfo.firstName = firstName;
+            draft.contactInfo.initial = middleInitial;
+            draft.contactInfo.lastName = lastName;
+            draft.contactInfo.addressLine1 = addressLine1;
+            draft.contactInfo.addressLine2 = addressLine2;
+            draft.contactInfo.city = city;
+            draft.contactInfo.province = province;
+            draft.contactInfo.country = country;
+            draft.contactInfo.postalCode = postalCode;
+            draft.contactInfo.telephone = telephone;
         });
 
         setShowContactInfoDialog(false);
@@ -334,9 +503,15 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
         setShowContactInfoDialog(false);
     }
 
+    function isSaveAccountPreferencesEnabled(): boolean {
+        return ofscContactPermission !== -1
+            //&& riderAdvantage !== -1
+            && volunteering !== -1;
+    }
+
     function accountPreferencesDialogShow(): void {
         setOfscContactPermission(appContext.data?.accountPreferences?.ofscContactPermission ?? -1);
-        setRiderAdvantage(appContext.data?.accountPreferences?.riderAdvantage ?? -1);
+        //setRiderAdvantage(appContext.data?.accountPreferences?.riderAdvantage ?? -1);
         setVolunteering(appContext.data?.accountPreferences?.volunteering ?? -1);
 
         setShowAccountPreferencesDialog(true);
@@ -346,7 +521,7 @@ function Contact({ appContext, router }: { appContext: IAppContextValues, router
         appContext.updater(draft => {
             let accountPreferences: IAccountPreferences = {
                 ofscContactPermission: ofscContactPermission,
-                riderAdvantage: riderAdvantage,
+                //riderAdvantage: riderAdvantage,
                 volunteering: volunteering
             };
 

@@ -20,7 +20,7 @@ import { WebApiAppContextData } from '@/custom/api';
 export default function App({ Component, pageProps }: AppProps) {
   const [immerAppContextValues, updateImmerAppContextValues] = useImmer(initialAppContextValues.data);
   const [showApp, setShowApp] = useState(false);
-  const [t, i18n] = useTranslation(); 
+  const [t, i18n] = useTranslation();
 
   // Restore app context from local storage.
   useEffect(() => {
@@ -44,10 +44,13 @@ export default function App({ Component, pageProps }: AppProps) {
 
   // Save app context to local storage whenever app context is updated.
   useEffect(() => {
+    // Set WebApi token.
+    WebApiAppContextData.token = immerAppContextValues.token;
+
     if (showApp && window.localStorage) {
       window.localStorage.setItem("data", JSON.stringify(immerAppContextValues));
     }
-  }, [showApp, immerAppContextValues]);  
+  }, [showApp, immerAppContextValues]);
 
   const appContextProviderValues: IAppContextValues = {
     data: immerAppContextValues as IAppContextData,
@@ -55,7 +58,8 @@ export default function App({ Component, pageProps }: AppProps) {
     translation: { t, i18n }
   };
 
-  WebApiAppContextData.data = immerAppContextValues as IAppContextData;
+  // Set WebApi token.
+  WebApiAppContextData.token = immerAppContextValues.token;
 
   return (
     <AppContext.Provider value={appContextProviderValues}>

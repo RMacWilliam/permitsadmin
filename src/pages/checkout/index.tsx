@@ -39,7 +39,7 @@ function Checkout({ appContext, router }: { appContext: IAppContextValues, route
                             <img src="Ontario.png" alt="Ontario Logo" width="50%" height="50%" />
                         </div>
 
-                        {appContext?.translation?.i18n?.language === "en" && (
+                        {appContext.translation?.i18n?.language === "en" && (
                             <>
                                 <h5 className="text-center mb-4">Application for Trail Permit - Terms & Conditions</h5>
 
@@ -52,7 +52,7 @@ function Checkout({ appContext, router }: { appContext: IAppContextValues, route
                             </>
                         )}
 
-                        {appContext?.translation?.i18n?.language === "fr" && (
+                        {appContext.translation?.i18n?.language === "fr" && (
                             <>
                                 <h5 className="text-center mb-4">Application for Trail Permit - Terms & Conditions</h5>
 
@@ -84,8 +84,9 @@ function Checkout({ appContext, router }: { appContext: IAppContextValues, route
 
                 <div className="card">
                     <div className="card-body text-center">
-                        <button className="btn btn-primary" disabled={!isStep1ContinueCheckoutEnabled()} onClick={() => step1ContinueCheckoutClick()}>Continue Checkout</button>
-                        <button className="btn btn-danger ms-2" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
+                        <button className="btn btn-primary me-2" onClick={() => step1GoBackClick()}>Back</button>
+                        <button className="btn btn-primary me-2" disabled={!isStep1ContinueCheckoutEnabled()} onClick={() => step1ContinueCheckoutClick()}>Continue Checkout</button>
+                        <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
                     </div>
                 </div>
             </>
@@ -101,7 +102,7 @@ function Checkout({ appContext, router }: { appContext: IAppContextValues, route
 
                 <div className="card mb-2">
                     <div className="card-body">
-                        {appContext?.translation?.i18n?.language === "en" && (
+                        {appContext.translation?.i18n?.language === "en" && (
                             <>
                                 <p className="fw-bold">Please read and acknowledge all sections.</p>
 
@@ -229,8 +230,6 @@ function Checkout({ appContext, router }: { appContext: IAppContextValues, route
                                         </div>
                                     </div>
                                 </div>
-
-
                             </>
                         )}
                     </div>
@@ -238,15 +237,16 @@ function Checkout({ appContext, router }: { appContext: IAppContextValues, route
 
                 <div className="card">
                     <div className="card-body text-center">
-                        <button className="btn btn-primary" disabled={!isStep2ContinueCheckoutEnabled()} onClick={() => step2ContinueCheckoutClick()}>Continue Checkout</button>
-                        <button className="btn btn-danger ms-2" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
+                        <button className="btn btn-primary me-2" onClick={() => step2GoBackClick()}>Back</button>
+                        <button className="btn btn-primary me-2" disabled={!isStep2ContinueCheckoutEnabled()} onClick={() => step2ContinueCheckoutClick()}>Continue Checkout</button>
+                        <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
                     </div>
                 </div>
             </>
         )
     } else {
         return (
-            <></>
+            <>Payment..........</>
         )
     }
 
@@ -256,6 +256,12 @@ function Checkout({ appContext, router }: { appContext: IAppContextValues, route
 
     function isStep1ContinueCheckoutEnabled(): boolean {
         return step1AcceptTerms ?? false;
+    }
+
+    function step1GoBackClick(): void {
+        setStep1AcceptTerms(false);
+
+        router.push("/cart");
     }
 
     function step1ContinueCheckoutClick(): void {
@@ -272,9 +278,15 @@ function Checkout({ appContext, router }: { appContext: IAppContextValues, route
             && (step2AcceptTerms3 ?? false);
     }
 
+    function step2GoBackClick(): void {
+        setStep2AcceptTerms1(false);
+        setStep2AcceptTerms2(false);
+        setStep2AcceptTerms3(false);
+
+        setCheckoutStep(0);
+    }
+
     function step2ContinueCheckoutClick(): void {
         setCheckoutStep(2);
     }
-
-
 }

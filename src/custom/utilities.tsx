@@ -1,27 +1,90 @@
 import moment from "moment";
-import { IKeyValue } from "./app-context";
-import { Observable } from "rxjs";
-import { fromFetch } from "rxjs/fetch";
+import { IKeyValue, IParentKeyValue } from "./app-context";
+import { v4 as uuidv4 } from "uuid";
+import _ from "lodash";
 
-export function getKeyValueFromSelect(e: any): IKeyValue | null {
-    let result: IKeyValue | null = null;
+export function getParentKeyValueFromSelect(e: any): IParentKeyValue | undefined {
+    let result: IParentKeyValue | undefined = undefined;
 
-    let key: string = e?.target?.value;
-    let value: string = e?.target?.selectedOptions[0]?.text;
+    let splitValues: string[] | undefined = e?.target?.value?.split("|");
 
-    if (key != null && value != null) {
-        result = { key, value };
+    if (splitValues != undefined) {
+        let parent: string = splitValues[0];
+        let key: string = splitValues[1];
+        let value: string = e?.target?.selectedOptions[0]?.text;
+
+        if (parent != undefined && key != undefined && value != undefined) {
+            result = { parent: parent, key: key, value: value };
+        }
     }
 
     return result;
 }
 
-export function formatShortDate(value: string | Date | undefined, defaultValue: string = ""): string {
-    let result: string = defaultValue;
+
+export function getKeyValueFromSelect(e: any): IKeyValue | undefined {
+    let result: IKeyValue | undefined = undefined;
+
+    let key: string = e?.target?.value;
+    let value: string = e?.target?.selectedOptions[0]?.text;
+
+    if (key != undefined && value != undefined) {
+        result = { key: key, value: value };
+    }
+
+    return result;
+}
+
+export function getDate(date?: string | Date): Date {
+    if (date == undefined) {
+        return moment().toDate();
+    } else {
+        return moment(date).toDate();
+    }
+}
+
+export function parseDate(date?: string | Date): Date | undefined {
+    let result: Date | undefined = undefined;
+
+    if (date != undefined) {
+        return moment(date).toDate();
+    }
+
+    return result;
+}
+
+export function getMoment(date?: string | Date): moment.Moment {
+    if (date == undefined) {
+        return moment();
+    } else {
+        return moment(date);
+    }
+}
+
+export function formatShortDate(value: string | Date | undefined): string {
+    let result: string = "";
 
     if (value != undefined && value !== "") {
         result = moment(value).format("D/M/YYYY");
     }
 
     return result;
+}
+
+export function getGuid(): string {
+    return uuidv4();
+}
+
+export function formatCurrency(value: string | number | undefined = 0): string {
+    let result: string = "";
+
+    if (value != undefined && value !== "") {
+        result = Number(value).toFixed(2);
+    }
+
+    return result;
+}
+
+export function sortArray(array: any[], sortBy: string[]): any[] {
+    return _.sortBy(array, sortBy);
 }

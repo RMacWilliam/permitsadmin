@@ -2,6 +2,7 @@ import ConfirmationDialog from "@/components/confirmation-dialog";
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
 import { AppContext, IAppContextValues, ICartItem, IShippingMethod } from "@/custom/app-context";
 import { shippingMethodsData, transactionAndAdministrationFee } from "@/custom/data";
+import { formatCurrency } from "@/custom/utilities";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useState } from "react";
@@ -67,7 +68,7 @@ function Cart({ appContext, router }: { appContext: IAppContextValues, router: N
                                             </div>
                                         </div>
                                         <div className="fw-bold ms-3">
-                                            ${cartItem.price}
+                                            ${formatCurrency(cartItem.price)}
                                         </div>
                                     </div>
                                 </li>
@@ -77,11 +78,11 @@ function Cart({ appContext, router }: { appContext: IAppContextValues, router: N
                         {getPermitCount() > 0 && (
                             <div className="card-footer">
                                 <div className="d-flex">
-                                    <div className="d-flex flex-fill flex-column">
-                                        Permit Transaction and Administration Fee
+                                    <div className="d-flex flex-fill flex-column fw-semibold">
+                                        Transaction and Administration Fee
                                     </div>
                                     <div className="fw-bold ms-3">
-                                        $7.50
+                                        ${formatCurrency(7.50)}
                                     </div>
                                 </div>
                             </div>
@@ -89,19 +90,19 @@ function Cart({ appContext, router }: { appContext: IAppContextValues, router: N
 
                         <div className="card-footer">
                             <div className="d-flex">
-                                <div className="d-flex flex-fill align-items-center">
+                                <div className="d-flex flex-fill align-items-center fw-semibold">
                                     Shipping
 
                                     <select className="form-select w-50 ms-2" aria-label="Shipping" value={shipping} onChange={(e: any) => shippingChange(e)}>
                                         <option value="" disabled>Please select a value</option>
 
                                         {shippingMethodsData != undefined && shippingMethodsData.length > 0 && shippingMethodsData.map(shippingMethod => (
-                                            <option value={shippingMethod.id} key={shippingMethod.id}>{shippingMethod.name} - ${shippingMethod.price}</option>
+                                            <option value={shippingMethod.id} key={shippingMethod.id}>{shippingMethod.name} - ${formatCurrency(shippingMethod.price)}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div className="fw-bold ms-3">
-                                    ${getShippingPrice()}
+                                    ${formatCurrency(getShippingPrice())}
                                 </div>
                             </div>
                         </div>
@@ -112,7 +113,7 @@ function Cart({ appContext, router }: { appContext: IAppContextValues, router: N
                                     Total
                                 </div>
                                 <div className="fw-bold ms-3">
-                                    ${calculateTotal()}
+                                    ${formatCurrency(calculateTotal())}
                                 </div>
                             </div>
                         </div>
@@ -128,12 +129,18 @@ function Cart({ appContext, router }: { appContext: IAppContextValues, router: N
                                     Registered Owner Address
                                 </label>
                                 <div className="mt-1">
-                                    <div>{`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.middleName} ${appContext.data?.contactInfo?.lastName}`}</div>
+                                    <div>{`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial} ${appContext.data?.contactInfo?.lastName}`}</div>
                                     <div>
-                                        <span>{appContext.data?.contactInfo?.addressLine1},</span>
-                                        <span className="ms-1">{appContext.data?.contactInfo?.addressLine2},</span>
-                                        <span className="ms-1">{appContext.data?.contactInfo?.city}, {appContext.data?.contactInfo?.province?.key}, {appContext.data?.contactInfo?.country?.key},</span>
-                                        <span className="ms-1">{appContext.data?.contactInfo?.postalCode}</span>
+                                        <span>{appContext.data?.contactInfo?.addressLine1}</span>
+
+                                        {appContext.data?.contactInfo?.addressLine2 != undefined && appContext.data?.contactInfo?.addressLine2 !== "" && (
+                                            <span>, {appContext.data?.contactInfo?.addressLine2}</span>
+                                        )}
+
+                                        <span>, {appContext.data?.contactInfo?.city}</span>
+                                        <span>, {appContext.data?.contactInfo?.province?.key}</span>
+                                        <span>, {appContext.data?.contactInfo?.country?.key}</span>
+                                        <span>, {appContext.data?.contactInfo?.postalCode}</span>
                                     </div>
                                 </div>
                             </div>

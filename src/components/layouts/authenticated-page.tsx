@@ -4,8 +4,9 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import LanguageToggler from '../language-toggler';
+import ModalAlert from '../modal-alert';
 
-export default function AuthenticatedPageLayout({ children }: { children?: ReactNode }) {
+export default function AuthenticatedPageLayout({ children, showAlert }: { children?: ReactNode, showAlert?: boolean }) {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
@@ -89,7 +90,7 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                                    <i className="fa-regular fa-address-card fa-fw me-2"></i>
+                                    <i className="fa-solid fa-address-card fa-fw me-2"></i>
                                     {appContext.translation?.t("CONTACT_INFORMATION.MENU_TITLE")}
                                 </Link>
                             </li>
@@ -128,7 +129,6 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                             </li>
                         </ul>
                     </div>
-
                 </nav>
 
                 <div className="nav-scroller bg-body shadow-sm d-none d-sm-none d-md-block">
@@ -138,7 +138,7 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                             {appContext.translation?.t("HOME.MENU_TITLE")}
                         </Link>
                         <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact">
-                            <i className="fa-regular fa-address-card me-2"></i>
+                            <i className="fa-solid fa-address-card me-2"></i>
                             {appContext.translation?.t("CONTACT_INFORMATION.MENU_TITLE")}
                         </Link>
                         {appContext.data?.isContactInfoVerified && (
@@ -180,6 +180,8 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
                     </div>
                 </div>
             </footer>
+
+            <ModalAlert showAlert={showAlert}></ModalAlert>
         </>
     )
 
@@ -189,6 +191,7 @@ export default function AuthenticatedPageLayout({ children }: { children?: React
             draft.email = undefined;
             draft.token = undefined;
 
+            draft.isFirstLoginOfSeason = undefined;
             draft.isContactInfoVerified = undefined;
 
             draft.cartItems = undefined;

@@ -1,3 +1,9 @@
+@import "../../node_modules/bootstrap/scss/functions.scss";
+@import "../../node_modules/bootstrap/scss/variables.scss";
+//@import "../../node_modules/bootstrap/scss/maps.scss";
+@import "../../node_modules/bootstrap/scss/mixins.scss";
+//@import "../../node_modules/bootstrap/scss/utilities.scss";
+
 html,
 body {
   height: 100%;
@@ -40,6 +46,10 @@ body {
   color: #343a40;
 }
 
+.modal {
+  padding-left: 0px !important;
+}
+
 .modal-width-50-percent {
   width: 50%;
   max-width: none !important;
@@ -53,6 +63,23 @@ body {
 .modal-width-90-percent {
   width: 90%;
   max-width: none !important;
+}
+
+@include media-breakpoint-down(lg) {
+  .modal-width-50-percent {
+    width: 93vw;
+    max-width: none !important;
+  }
+
+  .modal-width-75-percent {
+    width: 93vw;
+    max-width: none !important;
+  }
+
+  .modal-width-90-percent {
+    width: 93vw;
+    max-width: none !important;
+  }
 }
 
 .required::after {
