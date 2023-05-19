@@ -1,5 +1,5 @@
 import { forwardRef, useContext, useEffect, useState } from 'react'
-import { AppContext, IAppContextValues, ICartItem, IKeyValue, IPermit, IPermitOption, ISnowmobile } from '@/custom/app-context';
+import { AppContext, IAppContextValues, ICartItem, IKeyValue, IPermit, IPermitOption, IPermitSelections, ISnowmobile } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
 import { formatShortDate, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
@@ -9,53 +9,89 @@ import ConfirmationDialog from '@/components/confirmation-dialog';
 import { NextRouter, useRouter } from 'next/router';
 import DatePicker from 'react-datepicker';
 import CartItemsAlert from '@/components/cart-items-alert';
-import { IApiGetClubsResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserPermit, IApiGetVehiclesAndPermitsForUserPermitOption, IApiGetVehiclesAndPermitsForUserResult, apiGetClubs, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser } from '@/custom/api';
+import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserPermit, IApiGetVehiclesAndPermitsForUserPermitOption, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle } from '@/custom/api';
 import { Observable, forkJoin } from 'rxjs';
+import { isRoutePermitted, isUserAuthenticated, logout } from '@/custom/authentication';
 
 export default function PermitsPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     // Display loading indicator.
-    const [showAlert, setShowAlert] = useState(true);
+    const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
-        appContext.updater(draft => { draft.navbarPage = "permits" });
-    }, [appContext])
+        let authenticated: boolean = isUserAuthenticated(router, appContext);
+
+        if (authenticated) {
+            let permitted: boolean = isRoutePermitted(router, appContext, "permits");
+
+            if (permitted) {
+                appContext.updater(draft => { draft.navbarPage = "permits" });
+
+                setIsAuthenticated(true);
+                setShowAlert(true);
+            }
+        }
+    }, []);
 
     return (
         <AuthenticatedPageLayout showAlert={showAlert}>
-            <Permits appContext={appContext} router={router} setShowAlert={setShowAlert}></Permits>
+            {isAuthenticated && (
+                <Permits appContext={appContext} router={router} setShowAlert={setShowAlert}></Permits>
+            )}
         </AuthenticatedPageLayout>
     )
 }
 
+enum DialogMode {
+    Add = 0,
+    Edit = 1
+}
+
 function Permits({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [showAddEditSnowmobileDialog, setShowAddEditSnowmobileDialog] = useState(false);
+    const [addEditSnowmobileDialogMode, setAddEditSnowmobileDialogMode] = useState(DialogMode.Add);
     const [editedSnowmobileId, setEditedSnowmobileId] = useState("");
 
-    const [year, setYear] = useState("");
+    // Add/edit snowmobile dialog
+    const [vehicleYear, setVehicleYear] = useState("");
+    const [isVehicleYearValid, setIsVehicleYearValid] = useState(true);
+
     const [make, setMake] = useState({ key: "", value: "" });
+    const [isMakeValid, setIsMakeValid] = useState(true);
+
     const [model, setModel] = useState("");
+    const [isModelValid, setIsModelValid] = useState(true);
+
     const [vin, setVin] = useState("");
+    const [isVinValid, setIsVinValid] = useState(true);
+
     const [licensePlate, setLicensePlate] = useState("");
+    const [isLicensePlateValid, setIsLicensePlateValid] = useState(true);
+
     const [permitForThisSnowmobileOnly, setPermitForThisSnowmobileOnly] = useState(false);
+    const [isPermitForThisSnowmobileOnlyValid, setIsPermitForThisSnowmobileOnlyValid] = useState(true);
+
     const [registeredOwner, setRegisteredOwner] = useState(false);
+    const [isRegisteredOwnerValid, setIsRegisteredOwnerValid] = useState(true);
 
     const [showDeleteSnowmobileDialog, setShowDeleteSnowmobileDialog] = useState(false);
     const [snowmobileIdToDelete, setSnowmobileIdToDelete] = useState("");
     const [snowmobileNameToDelete, setSnowmobileNameToDelete] = useState("");
 
+    const [showSnowmobileInfoDialog, setShowSnowmobileInfoDialog] = useState(false);
+
     const startYear: number = 1960; // TODO: Is this the minimum year?
     const endYear: number = getDate().getFullYear(); // TODO: Is the current year the maximum year?
     const [yearsData, setYearsData] = useState([] as number[]);
     const [vehicleMakesData, setVehicleMakesData] = useState([] as IKeyValue[]);
-    const [clubsData, setClubsData] = useState([] as IKeyValue[]);
 
     const DateRangeInput = forwardRef(({ value, snowmobile, onClick }: { value?: Date, snowmobile: ISnowmobile, onClick?: (e: any) => void }, ref: any) => (
         <div className="form-floating mb-2">
             <input type="text" className="form-control" id={`permit-from-${snowmobile.oVehicleId}`} placeholder="From" value={formatShortDate(value)} onClick={onClick} onChange={() => null} disabled={isPermitAddedToCart(snowmobile.oVehicleId)} readOnly={true} ref={ref} />
-            <label className="required" htmlFor={`permit-from-${snowmobile.oVehicleId}`}>From</label>
+            <label className="required" htmlFor={`permit-from-${snowmobile.oVehicleId}`}>Select start date for permit</label>
         </div>
     ));
     DateRangeInput.displayName = "DateRangeInput";
@@ -64,8 +100,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
         // Get data from api.
         let batchApi: Observable<any>[] = [
             apiGetVehiclesAndPermitsForUser(),
-            apiGetVehicleMakes(),
-            apiGetClubs()
+            apiGetVehicleMakes()
         ];
 
         forkJoin(batchApi).subscribe({
@@ -86,6 +121,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                             vehicleYear: x?.vehicleYear,
                             origVehicleId: x?.origVehicleId,
                             isClassic: x?.isClassic,
+                            isEditable: x?.isEditable,
                             permits: undefined,
                             permitSelections: x?.permitSelections ?? {
                                 oPermitId: getGuid(),
@@ -94,14 +130,8 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 dateEnd: undefined,
                                 clubId: undefined
                             },
-                            permitOptions: undefined,
-                            isEditable: true
+                            permitOptions: undefined
                         };
-
-                        // TODO: Get api to set oPermitId to a guid initially.
-                        if (snowmobile?.permitSelections != undefined && snowmobile?.permitSelections?.oPermitId == undefined) {
-                            snowmobile.permitSelections.oPermitId = getGuid();
-                        }
 
                         if (x.permits != undefined && x.permits.length > 0) {
                             snowmobile.permits = x.permits.map<IPermit>((p: IApiGetVehiclesAndPermitsForUserPermit) => ({
@@ -127,8 +157,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 isExpired: p?.isExpired,
                                 permitOptionId: undefined,
                                 dateStart: undefined,
-                                dateEnd: undefined,
-                                clubIdString: undefined
+                                dateEnd: undefined
                             }));
                         }
 
@@ -166,13 +195,6 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                     setVehicleMakesData(apiGetVehicleMakesResult.map<IKeyValue>(x => ({ key: x?.key ?? "", value: x?.value ?? "" })));
                 }
 
-                // apiGetClubs
-                const apiGetClubsResult: IApiGetClubsResult[] = results[2] as IApiGetClubsResult[];
-
-                if (apiGetClubsResult != undefined && apiGetClubsResult.length > 0) {
-                    setClubsData(apiGetClubsResult.map<IKeyValue>(x => ({ key: x?.key ?? "", value: x?.value ?? "" })));
-                }
-
                 // non-api
                 let years: number[] = [];
 
@@ -185,7 +207,16 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                 setShowAlert(false);
             },
             error: (error: any) => {
-                console.log(error);
+                if (error instanceof Response) {
+                    const resp: Response = error;
+
+                    if (resp?.status === 401) {
+                        logout(router, appContext);
+                    } else {
+                        // TODO: Display error alert to user?
+                        console.log(error);
+                    }
+                }
 
                 setShowAlert(false);
             }
@@ -206,10 +237,8 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                 <div className="mb-2">You have not added any snowmobiles.</div>
             )}
 
-            <button className="btn btn-primary mb-3" onClick={() => addEditSnowmobileDialogShow()}>Add Snowmobile</button>
-
             {getSnowmobiles() != undefined && getSnowmobiles().length > 0 && getSnowmobiles().map(snowmobile => (
-                <div className="card w-100 mb-2" key={snowmobile.oVehicleId}>
+                <div className="card w-100 mb-3" key={snowmobile.oVehicleId}>
                     <div className="card-header d-flex justify-content-between align-items-center flex-wrap flex-sm-nowrap">
                         <div className="row row-cols-lg-auto g-3">
                             <div className="d-none d-sm-none d-md-flex">
@@ -243,11 +272,15 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                             </div>
                         </div>
                         <div className="d-flex justify-content-end">
-                            {snowmobile.isEditable && (
+                            {snowmobile?.isEditable && (
                                 <>
-                                    <button className="btn btn-primary btn-sm mt-2 mt-sm-0" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)}>Edit</button>
-                                    <button className="btn btn-danger btn-sm mt-2 mt-sm-0 ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)}>Remove</button>
+                                    <button className="btn btn-primary btn-sm mt-2 mt-sm-0" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>Edit</button>
+                                    <button className="btn btn-danger btn-sm mt-2 mt-sm-0 ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>Remove</button>
                                 </>
+                            )}
+
+                            {!snowmobile?.isEditable && (
+                                <button type="button" className="btn btn-link" onClick={() => setShowSnowmobileInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
                             )}
                         </div>
                     </div>
@@ -256,45 +289,46 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                         {snowmobile?.permits != undefined && snowmobile.permits.length > 0 && snowmobile.permits.map(permit => (
                             <li className="list-group-item" key={permit?.oPermitId}>
                                 <div>
+                                    <span className="me-1"><b>Permit:</b></span>
+
                                     {appContext?.translation?.i18n?.language === "en" && (
-                                        <div><b>Permit:</b> {permit?.permitType?.value} - {permit?.linkedPermit}</div>
+                                        <span className="me-1">{permit?.permitType?.value}</span>
                                     )}
                                     {appContext?.translation?.i18n?.language === "fr" && (
-                                        <div><b>Permit:</b> {permit?.permitType?.valueFr} - {permit?.linkedPermit}</div>
+                                        <span className="me-1">{permit?.permitType?.valueFr}</span>
                                     )}
 
-                                    <div><b>Purchased:</b> {formatShortDate(permit?.purchaseDate)}</div>
-                                    <div><b>Tracking #:</b> {permit?.trackingNumber}</div>
+                                    <span>- {permit?.linkedPermit}</span>
                                 </div>
+
+                                <div><b>Purchased:</b> {formatShortDate(permit?.purchaseDate)}</div>
+                                <div><b>Tracking #:</b> {permit?.trackingNumber}</div>
                             </li>
                         ))}
+
+                        {snowmobile?.isEditable && (snowmobile?.permitOptions == undefined || snowmobile.permitOptions.length === 0) && (
+                            <li className="list-group-item">
+                                <div>There are no permits that you can purchase for this snowmobile at this time.</div>
+                            </li>
+                        )}
 
                         {snowmobile?.isEditable && snowmobile?.permitOptions != undefined && snowmobile.permitOptions.length > 0 && (
                             <>
                                 <li className="list-group-item">
-                                    <h6 className="card-title required">Select a permit to purchase</h6>
+                                    <div className="form-floating">
+                                        <select className="form-select" id={`permits-permit-options-${snowmobile?.oVehicleId}`} aria-label="Select permit to purchase" value={getSelectedPermitOption(snowmobile?.oVehicleId)} onChange={(e: any) => permitOptionChange(e, snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
+                                            <option value="" disabled>Please select</option>
 
-                                    <div className="form-check form-check-inline">
-                                        <input className="form-check-input" type="radio" name={`permits-permit-options-${snowmobile?.oVehicleId}`} id={`permits-permit-options-${snowmobile?.oVehicleId}-none`} checked={isPermitOptionChecked(snowmobile?.oVehicleId, 0)} value={0} onChange={(e: any) => permitOptionChange(e, snowmobile?.oVehicleId, 0)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)} />
-                                        <label className="form-check-label" htmlFor={`permits-permit-options-${snowmobile?.oVehicleId}-none`}>
-                                            None Selected
-                                        </label>
+                                            {snowmobile.permitOptions.map(permitOption => (
+                                                <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.name} - ${permitOption?.amount}</option>
+                                            ))}
+                                        </select>
+                                        <label className="required" htmlFor={`permits-permit-options-${snowmobile?.oVehicleId}`}>Select permit to purchase</label>
                                     </div>
-
-                                    {snowmobile.permitOptions.map(permitOption => (
-                                        <div className="form-check form-check-inline" key={permitOption.productId}>
-                                            <input className="form-check-input" type="radio" name={`permits-permit-options-${snowmobile?.oVehicleId}`} id={`permits-permit-options-${snowmobile?.oVehicleId}-${permitOption?.productId}`} checked={isPermitOptionChecked(snowmobile?.oVehicleId, permitOption?.productId)} value={permitOption.productId} onChange={(e: any) => permitOptionChange(e, snowmobile?.oVehicleId, permitOption?.productId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)} />
-                                            <label className="form-check-label" htmlFor={`permits-permit-options-${snowmobile?.oVehicleId}-${permitOption?.productId}`}>
-                                                {permitOption?.name} - ${permitOption?.amount}
-                                            </label>
-                                        </div>
-                                    ))}
                                 </li>
 
                                 {showDateRangeForSelectedPermit(snowmobile?.oVehicleId) && (
                                     <li className="list-group-item">
-                                        <h6 className="card-title required">Select a date range</h6>
-
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-6">
                                                 <DatePicker dateFormat="yyyy-MM-dd" selected={getPermitDateRangeFromDate(snowmobile?.oVehicleId)} minDate={getDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile?.oVehicleId)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
@@ -303,65 +337,40 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                             <div className="col-12 col-sm-12 col-md-6">
                                                 <div className="form-floating mb-2">
                                                     <input type="text" className="form-control" id={`permit-to-${snowmobile?.oVehicleId}`} placeholder="To" value={getPermitDateRangeToDate(snowmobile?.oVehicleId)} onChange={() => null} disabled={true} />
-                                                    <label className="required" htmlFor={`permit-to-${snowmobile?.oVehicleId}`}>To</label>
+                                                    <label className="" htmlFor={`permit-to-${snowmobile?.oVehicleId}`}>Permit will be valid until</label>
                                                 </div>
                                             </div>
                                         </div>
                                     </li>
                                 )}
-
-                                <li className="list-group-item">
-                                    <h6 className="card-title required">Select a club</h6>
-
-                                    <div className="mb-2">
-                                        By choosing a specific club when buying a permit, you&apos;re directly helping that club groom and maintain the trails you enjoy riding most often,
-                                        so please buy where you ride and make your selection below.
-                                    </div>
-
-                                    <div className="form-floating mb-2">
-                                        <select className="form-select" id={`permits-club-${snowmobile?.oVehicleId}`} aria-label="Club" value={getSelectedClub(snowmobile?.oVehicleId)} onChange={(e) => permitClubChange(e, snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
-                                            <option value="" disabled>Please select a value</option>
-
-                                            {clubsData != undefined && clubsData.length > 0 && getClubsData().map(club => (
-                                                <option value={club.key} key={club.key}>{club.value}</option>
-                                            ))}
-                                        </select>
-                                        <label className="required" htmlFor="permits-club">Club</label>
-                                    </div>
-
-                                    {!isPermitAddedToCart(snowmobile?.oVehicleId) && (
-                                        <span className="btn btn-link text-decoration-none align-baseline text-start border-0 p-0" onClick={() => clubLocatorMapDialogShow()}>
-                                            Can&apos;t find your club? Use the Club Locator Map and enter the closest town name to get started.
-                                        </span>
-                                    )}
-                                    {isPermitAddedToCart(snowmobile?.oVehicleId) && (
-                                        <span className="">
-                                            Can&apos;t find your club? Use the Club Locator Map and enter the closest town name to get started.
-                                        </span>
-                                    )}
-                                </li>
                             </>
                         )}
                     </ul>
 
-                    {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
+                    {snowmobile?.isEditable && snowmobile?.permitOptions != undefined && snowmobile.permitOptions.length > 0 && (
                         <div className="card-footer">
-                            <button className="btn btn-success btn-sm" onClick={() => addPermitToCartClick(snowmobile?.oVehicleId)} disabled={!isAddToCartEnabled(snowmobile?.oVehicleId)}>Add Permit to Cart</button>
-                        </div>
-                    )}
-                    {snowmobile?.isEditable && isPermitAddedToCart(snowmobile?.oVehicleId) && (
-                        <div className="card-footer">
-                            <button className="btn btn-danger btn-sm" onClick={() => removePermitFromCartClick(snowmobile?.oVehicleId)}>Remove Permit from Cart</button>
-                        </div>
-                    )}
+                            {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
+                                <button className="btn btn-success btn-sm" onClick={() => addPermitToCartClick(snowmobile?.oVehicleId)} disabled={!isAddToCartEnabled(snowmobile?.oVehicleId)}>Add Permit to Cart</button>
+                            )}
 
-                    {!snowmobile?.isEditable && (
-                        <div className="card-footer">
-                            <i className="fa-solid fa-circle-info me-2"></i>This vehicle cannot be modified as a Ministry of Transportation Ontario Snowmobile Trail Permit has been registered to it.
+                            {snowmobile?.isEditable && isPermitAddedToCart(snowmobile?.oVehicleId) && (
+                                <button className="btn btn-danger btn-sm" onClick={() => removePermitFromCartClick(snowmobile?.oVehicleId)}>Remove Permit from Cart</button>
+                            )}
                         </div>
                     )}
                 </div>
             ))}
+
+            <div className="card">
+                <div className="card-body text-center">
+                    <button className="btn btn-primary" onClick={() => addEditSnowmobileDialogShow()}>Add Snowmobile</button>
+                </div>
+            </div>
+
+            <ConfirmationDialog showDialog={showSnowmobileInfoDialog} title="Information" buttons={0} icon="information" width="50"
+                okClick={() => setShowSnowmobileInfoDialog(false)} closeClick={() => setShowSnowmobileInfoDialog(false)}>
+                <div>This vehicle cannot be modified as a Ministry of Transportation Ontario Snowmobile Trail Permit has been registered to it.</div>
+            </ConfirmationDialog>
 
             <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title="Delete Snowmobile" buttons={2} icon="question" width="50"
                 yesClick={() => deleteSnowmobileDialogYesClick()} noClick={() => deleteSnowmobileDialogNoClick()} closeClick={() => deleteSnowmobileDialogNoClick()}>
@@ -371,15 +380,18 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
             <Modal show={showAddEditSnowmobileDialog} onHide={addEditSnowmobileDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
                 <Modal.Header closeButton>
-                    <Modal.Title>Edit Snowmobile</Modal.Title>
+                    <Modal.Title>
+                        {addEditSnowmobileDialogMode === DialogMode.Add && (<div>Add Snowmobile</div>)}
+                        {addEditSnowmobileDialogMode === DialogMode.Edit && (<div>Edit Snowmobile</div>)}
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className="container-fluid">
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id="add-edit-snowmobile-year" aria-label="Year" value={year} onChange={(e: any) => setYear(e.target.value)}>
-                                        <option value="" disabled>Please select a value</option>
+                                    <select className={`form-select ${isVehicleYearValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-year" aria-label="Year" value={vehicleYear} onChange={(e: any) => setVehicleYear(e?.target?.value)}>
+                                        <option value="" disabled>Please select</option>
 
                                         {yearsData != undefined && yearsData.length > 0 && yearsData.map(x => (
                                             <option value={x} key={x}>{x}</option>
@@ -391,8 +403,8 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id="add-edit-snowmobile-make" aria-label="Make" value={make.key} onChange={(e: any) => setMake(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
-                                        <option value="" disabled>Please select a value</option>
+                                    <select className={`form-select ${isMakeValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-make" aria-label="Make" value={make?.key} onChange={(e: any) => setMake(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
+                                        <option value="" disabled>Please select</option>
 
                                         {vehicleMakesData != undefined && vehicleMakesData.length > 0 && getVehicleMakesData().map(x => (
                                             <option value={x.key} key={x.key}>{x.value}</option>
@@ -406,21 +418,21 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="add-edit-snowmobile-model" placeholder="Model" value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} onBlur={(e: any) => setModel(e?.target?.value?.trim() ?? "")} />
+                                    <input type="text" className={`form-control ${isModelValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-model" placeholder="Model" value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} onBlur={(e: any) => setModel(e?.target?.value?.trim() ?? "")} />
                                     <label className="required" htmlFor="add-edit-snowmobile-model">Model</label>
                                 </div>
                             </div>
 
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="add-edit-snowmobile-vin" placeholder="VIN" value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} onBlur={(e: any) => setVin(e?.target?.value?.trim() ?? "")} />
+                                    <input type="text" className={`form-control ${isVinValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-vin" placeholder="VIN" value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} onBlur={(e: any) => setVin(e?.target?.value?.trim() ?? "")} />
                                     <label className="required" htmlFor="add-edit-snowmobile-vin">VIN</label>
                                 </div>
                             </div>
 
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className="form-control" id="add-edit-snowmobile-license-plate" placeholder="License Plate" value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} onBlur={(e: any) => setLicensePlate(e?.target?.value?.trim() ?? "")} />
+                                    <input type="text" className={`form-control ${isLicensePlateValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-license-plate" placeholder="License Plate" value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} onBlur={(e: any) => setLicensePlate(e?.target?.value?.trim() ?? "")} />
                                     <label className="required" htmlFor="add-edit-snowmobile-license-plate">License Plate</label>
                                 </div>
                             </div>
@@ -429,8 +441,8 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                         <div className="row">
                             <div className="col-12">
                                 <div className="form-check mb-2">
-                                    <input className="form-check-input" type="checkbox" value="" id="add-edit-snowmobile-permit-for-this-snowmobile-only" defaultChecked={permitForThisSnowmobileOnly} onChange={(e: any) => { setPermitForThisSnowmobileOnly(e.target.checked) }} />
-                                    <label className="form-check-label" htmlFor="add-edit-snowmobile-permit-for-this-snowmobile-only">
+                                    <input className={`form-check-input ${isPermitForThisSnowmobileOnlyValid ? "" : "is-invalid"}`} type="checkbox" value="" id="add-edit-snowmobile-permit-for-this-snowmobile-only" defaultChecked={permitForThisSnowmobileOnly} onChange={(e: any) => { setPermitForThisSnowmobileOnly(e.target.checked) }} />
+                                    <label className="form-check-label required" htmlFor="add-edit-snowmobile-permit-for-this-snowmobile-only">
                                         I understand that the trail permit for which I am applying is valid only for the motorized snow vehicle identified in this application
                                         and is valid only where the sticker (permit) issued under this application is permanently affixed in the required position on that
                                         motorized snow vehicle. I certify that the information contained in this application is true and acknowledge and accept the responsibilities
@@ -443,8 +455,8 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                         <div className="row">
                             <div className="col-12">
                                 <div className="form-check">
-                                    <input className="form-check-input" type="checkbox" value="" id="add-edit-snowmobile-registered-owner" defaultChecked={registeredOwner} onChange={(e: any) => setRegisteredOwner(e.target.checked)} />
-                                    <label className="form-check-label" htmlFor="add-edit-snowmobile-registered-owner">
+                                    <input className={`form-check-input ${isRegisteredOwnerValid ? "" : "is-invalid"}`} type="checkbox" value="" id="add-edit-snowmobile-registered-owner" defaultChecked={registeredOwner} onChange={(e: any) => setRegisteredOwner(e.target.checked)} />
+                                    <label className="form-check-label required" htmlFor="add-edit-snowmobile-registered-owner">
                                         I confirm I am the registered owner of this vehicle.
                                     </label>
                                 </div>
@@ -459,7 +471,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 <span className="text-danger me-1">*</span>= mandatory field
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="secondary" onClick={addEditSnowmobileDialogSave} disabled={!isSaveSnowmobileEnabled()}>Save</Button>
+                                <Button className="me-2" variant="secondary" onClick={() => addEditSnowmobileDialogSave()}>Save</Button>
                                 <Button variant="primary" onClick={addEditSnowmobileDialogHide}>Cancel</Button>
                             </div>
                         </div>
@@ -491,28 +503,38 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
     function addEditSnowmobileDialogShow(snowmobileId?: string): void {
         if (snowmobileId == undefined) {
-            setYear("");
+            setAddEditSnowmobileDialogMode(DialogMode.Add);
+            setEditedSnowmobileId("");
+
+            setVehicleYear("");
             setMake({ key: "", value: "" });
             setModel("");
             setVin("");
             setLicensePlate("");
             setPermitForThisSnowmobileOnly(false);
             setRegisteredOwner(false);
-
-            setEditedSnowmobileId("");
         } else {
+            setAddEditSnowmobileDialogMode(DialogMode.Edit);
+            setEditedSnowmobileId(snowmobileId);
+
             let snowmobile: ISnowmobile = getSnowmobiles()?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
-            setYear(snowmobile?.vehicleYear ?? "");
+            setVehicleYear(snowmobile?.vehicleYear ?? "");
             setMake(snowmobile?.vehicleMake ?? { key: "", value: "" });
             setModel(snowmobile?.model ?? "");
             setVin(snowmobile?.vin ?? "");
             setLicensePlate(snowmobile?.licensePlate ?? "");
             setPermitForThisSnowmobileOnly(false);
             setRegisteredOwner(false);
-
-            setEditedSnowmobileId(snowmobileId);
         }
+
+        setIsVehicleYearValid(true);
+        setIsMakeValid(true);
+        setIsModelValid(true);
+        setIsVinValid(true);
+        setIsLicensePlateValid(true);
+        setIsPermitForThisSnowmobileOnlyValid(true);
+        setIsRegisteredOwnerValid(true);
 
         setShowAddEditSnowmobileDialog(true);
     }
@@ -528,51 +550,140 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
     }
 
     function addEditSnowmobileDialogSave(): void {
-        if (editedSnowmobileId === "") {
-            let snowmobile: ISnowmobile = {
-                oVehicleId: getGuid(),
-                vehicleMake: make,
-                model: model,
-                vin: vin,
-                licensePlate: licensePlate,
-                vehicleYear: year,
-                permits: undefined,
-                permitSelections: { oPermitId: getGuid() },
-                permitOptions: undefined, // TODO: Permit options should reflect selections
-                isEditable: true,
-            };
+        if (validateAddEditSnowmobileDialog()) {
+            if (addEditSnowmobileDialogMode === DialogMode.Add) {
+                let apiAddVehicleForUserRequest: IApiAddVehicleForUserRequest = {
+                    oVehicleId: editedSnowmobileId,
+                    makeId: Number(make?.key),
+                    model: model,
+                    vin: vin,
+                    licensePlate: licensePlate,
+                    vehicleYear: vehicleYear
+                };
 
-            appContext.updater(draft => {
-                draft.snowmobiles = draft.snowmobiles == undefined ? [snowmobile] : [...draft.snowmobiles, snowmobile];
-            });
-        } else {
-            appContext.updater(draft => {
-                let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === editedSnowmobileId)[0];
+                setShowAlert(true);
 
-                if (snowmobile != undefined) {
-                    snowmobile.vehicleMake = make;
-                    snowmobile.model = model;
-                    snowmobile.vin = vin;
-                    snowmobile.licensePlate = licensePlate;
-                    snowmobile.vehicleYear = year;
-                    snowmobile.permits = undefined;
-                    snowmobile.permitOptions = undefined; // TODO: Permit options should reflect selections
-                    snowmobile.isEditable = true;
-                }
-            });
+                apiAddVehicleForUser(apiAddVehicleForUserRequest).subscribe({
+                    next: (result: IApiAddVehicleForUserResult) => {
+                        if (result?.isSuccessful && result?.data != undefined) {
+                            let newSnowmobile: ISnowmobile = result.data as ISnowmobile;
+
+                            appContext.updater(draft => {
+                                draft.snowmobiles = draft.snowmobiles == undefined ? [newSnowmobile] : [...draft.snowmobiles, newSnowmobile];
+                            });
+                        }
+
+                        setShowAlert(false);
+                    },
+                    error: (error: any) => {
+                        setShowAlert(false);
+                    }
+                });
+            } else if (addEditSnowmobileDialogMode === DialogMode.Edit) {
+                let apiUpdateVehicleRequest: IApiUpdateVehicleRequest = {
+                    oVehicleId: editedSnowmobileId,
+                    makeId: Number(make?.key),
+                    model: model,
+                    vin: vin,
+                    licensePlate: licensePlate,
+                    vehicleYear: vehicleYear
+                };
+
+                setShowAlert(true);
+
+                apiUpdateVehicle(apiUpdateVehicleRequest).subscribe({
+                    next: (result: IApiUpdateVehicleResult) => {
+                        if (result?.isSuccessful && result?.data != undefined) {
+                            let updatedSnowmobile: ISnowmobile = result.data as ISnowmobile;
+
+                            appContext.updater(draft => {
+                                if (draft?.snowmobiles != undefined) {
+                                    let index: number = draft.snowmobiles.findIndex(x => x?.oVehicleId === editedSnowmobileId) ?? -1;
+
+                                    if (index != -1) {
+                                        draft.snowmobiles[index] = updatedSnowmobile;
+                                    }
+                                }
+                            });
+                        }
+
+                        setShowAlert(false);
+                    },
+                    error: (error: any) => {
+                        console.log(error);
+
+                        setShowAlert(false);
+                    }
+                });
+            }
+
+            setShowAddEditSnowmobileDialog(false);
         }
-
-        setShowAddEditSnowmobileDialog(false);
     }
 
-    function isSaveSnowmobileEnabled(): boolean {
-        return year !== ''
-            && make != undefined
-            && model.trim() !== ''
-            && vin.trim() !== ''
-            && licensePlate.trim() !== ''
-            && permitForThisSnowmobileOnly
-            && registeredOwner;
+    function isVinNumberValid(vinNumber?: string): boolean {
+        let result: boolean = false;
+
+        if (vinNumber != undefined) {
+            result = /^([a-z,A-Z,0-9])([a-z,A-Z])([a-z,A-Z,0-9]{10})((\d{5}))$/.test(vinNumber);
+        }
+
+        return result;
+    }
+
+    function validateAddEditSnowmobileDialog(): boolean {
+        let isValid: boolean = true;
+
+        if (vehicleYear === "") {
+            setIsVehicleYearValid(false);
+            isValid = false;
+        } else {
+            setIsVehicleYearValid(true);
+        }
+
+        if (make?.key == undefined || make.key === "") {
+            setIsMakeValid(false);
+            isValid = false;
+        } else {
+            setIsMakeValid(true);
+        }
+
+        if (model === "") {
+            setIsModelValid(false);
+            isValid = false;
+        } else {
+            setIsModelValid(true);
+        }
+
+        if (vin === "" || !isVinNumberValid(vin)) {
+            setIsVinValid(false);
+            isValid = false;
+        } else {
+            setIsVinValid(true);
+        }
+
+        if (licensePlate === "") {
+            setIsLicensePlateValid(false);
+            isValid = false;
+        } else {
+            setIsLicensePlateValid(true);
+        }
+
+        if (permitForThisSnowmobileOnly === false) {
+            setIsPermitForThisSnowmobileOnlyValid(false);
+            isValid = false;
+        } else {
+            setIsPermitForThisSnowmobileOnlyValid(true);
+        }
+
+        if (registeredOwner === false) {
+            setIsRegisteredOwnerValid(false);
+            isValid = false;
+        } else {
+            setIsRegisteredOwnerValid(true);
+        }
+
+        return isValid;
     }
 
     function addEditSnowmobileDialogHide(): void {
@@ -611,34 +722,71 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
         setShowDeleteSnowmobileDialog(false);
     }
 
-    function isPermitOptionChecked(snowmobileId?: string, permitOptionId?: number): boolean {
-        let result: boolean = false;
+    function getSelectedPermitOption(snowmobileId?: string): string {
+        let result: string = "";
 
-        if (snowmobileId != undefined && permitOptionId != undefined) {
+        if (snowmobileId != undefined) {
             let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
-                result = snowmobile?.permitSelections?.permitOptionId === permitOptionId;
+                result = snowmobile?.permitSelections?.permitOptionId?.toString() ?? "";
             }
         }
 
         return result;
     }
 
-    function permitOptionChange(e: any, snowmobileId?: string, permitOptionId?: number): void {
-        appContext.updater(draft => {
-            let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+    function permitOptionChange(e: any, snowmobileId?: string): void {
+        if (e != undefined && snowmobileId != undefined) {
+            let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
-                if (snowmobile?.permitSelections == undefined) {
-                    snowmobile.permitSelections = { oPermitId: getGuid() };
-                }
+                let newPermitOptionId: number = Number(e?.target?.value);
+                let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === newPermitOptionId)[0];
 
-                snowmobile.permitSelections.permitOptionId = permitOptionId;
-                snowmobile.permitSelections.dateStart = undefined;
-                snowmobile.permitSelections.dateEnd = undefined;
+                if (permitOption != undefined) {
+                    let permitSelections: IPermitSelections | undefined = snowmobile?.permitSelections;
+
+                    if (permitSelections != undefined) {
+                        let apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
+                            oVehicleId: snowmobileId,
+                            oPermitId: permitSelections?.oPermitId ?? getGuid(),
+                            permitOptionId: newPermitOptionId, // New value
+                            dateStart: permitOption?.isMultiDay ? permitSelections?.dateStart : undefined,
+                            dateEnd: permitOption?.isMultiDay ? permitSelections?.dateEnd : undefined,
+                            clubId: permitSelections?.clubId == undefined ? undefined : Number(permitSelections?.clubId)
+                        };
+
+                        apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
+                            next: (result: IApiSavePermitSelectionForVehicleResult) => {
+                                if (result?.isSuccessful) { // TODO: data should come back from api
+                                    appContext.updater(draft => {
+                                        let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+
+                                        if (snowmobile != undefined) {
+                                            if (snowmobile?.permitSelections == undefined) {
+                                                snowmobile.permitSelections = { oPermitId: apiSavePermitSelectionForVehicleRequest?.oPermitId ?? getGuid() };
+                                            }
+
+                                            snowmobile.permitSelections.permitOptionId = apiSavePermitSelectionForVehicleRequest?.permitOptionId;
+                                            snowmobile.permitSelections.dateStart = undefined;
+                                            snowmobile.permitSelections.dateEnd = undefined;
+                                        }
+                                    });
+                                }
+
+                                //setShowAlert(false);
+                            },
+                            error: (error: any) => {
+                                console.log(error);
+
+                                //setShowAlert(false);
+                            }
+                        });
+                    }
+                }
             }
-        });
+        }
     }
 
     function getPermitDateRangeFromDate(snowmobileId?: string): Date | undefined {
@@ -669,59 +817,58 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
         return result;
     }
 
-    function permitDateRangeChange(date: Date, snowmobileId?: string): void {
-        if (snowmobileId != undefined) {
-            appContext.updater(draft => {
-                let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
-
-                if (snowmobile != undefined) {
-                    let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
-
-                    if (permitOption != undefined) {
-                        if (snowmobile?.permitSelections == undefined) {
-                            snowmobile.permitSelections = { oPermitId: getGuid() };
-                        }
-
-                        snowmobile.permitSelections.dateStart = date;
-
-                        let daysToAdd: number = (permitOption?.permitDays ?? 0) - 1;
-
-                        if (daysToAdd >= 0) {
-                            snowmobile.permitSelections.dateEnd = getMoment(date).add(daysToAdd, 'days').toDate();
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    function getSelectedClub(snowmobileId?: string): string {
-        let result: string = "";
-
-        if (snowmobileId != undefined) {
+    function permitDateRangeChange(date?: Date, snowmobileId?: string): void {
+        if (date != undefined && snowmobileId != undefined) {
             let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
-                result = snowmobile?.permitSelections?.clubId ?? "";
-            }
-        }
+                let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
 
-        return result;
-    }
+                if (permitOption != undefined) {
+                    let permitSelections: IPermitSelections | undefined = snowmobile?.permitSelections;
 
-    function permitClubChange(e: any, snowmobileId?: string): void {
-        if (snowmobileId != undefined) {
-            appContext.updater(draft => {
-                let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+                    if (permitSelections != undefined) {
+                        let daysToAdd: number = (permitOption?.permitDays ?? 0) - 1;
 
-                if (snowmobile != undefined) {
-                    if (snowmobile?.permitSelections == undefined) {
-                        snowmobile.permitSelections = { oPermitId: getGuid() };
+                        let apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
+                            oVehicleId: snowmobileId,
+                            oPermitId: permitSelections?.oPermitId ?? getGuid(),
+                            permitOptionId: permitSelections?.permitOptionId,
+                            dateStart: date, // New value
+                            dateEnd: daysToAdd >= 0 ? getMoment(date).add(daysToAdd, 'days').toDate() : date, // New value
+                            clubId: permitSelections?.clubId == undefined ? undefined : Number(permitSelections?.clubId)
+                        };
+
+                        //setShowAlert(true);
+
+                        apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
+                            next: (result: IApiSavePermitSelectionForVehicleResult) => {
+                                if (result?.isSuccessful) { // TODO: data should come back from api
+                                    appContext.updater(draft => {
+                                        let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+
+                                        if (snowmobile != undefined) {
+                                            if (snowmobile?.permitSelections == undefined) {
+                                                snowmobile.permitSelections = { oPermitId: apiSavePermitSelectionForVehicleRequest?.oPermitId ?? getGuid() };
+                                            }
+
+                                            snowmobile.permitSelections.dateStart = apiSavePermitSelectionForVehicleRequest?.dateStart;
+                                            snowmobile.permitSelections.dateEnd = apiSavePermitSelectionForVehicleRequest?.dateEnd;
+                                        }
+                                    });
+                                }
+
+                                //setShowAlert(false);
+                            },
+                            error: (error: any) => {
+                                console.log(error);
+
+                                //setShowAlert(false);
+                            }
+                        });
                     }
-
-                    snowmobile.permitSelections.clubId = e?.target?.value;
                 }
-            });
+            }
         }
     }
 
@@ -743,20 +890,6 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
         return result;
     }
 
-    function getClubsData(): IKeyValue[] {
-        let result: IKeyValue[] = [];
-
-        if (clubsData != undefined && clubsData.length > 0) {
-            result = sortArray(clubsData, ["value"]);
-        }
-
-        return result;
-    }
-
-    function clubLocatorMapDialogShow(): void {
-
-    }
-
     function isAddToCartEnabled(snowmobileId?: string): boolean {
         let result: boolean = false;
 
@@ -768,8 +901,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
                 if (permitOption != undefined) {
                     result = snowmobile?.permitSelections?.permitOptionId != undefined
-                        && (!permitOption?.isMultiDay || (permitOption?.isMultiDay && snowmobile?.permitSelections?.dateStart != undefined && snowmobile?.permitSelections?.dateEnd != undefined))
-                        && snowmobile?.permitSelections?.clubId != undefined;
+                        && (!permitOption?.isMultiDay || (permitOption?.isMultiDay && snowmobile?.permitSelections?.dateStart != undefined && snowmobile?.permitSelections?.dateEnd != undefined));
                 }
             }
         }
@@ -784,9 +916,8 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
                 if (snowmobile != undefined) {
                     let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
-                    let club: IKeyValue | undefined = clubsData?.filter(x => x.key === snowmobile?.permitSelections?.clubId)[0];
 
-                    if (permitOption != undefined && club != undefined) {
+                    if (permitOption != undefined) {
                         let description: string = `${snowmobile?.vehicleYear} ${snowmobile?.vehicleMake?.value} ${snowmobile?.model} ${snowmobile?.vin} `;
 
                         if (permitOption.isMultiDay) {
@@ -795,15 +926,15 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                             description += `${permitOption?.name} `;
                         }
 
-                        description += `(${club.value})`;
-
                         let cartItem: ICartItem = {
                             id: getGuid(),
                             description: description,
                             price: permitOption?.amount ?? 0,
                             isPermit: true,
                             isGiftCard: false,
-                            itemId: snowmobile.oVehicleId
+                            itemId: snowmobile.oVehicleId,
+
+                            uiRedemptionCode: ""
                         };
 
                         draft.cartItems = draft.cartItems == undefined ? [cartItem] : [...draft.cartItems, cartItem];

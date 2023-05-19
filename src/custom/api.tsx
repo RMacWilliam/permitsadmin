@@ -1,33 +1,45 @@
 import { Observable } from "rxjs";
 import { fromFetch } from "rxjs/fetch";
-import { IKeyValue, IParentKeyValue, IPermit, IPermitOption } from "./app-context";
+import { IKeyValue, IParentKeyValue } from "./app-context";
 
 export const WebApiAppContextData: any = { data: undefined, token: undefined };
 
 const WebApiGlobalQueryParams: any = {
-    AsOfDate: "2023-01-01"
+    //AsOfDate: "2023-01-01"
 };
 
 class WebApi {
     private static BaseUrl: string = "https://permitsapi.azurewebsites.net/api/";
 
+    // User
     static LoginUrl: string = this.BaseUrl + "user/validateuser";
     static LogoutUrl: string = this.BaseUrl + "............................";
-
     static GetUserDetails: string = this.BaseUrl + "user/getuserdetails";
     static GetUserPreferences: string = this.BaseUrl + "user/getuserpreferences";
+
+    // Utils
     static GetProvinces: string = this.BaseUrl + "utils/getprovinces";
     static GetCountries: string = this.BaseUrl + "utils/getcountries";
-
-    static GetVehiclesAndPermitsForUser: string = this.BaseUrl + "vehicle/getvehiclesandpermitsforuser";
-    static GetVehicleMakes: string = this.BaseUrl + "vehicle/getvehiclemakes";
     static GetClubs: string = this.BaseUrl + "utils/getclubs";
 
+    // Vehicle
+    static GetVehiclesAndPermitsForUser: string = this.BaseUrl + "vehicle/getvehiclesandpermitsforuser";
+    static GetVehicleMakes: string = this.BaseUrl + "vehicle/getvehiclemakes";
+    static AddVehicleForUser: string = this.BaseUrl + "vehicle/addvehicleforuser";
+    static UpdateVehicle: string = this.BaseUrl + "vehicle/updatevehicle";
+    static SavePermitSelectionForVehicle: string = this.BaseUrl + "vehicle/savepermitselectionforvehicle";
+
+    // GiftCard
     static GetGiftcardsForCurrentSeasonForUser: string = this.BaseUrl + "giftcard/getgiftcardsforcurrentseasonforuser";
     static GetAvailableGiftCards: string = this.BaseUrl + "giftcard/getavailablegiftcards";
+    static GetRedeemableGiftCardsForUser: string = this.BaseUrl + "giftcard/getredeemablegiftcardsforuser";
+
+    // Permit
+    static GetProcessingFee: string = this.BaseUrl + "permit/getprocessingfee";
+    static GetShippingFees: string = this.BaseUrl + "permit/getshippingfees";
 }
 
-function httpFetch<T>(method: "GET" | "POST", url: string, data?: any, isAuthenticated: boolean = true): Observable<T> {
+function httpFetch<T>(method: "GET" | "POST", url: string, params?: any, body?: any, isAuthenticated: boolean = true): Observable<T> {
     let headers: any = undefined;
 
     if (isAuthenticated) {
@@ -44,8 +56,14 @@ function httpFetch<T>(method: "GET" | "POST", url: string, data?: any, isAuthent
     let init = {
         method: method,
         headers: headers,
-        body: method === 'POST' ? JSON.stringify(data) : undefined,
-        selector: (response: Response) => response.json()
+        body: method === 'POST' ? JSON.stringify(body) : undefined,
+        selector: (response: Response) => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw response;
+            }
+        }
     };
 
     let queryParams: string[] = [];
@@ -54,9 +72,9 @@ function httpFetch<T>(method: "GET" | "POST", url: string, data?: any, isAuthent
         ...Object.entries(WebApiGlobalQueryParams).map(([prop, propValue]) => (`${prop}=${encodeURIComponent(propValue as string)}`))
     );
 
-    if (data != undefined) {
+    if (params != undefined) {
         queryParams.push(
-            ...Object.entries(data).map(([prop, propValue]) => (`${prop}=${encodeURIComponent(propValue as string)}`))
+            ...Object.entries(params).map(([prop, propValue]) => (`${prop}=${encodeURIComponent(propValue as string)}`))
         );
     }
 
@@ -67,12 +85,12 @@ function httpFetch<T>(method: "GET" | "POST", url: string, data?: any, isAuthent
     return fromFetch<T>(url, init);
 }
 
-export function httpGet<T>(url: string, params?: any, isAuthenticated: boolean = true): Observable<T> {
+function httpGet<T>(url: string, params?: any, isAuthenticated: boolean = true): Observable<T> {
     return httpFetch<T>("GET", url, params, isAuthenticated);
 }
 
-export function httpPost<T>(url: string, body?: any, isAuthenticated: boolean = true): Observable<T> {
-    return httpFetch<T>("POST", url, body, isAuthenticated);
+function httpPost<T>(url: string, params?: any, body?: any, isAuthenticated: boolean = true): Observable<T> {
+    return httpFetch<T>("POST", url, params, body, isAuthenticated);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +115,7 @@ export function apiLogin(email: string, password: string): Observable<IApiLoginR
         password: password
     };
 
-    return httpPost<IApiLoginResult>(WebApi.LoginUrl, body, false);
+    return httpPost<IApiLoginResult>(WebApi.LoginUrl, undefined, body, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,14 +221,27 @@ export function apiGetCountries(params?: any): Observable<IApiGetCountriesResult
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// apiGetVehicles
+// apiGetClubs
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export interface IApiGetVehiclesAndPermitsForUserRequest {
-    AsOfDate: string;
+export interface IApiGetClubsRequest {
+
 }
 
-export interface IApiGetVehiclesAndPermitsForUserPermit {
+export interface IApiGetClubsResult {
+    key?: string;
+    value?: string;
+}
+
+export function apiGetClubs(params?: any): Observable<IApiGetClubsResult> {
+    return httpGet<IApiGetClubsResult>(WebApi.GetClubs, params);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Vehicle Interfaces
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiVehiclePermit {
     oPermitId?: string;
     permitType?: IKeyValue;
     ofscNumber?: number; // TODO: Correct type?
@@ -233,7 +264,7 @@ export interface IApiGetVehiclesAndPermitsForUserPermit {
     isExpired?: boolean;
 }
 
-export interface IApiGetVehiclesAndPermitsForUserPermitSelections {
+export interface IApiVehiclePermitSelections {
     oPermitId?: string;
     permitOptionId?: number;
     dateStart?: Date;
@@ -241,7 +272,7 @@ export interface IApiGetVehiclesAndPermitsForUserPermitSelections {
     clubId?: string;
 }
 
-export interface IApiGetVehiclesAndPermitsForUserPermitOption {
+export interface IApiVehiclePermitOption {
     productId?: number;
     name?: string;
     displayName?: string;
@@ -260,7 +291,7 @@ export interface IApiGetVehiclesAndPermitsForUserPermitOption {
     canBuyGiftCard?: boolean;
 }
 
-export interface IApiGetVehiclesAndPermitsForUserResult {
+export interface IApiVehicle {
     oVehicleId?: string;
     vehicleMake?: IKeyValue;
     model?: string;
@@ -269,12 +300,39 @@ export interface IApiGetVehiclesAndPermitsForUserResult {
     vehicleYear?: string;
     origVehicleId?: number; // TODO: Is the type correct?
     isClassic?: boolean;
-    permits?: IApiGetVehiclesAndPermitsForUserPermit[];
-    permitOptions?: IApiGetVehiclesAndPermitsForUserPermitOption[];
-    permitSelections?: IApiGetVehiclesAndPermitsForUserPermitSelections;
+    isEditable?: boolean;
+    permits?: IApiVehiclePermit[];
+    permitOptions?: IApiVehiclePermitOption[];
+    permitSelections?: IApiVehiclePermitSelections;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiGetVehiclesAndPermitsForUser
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiGetVehiclesAndPermitsForUserRequest {
+    AsOfDate: string;
+}
+
+export interface IApiGetVehiclesAndPermitsForUserPermit extends IApiVehiclePermit {
+
+}
+
+export interface IApiGetVehiclesAndPermitsForUserPermitSelections extends IApiVehiclePermitSelections {
+
+}
+
+export interface IApiGetVehiclesAndPermitsForUserPermitOption extends IApiVehiclePermitOption {
+
+}
+
+export interface IApiGetVehiclesAndPermitsForUserResult extends IApiVehicle {
+
 }
 
 export function apiGetVehiclesAndPermitsForUser(params?: any): Observable<IApiGetVehiclesAndPermitsForUserResult[]> {
+    params = { ...params, AsOfDate: "2023-01-01" };
+
     return httpGet<IApiGetVehiclesAndPermitsForUserResult[]>(WebApi.GetVehiclesAndPermitsForUser, params);
 }
 
@@ -296,20 +354,133 @@ export function apiGetVehicleMakes(params?: any): Observable<IApiGetVehicleMakes
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// apiGetClubs
+// apiAddVehicleForUser
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export interface IApiGetClubsRequest {
+export interface IApiAddVehicleForUserRequest {
+    oVehicleId?: string;
+    makeId?: number;
+    model?: string;
+    vin?: string;
+    licensePlate?: string;
+    vehicleYear?: string;
+}
+
+export interface IApiAddVehicleForUserPermit extends IApiVehiclePermit {
 
 }
 
-export interface IApiGetClubsResult {
-    key?: string;
-    value?: string;
+export interface IApiAddVehicleForUserPermitSelections extends IApiVehiclePermitSelections {
+
 }
 
-export function apiGetClubs(params?: any): Observable<IApiGetClubsResult> {
-    return httpGet<IApiGetClubsResult>(WebApi.GetClubs, params);
+export interface IApiAddVehicleForUserPermitOption extends IApiVehiclePermitOption {
+
+}
+
+export interface IApiAddVehicleForUserData extends IApiVehicle {
+
+}
+
+export interface IApiAddVehicleForUserResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiAddVehicleForUserData;
+}
+
+export function apiAddVehicleForUser(body?: any, params: any = undefined): Observable<IApiAddVehicleForUserResult> {
+    return httpPost<IApiAddVehicleForUserResult>(WebApi.AddVehicleForUser, params, body);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiUpdateVehicle
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiUpdateVehicleRequest {
+    oVehicleId?: string;
+    makeId?: number;
+    model?: string;
+    vin?: string;
+    licensePlate?: string;
+    vehicleYear?: string;
+}
+
+export interface IApiUpdateVehiclePermit extends IApiVehiclePermit {
+
+}
+
+export interface IApiUpdateVehiclePermitSelections extends IApiVehiclePermitSelections {
+
+}
+
+export interface IApiUpdateVehiclePermitOption extends IApiVehiclePermitOption {
+
+}
+
+export interface IApiUpdateVehicleData extends IApiVehicle {
+
+}
+
+export interface IApiUpdateVehicleResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiUpdateVehicleData;
+}
+
+export function apiUpdateVehicle(body?: any, params: any = undefined): Observable<IApiUpdateVehicleResult> {
+    return httpPost<IApiUpdateVehicleResult>(WebApi.UpdateVehicle, params, body);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiSavePermitSelectionForVehicle
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiSavePermitSelectionForVehicleRequest {
+    oVehicleId?: string;
+    oPermitId?: string;
+    permitOptionId?: number;
+    dateStart?: Date;
+    dateEnd?: Date;
+    clubId?: number;
+}
+
+export interface IApiSavePermitSelectionForVehicleResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiUpdateVehicleData;
+}
+
+export function apiSavePermitSelectionForVehicle(body?: any, params: any = undefined): Observable<IApiSavePermitSelectionForVehicleResult> {
+    return httpPost<IApiSavePermitSelectionForVehicleResult>(WebApi.SavePermitSelectionForVehicle, params, body);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiGetGiftcardsForCurrentSeasonForUser
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiGetGiftcardsForCurrentSeasonForUserRequest {
+    email?: string;
+}
+
+export interface IApiGetGiftcardsForCurrentSeasonForUserResult {
+    oVoucherId?: string;
+    orderId?: string;
+    transactionDate?: Date;
+    recipientLastName?: string;
+    recipientPostal?: string;
+    redemptionCode?: string;
+    purchaserEmail?: string;
+    productId?: number;
+    isRedeemed?: boolean;
+    isPurchased?: boolean;
+    useShippingAddress?: boolean;
+    shippingOption?: string;
+    clubId?: number;
+    permitId?: number;
+}
+
+export function apiGetGiftcardsForCurrentSeasonForUser(params?: any): Observable<IApiGetGiftcardsForCurrentSeasonForUserResult> {
+    return httpGet<IApiGetGiftcardsForCurrentSeasonForUserResult>(WebApi.GetGiftcardsForCurrentSeasonForUser, params);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -344,29 +515,53 @@ export function apiGetAvailableGiftCards(params?: any): Observable<IApiGetAvaila
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// apiGetGiftcardsForCurrentSeasonForUser
+// apiGetRedeemableGiftCardsForUser
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export interface IApiGetGiftcardsForCurrentSeasonForUserRequest {
+export interface IApiGetRedeemableGiftCardsForUserRequest {
 
 }
 
-export interface IApiGetGiftcardsForCurrentSeasonForUserResult {
-    oVoucherId?: string;
-    orderId: string;
-    transactionDate?: Date;
-    recipientLastName?: string;
-    recipientPostal?: string;
-    redemptionCode?: string;
-    purchaserEmail?: string;
-    productId?: number;
-    redeemed?: boolean;
-    useShippingAddress?: boolean;
-    shippingOption?: string;
-    clubId?: number;
-    permitId?: number;
+export interface IApiGetRedeemableGiftCardsForUserResult {
+    seasonalGiftCards?: number;
+    classicGiftCards?: number;
 }
 
-export function apiGetGiftcardsForCurrentSeasonForUser(params?: any): Observable<IApiGetGiftcardsForCurrentSeasonForUserResult> {
-    return httpGet<IApiGetGiftcardsForCurrentSeasonForUserResult>(WebApi.GetGiftcardsForCurrentSeasonForUser, params);
+export function apiGetRedeemableGiftCardsForUser(params?: any): Observable<IApiGetRedeemableGiftCardsForUserResult> {
+    return httpGet<IApiGetRedeemableGiftCardsForUserResult>(WebApi.GetRedeemableGiftCardsForUser, params);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiGetProcessingFee
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiGetProcessingFeeRequest {
+
+}
+
+export interface IApiGetProcessingFeeResult {
+    fee: number;
+}
+
+export function apiGetProcessingFee(params?: any): Observable<IApiGetProcessingFeeResult> {
+    return httpGet<IApiGetProcessingFeeResult>(WebApi.GetProcessingFee, params);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiGetShippingFees
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiGetShippingFeesRequest {
+
+}
+
+export interface IApiGetShippingFeesResult {
+    id?: string;
+    name?: string;
+    price?: number;
+    showConfirmation?: boolean;
+}
+
+export function apiGetShippingFees(params?: any): Observable<IApiGetShippingFeesResult> {
+    return httpGet<IApiGetShippingFeesResult>(WebApi.GetShippingFees, params);
 }

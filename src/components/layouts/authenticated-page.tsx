@@ -1,24 +1,26 @@
-import { ReactNode, useContext, useEffect } from 'react';
+import { ReactNode, useContext, useEffect, useState } from 'react';
 import { AppContext } from '@/custom/app-context';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import LanguageToggler from '../language-toggler';
-import ModalAlert from '../modal-alert';
+import ProcessingAlert from '../modal-alert';
+import { isUserAuthenticated, logout } from '@/custom/authentication';
 
 export default function AuthenticatedPageLayout({ children, showAlert }: { children?: ReactNode, showAlert?: boolean }) {
     const appContext = useContext(AppContext);
     const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        if (!appContext.data.isAuthenticated) {
-            router.push("/");
-        } else if (!appContext.data.isContactInfoVerified && appContext.data.navbarPage !== "home" && appContext.data.navbarPage !== "contact") {
-            router.push("/home");
-        }
-    }, [appContext.data.isAuthenticated, appContext.data.isContactInfoVerified, appContext.data.navbarPage, router])
+        let authenticated: boolean = isUserAuthenticated(router, appContext);
 
-    if (!appContext.data.isAuthenticated || (!appContext.data.isContactInfoVerified && appContext.data.navbarPage !== "home" && appContext.data.navbarPage !== "contact")) {
+        if (authenticated) {
+            setIsAuthenticated(true);
+        }
+    }, []);
+
+    if (!isAuthenticated) {
         return (
             <></>
         )
@@ -41,7 +43,7 @@ export default function AuthenticatedPageLayout({ children, showAlert }: { child
                                     <img src="ofsc.png" alt="Logo" width="60" height="60" />
                                 </a>
 
-                                <div className="d-flex flex-column justify-content-center justify-content-md-between">
+                                <div className="flex-column justify-content-center justify-content-md-between">
                                     <h2 className="mb-0 d-none d-sm-block">Ontario Federation of Snowmobile Clubs</h2>
                                     <h5 className="mb-0 d-sm-none">Ontario Federation of Snowmobile Clubs</h5>
 
@@ -61,7 +63,7 @@ export default function AuthenticatedPageLayout({ children, showAlert }: { child
                                 {appContext.data?.isContactInfoVerified && (
                                     <div className="ms-3 me-2">
                                         <Link className="nav-link position-relative" aria-current="page" href="/cart">
-                                            <i className="fa-solid fa-cart-shopping fa-xl"></i>
+                                            <i className="fa-solid fa-cart-shopping fa-2xl"></i>
                                             {appContext.data?.cartItems != undefined && appContext.data.cartItems.length > 0 && (
                                                 <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
                                                     {appContext.data.cartItems.length}
@@ -82,12 +84,14 @@ export default function AuthenticatedPageLayout({ children, showAlert }: { child
 
                     <div className="collapse navbar-collapse bg-dark text-white px-3 px-md-0" id="navbarCollapse">
                         <ul className="navbar-nav me-auto mb-2 mb-md-0 d-block d-sm-block d-md-none">
-                            <li className="nav-item">
-                                <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/home"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                                    <i className="fa-solid fa-house fa-fw me-2"></i>
-                                    {appContext.translation?.t("HOME.MENU_TITLE")}
-                                </Link>
-                            </li>
+                            {appContext.data?.isContactInfoVerified && (
+                                <li className="nav-item">
+                                    <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/home"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                        <i className="fa-solid fa-house fa-fw me-2"></i>
+                                        {appContext.translation?.t("HOME.MENU_TITLE")}
+                                    </Link>
+                                </li>
+                            )}
                             <li className="nav-item">
                                 <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                     <i className="fa-solid fa-address-card fa-fw me-2"></i>
@@ -133,10 +137,12 @@ export default function AuthenticatedPageLayout({ children, showAlert }: { child
 
                 <div className="nav-scroller bg-body shadow-sm d-none d-sm-none d-md-block">
                     <nav className="nav justify-content-center" aria-label="Secondary navigation">
-                        <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "home" ? "active" : ""}`} href="/home">
-                            <i className="fa-solid fa-house me-2"></i>
-                            {appContext.translation?.t("HOME.MENU_TITLE")}
-                        </Link>
+                        {appContext.data?.isContactInfoVerified && (
+                            <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "home" ? "active" : ""}`} href="/home">
+                                <i className="fa-solid fa-house me-2"></i>
+                                {appContext.translation?.t("HOME.MENU_TITLE")}
+                            </Link>
+                        )}
                         <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact">
                             <i className="fa-solid fa-address-card me-2"></i>
                             {appContext.translation?.t("CONTACT_INFORMATION.MENU_TITLE")}
@@ -181,35 +187,11 @@ export default function AuthenticatedPageLayout({ children, showAlert }: { child
                 </div>
             </footer>
 
-            <ModalAlert showAlert={showAlert}></ModalAlert>
+            <ProcessingAlert showAlert={showAlert}></ProcessingAlert>
         </>
     )
 
     function doLogout() {
-        appContext.updater(draft => {
-            draft.isAuthenticated = false;
-            draft.email = undefined;
-            draft.token = undefined;
-
-            draft.isFirstLoginOfSeason = undefined;
-            draft.isContactInfoVerified = undefined;
-
-            draft.cartItems = undefined;
-
-            draft.navbarPage = undefined;
-
-            draft.contactInfo = undefined;
-            draft.accountPreferences = undefined;
-
-            draft.snowmobiles = undefined;
-
-            draft.giftCards = undefined;
-        });
-
-        if (window.localStorage) {
-            window.localStorage.removeItem("data");
-        }
-
-        router.push("/");
+        logout(router, appContext);
     }
 }

@@ -10,21 +10,36 @@ import CartItemsAlert from '@/components/cart-items-alert';
 import { Observable, forkJoin } from 'rxjs';
 import { IApiGetCountriesResult, IApiGetProvincesResult, IApiGetUserDetailsResult, IApiGetUserPreferencesResult, apiGetCountries, apiGetProvinces, apiGetUserDetails, apiGetUserPreferences } from '@/custom/api';
 import _ from 'lodash';
+import { isRoutePermitted, isUserAuthenticated } from '@/custom/authentication';
 
 export default function ContactPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     // Display loading indicator.
-    const [showAlert, setShowAlert] = useState(true);
+    const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
-        appContext.updater(draft => { draft.navbarPage = "contact" });
-    }, [appContext])
+        let authenticated: boolean = isUserAuthenticated(router, appContext);
+
+        if (authenticated) {
+            let permitted: boolean = isRoutePermitted(router, appContext, "contact");
+
+            if (permitted) {
+                appContext.updater(draft => { draft.navbarPage = "contact" });
+
+                setIsAuthenticated(true);
+                setShowAlert(true);
+            }
+        }
+    }, []);
 
     return (
         <AuthenticatedPageLayout showAlert={showAlert}>
-            <Contact appContext={appContext} router={router} setShowAlert={setShowAlert}></Contact>
+            {isAuthenticated && (
+                <Contact appContext={appContext} router={router} setShowAlert={setShowAlert}></Contact>
+            )}
         </AuthenticatedPageLayout>
     )
 }
@@ -137,10 +152,10 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
 
             <CartItemsAlert></CartItemsAlert>
 
-            <div className="card w-100">
+            <div className="card mb-3 w-100">
                 <h5 className="card-header d-flex justify-content-between align-items-center">
                     <div>
-                        {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial} ${appContext.data?.contactInfo?.lastName}`}
+                        {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName}`}
                     </div>
                     <div>
                         <button className="btn btn-primary btn-sm" onClick={contactInfoDialogShow}>Edit</button>
@@ -169,7 +184,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                 </ul>
             </div>
 
-            <div className="card mt-2 w-100">
+            <div className="card w-100">
                 <h5 className="card-header d-flex justify-content-between align-items-center">
                     <div>
                         Preferences
@@ -274,8 +289,8 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                             </div>
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id="contact-info-province" aria-label="Province/State" value={getProvinceValueForProp()} onChange={(e: any) => provinceChange(e)}>
-                                        <option value="|" disabled>Please select a value</option>
+                                    <select className="form-select" id="contact-info-province" aria-label="Province/State" value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
+                                        <option value="" disabled>Please select</option>
 
                                         {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
                                             <option value={`${country.key}|${provinceData.key}`} key={`${country.key}|${provinceData.key}`}>{provinceData.value}</option>
@@ -287,7 +302,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
                                     <select className="form-select" id="contact-info-country" aria-label="Country" value={country.key} onChange={(e: any) => countryChange(e)}>
-                                        <option value="" disabled>Please select a value</option>
+                                        <option value="" disabled>Please select</option>
 
                                         {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
                                             <option value={countryData.key} key={countryData.key}>{countryData.value}</option>
@@ -350,13 +365,13 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 <div>
                                     I consent to the OFSC contacting me with information regarding permits, Rider Advantage and other information related to snowmobiling.
                                     I understand that the OFSC values my privacy and the protection of personal information, by authorizing the release of my name and address
-                                    information, I consent to the OFSC&apos;s use of this information for the purposes related to the mandate of the OFSC (www.ofsc.on.ca). I
+                                    information, I consent to the OFSC's use of this information for the purposes related to the mandate of the OFSC (www.ofsc.on.ca). I
                                     further understand that any information provided to the OFSC is out of custody and control of the Ministry of Transportation and that the
                                     OFSC will have sole responsibility of the information.
                                 </div>
                                 <div className="form-floating mb-2">
                                     <select className="form-select" id="account-preferences-ofsc-contact-permission" aria-label="OFSC Contact Permission" value={ofscContactPermission.toString()} onChange={(e: any) => setOfscContactPermission(Number(e.target.value))}>
-                                        <option value="-1" disabled>Please select a value</option>
+                                        <option value="-1" disabled>Please select</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
                                     </select>
@@ -372,7 +387,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 </div>
                                 <div className="form-floating mb-2">
                                     <select className="form-select" id="account-preferences-rider-advantage" aria-label="Rider Advantage" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
-                                        <option value="-1" disabled>Please select a value</option>
+                                        <option value="-1" disabled>Please select</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
                                     </select>
@@ -388,10 +403,10 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 </div>
                                 <div className="form-floating mb-2">
                                     <select className="form-select" id="account-preferences-volunteering" aria-label="Volunteering" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
-                                        <option value="-1" disabled>Please select a value</option>
+                                        <option value="-1" disabled>Please select</option>
                                         <option value="0">No, I am not interested in volunteering</option>
                                         <option value="1">Yes, I already volunteer</option>
-                                        <option value="2">Yes, I&apos;d like to volunteer</option>
+                                        <option value="2">Yes, I'd like to volunteer</option>
                                     </select>
                                     <label className="required" htmlFor="account-preferences-volunteering">Volunteering</label>
                                 </div>
@@ -416,11 +431,13 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
         </>
     )
 
-    function getProvinceValueForProp(): string {
-        let result: string = "|";
+    function getSelectedProvinceStateOption(): string {
+        let result: string = "";
 
-        if (country != undefined && country.key != undefined && country.key !== "" && province != undefined && province.key != undefined && province.key !== "") {
-            result = country.key + "|" + province.key;
+        if (country != undefined && country?.key != undefined && country.key !== ""
+            && province != undefined && province?.key != undefined && province.key !== "") {
+
+            result = country?.key + "|" + province?.key
         }
 
         return result;

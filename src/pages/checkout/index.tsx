@@ -1,21 +1,43 @@
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page";
 import { AppContext, IAppContextValues } from "@/custom/app-context";
+import { isRoutePermitted, isUserAuthenticated } from "@/custom/authentication";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export default function CheckoutPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    // Display loading indicator.
+    const [showAlert, setShowAlert] = useState(false);
+
+    useEffect(() => {
+        let authenticated: boolean = isUserAuthenticated(router, appContext);
+
+        if (authenticated) {
+            let permitted: boolean = isRoutePermitted(router, appContext, "checkout");
+
+            if (permitted) {
+                appContext.updater(draft => { draft.navbarPage = "checkout" });
+
+                setIsAuthenticated(true);
+                setShowAlert(false);
+            }
+        }
+    }, []);
 
     return (
-        <AuthenticatedPageLayout>
-            <Checkout appContext={appContext} router={router}></Checkout>
+        <AuthenticatedPageLayout showAlert={showAlert}>
+            {isAuthenticated && (
+                <Checkout appContext={appContext} router={router} setShowAlert={setShowAlert}></Checkout>
+            )}
         </AuthenticatedPageLayout>
     )
 }
 
-function Checkout({ appContext, router }: { appContext: IAppContextValues, router: NextRouter }) {
+function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [checkoutStep, setCheckoutStep] = useState(0);
 
     const [step1AcceptTerms, setStep1AcceptTerms] = useState(false);

@@ -101,10 +101,10 @@ export interface ISnowmobile {
     vehicleYear?: string;
     origVehicleId?: number; // TODO: Correct type?
     isClassic?: boolean;
+    isEditable?: boolean;
     permits?: IPermit[];
     permitOptions?: IPermitOption[];
     permitSelections?: IPermitSelections;
-    isEditable?: boolean; // TODO: Need this flag to be returned from api.
 }
 
 export interface IGiftCardType {
@@ -140,7 +140,17 @@ export interface IGiftCard {
     shippingOption?: string;
     clubId?: number;
     permitId?: number;
-    isEditable: boolean;
+    isPurchased?: boolean;
+    isRedeemed?: boolean;
+
+    uiIsInEditMode?: boolean;
+    uiRecipientLastName?: string;
+    uiRecipientPostal?: string;
+}
+
+export interface IRedeemableGiftCards {
+    seasonalGiftCards?: number;
+    classicGiftCards?: number;
 }
 
 export interface ICartItem {
@@ -150,13 +160,21 @@ export interface ICartItem {
     isPermit: boolean;
     isGiftCard: boolean;
     itemId?: string;
+
+    // TODO: Add gift card info here after lookup for use in cart.
+    redemptionCode?: string;
+    giftCardAmount?: number;
+    giftCardTrackingShippingAmount?: number;
+
+    uiRedemptionCode: string; // This is a controlled field. Cannot be undefined.
+    uiShowRedemptionCodeNotFound?: boolean;
 }
 
-export interface IShippingMethod {
-    id: string; // guid
-    name: string;
-    price: number;
-    showConfirmation: boolean;
+export interface IShippingFee {
+    id?: string;
+    name?: string;
+    price?: number;
+    showConfirmation?: boolean;
 }
 
 export interface IAppContextData {

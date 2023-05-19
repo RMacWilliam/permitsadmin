@@ -7,26 +7,45 @@ import CartItemsAlert from '@/components/cart-items-alert';
 import { formatCurrency, getGuid, parseDate } from '@/custom/utilities';
 import { Observable, forkJoin } from 'rxjs';
 import { IApiGetAvailableGiftCardsResult, IApiGetGiftcardsForCurrentSeasonForUserResult, apiGetAvailableGiftCards, apiGetGiftcardsForCurrentSeasonForUser } from '@/custom/api';
+import ConfirmationDialog from '@/components/confirmation-dialog';
+import { isRoutePermitted, isUserAuthenticated } from '@/custom/authentication';
 
 export default function GiftCardsPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     // Display loading indicator.
-    const [showAlert, setShowAlert] = useState(true);
+    const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
-        appContext.updater(draft => { draft.navbarPage = "gift-cards" });
-    }, [appContext])
+        let authenticated: boolean = isUserAuthenticated(router, appContext);
+
+        if (authenticated) {
+            let permitted: boolean = isRoutePermitted(router, appContext, "gift-cards");
+
+            if (permitted) {
+                appContext.updater(draft => { draft.navbarPage = "gift-cards" });
+
+                setIsAuthenticated(true);
+                setShowAlert(true);
+            }
+        }
+    }, []);
 
     return (
         <AuthenticatedPageLayout showAlert={showAlert}>
-            <GiftCards appContext={appContext} router={router} setShowAlert={setShowAlert}></GiftCards>
+            {isAuthenticated && (
+                <GiftCards appContext={appContext} router={router} setShowAlert={setShowAlert}></GiftCards>
+            )}
         </AuthenticatedPageLayout>
     )
 }
 
 function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
+    const [showDeleteGiftCardDialog, setShowDeleteGiftCardDialog] = useState(false);
+    const [giftCardIdToDelete, setGiftCardIdToDelete] = useState("");
+
     const [giftCardTypesData, setGiftCardTypesData] = useState([] as IGiftCardType[]);
 
     useEffect(() => {
@@ -42,23 +61,29 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
                 const apiGetGiftcardsForCurrentSeasonForUserResult: IApiGetGiftcardsForCurrentSeasonForUserResult[] = results[0] as IApiGetGiftcardsForCurrentSeasonForUserResult[];
 
                 if (apiGetGiftcardsForCurrentSeasonForUserResult != undefined) {
+                    let giftCards: IGiftCard[] = apiGetGiftcardsForCurrentSeasonForUserResult.map<IGiftCard>((x: IApiGetGiftcardsForCurrentSeasonForUserResult) => ({
+                        oVoucherId: x?.oVoucherId,
+                        orderId: x?.orderId,
+                        transactionDate: parseDate(x?.transactionDate),
+                        recipientLastName: x?.recipientLastName,
+                        recipientPostal: x?.recipientPostal,
+                        redemptionCode: x?.redemptionCode,
+                        purchaserEmail: x?.purchaserEmail,
+                        productId: x?.productId,
+                        isRedeemed: x?.isRedeemed,
+                        isPurchased: x?.isPurchased,
+                        useShippingAddress: x?.useShippingAddress,
+                        shippingOption: x?.shippingOption,
+                        clubId: x?.clubId,
+                        permitId: x?.permitId,
+
+                        uiIsInEditMode: false,
+                        uiRecipientLastName: undefined,
+                        uiRecipientPostal: undefined
+                    }));
+
                     appContext.updater(draft => {
-                        draft.giftCards = apiGetGiftcardsForCurrentSeasonForUserResult.map<IGiftCard>((x: IApiGetGiftcardsForCurrentSeasonForUserResult) => ({
-                            oVoucherId: x?.oVoucherId,
-                            orderId: x?.orderId,
-                            transactionDate: parseDate(x?.transactionDate),
-                            recipientLastName: x?.recipientLastName,
-                            recipientPostal: x?.recipientPostal,
-                            redemptionCode: x?.redemptionCode,
-                            purchaserEmail: x?.purchaserEmail,
-                            productId: x?.productId,
-                            redeemed: x?.redeemed,
-                            useShippingAddress: x?.useShippingAddress,
-                            shippingOption: x?.shippingOption,
-                            clubId: x?.clubId,
-                            permitId: x?.permitId,
-                            isEditable: true // TODO: This should come from api.
-                        }));
+                        draft.giftCards = giftCards;
                     });
                 }
 
@@ -114,86 +139,117 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
                 <li>Want to gift a permit for a family member, friend, business associate, customer, etc.</li>
             </ul>
 
-            <div className="fw-semibold">Gift card options based on recipient&apos;s vehicle model year:</div>
+            <div className="fw-semibold">Gift card options based on recipient's vehicle model year:</div>
             <ul>
                 <li>Classic (1999 or older)</li>
                 <li>Seasonal (2000 or newer)</li>
             </ul>
 
-            <button className="btn btn-primary btn-sm mt-2" onClick={() => addGiftCardClick()}>Add Gift Card</button>
-
             {getGiftCards() != undefined && getGiftCards().length > 0 && getGiftCards().map(giftCard => (
-                <div className="card mt-3" key={giftCard.oVoucherId}>
-                    <h5 className="card-header">
-                        {!giftCard.isEditable && getGiftCardType(giftCard.productId) != undefined && (
-                            <span>Purchased {getGiftCardType(giftCard.productId)?.name} Gift Card - ${formatCurrency(getGiftCardType(giftCard.productId)?.amount)}</span>
-                        )}
+                <div className="card mb-3" key={giftCard.oVoucherId}>
+                    <h5 className="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            {giftCard.isPurchased && (
+                                <span>Purchased {getGiftCardType(giftCard.productId)?.name} Gift Card - ${formatCurrency(getGiftCardType(giftCard.productId)?.amount)}</span>
+                            )}
 
-                        {giftCard.isEditable && (
-                            <span>Unpurchased Gift Card</span>
-                        )}
+                            {!giftCard.isPurchased && (
+                                <span>Buy New Gift Card</span>
+                            )}
+                        </div>
+
+
+                        <div>
+                            {giftCard?.isPurchased && !giftCard?.isRedeemed && (
+                                <button className="btn btn-primary btn-sm" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>Edit</button>
+                            )}
+
+                            {!giftCard?.isPurchased && !giftCard?.isRedeemed && (
+                                <button className="btn btn-danger btn-sm ms-1" onClick={() => deleteSnowmobileDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>Remove</button>
+                            )}
+                        </div>
                     </h5>
 
                     <ul className="list-group list-group-flush">
-                        {giftCard.isEditable && (
+                        {!giftCard?.isPurchased && !giftCard?.isRedeemed && (
                             <li className="list-group-item">
-                                <h6 className="card-title">Select a permit to purchase</h6>
+                                <div className="form-check">
+                                    <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)} />
+                                    <label className="form-check-label" htmlFor="flexCheckDefault">
+                                        Show gift cards with tracked shipping included
+                                    </label>
+                                </div>
 
-                                {giftCardTypesData != undefined && giftCardTypesData.length > 0 && getGiftCardTypesData().map(giftCardType => (
-                                    <div className="form-check form-check-inline" key={giftCardType?.productId}>
-                                        <input className="form-check-input" type="radio" name={`gift-cards-permit-options-${giftCard.oVoucherId}`} id={`gift-cards-permit-options-${giftCard.oVoucherId}-${giftCardType?.productId}`} checked={isGiftCardTypeChecked(giftCard.oVoucherId, giftCardType?.productId)} value={giftCardType?.productId} onChange={(e: any) => giftCardTypeChange(e, giftCard.oVoucherId)} disabled={!giftCard?.isEditable} />
-                                        <label className="form-check-label" htmlFor={`gift-cards-permit-options-${giftCard.oVoucherId}-${giftCardType?.productId}`}>
-                                            {giftCardType?.name} - ${formatCurrency(giftCardType?.amount)}
-                                        </label>
-                                    </div>
-                                ))}
+                                <div className="form-floating">
+                                    <select className="form-select" id={`gift-cards-permit-options-${giftCard.oVoucherId}`} aria-label="Select gift card to purchase" value={getSelectedGiftCardOption(giftCard?.oVoucherId)} onChange={(e: any) => giftCardOptionChange(e, giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
+                                        <option value="" disabled>Please select</option>
+
+                                        {giftCardTypesData != undefined && giftCardTypesData.length > 0 && getGiftCardTypesData().map(giftCardType => (
+                                            <option value={giftCardType?.productId} key={giftCardType?.productId}>{giftCardType?.name} - ${formatCurrency(giftCardType?.amount)}</option>
+                                        ))}
+                                    </select>
+                                    <label className="required" htmlFor={`gift-cards-permit-options-${giftCard.oVoucherId}`}>Select gift card to purchase</label>
+                                </div>
                             </li>
                         )}
 
                         <li className="list-group-item">
-                            <h6 className="mt-2">Recipient Information</h6>
-
                             <div className="row">
                                 <div className="col-12 col-sm-12 col-md-6">
                                     <div className="form-floating mb-2">
-                                        <input type="text" className="form-control" id="gift-cards-last-name-${giftCard.id}" placeholder="Recipient's LAST Name ONLY" value={giftCard.recipientLastName} onChange={(e: any) => giftCardLastNameChange(e, giftCard.oVoucherId)} />
-                                        <label className="required" htmlFor="gift-cards-last-name-${giftCard.id}">Recipient&apos;s LAST Name ONLY</label>
+                                        <input type="text" className="form-control" id="gift-cards-last-name-${giftCard.id}" placeholder="Recipient's LAST Name ONLY" value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
+                                        <label className="required" htmlFor="gift-cards-last-name-${giftCard.id}">Recipient's LAST Name ONLY</label>
                                     </div>
                                 </div>
 
                                 <div className="col-12 col-sm-12 col-md-6">
                                     <div className="form-floating mb-2">
-                                        <input type="text" className="form-control" id="gift-cards-postal-code-${giftCard.id}" placeholder="Recipient's Postal Code" value={giftCard.recipientPostal} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard.oVoucherId)} />
-                                        <label className="required" htmlFor="gift-cards-postal-code-${giftCard.id}">Recipient&apos;s Postal Code</label>
+                                        <input type="text" className="form-control" id="gift-cards-postal-code-${giftCard.id}" placeholder="Recipient's Postal Code" value={getGiftCardRecipientPostalCode(giftCard?.oVoucherId)} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardPostalCodeEnabled(giftCard?.oVoucherId)} />
+                                        <label className="required" htmlFor="gift-cards-postal-code-${giftCard.id}">Recipient's Postal Code</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div>
-                                <span className="text-danger me-1">*</span>= mandatory field and must match the recipient&apos;s OFSC account information
+                                <span className="text-danger me-1">*</span>= mandatory field and must match the recipient's OFSC account information
                             </div>
                         </li>
                     </ul>
 
-                    <div className="card-footer">
-                        {giftCard.isEditable && !isGiftCardAddedToCart(giftCard.oVoucherId) && (
-                            <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)} disabled={!isAddToCartEnabled(giftCard?.oVoucherId)}>Add Gift Card to Cart</button>
-                        )}
+                    {((!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId))
+                        || (!giftCard?.isPurchased && !giftCard?.isRedeemed && isGiftCardAddedToCart(giftCard?.oVoucherId))
+                        || (giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode)) && (
+                            <div className="card-footer">
+                                {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
+                                    <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)} disabled={!isAddToCartEnabled(giftCard?.oVoucherId)}>Add Gift Card to Cart</button>
+                                )}
 
-                        {giftCard.isEditable && isGiftCardAddedToCart(giftCard.oVoucherId) && (
-                            <button className="btn btn-danger btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>Remove Gift Card from Cart</button>
-                        )}
+                                {!giftCard?.isPurchased && !giftCard?.isRedeemed && isGiftCardAddedToCart(giftCard?.oVoucherId) && (
+                                    <button className="btn btn-danger btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>Remove Gift Card from Cart</button>
+                                )}
 
-                        {!giftCard.isEditable && (
-                            <button className="btn btn-primary btn-sm" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>Save Changes</button>
-                        )}
+                                {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode && (
+                                    <button className="btn btn-primary btn-sm me-2" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>Save Changes</button>
+                                )}
 
-                        {giftCard.isEditable && !isGiftCardAddedToCart(giftCard.oVoucherId) && (
-                            <button className="btn btn-primary btn-sm" onClick={() => cancelAddGiftCardClick(giftCard?.oVoucherId)}>Cancel</button>
+                                {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode && (
+                                    <button className="btn btn-primary btn-sm" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>Cancel Changes</button>
+                                )}
+                            </div>
                         )}
-                    </div>
                 </div>
             ))}
+
+            <div className="card">
+                <div className="card-body text-center">
+                    <button className="btn btn-primary btn-sm mt-2" onClick={() => addGiftCardClick()}>Add Gift Card</button>
+                </div>
+            </div>
+
+            <ConfirmationDialog showDialog={showDeleteGiftCardDialog} title="Remove Gift Card" buttons={2} icon="question" width="50"
+                yesClick={() => deleteGiftCardDialogYesClick()} noClick={() => deleteGiftCardDialogNoClick()} closeClick={() => deleteGiftCardDialogNoClick()}>
+                <div>Are you sure you want to remove this gift card?</div>
+            </ConfirmationDialog>
         </>
     )
 
@@ -211,7 +267,7 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
         let result: IGiftCard | undefined = undefined;
 
         if (giftCardId != undefined) {
-            result = getGiftCards()?.filter(x => x.oVoucherId === giftCardId)[0];
+            result = getGiftCards()?.filter(x => x?.oVoucherId === giftCardId)[0];
         }
 
         return result;
@@ -220,7 +276,7 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
     function getGiftCardTypesData(): IGiftCardType[] {
         let result: IGiftCardType[] = [];
 
-        if (giftCardTypesData != null && giftCardTypesData.length > 0) {
+        if (giftCardTypesData != undefined && giftCardTypesData.length > 0) {
             result = giftCardTypesData;
         }
 
@@ -239,11 +295,16 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
 
     function addGiftCardClick(): void {
         let giftCard: IGiftCard = {
-            oVoucherId: getGuid(),            
-            productId: 0,
-            recipientLastName: "",
-            recipientPostal: "",
-            isEditable: true
+            oVoucherId: getGuid(),
+            productId: undefined,
+            recipientLastName: undefined,
+            recipientPostal: undefined,
+            isPurchased: false,
+            isRedeemed: false,
+
+            uiIsInEditMode: false,
+            uiRecipientLastName: undefined,
+            uiRecipientPostal: undefined
         };
 
         appContext.updater(draft => {
@@ -251,54 +312,120 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
         });
     }
 
-    function isGiftCardTypeChecked(giftCardId?: string, giftCardTypeId?: number): boolean {
-        let result: boolean = false;
+    function editGiftCardClick(giftCardId?: string): void {
+        if (giftCardId != undefined) {
+            appContext.updater(draft => {
+                let giftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === giftCardId)[0];
 
-        if (giftCardId != undefined && giftCardTypeId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCards()?.filter(x => x.oVoucherId === giftCardId)[0];
+                if (giftCard != undefined) {
+                    giftCard.uiRecipientLastName = giftCard?.recipientLastName;
+                    giftCard.uiRecipientPostal = giftCard?.recipientPostal;
+                    giftCard.uiIsInEditMode = true;
+                }
+            });
+        }
+    }
+
+    function getGiftCardRecipientLastName(giftCardId?: string): string | undefined {
+        let result: string | undefined = undefined;
+
+        if (giftCardId != undefined) {
+            let giftCard: IGiftCard | undefined = getGiftCard(giftCardId);
 
             if (giftCard != undefined) {
-                result = giftCard.productId === giftCardTypeId;
+                if (giftCard?.uiIsInEditMode) {
+                    result = giftCard?.uiRecipientLastName;
+                } else {
+                    result = giftCard?.recipientLastName;
+                }
             }
         }
 
         return result;
     }
 
-    function giftCardTypeChange(e: any, giftCardId?: string): void {
-        if (giftCardId != undefined) {
+    function giftCardLastNameChange(e: any, giftCardId?: string): void {
+        if (e != undefined && giftCardId != undefined) {
             appContext.updater(draft => {
                 let giftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x.oVoucherId === giftCardId)[0];
 
                 if (giftCard != undefined) {
-                    giftCard.productId = Number(e?.target?.value);
+                    if (giftCard?.isPurchased) {
+                        giftCard.uiRecipientLastName = e?.target?.value;
+                    } else {
+                        giftCard.recipientLastName = e?.target?.value;
+                    }
                 }
             });
         }
     }
 
-    function giftCardLastNameChange(e: any, giftCardId?: string): void {
-        if (giftCardId != undefined) {
-            appContext.updater(draft => {
-                let giftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x.oVoucherId === giftCardId)[0];
+    function isGiftCardLastNameEnabled(giftCardId?: string): boolean {
+        let result: boolean = false;
 
-                if (giftCard != undefined) {
-                    giftCard.recipientLastName = e?.target?.value;
-                }
-            });
+        if (giftCardId != undefined) {
+            let giftCard: IGiftCard | undefined = getGiftCard(giftCardId);
+
+            if (giftCard != undefined) {
+                result = (!isGiftCardAddedToCart(giftCardId)
+                    && (!giftCard?.isPurchased || (giftCard?.isPurchased && giftCard?.uiIsInEditMode))
+                    && !giftCard?.isRedeemed
+                ) ?? false;
+            }
         }
+
+        return result;
+    }
+
+    function getGiftCardRecipientPostalCode(giftCardId?: string): string | undefined {
+        let result: string | undefined = undefined;
+
+        if (giftCardId != undefined) {
+            let giftCard: IGiftCard | undefined = getGiftCard(giftCardId);
+
+            if (giftCard != undefined) {
+                if (giftCard?.uiIsInEditMode) {
+                    result = giftCard?.uiRecipientPostal;
+                } else {
+                    result = giftCard?.recipientPostal;
+                }
+            }
+        }
+
+        return result;
     }
 
     function giftCardPostalCodeChange(e: any, giftCardId?: string): void {
-        if (giftCardId != undefined) {
+        if (e != undefined && giftCardId != undefined) {
             appContext.updater(draft => {
                 let giftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x.oVoucherId === giftCardId)[0];
 
                 if (giftCard != undefined) {
-                    giftCard.recipientPostal = e?.target?.value;
+                    if (giftCard?.isPurchased) {
+                        giftCard.uiRecipientPostal = e?.target?.value;
+                    } else {
+                        giftCard.recipientPostal = e?.target?.value;
+                    }
                 }
             });
         }
+    }
+
+    function isGiftCardPostalCodeEnabled(giftCardId?: string): boolean {
+        let result: boolean = false;
+
+        if (giftCardId != undefined) {
+            let giftCard: IGiftCard | undefined = getGiftCard(giftCardId);
+
+            if (giftCard != undefined) {
+                result = (!isGiftCardAddedToCart(giftCardId)
+                    && (!giftCard?.isPurchased || (giftCard?.isPurchased && giftCard?.uiIsInEditMode))
+                    && !giftCard?.isRedeemed
+                ) ?? false;
+            }
+        }
+
+        return result;
     }
 
     function addGiftCardToCartClick(giftCardId?: string): void {
@@ -317,7 +444,9 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
                         price: giftCardType?.amount ?? 0,
                         isPermit: false,
                         isGiftCard: true,
-                        itemId: giftCard.oVoucherId
+                        itemId: giftCard.oVoucherId,
+
+                        uiRedemptionCode: ""
                     };
 
                     appContext.updater(draft => {
@@ -331,21 +460,35 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
     function removeGiftCardFromCartClick(giftCardId?: string): void {
         if (giftCardId != undefined) {
             appContext.updater(draft => {
-                draft.cartItems = draft.cartItems?.filter(x => x.itemId !== giftCardId);
-            });
-        }
-    }
-
-    function cancelAddGiftCardClick(giftCardId?: string): void {
-        if (giftCardId != undefined) {
-            appContext.updater(draft => {
-                draft.giftCards = draft?.giftCards?.filter(x => x.oVoucherId !== giftCardId);
+                draft.cartItems = draft.cartItems?.filter(x => x?.itemId !== giftCardId);
             });
         }
     }
 
     function saveGiftCardChangesClick(giftCardId?: string): void {
+        if (giftCardId != undefined) {
+            appContext.updater(draft => {
+                let giftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === giftCardId)[0];
 
+                if (giftCard != undefined) {
+                    giftCard.recipientLastName = giftCard?.uiRecipientLastName;
+                    giftCard.recipientPostal = giftCard?.uiRecipientPostal;
+                    giftCard.uiIsInEditMode = false;
+                }
+            });
+        }
+    }
+
+    function cancelGiftCardChangesClick(giftCardId?: string): void {
+        if (giftCardId != undefined) {
+            appContext.updater(draft => {
+                let giftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === giftCardId)[0];
+
+                if (giftCard != undefined) {
+                    giftCard.uiIsInEditMode = false;
+                }
+            });
+        }
     }
 
     function isAddToCartEnabled(giftCardId?: string): boolean {
@@ -355,9 +498,9 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
             let giftCard: IGiftCard | undefined = getGiftCard(giftCardId);
 
             if (giftCard != undefined) {
-                result = giftCard?.productId !== 0
-                    && giftCard?.recipientLastName?.trim() !== ""
-                    && giftCard?.recipientPostal?.trim() !== "";
+                result = giftCard?.productId != undefined && giftCard?.productId !== 0
+                    && giftCard?.recipientLastName != undefined && giftCard?.recipientLastName?.trim() !== ""
+                    && giftCard?.recipientPostal != undefined && giftCard?.recipientPostal?.trim() !== "";
             }
         }
 
@@ -368,9 +511,73 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
         let result: boolean = false;
 
         if (giftCardId != undefined) {
-            result = appContext.data?.cartItems?.some(x => x.isGiftCard && x.itemId === giftCardId) ?? false;
+            result = appContext.data?.cartItems?.some(x => x.isGiftCard && x?.itemId === giftCardId) ?? false;
         }
 
         return result;
+    }
+
+    function deleteSnowmobileDialogShow(giftCardId?: string): void {
+        if (giftCardId != undefined) {
+            setGiftCardIdToDelete(giftCardId);
+            setShowDeleteGiftCardDialog(true);
+        }
+    }
+
+    function deleteGiftCardDialogYesClick(): void {
+        appContext.updater(draft => {
+            draft.giftCards = draft?.giftCards?.filter(x => x?.oVoucherId !== giftCardIdToDelete);
+            draft.cartItems = draft?.cartItems?.filter(x => x?.itemId !== giftCardIdToDelete);
+        });
+
+        setGiftCardIdToDelete("");
+        setShowDeleteGiftCardDialog(false);
+    }
+
+    function deleteGiftCardDialogNoClick(): void {
+        setGiftCardIdToDelete("");
+        setShowDeleteGiftCardDialog(false);
+    }
+
+    function getSelectedGiftCardOption(giftCardId?: string): string {
+        let result: string = "";
+
+        if (giftCardId != undefined) {
+            let giftCard: IGiftCard | undefined = getGiftCard(giftCardId);
+
+            if (giftCard != undefined && giftCard?.productId != undefined) {
+                result = giftCard?.productId?.toString() ?? "";
+
+                // TODO: Why did api return product ID that was not in the list of gift card options??
+                // Check if id exists in list.
+                if (result !== "" && getGiftCardType(Number(result)) == undefined) {
+                    result = "";
+
+                    //             appContext.updater(draft => {
+                    //                 let gc: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === giftCardId)[0];
+
+                    //                 if (gc != undefined) {
+                    //                     gc.productId = undefined;
+                    //                 }
+                    //             });
+                }
+            }
+        }
+
+        return result;
+    }
+
+    function giftCardOptionChange(e: any, giftCardId?: string): void {
+        if (e != undefined && giftCardId != undefined) {
+            appContext.updater(draft => {
+                let giftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === giftCardId)[0];
+
+                if (giftCard != undefined) {
+                    if (!giftCard?.isPurchased && !giftCard?.isRedeemed) {
+                        giftCard.productId = Number(e?.target?.value);
+                    }
+                }
+            });
+        }
     }
 }

@@ -1,5 +1,5 @@
-import moment from "moment";
-import { IAccountPreferences, ICartItem, IContactInfo, IGiftCard, IGiftCardType, IKeyValue, IParentKeyValue, IPermitOption, IShippingMethod, ISnowmobile } from "./app-context";
+// import moment from "moment";
+// import { IAccountPreferences, ICartItem, IContactInfo, IGiftCard, IGiftCardType, IKeyValue, IParentKeyValue, IPermitOption, IShippingMethod, ISnowmobile } from "./app-context";
 
 // export const contactInfoData: IContactInfo = {
 //     firstName: "John",
@@ -169,19 +169,19 @@ import { IAccountPreferences, ICartItem, IContactInfo, IGiftCard, IGiftCardType,
 //     // }
 // ];
 
-export const shippingMethodsData: IShippingMethod[] = [
-    {
-        id: "73cd7359-acc1-4c64-a691-6668586a4f27",
-        name: "Standard",
-        price: 0,
-        showConfirmation: true
-    },
-    {
-        id: "3744e5d4-3012-4c05-809d-4d8db59c8fe8",
-        name: "Tracked",
-        price: 10,
-        showConfirmation: false
-    }
-];
+// export const shippingMethodsData: IShippingMethod[] = [
+//     {
+//         id: "73cd7359-acc1-4c64-a691-6668586a4f27",
+//         name: "Standard",
+//         price: 0,
+//         showConfirmation: true
+//     },
+//     {
+//         id: "3744e5d4-3012-4c05-809d-4d8db59c8fe8",
+//         name: "Tracked",
+//         price: 10,
+//         showConfirmation: false
+//     }
+// ];
 
-export const transactionAndAdministrationFee: number = 7.5;
+//export const transactionAndAdministrationFee: number = 7.5;

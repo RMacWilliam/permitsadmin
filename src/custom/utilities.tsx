@@ -21,7 +21,6 @@ export function getParentKeyValueFromSelect(e: any): IParentKeyValue | undefined
     return result;
 }
 
-
 export function getKeyValueFromSelect(e: any): IKeyValue | undefined {
     let result: IKeyValue | undefined = undefined;
 

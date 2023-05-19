@@ -1,6 +1,7 @@
 import UnauthenticatedPageLayout from '@/components/layouts/unauthenticated-page'
 import { IApiLoginResult, WebApiAppContextData, apiLogin } from '@/custom/api';
 import { AppContext } from '@/custom/app-context';
+import { login } from '@/custom/authentication';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -131,29 +132,7 @@ function Index() {
                     // Set WebApi token.
                     WebApiAppContextData.token = apiLoginResult.token;
 
-                    appContext.updater(draft => {
-                        draft.isAuthenticated = true;
-                        draft.email = apiLoginResult.email;
-                        draft.token = apiLoginResult.token;
-
-                        draft.language = draft.language ?? "en";
-
-                        draft.isFirstLoginOfSeason = apiLoginResult.isFirstLoginOfSeason;
-                        draft.isContactInfoVerified = false;
-
-                        draft.cartItems = undefined;
-
-                        draft.navbarPage = "home";
-
-                        draft.contactInfo = undefined;
-                        draft.accountPreferences = undefined;
-
-                        draft.snowmobiles = undefined;
-
-                        draft.giftCards = undefined;
-                    });
-
-                    router.push("/home");
+                    login(router, appContext, apiLoginResult);
                 } else {
                     setShowInvalidLogin(true);
                 }
