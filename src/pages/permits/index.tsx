@@ -53,6 +53,7 @@ enum DialogMode {
 function Permits({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [showAddEditSnowmobileDialog, setShowAddEditSnowmobileDialog] = useState(false);
     const [addEditSnowmobileDialogMode, setAddEditSnowmobileDialogMode] = useState(DialogMode.Add);
+    const [addEditSnowmobileDialogErrorMessage, setAddEditSnowmobileDialogErrorMessage] = useState("");
     const [editedSnowmobileId, setEditedSnowmobileId] = useState("");
 
     // Add/edit snowmobile dialog
@@ -123,12 +124,12 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                             isClassic: x?.isClassic,
                             isEditable: x?.isEditable,
                             permits: undefined,
-                            permitSelections: x?.permitSelections ?? {
-                                oPermitId: getGuid(),
-                                permitOptionId: undefined,
-                                dateStart: undefined,
-                                dateEnd: undefined,
-                                clubId: undefined
+                            permitSelections: {
+                                oPermitId: x?.permitSelections?.oPermitId,
+                                permitOptionId: x?.permitSelections?.permitOptionId,
+                                dateStart: x?.permitSelections?.dateStart,
+                                dateEnd: x?.permitSelections?.dateEnd,
+                                clubId: x?.permitSelections?.clubId
                             },
                             permitOptions: undefined
                         };
@@ -387,6 +388,15 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                 </Modal.Header>
                 <Modal.Body>
                     <div className="container-fluid">
+                        {addEditSnowmobileDialogErrorMessage !== "" && (
+                            <div className="row">
+                                <div className="col-12">
+                                    <div className="alert alert-danger" role="alert">
+                                        {addEditSnowmobileDialogErrorMessage}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
@@ -536,6 +546,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
         setIsPermitForThisSnowmobileOnlyValid(true);
         setIsRegisteredOwnerValid(true);
 
+        setAddEditSnowmobileDialogErrorMessage("");
         setShowAddEditSnowmobileDialog(true);
     }
 
@@ -571,6 +582,10 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                             appContext.updater(draft => {
                                 draft.snowmobiles = draft.snowmobiles == undefined ? [newSnowmobile] : [...draft.snowmobiles, newSnowmobile];
                             });
+
+                            setShowAddEditSnowmobileDialog(false);
+                        } else {
+                            setAddEditSnowmobileDialogErrorMessage(result?.errorMessage ?? "");
                         }
 
                         setShowAlert(false);
@@ -605,6 +620,10 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                     }
                                 }
                             });
+
+                            setShowAddEditSnowmobileDialog(false);
+                        } else {
+                            setAddEditSnowmobileDialogErrorMessage(result?.errorMessage ?? "");
                         }
 
                         setShowAlert(false);
@@ -616,8 +635,6 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                     }
                 });
             }
-
-            setShowAddEditSnowmobileDialog(false);
         }
     }
 
@@ -741,49 +758,44 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
             let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
-                let newPermitOptionId: number = Number(e?.target?.value);
-                let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === newPermitOptionId)[0];
+                let permitSelections: IPermitSelections | undefined = snowmobile?.permitSelections;
 
-                if (permitOption != undefined) {
-                    let permitSelections: IPermitSelections | undefined = snowmobile?.permitSelections;
+                if (permitSelections != undefined) {
+                    let apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
+                        oVehicleId: snowmobileId,
+                        oPermitId: permitSelections?.oPermitId ?? getGuid(),
+                        permitOptionId: Number(e?.target?.value), // New value
+                        dateStart: undefined,
+                        dateEnd: undefined,
+                        clubId: permitSelections?.clubId
+                    };
 
-                    if (permitSelections != undefined) {
-                        let apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
-                            oVehicleId: snowmobileId,
-                            oPermitId: permitSelections?.oPermitId ?? getGuid(),
-                            permitOptionId: newPermitOptionId, // New value
-                            dateStart: permitOption?.isMultiDay ? permitSelections?.dateStart : undefined,
-                            dateEnd: permitOption?.isMultiDay ? permitSelections?.dateEnd : undefined,
-                            clubId: permitSelections?.clubId == undefined ? undefined : Number(permitSelections?.clubId)
-                        };
+                    apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
+                        next: (result: IApiSavePermitSelectionForVehicleResult) => {
+                            if (result?.isSuccessful) { // TODO: data should come back from api
+                                appContext.updater(draft => {
+                                    let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
-                        apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
-                            next: (result: IApiSavePermitSelectionForVehicleResult) => {
-                                if (result?.isSuccessful) { // TODO: data should come back from api
-                                    appContext.updater(draft => {
-                                        let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
-
-                                        if (snowmobile != undefined) {
-                                            if (snowmobile?.permitSelections == undefined) {
-                                                snowmobile.permitSelections = { oPermitId: apiSavePermitSelectionForVehicleRequest?.oPermitId ?? getGuid() };
-                                            }
-
-                                            snowmobile.permitSelections.permitOptionId = apiSavePermitSelectionForVehicleRequest?.permitOptionId;
-                                            snowmobile.permitSelections.dateStart = undefined;
-                                            snowmobile.permitSelections.dateEnd = undefined;
-                                        }
-                                    });
-                                }
-
-                                //setShowAlert(false);
-                            },
-                            error: (error: any) => {
-                                console.log(error);
-
-                                //setShowAlert(false);
+                                    if (snowmobile != undefined) {
+                                        snowmobile.permitSelections = {
+                                            oPermitId: result?.data?.oPermitId ?? getGuid(),
+                                            permitOptionId: result?.data?.permitOptionId,
+                                            dateStart: result?.data?.dateStart,
+                                            dateEnd: result?.data?.dateEnd,
+                                            clubId: result?.data?.clubId
+                                        };
+                                    }
+                                });
                             }
-                        });
-                    }
+
+                            //setShowAlert(false);
+                        },
+                        error: (error: any) => {
+                            console.log(error);
+
+                            //setShowAlert(false);
+                        }
+                    });
                 }
             }
         }
@@ -836,7 +848,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                             permitOptionId: permitSelections?.permitOptionId,
                             dateStart: date, // New value
                             dateEnd: daysToAdd >= 0 ? getMoment(date).add(daysToAdd, 'days').toDate() : date, // New value
-                            clubId: permitSelections?.clubId == undefined ? undefined : Number(permitSelections?.clubId)
+                            clubId: permitSelections?.clubId
                         };
 
                         //setShowAlert(true);
@@ -848,12 +860,13 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                         let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
                                         if (snowmobile != undefined) {
-                                            if (snowmobile?.permitSelections == undefined) {
-                                                snowmobile.permitSelections = { oPermitId: apiSavePermitSelectionForVehicleRequest?.oPermitId ?? getGuid() };
-                                            }
-
-                                            snowmobile.permitSelections.dateStart = apiSavePermitSelectionForVehicleRequest?.dateStart;
-                                            snowmobile.permitSelections.dateEnd = apiSavePermitSelectionForVehicleRequest?.dateEnd;
+                                            snowmobile.permitSelections = {
+                                                oPermitId: result?.data?.oPermitId ?? getGuid(),
+                                                permitOptionId: result?.data?.permitOptionId,
+                                                dateStart: result?.data?.dateStart,
+                                                dateEnd: result?.data?.dateEnd,
+                                                clubId: result?.data?.clubId
+                                            };
                                         }
                                     });
                                 }

@@ -687,7 +687,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
             let snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x.oVehicleId === snowmobileId)[0];
 
             if (snowmobile != undefined) {
-                result = snowmobile?.permitSelections?.clubId ?? "";
+                result = snowmobile?.permitSelections?.clubId?.toString() ?? "";
             }
         }
 

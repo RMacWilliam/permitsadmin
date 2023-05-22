@@ -5,7 +5,7 @@ import { IKeyValue, IParentKeyValue } from "./app-context";
 export const WebApiAppContextData: any = { data: undefined, token: undefined };
 
 const WebApiGlobalQueryParams: any = {
-    //AsOfDate: "2023-01-01"
+    asOfDate: "2023-01-01"
 };
 
 class WebApi {
@@ -269,7 +269,7 @@ export interface IApiVehiclePermitSelections {
     permitOptionId?: number;
     dateStart?: Date;
     dateEnd?: Date;
-    clubId?: string;
+    clubId?: number;
 }
 
 export interface IApiVehiclePermitOption {
@@ -311,7 +311,8 @@ export interface IApiVehicle {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface IApiGetVehiclesAndPermitsForUserRequest {
-    AsOfDate: string;
+    email?: string;
+    asOfDate: string;
 }
 
 export interface IApiGetVehiclesAndPermitsForUserPermit extends IApiVehiclePermit {
@@ -331,8 +332,6 @@ export interface IApiGetVehiclesAndPermitsForUserResult extends IApiVehicle {
 }
 
 export function apiGetVehiclesAndPermitsForUser(params?: any): Observable<IApiGetVehiclesAndPermitsForUserResult[]> {
-    params = { ...params, AsOfDate: "2023-01-01" };
-
     return httpGet<IApiGetVehiclesAndPermitsForUserResult[]>(WebApi.GetVehiclesAndPermitsForUser, params);
 }
 
@@ -366,18 +365,6 @@ export interface IApiAddVehicleForUserRequest {
     vehicleYear?: string;
 }
 
-export interface IApiAddVehicleForUserPermit extends IApiVehiclePermit {
-
-}
-
-export interface IApiAddVehicleForUserPermitSelections extends IApiVehiclePermitSelections {
-
-}
-
-export interface IApiAddVehicleForUserPermitOption extends IApiVehiclePermitOption {
-
-}
-
 export interface IApiAddVehicleForUserData extends IApiVehicle {
 
 }
@@ -405,18 +392,6 @@ export interface IApiUpdateVehicleRequest {
     vehicleYear?: string;
 }
 
-export interface IApiUpdateVehiclePermit extends IApiVehiclePermit {
-
-}
-
-export interface IApiUpdateVehiclePermitSelections extends IApiVehiclePermitSelections {
-
-}
-
-export interface IApiUpdateVehiclePermitOption extends IApiVehiclePermitOption {
-
-}
-
 export interface IApiUpdateVehicleData extends IApiVehicle {
 
 }
@@ -435,19 +410,18 @@ export function apiUpdateVehicle(body?: any, params: any = undefined): Observabl
 // apiSavePermitSelectionForVehicle
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export interface IApiSavePermitSelectionForVehicleRequest {
+export interface IApiSavePermitSelectionForVehicleRequest extends IApiVehiclePermitSelections {
     oVehicleId?: string;
-    oPermitId?: string;
-    permitOptionId?: number;
-    dateStart?: Date;
-    dateEnd?: Date;
-    clubId?: number;
+}
+
+export interface IApiSavePermitSelectionForVehicleData extends IApiVehiclePermitSelections {
+    oVehicleId?: string;
 }
 
 export interface IApiSavePermitSelectionForVehicleResult {
     isSuccessful?: boolean;
     errorMessage?: string;
-    data?: IApiUpdateVehicleData;
+    data?: IApiSavePermitSelectionForVehicleData;
 }
 
 export function apiSavePermitSelectionForVehicle(body?: any, params: any = undefined): Observable<IApiSavePermitSelectionForVehicleResult> {
@@ -488,7 +462,7 @@ export function apiGetGiftcardsForCurrentSeasonForUser(params?: any): Observable
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface IApiGetAvailableGiftCardsRequest {
-
+    asOfDate?: string;
 }
 
 export interface IApiGetAvailableGiftCardsResult {
@@ -519,7 +493,7 @@ export function apiGetAvailableGiftCards(params?: any): Observable<IApiGetAvaila
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface IApiGetRedeemableGiftCardsForUserRequest {
-
+    asOfDate?: string;
 }
 
 export interface IApiGetRedeemableGiftCardsForUserResult {

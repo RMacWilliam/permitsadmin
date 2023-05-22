@@ -89,7 +89,7 @@ export interface IPermitSelections {
     permitOptionId?: number;
     dateStart?: Date;
     dateEnd?: Date;
-    clubId?: string;
+    clubId?: number;
 }
 
 export interface ISnowmobile {
