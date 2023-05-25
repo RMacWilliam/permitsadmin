@@ -9,9 +9,9 @@ export enum DialogButtons {
     YesNoCancel = 3
 }
 
-export default function ConfirmationDialog({ showDialog, title, message, buttons, icon, width, okClick, cancelClick, yesClick, noClick, closeClick, children }
+export default function ConfirmationDialog({ showDialog, title, message, errorMessage, buttons, icon, width, okClick, cancelClick, yesClick, noClick, closeClick, children }
     : {
-        showDialog: boolean, title?: string, message?: string, buttons?: DialogButtons, icon?: string, width?: string,
+        showDialog: boolean, title?: string, message?: string, errorMessage?: string, buttons?: DialogButtons, icon?: string, width?: string,
         okClick?: Function, cancelClick?: Function, yesClick?: Function, noClick?: Function, closeClick: Function, children?: ReactNode
     }) {
 
@@ -34,6 +34,17 @@ export default function ConfirmationDialog({ showDialog, title, message, buttons
             </Modal.Header>
             <Modal.Body>
                 <div className="container-fluid px-0">
+                    <div className="row">
+                        {errorMessage !== "" && (
+                            <div className="row">
+                                <div className="col-12">
+                                    <div className="alert alert-danger" role="alert">
+                                        {errorMessage}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                     <div className="row">
                         <div className="col-12">
                             <div className="d-flex align-items-center">

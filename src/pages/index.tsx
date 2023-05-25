@@ -1,5 +1,5 @@
 import UnauthenticatedPageLayout from '@/components/layouts/unauthenticated-page'
-import { IApiLoginResult, WebApiAppContextData, apiLogin } from '@/custom/api';
+import { IApiLoginRequest, IApiLoginResult, WebApiAppContextData, apiLogin } from '@/custom/api';
 import { AppContext } from '@/custom/app-context';
 import { login } from '@/custom/authentication';
 import Head from 'next/head';
@@ -125,8 +125,13 @@ function Index() {
         if (password === "s") p = "SnowTravel59!"; // TODO: Clean up this code!
         if (password === "b") p = "CrappyPassword1!"; // TODO: Clean up this code!
 
+        let apiLoginRequest: IApiLoginRequest = {
+            email: e ?? email,
+            password: p ?? password
+        };
+
         // Do login.
-        apiLogin(e ?? email, p ?? password).subscribe({ // TODO: Clean up this code!
+        apiLogin(apiLoginRequest).subscribe({
             next: (apiLoginResult: IApiLoginResult) => {
                 if (apiLoginResult.isValid) {
                     // Set WebApi token.

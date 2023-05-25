@@ -4,13 +4,21 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import LanguageToggler from '../language-toggler';
-import ProcessingAlert from '../modal-alert';
+import ModalProcessingAlert from '../modal-processing-alert';
 import { isUserAuthenticated, logout } from '@/custom/authentication';
 
-export default function AuthenticatedPageLayout({ children, showAlert }: { children?: ReactNode, showAlert?: boolean }) {
+export default function AuthenticatedPageLayout({ children, showAlert }: { children?: ReactNode, showAlert?: boolean | { showAlert?: boolean, message?: string } }) {
     const appContext = useContext(AppContext);
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    let show: boolean | undefined = false;
+
+    if (typeof showAlert === "boolean") {
+        show = showAlert as boolean | undefined;
+    } else {
+        show = showAlert?.showAlert;
+    }
 
     useEffect(() => {
         let authenticated: boolean = isUserAuthenticated(router, appContext);
@@ -63,12 +71,23 @@ export default function AuthenticatedPageLayout({ children, showAlert }: { child
                                 {appContext.data?.isContactInfoVerified && (
                                     <div className="ms-3 me-2">
                                         <Link className="nav-link position-relative" aria-current="page" href="/cart">
-                                            <i className="fa-solid fa-cart-shopping fa-2xl"></i>
-                                            {appContext.data?.cartItems != undefined && appContext.data.cartItems.length > 0 && (
-                                                <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
-                                                    {appContext.data.cartItems.length}
-                                                </span>
-                                            )}
+                                            <div className="d-md-none">
+                                                <i className="fa-solid fa-cart-shopping fa-xl"></i>
+                                                {appContext.data?.cartItems != undefined && appContext.data.cartItems.length > 0 && (
+                                                    <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                                                        {appContext.data.cartItems.length}
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <div className="d-none d-md-block">
+                                                <i className="fa-solid fa-cart-shopping fa-2xl"></i>
+                                                {appContext.data?.cartItems != undefined && appContext.data.cartItems.length > 0 && (
+                                                    <span className="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                                                        {appContext.data.cartItems.length}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </Link>
                                     </div>
                                 )}
@@ -187,7 +206,7 @@ export default function AuthenticatedPageLayout({ children, showAlert }: { child
                 </div>
             </footer>
 
-            <ProcessingAlert showAlert={showAlert}></ProcessingAlert>
+            <ModalProcessingAlert showAlert={show}></ModalProcessingAlert>
         </>
     )
 

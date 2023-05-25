@@ -1,7 +1,7 @@
 import Modal from 'react-bootstrap/Modal';
 
-export default function ProcessingAlert({ showAlert, message }: { showAlert?: boolean, message?: string }) {
-    const defaultMessage: string = "Loading page. Please wait.";
+export default function ModalProcessingAlert({ showAlert, message }: { showAlert?: boolean, message?: string }) {
+    const defaultMessage: string = "Processing request. Please wait.";
 
     return (
         <Modal show={showAlert ?? false} backdrop="static" keyboard={false} centered>

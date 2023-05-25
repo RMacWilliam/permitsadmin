@@ -19,6 +19,8 @@ export default function GiftCardsPage() {
     const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
+        setIsAuthenticated(false);
+
         let authenticated: boolean = isUserAuthenticated(router, appContext);
 
         if (authenticated) {
@@ -31,7 +33,7 @@ export default function GiftCardsPage() {
                 setShowAlert(true);
             }
         }
-    }, []);
+    }, [appContext.data.isAuthenticated]);
 
     return (
         <AuthenticatedPageLayout showAlert={showAlert}>
@@ -149,15 +151,17 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
                 <div className="card mb-3" key={giftCard.oVoucherId}>
                     <h5 className="card-header d-flex justify-content-between align-items-center">
                         <div>
-                            {giftCard.isPurchased && (
-                                <span>Purchased {getGiftCardType(giftCard.productId)?.name} Gift Card - ${formatCurrency(getGiftCardType(giftCard.productId)?.amount)}</span>
+                            {giftCard.isPurchased && appContext.translation?.i18n?.language === "en" && (
+                                <span>Purchased {getGiftCardType(giftCard.productId)?.displayName} Gift Card &mdash; ${formatCurrency(getGiftCardType(giftCard.productId)?.amount)}</span>
+                            )}
+                            {giftCard.isPurchased && appContext.translation?.i18n?.language === "fr" && (
+                                <span>Purchased {getGiftCardType(giftCard.productId)?.frenchDisplayName} Gift Card &mdash; ${formatCurrency(getGiftCardType(giftCard.productId)?.amount)}</span>
                             )}
 
                             {!giftCard.isPurchased && (
                                 <span>Buy New Gift Card</span>
                             )}
                         </div>
-
 
                         <div>
                             {giftCard?.isPurchased && !giftCard?.isRedeemed && (
@@ -171,22 +175,36 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
                     </h5>
 
                     <ul className="list-group list-group-flush">
-                        {!giftCard?.isPurchased && !giftCard?.isRedeemed && (
-                            <li className="list-group-item">
-                                <div className="form-check">
-                                    <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)} />
-                                    <label className="form-check-label" htmlFor="flexCheckDefault">
-                                        Show gift cards with tracked shipping included
-                                    </label>
+                        <li className="list-group-item">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <label htmlFor="exampleFormControlInput1" className="form-label">Redemption Code</label>
+                                    <p className="font-monospace mb-0">3059734095760349576340957340957304957</p>
                                 </div>
 
+                                <div>
+                                    <button className="btn btn-primary btn-sm">Resend E-mail</button>
+                                </div>
+                            </div>
+                        </li>
+
+                        {!giftCard?.isPurchased && !giftCard?.isRedeemed && (
+                            <li className="list-group-item">
                                 <div className="form-floating">
                                     <select className="form-select" id={`gift-cards-permit-options-${giftCard.oVoucherId}`} aria-label="Select gift card to purchase" value={getSelectedGiftCardOption(giftCard?.oVoucherId)} onChange={(e: any) => giftCardOptionChange(e, giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
                                         <option value="" disabled>Please select</option>
 
-                                        {giftCardTypesData != undefined && giftCardTypesData.length > 0 && getGiftCardTypesData().map(giftCardType => (
-                                            <option value={giftCardType?.productId} key={giftCardType?.productId}>{giftCardType?.name} - ${formatCurrency(giftCardType?.amount)}</option>
-                                        ))}
+                                        {giftCardTypesData != undefined && giftCardTypesData.length > 0 && getGiftCardTypesData().map(giftCardType => {
+                                            if (appContext.translation?.i18n?.language === "fr") {
+                                                return (
+                                                    <option value={giftCardType?.productId} key={giftCardType?.productId}>{giftCardType?.frenchDisplayName} - ${formatCurrency(giftCardType?.amount)}</option>
+                                                )
+                                            } else {
+                                                return (
+                                                    <option value={giftCardType?.productId} key={giftCardType?.productId}>{giftCardType?.displayName} - ${formatCurrency(giftCardType?.amount)}</option>
+                                                )
+                                            }
+                                        })}
                                     </select>
                                     <label className="required" htmlFor={`gift-cards-permit-options-${giftCard.oVoucherId}`}>Select gift card to purchase</label>
                                 </div>

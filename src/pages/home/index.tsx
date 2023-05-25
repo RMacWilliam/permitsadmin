@@ -15,6 +15,8 @@ export default function HomePage() {
     const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
+        setIsAuthenticated(false);
+        
         let authenticated: boolean = isUserAuthenticated(router, appContext);
 
         if (authenticated) {
@@ -27,7 +29,7 @@ export default function HomePage() {
                 setShowAlert(false);
             }
         }
-    }, []);
+    }, [appContext.data.isAuthenticated]);
 
     return (
         <AuthenticatedPageLayout showAlert={showAlert}>

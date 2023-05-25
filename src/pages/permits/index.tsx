@@ -9,7 +9,7 @@ import ConfirmationDialog from '@/components/confirmation-dialog';
 import { NextRouter, useRouter } from 'next/router';
 import DatePicker from 'react-datepicker';
 import CartItemsAlert from '@/components/cart-items-alert';
-import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserPermit, IApiGetVehiclesAndPermitsForUserPermitOption, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle } from '@/custom/api';
+import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserPermit, IApiGetVehiclesAndPermitsForUserPermitOption, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle, IApiDeleteVehicleRequest, IApiDeleteVehicleResult, apiDeleteVehicle } from '@/custom/api';
 import { Observable, forkJoin } from 'rxjs';
 import { isRoutePermitted, isUserAuthenticated, logout } from '@/custom/authentication';
 
@@ -22,6 +22,8 @@ export default function PermitsPage() {
     const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
+        setIsAuthenticated(false);
+
         let authenticated: boolean = isUserAuthenticated(router, appContext);
 
         if (authenticated) {
@@ -34,7 +36,7 @@ export default function PermitsPage() {
                 setShowAlert(true);
             }
         }
-    }, []);
+    }, [appContext.data.isAuthenticated]);
 
     return (
         <AuthenticatedPageLayout showAlert={showAlert}>
@@ -56,7 +58,6 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
     const [addEditSnowmobileDialogErrorMessage, setAddEditSnowmobileDialogErrorMessage] = useState("");
     const [editedSnowmobileId, setEditedSnowmobileId] = useState("");
 
-    // Add/edit snowmobile dialog
     const [vehicleYear, setVehicleYear] = useState("");
     const [isVehicleYearValid, setIsVehicleYearValid] = useState(true);
 
@@ -79,6 +80,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
     const [isRegisteredOwnerValid, setIsRegisteredOwnerValid] = useState(true);
 
     const [showDeleteSnowmobileDialog, setShowDeleteSnowmobileDialog] = useState(false);
+    const [deleteSnowmobileDialogErrorMessage, setDeleteSnowmobileDialogErrorMessage] = useState("");
     const [snowmobileIdToDelete, setSnowmobileIdToDelete] = useState("");
     const [snowmobileNameToDelete, setSnowmobileNameToDelete] = useState("");
 
@@ -373,8 +375,9 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                 <div>This vehicle cannot be modified as a Ministry of Transportation Ontario Snowmobile Trail Permit has been registered to it.</div>
             </ConfirmationDialog>
 
-            <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title="Delete Snowmobile" buttons={2} icon="question" width="50"
-                yesClick={() => deleteSnowmobileDialogYesClick()} noClick={() => deleteSnowmobileDialogNoClick()} closeClick={() => deleteSnowmobileDialogNoClick()}>
+            <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title="Delete Snowmobile" errorMessage={deleteSnowmobileDialogErrorMessage} buttons={2}
+                icon="question" width="50" yesClick={() => deleteSnowmobileDialogYesClick()} noClick={() => deleteSnowmobileDialogNoClick()}
+                closeClick={() => deleteSnowmobileDialogNoClick()}>
                 <div className="fw-bold mb-2">{snowmobileNameToDelete}</div>
                 <div>Are you sure you want to delete this snowmobile?</div>
             </ConfirmationDialog>
@@ -721,15 +724,36 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
     }
 
     function deleteSnowmobileDialogYesClick(): void {
-        appContext.updater(draft => {
-            draft.snowmobiles = draft?.snowmobiles?.filter(x => x?.oVehicleId !== snowmobileIdToDelete);
-            draft.cartItems = draft?.cartItems?.filter(x => x.itemId !== snowmobileIdToDelete);
+        let apiDeleteVehicleRequest: IApiDeleteVehicleRequest = {
+            oVehicleId: snowmobileIdToDelete,
+        };
+
+        setShowAlert(true);
+
+        apiDeleteVehicle(apiDeleteVehicleRequest).subscribe({
+            next: (result: IApiUpdateVehicleResult) => {
+                if (result?.isSuccessful) {
+                    appContext.updater(draft => {
+                        draft.snowmobiles = draft?.snowmobiles?.filter(x => x?.oVehicleId !== snowmobileIdToDelete);
+                        draft.cartItems = draft?.cartItems?.filter(x => x.itemId !== snowmobileIdToDelete);
+                    });
+
+                    setSnowmobileIdToDelete("");
+                    setSnowmobileNameToDelete("");
+
+                    setShowDeleteSnowmobileDialog(false);
+                } else {
+                    setDeleteSnowmobileDialogErrorMessage(result?.errorMessage ?? "");
+                }
+
+                setShowAlert(false);
+            },
+            error: (error: any) => {
+                console.log(error);
+
+                setShowAlert(false);
+            }
         });
-
-        setSnowmobileIdToDelete("");
-        setSnowmobileNameToDelete("");
-
-        setShowDeleteSnowmobileDialog(false);
     }
 
     function deleteSnowmobileDialogNoClick(): void {
@@ -772,7 +796,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
                     apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
                         next: (result: IApiSavePermitSelectionForVehicleResult) => {
-                            if (result?.isSuccessful) { // TODO: data should come back from api
+                            if (result?.isSuccessful) {
                                 appContext.updater(draft => {
                                     let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
@@ -855,7 +879,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
                         apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
                             next: (result: IApiSavePermitSelectionForVehicleResult) => {
-                                if (result?.isSuccessful) { // TODO: data should come back from api
+                                if (result?.isSuccessful) {
                                     appContext.updater(draft => {
                                         let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 

@@ -1,6 +1,7 @@
 import { Observable } from "rxjs";
 import { fromFetch } from "rxjs/fetch";
 import { IKeyValue, IParentKeyValue } from "./app-context";
+import { WebApi } from "../../constants";
 
 export const WebApiAppContextData: any = { data: undefined, token: undefined };
 
@@ -8,38 +9,7 @@ const WebApiGlobalQueryParams: any = {
     asOfDate: "2023-01-01"
 };
 
-class WebApi {
-    private static BaseUrl: string = "https://permitsapi.azurewebsites.net/api/";
-
-    // User
-    static LoginUrl: string = this.BaseUrl + "user/validateuser";
-    static LogoutUrl: string = this.BaseUrl + "............................";
-    static GetUserDetails: string = this.BaseUrl + "user/getuserdetails";
-    static GetUserPreferences: string = this.BaseUrl + "user/getuserpreferences";
-
-    // Utils
-    static GetProvinces: string = this.BaseUrl + "utils/getprovinces";
-    static GetCountries: string = this.BaseUrl + "utils/getcountries";
-    static GetClubs: string = this.BaseUrl + "utils/getclubs";
-
-    // Vehicle
-    static GetVehiclesAndPermitsForUser: string = this.BaseUrl + "vehicle/getvehiclesandpermitsforuser";
-    static GetVehicleMakes: string = this.BaseUrl + "vehicle/getvehiclemakes";
-    static AddVehicleForUser: string = this.BaseUrl + "vehicle/addvehicleforuser";
-    static UpdateVehicle: string = this.BaseUrl + "vehicle/updatevehicle";
-    static SavePermitSelectionForVehicle: string = this.BaseUrl + "vehicle/savepermitselectionforvehicle";
-
-    // GiftCard
-    static GetGiftcardsForCurrentSeasonForUser: string = this.BaseUrl + "giftcard/getgiftcardsforcurrentseasonforuser";
-    static GetAvailableGiftCards: string = this.BaseUrl + "giftcard/getavailablegiftcards";
-    static GetRedeemableGiftCardsForUser: string = this.BaseUrl + "giftcard/getredeemablegiftcardsforuser";
-
-    // Permit
-    static GetProcessingFee: string = this.BaseUrl + "permit/getprocessingfee";
-    static GetShippingFees: string = this.BaseUrl + "permit/getshippingfees";
-}
-
-function httpFetch<T>(method: "GET" | "POST", url: string, params?: any, body?: any, isAuthenticated: boolean = true): Observable<T> {
+function httpFetch<T>(method: "GET" | "POST" | "DELETE", url: string, params?: any, body?: any, isAuthenticated: boolean = true): Observable<T> {
     let headers: any = undefined;
 
     if (isAuthenticated) {
@@ -56,7 +26,7 @@ function httpFetch<T>(method: "GET" | "POST", url: string, params?: any, body?: 
     let init = {
         method: method,
         headers: headers,
-        body: method === 'POST' ? JSON.stringify(body) : undefined,
+        body: method === 'GET' ? undefined : JSON.stringify(body),
         selector: (response: Response) => {
             if (response.ok) {
                 return response.json();
@@ -93,6 +63,10 @@ function httpPost<T>(url: string, params?: any, body?: any, isAuthenticated: boo
     return httpFetch<T>("POST", url, params, body, isAuthenticated);
 }
 
+function httpDelete<T>(url: string, params?: any, body?: any, isAuthenticated: boolean = true): Observable<T> {
+    return httpFetch<T>("DELETE", url, params, body, isAuthenticated);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // apiLogin
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,13 +83,8 @@ export interface IApiLoginResult {
     email?: string;
 }
 
-export function apiLogin(email: string, password: string): Observable<IApiLoginResult> {
-    let body: IApiLoginRequest = {
-        email: email,
-        password: password
-    };
-
-    return httpPost<IApiLoginResult>(WebApi.LoginUrl, undefined, body, false);
+export function apiLogin(body?: any, params: any = undefined): Observable<IApiLoginResult> {
+    return httpPost<IApiLoginResult>(WebApi.LoginUrl, params, body, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,19 +99,15 @@ export interface IApiLogoutResult {
 
 }
 
-export function apiLogout(): Observable<IApiLogoutResult> {
-    return httpPost<IApiLogoutResult>(WebApi.LogoutUrl);
+export function apiLogout(body?: any, params: any = undefined): Observable<IApiLogoutResult> {
+    return httpPost<IApiLogoutResult>(WebApi.LogoutUrl, params, body);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// apiGetUserDetails
+// User Details Interfaces
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export interface IApiGetUserDetailsRequest {
-
-}
-
-export interface IApiGetUserDetailsResult {
+export interface IApiUserDetails {
     personId?: string; // (obfuscated)
     firstName?: string;
     initial?: string;
@@ -163,8 +128,59 @@ export interface IApiGetUserDetailsResult {
     volunteerStatus?: number; // TODO: Is the type correct?    
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiGetUserDetails
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiGetUserDetailsRequest {
+
+}
+
+export interface IApiGetUserDetailsResult extends IApiUserDetails {
+
+}
+
 export function apiGetUserDetails(params?: any): Observable<IApiGetUserDetailsResult> {
     return httpGet<IApiGetUserDetailsResult>(WebApi.GetUserDetails, params);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiSaveUserDetails
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiSaveUserDetailsRequest {
+    addressLine1?: string;
+    addressLine2?: string;
+    city?: string;
+    countryId?: string;
+    email?: string;
+    postalCode?: string;
+    provinceId?: string;
+    telephone?: string;
+}
+
+export interface IApiSaveUserDetailsUserDetails extends IApiUserDetails {
+
+}
+
+export interface IApiSaveUserDetailsResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiSaveUserDetailsUserDetails;
+}
+
+export function apiSaveUserDetails(body?: any, params: any = undefined): Observable<IApiSaveUserDetailsResult> {
+    return httpPost<IApiSaveUserDetailsResult>(WebApi.SaveUserDetails, params, body);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// User Preferences Interfaces
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiUserPreferences {
+    ofscContactPermission?: number;
+    riderAdvantage?: number;
+    volunteering?: number;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,14 +191,35 @@ export interface IApiGetUserPreferencesRequest {
 
 }
 
-export interface IApiGetUserPreferencesResult {
-    ofscContactPermission?: number;
-    riderAdvantage?: number;
-    volunteering?: number;
+export interface IApiGetUserPreferencesResult extends IApiUserPreferences {
+
 }
 
 export function apiGetUserPreferences(params?: any): Observable<IApiGetUserPreferencesResult> {
     return httpGet<IApiGetUserPreferencesResult>(WebApi.GetUserPreferences, params);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiSaveUserPreferences
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiSaveUserPreferencesRequest {
+    ofscContactPermission?: number;
+    volunteering?: number;
+}
+
+export interface IApiSaveUserPreferencesUserPreferences extends IApiUserPreferences {
+
+}
+
+export interface IApiSaveUserPreferencesResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiSaveUserPreferencesUserPreferences;
+}
+
+export function apiSaveUserPreferences(body?: any, params: any = undefined): Observable<IApiSaveUserPreferencesResult> {
+    return httpPost<IApiSaveUserPreferencesResult>(WebApi.SaveUserPreferences, params, body);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -407,6 +444,24 @@ export function apiUpdateVehicle(body?: any, params: any = undefined): Observabl
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiDeleteVehicle
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiDeleteVehicleRequest {
+    oVehicleId?: string;
+}
+
+export interface IApiDeleteVehicleResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: any;
+}
+
+export function apiDeleteVehicle(body?: any, params: any = undefined): Observable<IApiDeleteVehicleResult> {
+    return httpDelete<IApiDeleteVehicleResult>(WebApi.DeleteVehicle, params, body);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // apiSavePermitSelectionForVehicle
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -484,8 +539,8 @@ export interface IApiGetAvailableGiftCardsResult {
     canBuyGiftCard?: boolean;
 }
 
-export function apiGetAvailableGiftCards(params?: any): Observable<IApiGetAvailableGiftCardsResult> {
-    return httpGet<IApiGetAvailableGiftCardsResult>(WebApi.GetAvailableGiftCards, params);
+export function apiGetAvailableGiftCards(params?: any): Observable<IApiGetAvailableGiftCardsResult[]> {
+    return httpGet<IApiGetAvailableGiftCardsResult[]>(WebApi.GetAvailableGiftCards, params);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -536,6 +591,6 @@ export interface IApiGetShippingFeesResult {
     showConfirmation?: boolean;
 }
 
-export function apiGetShippingFees(params?: any): Observable<IApiGetShippingFeesResult> {
-    return httpGet<IApiGetShippingFeesResult>(WebApi.GetShippingFees, params);
+export function apiGetShippingFees(params?: any): Observable<IApiGetShippingFeesResult[]> {
+    return httpGet<IApiGetShippingFeesResult[]>(WebApi.GetShippingFees, params);
 }
