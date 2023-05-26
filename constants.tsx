@@ -1,4 +1,9 @@
+import { ITranslation } from "@/custom/app-context";
+import { Translation, getI18n } from "react-i18next";
+
 const WebApiBaseUrl: string = "https://permitsapi.azurewebsites.net/api/";
+
+export const GlobalAppContext: { token?: string, translation?: ITranslation } = { token: "", translation: { t: Translation, i18n: getI18n() } };
 
 export class WebApi {
     // User
@@ -30,4 +35,10 @@ export class WebApi {
     // Permit
     static GetProcessingFee: string = WebApiBaseUrl + "permit/getprocessingfee";
     static GetShippingFees: string = WebApiBaseUrl + "permit/getshippingfees";
+}
+
+export class Constants {
+    static get PleaseSelect(): string {
+        return GlobalAppContext?.translation?.i18n?.language === "fr" ? "(fr)Please select" : "Please select";
+    }
 }

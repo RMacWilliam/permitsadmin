@@ -28,12 +28,8 @@ export interface IContactInfo {
     country?: IKeyValue;
     telephone?: string;
     email?: string;
-
     adminUser?: boolean;
-
     verified?: boolean;
-    contactConsent?: boolean;
-    volunteerStatus?: number;
 }
 
 export interface IAccountPreferences {
@@ -118,6 +114,8 @@ export interface IGiftCardType {
     multiDayUpgrade?: boolean;
     isMultiDay?: boolean;
     isSpecialEvent?: boolean;
+    isTrackedShipping?: boolean;
+    trackedShippingAmount?: number;
     eventDate?: Date;
     eventName?: string;
     eventClubId?: number;
@@ -156,6 +154,7 @@ export interface IRedeemableGiftCards {
 export interface ICartItem {
     id: string; // guid
     description: string;
+    descriptionFr: string;
     price: number;
     isPermit: boolean;
     isGiftCard: boolean;

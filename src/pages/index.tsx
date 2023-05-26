@@ -1,5 +1,5 @@
 import UnauthenticatedPageLayout from '@/components/layouts/unauthenticated-page'
-import { IApiLoginRequest, IApiLoginResult, WebApiAppContextData, apiLogin } from '@/custom/api';
+import { IApiLoginRequest, IApiLoginResult, apiLogin } from '@/custom/api';
 import { AppContext } from '@/custom/app-context';
 import { login } from '@/custom/authentication';
 import Head from 'next/head';
@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import { Button } from 'react-bootstrap';
+import { GlobalAppContext } from '../../constants';
 
 export default function IndexPage() {
     return (
@@ -135,7 +136,7 @@ function Index() {
             next: (apiLoginResult: IApiLoginResult) => {
                 if (apiLoginResult.isValid) {
                     // Set WebApi token.
-                    WebApiAppContextData.token = apiLoginResult.token;
+                    GlobalAppContext.token = apiLoginResult.token;
 
                     login(router, appContext, apiLoginResult);
                 } else {

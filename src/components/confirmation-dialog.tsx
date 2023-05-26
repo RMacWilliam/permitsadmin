@@ -34,8 +34,8 @@ export default function ConfirmationDialog({ showDialog, title, message, errorMe
             </Modal.Header>
             <Modal.Body>
                 <div className="container-fluid px-0">
-                    <div className="row">
-                        {errorMessage !== "" && (
+                    {errorMessage != undefined && errorMessage !== "" && (
+                        <div className="row">
                             <div className="row">
                                 <div className="col-12">
                                     <div className="alert alert-danger" role="alert">
@@ -43,8 +43,8 @@ export default function ConfirmationDialog({ showDialog, title, message, errorMe
                                     </div>
                                 </div>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
                     <div className="row">
                         <div className="col-12">
                             <div className="d-flex align-items-center">

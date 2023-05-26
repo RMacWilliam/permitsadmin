@@ -32,7 +32,7 @@ export const resources_en = {
       "TITLE": "Checkout"
     },
     "API": {
-      "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "(fr)VIN assigned to another vehicle on account."
+      "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "VIN assigned to another vehicle on account."
     }
   }
 };

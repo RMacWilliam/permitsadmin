@@ -1,9 +1,7 @@
 import { Observable } from "rxjs";
 import { fromFetch } from "rxjs/fetch";
 import { IKeyValue, IParentKeyValue } from "./app-context";
-import { WebApi } from "../../constants";
-
-export const WebApiAppContextData: any = { data: undefined, token: undefined };
+import { GlobalAppContext, WebApi } from "../../constants";
 
 const WebApiGlobalQueryParams: any = {
     asOfDate: "2023-01-01"
@@ -15,7 +13,7 @@ function httpFetch<T>(method: "GET" | "POST" | "DELETE", url: string, params?: a
     if (isAuthenticated) {
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + WebApiAppContextData.token
+            "Authorization": "Bearer " + GlobalAppContext.token
         };
     } else {
         headers = {
@@ -120,12 +118,8 @@ export interface IApiUserDetails {
     country?: IKeyValue;
     telephone?: string;
     email?: string;
-
     adminUser?: boolean;
-
     verified?: boolean;
-    contactConsent?: boolean;
-    volunteerStatus?: number; // TODO: Is the type correct?    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,6 +199,7 @@ export function apiGetUserPreferences(params?: any): Observable<IApiGetUserPrefe
 
 export interface IApiSaveUserPreferencesRequest {
     ofscContactPermission?: number;
+    riderAdvantage?: number;
     volunteering?: number;
 }
 
@@ -236,8 +231,8 @@ export interface IApiGetProvincesResult {
     value?: string;
 }
 
-export function apiGetProvinces(params?: any): Observable<IApiGetProvincesResult> {
-    return httpGet<IApiGetProvincesResult>(WebApi.GetProvinces, params);
+export function apiGetProvinces(params?: any): Observable<IApiGetProvincesResult[]> {
+    return httpGet<IApiGetProvincesResult[]>(WebApi.GetProvinces, params);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -253,8 +248,8 @@ export interface IApiGetCountriesResult {
     value?: string;
 }
 
-export function apiGetCountries(params?: any): Observable<IApiGetCountriesResult> {
-    return httpGet<IApiGetCountriesResult>(WebApi.GetCountries, params);
+export function apiGetCountries(params?: any): Observable<IApiGetCountriesResult[]> {
+    return httpGet<IApiGetCountriesResult[]>(WebApi.GetCountries, params);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,8 +265,8 @@ export interface IApiGetClubsResult {
     value?: string;
 }
 
-export function apiGetClubs(params?: any): Observable<IApiGetClubsResult> {
-    return httpGet<IApiGetClubsResult>(WebApi.GetClubs, params);
+export function apiGetClubs(params?: any): Observable<IApiGetClubsResult[]> {
+    return httpGet<IApiGetClubsResult[]>(WebApi.GetClubs, params);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -352,18 +347,6 @@ export interface IApiGetVehiclesAndPermitsForUserRequest {
     asOfDate: string;
 }
 
-export interface IApiGetVehiclesAndPermitsForUserPermit extends IApiVehiclePermit {
-
-}
-
-export interface IApiGetVehiclesAndPermitsForUserPermitSelections extends IApiVehiclePermitSelections {
-
-}
-
-export interface IApiGetVehiclesAndPermitsForUserPermitOption extends IApiVehiclePermitOption {
-
-}
-
 export interface IApiGetVehiclesAndPermitsForUserResult extends IApiVehicle {
 
 }
@@ -385,8 +368,8 @@ export interface IApiGetVehicleMakesResult {
     value?: string;
 }
 
-export function apiGetVehicleMakes(params?: any): Observable<IApiGetVehicleMakesResult> {
-    return httpGet<IApiGetVehicleMakesResult>(WebApi.GetVehicleMakes, params);
+export function apiGetVehicleMakes(params?: any): Observable<IApiGetVehicleMakesResult[]> {
+    return httpGet<IApiGetVehicleMakesResult[]>(WebApi.GetVehicleMakes, params);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -508,8 +491,8 @@ export interface IApiGetGiftcardsForCurrentSeasonForUserResult {
     permitId?: number;
 }
 
-export function apiGetGiftcardsForCurrentSeasonForUser(params?: any): Observable<IApiGetGiftcardsForCurrentSeasonForUserResult> {
-    return httpGet<IApiGetGiftcardsForCurrentSeasonForUserResult>(WebApi.GetGiftcardsForCurrentSeasonForUser, params);
+export function apiGetGiftcardsForCurrentSeasonForUser(params?: any): Observable<IApiGetGiftcardsForCurrentSeasonForUserResult[]> {
+    return httpGet<IApiGetGiftcardsForCurrentSeasonForUserResult[]>(WebApi.GetGiftcardsForCurrentSeasonForUser, params);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -531,6 +514,8 @@ export interface IApiGetAvailableGiftCardsResult {
     multiDayUpgrade?: boolean;
     isMultiDay?: boolean;
     isSpecialEvent?: boolean;
+    isTrackedShipping?: boolean;
+    trackedShippingAmount?: number;
     eventDate?: Date;
     eventName?: string;
     eventClubId?: number;
@@ -569,7 +554,7 @@ export interface IApiGetProcessingFeeRequest {
 }
 
 export interface IApiGetProcessingFeeResult {
-    fee: number;
+    fee?: number;
 }
 
 export function apiGetProcessingFee(params?: any): Observable<IApiGetProcessingFeeResult> {

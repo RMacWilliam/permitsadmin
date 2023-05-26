@@ -2,6 +2,7 @@ import moment from "moment";
 import { IKeyValue, IParentKeyValue } from "./app-context";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
+import { GlobalAppContext } from "../../constants";
 
 export function getParentKeyValueFromSelect(e: any): IParentKeyValue | undefined {
     let result: IParentKeyValue | undefined = undefined;
@@ -86,4 +87,18 @@ export function formatCurrency(value: string | number | undefined = 0): string {
 
 export function sortArray(array: any[], sortBy: string[]): any[] {
     return _.sortBy(array, sortBy);
+}
+
+export function getApiErrorMessage(key: string | undefined): string | undefined {
+    let result: string | undefined = undefined;
+
+    if (key != undefined && key !== "") {
+        let message: string | undefined = GlobalAppContext.translation?.i18n?.t("API." + key);
+
+        if (message !== key) {
+            result = message;
+        }
+    }
+
+    return result;
 }

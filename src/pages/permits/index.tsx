@@ -2,16 +2,17 @@ import { forwardRef, useContext, useEffect, useState } from 'react'
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IPermit, IPermitOption, IPermitSelections, ISnowmobile } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
-import { formatShortDate, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
+import { formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import ConfirmationDialog from '@/components/confirmation-dialog';
 import { NextRouter, useRouter } from 'next/router';
 import DatePicker from 'react-datepicker';
 import CartItemsAlert from '@/components/cart-items-alert';
-import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserPermit, IApiGetVehiclesAndPermitsForUserPermitOption, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle, IApiDeleteVehicleRequest, IApiDeleteVehicleResult, apiDeleteVehicle } from '@/custom/api';
+import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle, IApiDeleteVehicleRequest, IApiDeleteVehicleResult, apiDeleteVehicle, IApiVehiclePermit, IApiVehiclePermitOption } from '@/custom/api';
 import { Observable, forkJoin } from 'rxjs';
 import { isRoutePermitted, isUserAuthenticated, logout } from '@/custom/authentication';
+import { Constants } from '../../../constants';
 
 export default function PermitsPage() {
     const appContext = useContext(AppContext);
@@ -137,7 +138,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                         };
 
                         if (x.permits != undefined && x.permits.length > 0) {
-                            snowmobile.permits = x.permits.map<IPermit>((p: IApiGetVehiclesAndPermitsForUserPermit) => ({
+                            snowmobile.permits = x.permits.map<IPermit>((p: IApiVehiclePermit) => ({
                                 oPermitId: p?.oPermitId,
                                 permitType: p?.permitType,
                                 ofscNumber: p?.ofscNumber,
@@ -165,7 +166,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                         }
 
                         if (x.permitOptions != undefined && x.permitOptions.length > 0) {
-                            snowmobile.permitOptions = x.permitOptions.map<IPermitOption>((p: IApiGetVehiclesAndPermitsForUserPermitOption) => ({
+                            snowmobile.permitOptions = x.permitOptions.map<IPermitOption>((p: IApiVehiclePermitOption) => ({
                                 productId: p?.productId,
                                 name: p?.name,
                                 displayName: p?.displayName,
@@ -210,14 +211,13 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                 setShowAlert(false);
             },
             error: (error: any) => {
+                console.log(error);
+
                 if (error instanceof Response) {
                     const resp: Response = error;
 
                     if (resp?.status === 401) {
                         logout(router, appContext);
-                    } else {
-                        // TODO: Display error alert to user?
-                        console.log(error);
                     }
                 }
 
@@ -320,11 +320,19 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 <li className="list-group-item">
                                     <div className="form-floating">
                                         <select className="form-select" id={`permits-permit-options-${snowmobile?.oVehicleId}`} aria-label="Select permit to purchase" value={getSelectedPermitOption(snowmobile?.oVehicleId)} onChange={(e: any) => permitOptionChange(e, snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
-                                            <option value="" disabled>Please select</option>
+                                            <option value="" disabled>{Constants.PleaseSelect}</option>
 
-                                            {snowmobile.permitOptions.map(permitOption => (
-                                                <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.name} - ${permitOption?.amount}</option>
-                                            ))}
+                                            {snowmobile.permitOptions.map(permitOption => {
+                                                if (appContext.translation?.i18n?.language === "fr") {
+                                                    return (
+                                                        <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.frenchDisplayName} - ${permitOption?.amount}</option>
+                                                    );
+                                                } else {
+                                                    return (
+                                                        <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.displayName} - ${permitOption?.amount}</option>
+                                                    );
+                                                }
+                                            })}
                                         </select>
                                         <label className="required" htmlFor={`permits-permit-options-${snowmobile?.oVehicleId}`}>Select permit to purchase</label>
                                     </div>
@@ -404,7 +412,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
                                     <select className={`form-select ${isVehicleYearValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-year" aria-label="Year" value={vehicleYear} onChange={(e: any) => setVehicleYear(e?.target?.value)}>
-                                        <option value="" disabled>Please select</option>
+                                        <option value="" disabled>{Constants.PleaseSelect}</option>
 
                                         {yearsData != undefined && yearsData.length > 0 && yearsData.map(x => (
                                             <option value={x} key={x}>{x}</option>
@@ -417,7 +425,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
                                     <select className={`form-select ${isMakeValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-make" aria-label="Make" value={make?.key} onChange={(e: any) => setMake(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
-                                        <option value="" disabled>Please select</option>
+                                        <option value="" disabled>{Constants.PleaseSelect}</option>
 
                                         {vehicleMakesData != undefined && vehicleMakesData.length > 0 && getVehicleMakesData().map(x => (
                                             <option value={x.key} key={x.key}>{x.value}</option>
@@ -484,7 +492,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 <span className="text-danger me-1">*</span>= mandatory field
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="secondary" onClick={() => addEditSnowmobileDialogSave()}>Save</Button>
+                                <Button className="me-2" variant="primary" onClick={() => addEditSnowmobileDialogSave()}>Save</Button>
                                 <Button variant="primary" onClick={addEditSnowmobileDialogHide}>Cancel</Button>
                             </div>
                         </div>
@@ -580,7 +588,75 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                 apiAddVehicleForUser(apiAddVehicleForUserRequest).subscribe({
                     next: (result: IApiAddVehicleForUserResult) => {
                         if (result?.isSuccessful && result?.data != undefined) {
-                            let newSnowmobile: ISnowmobile = result.data as ISnowmobile;
+                            let newSnowmobile: ISnowmobile = {
+                                oVehicleId: result?.data?.oVehicleId,
+                                vehicleMake: result?.data?.vehicleMake,
+                                model: result?.data?.model,
+                                vin: result?.data?.vin,
+                                licensePlate: result?.data?.licensePlate,
+                                vehicleYear: result?.data?.vehicleYear,
+                                origVehicleId: result?.data?.origVehicleId,
+                                isClassic: result?.data?.isClassic,
+                                isEditable: result?.data?.isEditable,
+                                permits: undefined,
+                                permitSelections: {
+                                    oPermitId: result?.data?.permitSelections?.oPermitId,
+                                    permitOptionId: result?.data?.permitSelections?.permitOptionId,
+                                    dateStart: result?.data?.permitSelections?.dateStart,
+                                    dateEnd: result?.data?.permitSelections?.dateEnd,
+                                    clubId: result?.data?.permitSelections?.clubId
+                                },
+                                permitOptions: undefined
+                            };
+
+                            if (result?.data?.permits != undefined && result?.data?.permits.length > 0) {
+                                newSnowmobile.permits = result?.data?.permits.map<IPermit>((p: IApiVehiclePermit) => ({
+                                    oPermitId: p?.oPermitId,
+                                    permitType: p?.permitType,
+                                    ofscNumber: p?.ofscNumber,
+                                    linkedPermit: p?.linkedPermit,
+                                    seasonId: p?.seasonId,
+                                    purchaseDate: parseDate(p?.purchaseDate),
+                                    club: p?.club,
+                                    origPermitId: p?.origPermitId,
+                                    associationId: p?.associationId,
+                                    trackingNumber: p?.trackingNumber,
+                                    isReplacement: p?.isReplacement,
+                                    effectiveDate: parseDate(p?.effectiveDate),
+                                    tempPermitDownloaded: p?.tempPermitDownloaded,
+                                    refunded: p?.refunded,
+                                    cancelled: p?.cancelled,
+                                    manualReset: p?.manualReset,
+                                    isaVoucher: p?.isaVoucher,
+                                    encryptedReference: p?.encryptedReference,
+                                    isMostRecent: p?.isMostRecent,
+                                    isExpired: p?.isExpired,
+                                    permitOptionId: undefined,
+                                    dateStart: undefined,
+                                    dateEnd: undefined
+                                }));
+                            }
+
+                            if (result?.data?.permitOptions != undefined && result?.data?.permitOptions.length > 0) {
+                                newSnowmobile.permitOptions = result?.data?.permitOptions.map<IPermitOption>((p: IApiVehiclePermitOption) => ({
+                                    productId: p?.productId,
+                                    name: p?.name,
+                                    displayName: p?.displayName,
+                                    frenchDisplayName: p?.frenchDisplayName,
+                                    amount: p?.amount,
+                                    testAmount: p?.testAmount,
+                                    classic: p?.classic,
+                                    multiDayUpgrade: p?.multiDayUpgrade,
+                                    isMultiDay: p?.isMultiDay,
+                                    isSpecialEvent: p?.isSpecialEvent,
+                                    eventDate: parseDate(p?.eventDate),
+                                    eventName: p?.eventName,
+                                    eventClubId: p?.eventClubId,
+                                    csrOnly: p?.csrOnly,
+                                    permitDays: p?.permitDays,
+                                    canBuyGiftCard: p?.canBuyGiftCard
+                                }));
+                            }
 
                             appContext.updater(draft => {
                                 draft.snowmobiles = draft.snowmobiles == undefined ? [newSnowmobile] : [...draft.snowmobiles, newSnowmobile];
@@ -588,12 +664,14 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
                             setShowAddEditSnowmobileDialog(false);
                         } else {
-                            setAddEditSnowmobileDialogErrorMessage(result?.errorMessage ?? "");
+                            setAddEditSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                         }
 
                         setShowAlert(false);
                     },
                     error: (error: any) => {
+                        console.log(error);
+
                         setShowAlert(false);
                     }
                 });
@@ -626,7 +704,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
                             setShowAddEditSnowmobileDialog(false);
                         } else {
-                            setAddEditSnowmobileDialogErrorMessage(result?.errorMessage ?? "");
+                            setAddEditSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                         }
 
                         setShowAlert(false);
@@ -715,9 +793,9 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
             let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
+                setDeleteSnowmobileDialogErrorMessage("");
                 setSnowmobileIdToDelete(snowmobileId);
                 setSnowmobileNameToDelete(`${snowmobile.vehicleYear} ${snowmobile?.vehicleMake?.value} ${snowmobile?.model} ${snowmobile?.vin}`);
-
                 setShowDeleteSnowmobileDialog(true);
             }
         }
@@ -731,19 +809,19 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
         setShowAlert(true);
 
         apiDeleteVehicle(apiDeleteVehicleRequest).subscribe({
-            next: (result: IApiUpdateVehicleResult) => {
+            next: (result: IApiDeleteVehicleResult) => {
                 if (result?.isSuccessful) {
                     appContext.updater(draft => {
                         draft.snowmobiles = draft?.snowmobiles?.filter(x => x?.oVehicleId !== snowmobileIdToDelete);
                         draft.cartItems = draft?.cartItems?.filter(x => x.itemId !== snowmobileIdToDelete);
                     });
 
+                    setDeleteSnowmobileDialogErrorMessage("");
                     setSnowmobileIdToDelete("");
                     setSnowmobileNameToDelete("");
-
                     setShowDeleteSnowmobileDialog(false);
                 } else {
-                    setDeleteSnowmobileDialogErrorMessage(result?.errorMessage ?? "");
+                    setDeleteSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                 }
 
                 setShowAlert(false);
@@ -757,6 +835,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
     }
 
     function deleteSnowmobileDialogNoClick(): void {
+        setDeleteSnowmobileDialogErrorMessage("");
         setSnowmobileIdToDelete("");
         setSnowmobileNameToDelete("");
 
@@ -796,7 +875,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
                     apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
                         next: (result: IApiSavePermitSelectionForVehicleResult) => {
-                            if (result?.isSuccessful) {
+                            if (result?.isSuccessful && result?.data != undefined) {
                                 appContext.updater(draft => {
                                     let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
@@ -810,6 +889,8 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                         };
                                     }
                                 });
+                            } else {
+
                             }
 
                             //setShowAlert(false);
@@ -879,7 +960,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
 
                         apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
                             next: (result: IApiSavePermitSelectionForVehicleResult) => {
-                                if (result?.isSuccessful) {
+                                if (result?.isSuccessful && result?.data != undefined) {
                                     appContext.updater(draft => {
                                         let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
@@ -893,6 +974,8 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                             };
                                         }
                                     });
+                                } else {
+                                    
                                 }
 
                                 //setShowAlert(false);
@@ -955,17 +1038,17 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                     let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
 
                     if (permitOption != undefined) {
-                        let description: string = `${snowmobile?.vehicleYear} ${snowmobile?.vehicleMake?.value} ${snowmobile?.model} ${snowmobile?.vin} `;
+                        let description: string = `${snowmobile?.vehicleYear} ${snowmobile?.vehicleMake?.value} ${snowmobile?.model} ${snowmobile?.vin} ${permitOption?.displayName}`;
+                        let descriptionFr: string = `${snowmobile?.vehicleYear} ${snowmobile?.vehicleMake?.value} ${snowmobile?.model} ${snowmobile?.vin} ${permitOption?.frenchDisplayName}`;
 
                         if (permitOption.isMultiDay) {
-                            description += `${permitOption?.name} (${formatShortDate(snowmobile?.permitSelections?.dateStart)} - ${formatShortDate(snowmobile?.permitSelections?.dateEnd)}) `;
-                        } else {
-                            description += `${permitOption?.name} `;
+                            description += ` (${formatShortDate(snowmobile?.permitSelections?.dateStart)} - ${formatShortDate(snowmobile?.permitSelections?.dateEnd)}) `;
                         }
 
                         let cartItem: ICartItem = {
                             id: getGuid(),
                             description: description,
+                            descriptionFr: descriptionFr,
                             price: permitOption?.amount ?? 0,
                             isPermit: true,
                             isGiftCard: false,

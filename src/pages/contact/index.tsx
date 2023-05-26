@@ -1,16 +1,18 @@
 import { useContext, useEffect, useState } from 'react'
-import { AppContext, IAccountPreferences, IAppContextValues, IContactInfo, IKeyValue, IParentKeyValue } from '@/custom/app-context';
+import { AppContext, IAppContextValues, IKeyValue, IParentKeyValue } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from '@/custom/utilities';
+import { getApiErrorMessage, getKeyValueFromSelect, getParentKeyValueFromSelect } from '@/custom/utilities';
 import { NextRouter, useRouter } from 'next/router';
 import CartItemsAlert from '@/components/cart-items-alert';
 import { Observable, forkJoin } from 'rxjs';
 import { IApiGetCountriesResult, IApiGetProvincesResult, IApiGetUserDetailsResult, IApiGetUserPreferencesResult, IApiSaveUserDetailsRequest, IApiSaveUserDetailsResult, IApiSaveUserPreferencesRequest, IApiSaveUserPreferencesResult, IApiUpdateVehicleResult, apiGetCountries, apiGetProvinces, apiGetUserDetails, apiGetUserPreferences, apiSaveUserDetails, apiSaveUserPreferences } from '@/custom/api';
-import _, { initial } from 'lodash';
+import _ from 'lodash';
 import { isRoutePermitted, isUserAuthenticated } from '@/custom/authentication';
+import { Constants } from '../../../constants';
+import { error } from 'console';
 
 export default function ContactPage() {
     const appContext = useContext(AppContext);
@@ -89,7 +91,8 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
     const [ofscContactPermission, setOfscContactPermission] = useState(-1);
     const [isOfscContactPermissionValid, setIsOfscContactPermissionValid] = useState(true);
 
-    //const [riderAdvantage, setRiderAdvantage] = useState(-1);
+    const [riderAdvantage, setRiderAdvantage] = useState(-1);
+    const [isRiderAdvantageValid, setIsRiderAdvantageValid] = useState(true);
 
     const [volunteering, setVolunteering] = useState(-1);
     const [isVolunteeringValid, setIsVolunteeringValid] = useState(true);
@@ -127,9 +130,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                             telephone: apiGetUserDetailsResult?.telephone,
                             email: apiGetUserDetailsResult?.email,
                             adminUser: apiGetUserDetailsResult?.adminUser ?? false,
-                            verified: apiGetUserDetailsResult?.verified ?? false,
-                            contactConsent: apiGetUserDetailsResult?.contactConsent ?? false,
-                            volunteerStatus: apiGetUserDetailsResult?.volunteerStatus ?? 0
+                            verified: apiGetUserDetailsResult?.verified ?? false
                         };
                     });
                 }
@@ -141,7 +142,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                     appContext.updater(draft => {
                         draft.accountPreferences = {
                             ofscContactPermission: apiGetUserPreferences?.ofscContactPermission ?? -1,
-                            //riderAdvantage: apiGetUserPreferences?.riderAdvantage ?? -1,
+                            riderAdvantage: apiGetUserPreferences?.riderAdvantage ?? -1,
                             volunteering: apiGetUserPreferences?.volunteering ?? -1
                         };
                     })
@@ -236,7 +237,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                             )}
                         </div>
 
-                        {/* <div>
+                        <div>
                             <span className="me-1">Rider Advantage:</span>
 
                             {appContext.data?.accountPreferences?.riderAdvantage === 0 && (
@@ -246,7 +247,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                             {appContext.data?.accountPreferences?.riderAdvantage === 1 && (
                                 <span className="fw-bold">Yes</span>
                             )}
-                        </div> */}
+                        </div>
 
                         <div>
                             <span className="me-1">Interested in volunteering:</span>
@@ -328,7 +329,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
                                     <select className={`form-select ${isProvinceValid ? "" : "is-invalid"}`} id="contact-info-province" aria-label="Province/State" value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
-                                        <option value="" disabled>Please select</option>
+                                        <option value="" disabled>{Constants.PleaseSelect}</option>
 
                                         {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
                                             <option value={`${country.key}|${provinceData.key}`} key={`${country.key}|${provinceData.key}`}>{provinceData.value}</option>
@@ -340,7 +341,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
                                     <select className={`form-select ${isCountryValid ? "" : "is-invalid"}`} id="contact-info-country" aria-label="Country" value={country.key} onChange={(e: any) => countryChange(e)}>
-                                        <option value="" disabled>Please select</option>
+                                        <option value="" disabled>{Constants.PleaseSelect}</option>
 
                                         {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
                                             <option value={countryData.key} key={countryData.key}>{countryData.value}</option>
@@ -384,7 +385,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 <span className="text-danger me-1">*</span>= mandatory field
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="secondary" onClick={() => contactInfoDialogSave()}>Save</Button>
+                                <Button className="me-2" variant="primary" onClick={() => contactInfoDialogSave()}>Save</Button>
                                 <Button variant="primary" onClick={() => contactInfoDialogHide()}>Cancel</Button>
                             </div>
                         </div>
@@ -418,7 +419,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 </div>
                                 <div className="form-floating mb-2">
                                     <select className={`form-select ${isOfscContactPermissionValid ? "" : "is-invalid"}`} id="account-preferences-ofsc-contact-permission" aria-label="OFSC Contact Permission" value={ofscContactPermission.toString()} onChange={(e: any) => setOfscContactPermission(Number(e.target.value))}>
-                                        <option value="-1" disabled>Please select</option>
+                                        <option value="-1" disabled>{Constants.PleaseSelect}</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
                                     </select>
@@ -427,21 +428,21 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                             </div>
                         </div>
 
-                        {/* <div className="row">
+                        <div className="row">
                             <div className="col-12">
                                 <div>
                                     I would like to participate in eligible Rider Advantage programs as offered/available.
                                 </div>
                                 <div className="form-floating mb-2">
                                     <select className="form-select" id="account-preferences-rider-advantage" aria-label="Rider Advantage" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
-                                        <option value="-1" disabled>Please select</option>
+                                        <option value="-1" disabled>{Constants.PleaseSelect}</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
                                     </select>
                                     <label className="required" htmlFor="account-preferences-rider-advantage">Rider Advantage</label>
                                 </div>
                             </div>
-                        </div> */}
+                        </div>
 
                         <div className="row">
                             <div className="col-12">
@@ -450,7 +451,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 </div>
                                 <div className="form-floating mb-2">
                                     <select className={`form-select ${isVolunteeringValid ? "" : "is-invalid"}`} id="account-preferences-volunteering" aria-label="Volunteering" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
-                                        <option value="-1" disabled>Please select</option>
+                                        <option value="-1" disabled>{Constants.PleaseSelect}</option>
                                         <option value="0">No, I am not interested in volunteering</option>
                                         <option value="1">Yes, I already volunteer</option>
                                         <option value="2">Yes, I'd like to volunteer</option>
@@ -468,7 +469,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 <span className="text-danger me-1">*</span>= mandatory field
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="secondary" onClick={() => accountPreferencesDialogSave()}>Save</Button>
+                                <Button className="me-2" variant="primary" onClick={() => accountPreferencesDialogSave()}>Save</Button>
                                 <Button variant="primary" onClick={() => accountPreferencesDialogHide()}>Cancel</Button>
                             </div>
                         </div>
@@ -498,7 +499,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
         let result: IParentKeyValue[] = [];
 
         if (provincesData != undefined && provincesData.length > 0) {
-            result = sortArray(provincesData.filter(x => x.parent === country.key), ["value"]);
+            result = provincesData.filter(x => x.parent === country.key);
         }
 
         return result;
@@ -510,11 +511,10 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
     }
 
     function getCountriesData(): IKeyValue[] {
-        return countriesData;
+        return countriesData?.filter(x => x?.key !== 'OT');
     }
 
     function contactInfoDialogShow(): void {
-        setEmail(appContext.data?.contactInfo?.email ?? "");
         setFirstName(appContext.data?.contactInfo?.firstName ?? "");
         setMiddleInitial(appContext.data?.contactInfo?.initial ?? "")
         setLastName(appContext.data?.contactInfo?.lastName ?? "");
@@ -525,6 +525,19 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
         setCountry(appContext.data?.contactInfo?.country ?? { key: "", value: "" });
         setPostalCode(appContext.data?.contactInfo?.postalCode ?? "");
         setTelephone(appContext.data?.contactInfo?.telephone ?? "");
+        setEmail(appContext.data?.contactInfo?.email ?? "");
+
+        setIsFirstNameValid(true);
+        setIsMiddleInitialValid(true);
+        setIsLastNameValid(true);
+        setIsAddressLine1Valid(true);
+        setIsAddressLine2Valid(true);
+        setIsCityValid(true);
+        setIsProvinceValid(true);
+        setIsCountryValid(true);
+        setIsPostalCodeValid(true);
+        setIsTelephoneValid(true);
+        setIsEmailValid(true);
 
         setShowContactInfoDialog(true);
     }
@@ -541,8 +554,6 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                 provinceId: province?.key,
                 telephone: telephone,
             };
-
-            console.log(apiSaveUserDetailsRequest);
 
             setShowAlert(true);
 
@@ -565,19 +576,19 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                                 email: result?.data?.email,
                                 adminUser: result?.data?.adminUser ?? false,
                                 verified: result?.data?.verified ?? false,
-                                contactConsent: result?.data?.contactConsent ?? false,
-                                volunteerStatus: result?.data?.volunteerStatus ?? 0
                             };
                         });
 
                         setShowContactInfoDialog(false);
                     } else {
-                        setContactInfoDialogErrorMessage(result?.errorMessage ?? "");
-                    }
+                        setContactInfoDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
+                    }                   
 
                     setShowAlert(false);
                 },
                 error: (error: any) => {
+                    console.log(error);                   
+
                     setShowAlert(false);
                 }
             });
@@ -649,7 +660,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
         } else {
             setIsEmailValid(true);
         }
-        console.log(isValid);
+
         return isValid;
     }
 
@@ -659,8 +670,12 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
 
     function accountPreferencesDialogShow(): void {
         setOfscContactPermission(appContext.data?.accountPreferences?.ofscContactPermission ?? -1);
-        //setRiderAdvantage(appContext.data?.accountPreferences?.riderAdvantage ?? -1);
+        setRiderAdvantage(appContext.data?.accountPreferences?.riderAdvantage ?? -1);
         setVolunteering(appContext.data?.accountPreferences?.volunteering ?? -1);
+
+        setIsOfscContactPermissionValid(true);
+        setIsRiderAdvantageValid(true);
+        setIsVolunteeringValid(true);
 
         setShowAccountPreferencesDialog(true);
     }
@@ -669,6 +684,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
         if (validateAccountPreferencesDialog()) {
             let apiSaveUserPreferencesRequest: IApiSaveUserPreferencesRequest = {
                 ofscContactPermission: ofscContactPermission,
+                riderAdvantage: riderAdvantage,
                 volunteering: volunteering
             };
 
@@ -679,20 +695,22 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                     if (result?.isSuccessful && result?.data != undefined) {
                         appContext.updater(draft => {
                             draft.accountPreferences = {
-                                ofscContactPermission: result?.data?.ofscContactPermission,
-                                riderAdvantage: result?.data?.riderAdvantage,
-                                volunteering: result?.data?.volunteering
+                                ofscContactPermission: result?.data?.ofscContactPermission ?? -1,
+                                riderAdvantage: result?.data?.riderAdvantage ?? -1,
+                                volunteering: result?.data?.volunteering ?? -1
                             };
                         });
 
                         setShowAccountPreferencesDialog(false);
                     } else {
-                        setAccountPreferencesDialogErrorMessage(result?.errorMessage ?? "");
+                        setAccountPreferencesDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                     }
 
                     setShowAlert(false);
                 },
                 error: (error: any) => {
+                    console.log(error);
+
                     setShowAlert(false);
                 }
             });
@@ -707,6 +725,13 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
             isValid = false;
         } else {
             setIsOfscContactPermissionValid(true);
+        }
+
+        if (riderAdvantage === -1) {
+            setIsRiderAdvantageValid(false);
+            isValid = false;
+        } else {
+            setIsRiderAdvantageValid(true);
         }
 
         if (volunteering === -1) {

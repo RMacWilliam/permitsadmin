@@ -3,12 +3,13 @@ import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
 import { IApiGetClubsResult, IApiGetCountriesResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetShippingFeesResult, apiGetClubs, apiGetCountries, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, IApiSavePermitSelectionForVehicleRequest, apiSavePermitSelectionForVehicle, IApiSavePermitSelectionForVehicleResult } from "@/custom/api";
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IParentKeyValue, IRedeemableGiftCards, IShippingFee, ISnowmobile, IPermitSelections } from "@/custom/app-context";
 import { isRoutePermitted, isUserAuthenticated } from "@/custom/authentication";
-import { formatCurrency, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from "@/custom/utilities";
+import { formatCurrency, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect } from "@/custom/utilities";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { Observable, forkJoin } from "rxjs";
 import Select from 'react-select';
+import { Constants } from "../../../constants";
 
 export default function CartPage() {
     const appContext = useContext(AppContext);
@@ -177,19 +178,26 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                         <ul className="list-group list-group-flush">
                             {getCartItems().map(cartItem => (
                                 <li className="list-group-item" key={cartItem.id}>
-                                    <div className="d-flex">
+                                    <div className="d-flex my-2">
                                         <div className="flex-fill">
-                                            {cartItem.isPermit && (
-                                                <i className="fa-solid fa-snowflake me-2"></i>
-                                            )}
-                                            {cartItem.isGiftCard && (
-                                                <i className="fa-solid fa-gift me-2"></i>
-                                            )}
+                                            <span className="me-2">
+                                                {cartItem.isPermit && (
+                                                    <i className="fa-solid fa-snowflake me-2"></i>
+                                                )}
+                                                {cartItem.isGiftCard && (
+                                                    <i className="fa-solid fa-gift me-2"></i>
+                                                )}
 
-                                            {cartItem.description}
+                                                {appContext.translation?.i18n?.language === "fr" && (
+                                                    <span>{cartItem.descriptionFr}</span>
+                                                )}
+                                                {appContext.translation?.i18n?.language === "en" && (
+                                                    <span>{cartItem.description}</span>
+                                                )}
+                                            </span>
 
                                             <button className="btn btn-link text-danger" style={{ display: "contents" }} type="button" onClick={() => removeCartItemClick(cartItem.id)}>
-                                                <span className="ms-2">Remove</span>
+                                                Remove
                                             </button>
                                         </div>
                                         <div className="fw-bold text-end ms-3">
@@ -197,21 +205,21 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                         </div>
                                     </div>
                                     <div className="d-flex">
-                                        <div className="flex-column flex-fill">
+                                        <div className="flex-column flex-fill w-100">
                                             {cartItem?.isPermit && (
                                                 <>
                                                     <div className="card mt-2">
                                                         <div className="card-body">
                                                             {cartItem?.redemptionCode != undefined && (
-                                                                <div className="d-flex justify-content-between">
-                                                                    <div className="fw-bold">
-                                                                        Gift card redemption ({cartItem?.redemptionCode})
+                                                                <div className="d-flex justify-content-between flex-wrap flex-sm-nowrap">
+                                                                    <div className="fw-bold w-100">
+                                                                        <span className="me-2">Gift card redemption ({cartItem?.redemptionCode})</span>
 
-                                                                        <button className="btn btn-link text-danger" style={{ display: "contents" }} type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
-                                                                            <span className="ms-2">Remove</span>
-                                                                        </button>
+                                                                        <a className="btn btn-link text-danger text-nowrap" style={{ display: "contents" }} type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
+                                                                            Remove
+                                                                        </a>
                                                                     </div>
-                                                                    <div className="fw-bold">${formatCurrency(cartItem?.giftCardAmount)}</div>
+                                                                    <div className="fw-bold text-end ms-auto">${formatCurrency(cartItem?.giftCardAmount)}</div>
                                                                 </div>
                                                             )}
 
@@ -263,7 +271,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                             </div>
 
                                                             <div className="form-floatingg mt-1">
-                                                                <Select id={`cart-club-${cartItem?.itemId}`} aria-label="Club" options={getClubsData()} value={getSelectedClub(cartItem?.itemId)} onChange={(e: any) => permitClubChange(e, cartItem?.itemId)} />
+                                                                <Select id={`cart-club-${cartItem?.itemId}`} aria-label="Club" isClearable={true} placeholder={Constants.PleaseSelect} options={getClubsData()} value={getSelectedClub(cartItem?.itemId)} onChange={(e: any) => permitClubChange(e, cartItem?.itemId)} />
                                                             </div>
 
                                                             <div className="btn btn-link text-decoration-none align-baseline text-start border-0 px-0 pb-0" onClick={() => clubLocatorMapDialogShow()}>
@@ -298,7 +306,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                             <div className="d-flex">
                                 <div className="flex-column me-auto w-100">
                                     <select className="form-select" aria-label="Shipping" value={shipping} onChange={(e: any) => shippingChange(e)}>
-                                        <option value="">Please select</option>
+                                        <option value="">{Constants.PleaseSelect}</option>
 
                                         {shippingFeesData != undefined && shippingFeesData.length > 0 && getShippingFeesData().map(shippingMethod => (
                                             <option value={shippingMethod.id} key={shippingMethod.id}>{shippingMethod.name} - ${formatCurrency(shippingMethod.price)}</option>
@@ -383,7 +391,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
                                                     <select className="form-select" id="alternate-address-province" aria-label="Province/State" value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
-                                                        <option value="" disabled>Please select</option>
+                                                        <option value="" disabled>{Constants.PleaseSelect}</option>
 
                                                         {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
                                                             <option value={`${country.key}|${provinceData.key}`} key={`${country.key}|${provinceData.key}`}>{provinceData.value}</option>
@@ -395,7 +403,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
                                                     <select className="form-select" id="alternate-address-country" aria-label="Country" value={country.key} onChange={(e: any) => countryChange(e)}>
-                                                        <option value="" disabled>Please select</option>
+                                                        <option value="" disabled>{Constants.PleaseSelect}</option>
 
                                                         {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
                                                             <option value={countryData.key} key={countryData.key}>{countryData.value}</option>
@@ -485,7 +493,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         let result: { value?: string, label?: string }[] = [];
 
         if (clubsData != undefined && clubsData.length > 0) {
-            result = sortArray(clubsData, ["value"])?.map(x => ({ value: x?.key, label: x?.value }))
+            result = clubsData?.map(x => ({ value: x?.key, label: x?.value }))
         }
 
         return result;
@@ -659,7 +667,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         let result: IParentKeyValue[] = [];
 
         if (provincesData != undefined && provincesData.length > 0) {
-            result = sortArray(provincesData.filter(x => x.parent === country.key), ["value"]);
+            result = provincesData.filter(x => x.parent === country.key);
         }
 
         return result;
@@ -689,7 +697,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     }
 
     function permitClubChange(e: any, snowmobileId?: string): void {
-        if (e != undefined && snowmobileId != undefined) {
+        if (snowmobileId != undefined) {
             let snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
             if (snowmobile != undefined) {
@@ -702,12 +710,12 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                         permitOptionId: permitSelections?.permitOptionId,
                         dateStart: permitSelections?.dateStart,
                         dateEnd: permitSelections?.dateEnd,
-                        clubId: Number(e?.value)
+                        clubId: e == undefined ? undefined : Number(e?.value)
                     };
 
                     apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
                         next: (result: IApiSavePermitSelectionForVehicleResult) => {
-                            if (result?.isSuccessful) {
+                            if (result?.isSuccessful && result?.data != undefined) {
                                 appContext.updater(draft => {
                                     let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
@@ -721,6 +729,8 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                         };
                                     }
                                 });
+                            } else {
+                                
                             }
 
                             //setShowAlert(false);

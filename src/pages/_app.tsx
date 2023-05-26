@@ -15,7 +15,7 @@ import '@/localization/i18n';
 import Script from 'next/script'
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { WebApiAppContextData } from '@/custom/api';
+import { GlobalAppContext } from '../../constants';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [immerAppContextValues, updateImmerAppContextValues] = useImmer(initialAppContextValues.data);
@@ -45,7 +45,7 @@ export default function App({ Component, pageProps }: AppProps) {
   // Save app context to local storage whenever app context is updated.
   useEffect(() => {
     // Set WebApi token.
-    WebApiAppContextData.token = immerAppContextValues.token;
+    GlobalAppContext.token = immerAppContextValues.token;
 
     if (showApp && window.localStorage) {
       window.localStorage.setItem("data", JSON.stringify(immerAppContextValues));
@@ -57,9 +57,6 @@ export default function App({ Component, pageProps }: AppProps) {
     updater: updateImmerAppContextValues as Updater<IAppContextData>,
     translation: { t, i18n }
   };
-
-  // Set WebApi token.
-  WebApiAppContextData.token = immerAppContextValues.token;
 
   return (
     <AppContext.Provider value={appContextProviderValues}>

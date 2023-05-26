@@ -9,6 +9,7 @@ import { Observable, forkJoin } from 'rxjs';
 import { IApiGetAvailableGiftCardsResult, IApiGetGiftcardsForCurrentSeasonForUserResult, apiGetAvailableGiftCards, apiGetGiftcardsForCurrentSeasonForUser } from '@/custom/api';
 import ConfirmationDialog from '@/components/confirmation-dialog';
 import { isRoutePermitted, isUserAuthenticated } from '@/custom/authentication';
+import { Constants } from '../../../constants';
 
 export default function GiftCardsPage() {
     const appContext = useContext(AppContext);
@@ -46,6 +47,7 @@ export default function GiftCardsPage() {
 
 function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [showDeleteGiftCardDialog, setShowDeleteGiftCardDialog] = useState(false);
+    const [deleteGiftCardDialogErrorMessage, setDeleteGiftCardDialogErrorMessage] = useState("");
     const [giftCardIdToDelete, setGiftCardIdToDelete] = useState("");
 
     const [giftCardTypesData, setGiftCardTypesData] = useState([] as IGiftCardType[]);
@@ -104,6 +106,8 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
                         multiDayUpgrade: x?.multiDayUpgrade,
                         isMultiDay: x?.isMultiDay,
                         isSpecialEvent: x?.isSpecialEvent,
+                        isTrackedShipping: x?.isTrackedShipping,
+                        trackedShippingAmount: x?.trackedShippingAmount,
                         eventDate: parseDate(x?.eventDate),
                         eventName: x?.eventName,
                         eventClubId: x?.eventClubId,
@@ -152,10 +156,10 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
                     <h5 className="card-header d-flex justify-content-between align-items-center">
                         <div>
                             {giftCard.isPurchased && appContext.translation?.i18n?.language === "en" && (
-                                <span>Purchased {getGiftCardType(giftCard.productId)?.displayName} Gift Card &mdash; ${formatCurrency(getGiftCardType(giftCard.productId)?.amount)}</span>
+                                <span>Purchased {getGiftCardName(giftCard.productId)} &mdash; ${formatCurrency(getGiftCardType(giftCard.productId)?.amount)}</span>
                             )}
                             {giftCard.isPurchased && appContext.translation?.i18n?.language === "fr" && (
-                                <span>Purchased {getGiftCardType(giftCard.productId)?.frenchDisplayName} Gift Card &mdash; ${formatCurrency(getGiftCardType(giftCard.productId)?.amount)}</span>
+                                <span>Purchased {getGiftCardName(giftCard.productId, "fr")} Gift Card &mdash; ${formatCurrency(getGiftCardType(giftCard.productId)?.amount)}</span>
                             )}
 
                             {!giftCard.isPurchased && (
@@ -175,35 +179,44 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
                     </h5>
 
                     <ul className="list-group list-group-flush">
-                        <li className="list-group-item">
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <label htmlFor="exampleFormControlInput1" className="form-label">Redemption Code</label>
-                                    <p className="font-monospace mb-0">3059734095760349576340957340957304957</p>
-                                </div>
+                        {giftCard?.isPurchased && (
+                            <li className="list-group-item">
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <label htmlFor="exampleFormControlInput1" className="form-label">Redemption Code</label>
+                                        <p className="font-monospace mb-0">{giftCard?.redemptionCode}</p>
+                                    </div>
 
-                                <div>
-                                    <button className="btn btn-primary btn-sm">Resend E-mail</button>
+                                    <div>
+                                        <button className="btn btn-primary btn-sm">Resend E-mail</button>
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
+                            </li>
+                        )}
 
                         {!giftCard?.isPurchased && !giftCard?.isRedeemed && (
                             <li className="list-group-item">
                                 <div className="form-floating">
                                     <select className="form-select" id={`gift-cards-permit-options-${giftCard.oVoucherId}`} aria-label="Select gift card to purchase" value={getSelectedGiftCardOption(giftCard?.oVoucherId)} onChange={(e: any) => giftCardOptionChange(e, giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
-                                        <option value="" disabled>Please select</option>
+                                        <option value="" disabled>{Constants.PleaseSelect}</option>
 
                                         {giftCardTypesData != undefined && giftCardTypesData.length > 0 && getGiftCardTypesData().map(giftCardType => {
+                                            let key: string = (giftCardType?.productId?.toString() ?? "") + "|" + (giftCardType?.isTrackedShipping ? "TRACKED" : "UNTRACKED");
+                                            let displayText: string = "";
+
                                             if (appContext.translation?.i18n?.language === "fr") {
-                                                return (
-                                                    <option value={giftCardType?.productId} key={giftCardType?.productId}>{giftCardType?.frenchDisplayName} - ${formatCurrency(giftCardType?.amount)}</option>
-                                                )
+                                                displayText = getGiftCardName(giftCardType?.productId, "fr");
                                             } else {
-                                                return (
-                                                    <option value={giftCardType?.productId} key={giftCardType?.productId}>{giftCardType?.displayName} - ${formatCurrency(giftCardType?.amount)}</option>
-                                                )
+                                                displayText = getGiftCardName(giftCardType?.productId);
                                             }
+
+                                            let amount: number = (giftCardType?.amount ?? 0) + (giftCardType?.isTrackedShipping ? (giftCardType?.trackedShippingAmount ?? 0) : 0);
+
+                                            displayText += " — $" + formatCurrency(amount);
+
+                                            return (
+                                                <option value={key} key={key}>{displayText}</option>
+                                            )
                                         })}
                                     </select>
                                     <label className="required" htmlFor={`gift-cards-permit-options-${giftCard.oVoucherId}`}>Select gift card to purchase</label>
@@ -264,7 +277,7 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
                 </div>
             </div>
 
-            <ConfirmationDialog showDialog={showDeleteGiftCardDialog} title="Remove Gift Card" buttons={2} icon="question" width="50"
+            <ConfirmationDialog showDialog={showDeleteGiftCardDialog} title="Remove Gift Card" errorMessage={deleteGiftCardDialogErrorMessage} buttons={2} icon="question" width="50"
                 yesClick={() => deleteGiftCardDialogYesClick()} noClick={() => deleteGiftCardDialogNoClick()} closeClick={() => deleteGiftCardDialogNoClick()}>
                 <div>Are you sure you want to remove this gift card?</div>
             </ConfirmationDialog>
@@ -306,6 +319,36 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
 
         if (giftCardTypeId != undefined) {
             result = getGiftCardTypesData()?.filter(x => x?.productId === giftCardTypeId)[0];
+        }
+
+        return result;
+    }
+
+    function getGiftCardName(giftCardTypeId?: number, language: string = "en"): string {
+        let result: string = "";
+
+        if (giftCardTypeId != undefined) {
+            let giftCard: IGiftCardType | undefined = getGiftCardTypesData()?.filter(x => x?.productId === giftCardTypeId)[0];
+
+            if (giftCard != undefined) {
+                if (language === "fr") {
+                    result = giftCard.frenchDisplayName + " (fr) Gift Card";
+
+                    if (giftCard?.isTrackedShipping) {
+                        result += " (fr) with Tracking";
+                    } else {
+                        result += " (fr) without Tracking";
+                    }
+                } else {
+                    result = giftCard.displayName + " Gift Card";
+
+                    if (giftCard?.isTrackedShipping) {
+                        result += " with Tracking";
+                    } else {
+                        result += " without Tracking";
+                    }
+                }
+            }
         }
 
         return result;
@@ -454,12 +497,13 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
                 let giftCardType: IGiftCardType | undefined = giftCardTypesData?.filter(x => x?.productId === giftCard?.productId)[0];
 
                 if (giftCardType != undefined) {
-                    let description: string = `${giftCardType?.name} Gift Card - ${giftCard?.recipientLastName} - ${giftCard?.recipientPostal}`;
-
                     let cartItem: ICartItem = {
                         id: getGuid(),
-                        description: description,
-                        price: giftCardType?.amount ?? 0,
+                        description: getGiftCardName(giftCardType?.productId) + ` — ${giftCard?.recipientLastName} — ${giftCard?.recipientPostal}`,
+                        descriptionFr: getGiftCardName(giftCardType?.productId, "fr") + ` — ${giftCard?.recipientLastName} — ${giftCard?.recipientPostal}`,
+                        price: giftCardType?.isTrackedShipping
+                            ? (giftCardType?.amount ?? 0) + (giftCardType.trackedShippingAmount ?? 0)
+                            : (giftCardType?.amount ?? 0),
                         isPermit: false,
                         isGiftCard: true,
                         itemId: giftCard.oVoucherId,
@@ -537,6 +581,7 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
 
     function deleteSnowmobileDialogShow(giftCardId?: string): void {
         if (giftCardId != undefined) {
+            setDeleteGiftCardDialogErrorMessage("");
             setGiftCardIdToDelete(giftCardId);
             setShowDeleteGiftCardDialog(true);
         }
@@ -548,11 +593,13 @@ function GiftCards({ appContext, router, setShowAlert }: { appContext: IAppConte
             draft.cartItems = draft?.cartItems?.filter(x => x?.itemId !== giftCardIdToDelete);
         });
 
+        setDeleteGiftCardDialogErrorMessage("");
         setGiftCardIdToDelete("");
         setShowDeleteGiftCardDialog(false);
     }
 
     function deleteGiftCardDialogNoClick(): void {
+        setDeleteGiftCardDialogErrorMessage("");
         setGiftCardIdToDelete("");
         setShowDeleteGiftCardDialog(false);
     }
