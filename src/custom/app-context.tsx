@@ -104,6 +104,7 @@ export interface ISnowmobile {
 }
 
 export interface IGiftCardType {
+    giftcardId?: number;
     productId?: number;
     name?: string;
     displayName?: string;
@@ -111,20 +112,12 @@ export interface IGiftCardType {
     amount?: number;
     testAmount?: number;
     classic?: boolean;
-    multiDayUpgrade?: boolean;
-    isMultiDay?: boolean;
-    isSpecialEvent?: boolean;
     isTrackedShipping?: boolean;
     trackedShippingAmount?: number;
-    eventDate?: Date;
-    eventName?: string;
-    eventClubId?: number;
-    csrOnly?: boolean;
-    permitDays: number;
-    canBuyGiftCard?: boolean;
 }
 
 export interface IGiftCard {
+    giftCardId?: number;
     oVoucherId?: string;
     orderId?: string;
     transactionDate?: Date;
@@ -133,13 +126,12 @@ export interface IGiftCard {
     redemptionCode?: string;
     purchaserEmail?: string;
     productId?: number;
-    redeemed?: boolean;
+    isRedeemed?: boolean;
+    isPurchased?: boolean;
     useShippingAddress?: boolean;
     shippingOption?: string;
     clubId?: number;
     permitId?: number;
-    isPurchased?: boolean;
-    isRedeemed?: boolean;
 
     uiIsInEditMode?: boolean;
     uiRecipientLastName?: string;
@@ -167,6 +159,8 @@ export interface ICartItem {
 
     uiRedemptionCode: string; // This is a controlled field. Cannot be undefined.
     uiShowRedemptionCodeNotFound?: boolean;
+
+    uiIsClubValid?: boolean;
 }
 
 export interface IShippingFee {

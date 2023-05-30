@@ -66,7 +66,7 @@ function Home({ appContext, router, setShowAlert }: { appContext: IAppContextVal
             )}
 
             <div className="row">
-                <div className="col-12 col-sm-6 ">
+                <div className="col-12 col-md-6 ">
                     <div className="card h-100">
                         <div className="card-body">
                             <div className="d-flex h-100">
@@ -94,7 +94,7 @@ function Home({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                     </div>
                 </div>
 
-                <div className="col-12 col-sm-6 mt-2 mt-sm-0">
+                <div className="col-12 col-md-6 mt-3 mt-md-0">
                     <div className="card h-100">
                         <div className="card-body">
                             <div className="d-flex h-100">

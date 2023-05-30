@@ -268,7 +268,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                 <button type="button" className="btn btn-success mt-3" onClick={() => confirmContactInfoClick()}>Confirm Contact Information</button>
             )}
 
-            <Modal show={showContactInfoDialog} onHide={contactInfoDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
+            <Modal show={showContactInfoDialog} onHide={contactInfoDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-75-percent">
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Contact Information</Modal.Title>
                 </Modal.Header>
@@ -393,7 +393,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                 </Modal.Footer>
             </Modal>
 
-            <Modal show={showAccountPreferencesDialog} onHide={accountPreferencesDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-90-percent">
+            <Modal show={showAccountPreferencesDialog} onHide={accountPreferencesDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-75-percent">
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Account Preferences</Modal.Title>
                 </Modal.Header>

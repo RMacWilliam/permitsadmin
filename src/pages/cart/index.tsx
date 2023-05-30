@@ -55,6 +55,10 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
 
     const [shipping, setShipping] = useState("");
     const [pendingShipping, setPendingShipping] = useState("");
+    const [isShippingValid, setIsShippingValid] = useState(true);
+
+    const [standardShippingWarning, setStandardShippingWarning] = useState(false);
+    const [isStandardShippingWarningValid, setIsStandardShippingWarningValid] = useState(true);
 
     const [showStandardShippingDialog, setShowStandardShippingDialog] = useState(false);
 
@@ -150,6 +154,13 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                     setClubsData(apiGetClubsResult.map<IKeyValue>(x => ({ key: x?.key ?? "", value: x?.value ?? "" })));
                 }
 
+                // Reset validation.
+                appContext.updater(draft => {
+                    draft?.cartItems?.filter(x => x.isPermit)?.forEach(x => {
+                        x.uiIsClubValid = undefined;
+                    });
+                })
+
                 setShowAlert(false);
             },
             error: (error: any) => {
@@ -208,75 +219,78 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                         <div className="flex-column flex-fill w-100">
                                             {cartItem?.isPermit && (
                                                 <>
-                                                    <div className="card mt-2">
-                                                        <div className="card-body">
-                                                            {cartItem?.redemptionCode != undefined && (
-                                                                <div className="d-flex justify-content-between flex-wrap flex-sm-nowrap">
-                                                                    <div className="fw-bold w-100">
-                                                                        <span className="me-2">Gift card redemption ({cartItem?.redemptionCode})</span>
+                                                    {isRedeemGiftCardVisible(cartItem?.itemId) && (
+                                                        <div className="card mt-2">
+                                                            <div className="card-body footer-color">
+                                                                {cartItem?.redemptionCode != undefined && (
+                                                                    <div className="d-flex justify-content-between flex-wrap flex-sm-nowrap">
+                                                                        <div className="fw-semibold w-100">
+                                                                            <span className="me-2">Gift card redemption ({cartItem?.redemptionCode})</span>
 
-                                                                        <a className="btn btn-link text-danger text-nowrap" style={{ display: "contents" }} type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
-                                                                            Remove
-                                                                        </a>
+                                                                            <a className="btn btn-link text-danger text-nowrap" style={{ display: "contents" }} type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
+                                                                                Remove
+                                                                            </a>
+                                                                        </div>
+                                                                        <div className="fw-bold text-end ms-auto">${formatCurrency(cartItem?.giftCardAmount)}</div>
                                                                     </div>
-                                                                    <div className="fw-bold text-end ms-auto">${formatCurrency(cartItem?.giftCardAmount)}</div>
-                                                                </div>
-                                                            )}
+                                                                )}
 
-                                                            {cartItem?.redemptionCode == undefined && (
-                                                                <>
-                                                                    <div className="fw-bold mb-2">Redeem Gift Card</div>
+                                                                {cartItem?.redemptionCode == undefined && (
+                                                                    <>
+                                                                        <div className="fw-semibold mb-2">Redeem Gift Card</div>
 
-                                                                    <div className="d-flex">
-                                                                        <div className="flex-column me-auto w-100">
-                                                                            <div className="container-fluid">
-                                                                                <div className="row">
-                                                                                    <div className="col-12 col-md-6 g-0 w-100">
-                                                                                        <div className="d-sm-none">
-                                                                                            <label className="form-label" htmlFor={`cart-redemption-code-${cartItem?.itemId}`}>Enter the redemption code provided on your gift card.</label>
-                                                                                            <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Redemption Code" value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
-                                                                                            <button className="btn btn-primary btn-sm mt-2" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate Gift Card</button>
-                                                                                        </div>
-
-                                                                                        <div className="input-group d-none d-sm-flex">
-                                                                                            <div className="form-floating">
-                                                                                                <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter the redemption code provided on your gift card." value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
-                                                                                                <label htmlFor={`cart-redemption-code-${cartItem?.itemId}`}>Enter the redemption code provided on your gift card.</label>
+                                                                        <div className="d-flex">
+                                                                            <div className="flex-column me-auto w-100">
+                                                                                <div className="container-fluid">
+                                                                                    <div className="row">
+                                                                                        <div className="col-12 col-md-6 g-0 w-100">
+                                                                                            <div className="d-sm-none">
+                                                                                                <label className="form-label" htmlFor={`cart-redemption-code-${cartItem?.itemId}`}>Enter the redemption code provided on your gift card.</label>
+                                                                                                <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Redemption Code" value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
+                                                                                                <button className="btn btn-primary btn-sm mt-2" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate Gift Card</button>
                                                                                             </div>
-                                                                                            <button className="btn btn-primary btn-sm" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate Gift Card</button>
-                                                                                        </div>
 
-                                                                                        {cartItem?.uiShowRedemptionCodeNotFound && (
-                                                                                            <div className="text-danger mt-1">Redemption code not found.</div>
-                                                                                        )}
+                                                                                            <div className="input-group d-none d-sm-flex">
+                                                                                                <div className="form-floating">
+                                                                                                    <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter the redemption code provided on your gift card." value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
+                                                                                                    <label htmlFor={`cart-redemption-code-${cartItem?.itemId}`}>Enter the redemption code provided on your gift card.</label>
+                                                                                                </div>
+                                                                                                <button className="btn btn-primary btn-sm" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate Gift Card</button>
+                                                                                            </div>
+
+                                                                                            {cartItem?.uiShowRedemptionCodeNotFound && (
+                                                                                                <div className="text-danger mt-1">Redemption code not found.</div>
+                                                                                            )}
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                </>
-                                                            )}
+                                                                    </>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    )}
 
                                                     <div className="card mt-2">
-                                                        <div className="card-body">
+                                                        <div className="card-body footer-color">
                                                             <div className="d-flex justify-content-between align-items-center">
                                                                 <div>
-                                                                    <h6 className="card-title fw-bold required">Select a Club</h6>
+                                                                    <h6 className="card-title fw-semibold required">Select a Club</h6>
                                                                 </div>
                                                                 <div>
-                                                                    <button type="button" className="btn btn-link p-0" onClick={() => setShowClubInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
+                                                                    <button type="button" className="btn btn-link text-decoration-none p-0" onClick={() => clubLocatorMapDialogShow()}><i className="fa-solid fa-map fa-lg me-2"></i>Use Club Locator Map</button>
+                                                                    <button type="button" className="btn btn-link p-0 ms-3" onClick={() => setShowClubInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="form-floatingg mt-1">
-                                                                <Select id={`cart-club-${cartItem?.itemId}`} aria-label="Club" isClearable={true} placeholder={Constants.PleaseSelect} options={getClubsData()} value={getSelectedClub(cartItem?.itemId)} onChange={(e: any) => permitClubChange(e, cartItem?.itemId)} />
+                                                            <div className="mt-1">
+                                                                <Select id={`cart-club-${cartItem?.itemId}`} className="react-select" aria-label="Club" classNames={getClubReactSelectClasses(cartItem?.id)} isClearable={true} placeholder={Constants.PleaseSelect} options={getClubsData()} value={getSelectedClub(cartItem?.itemId)} onChange={(e: any) => permitClubChange(e, cartItem?.itemId)} />
                                                             </div>
 
-                                                            <div className="btn btn-link text-decoration-none align-baseline text-start border-0 px-0 pb-0" onClick={() => clubLocatorMapDialogShow()}>
+                                                            {/* <div className="btn btn-link text-decoration-none align-baseline text-start border-0 px-0 pb-0" onClick={() => clubLocatorMapDialogShow()}>
                                                                 Can't find your club? Use the Club Locator Map and enter the closest town name to get started.
-                                                            </div>
+                                                            </div> */}
                                                         </div>
                                                     </div>
                                                 </>
@@ -285,43 +299,67 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                     </div>
                                 </li>
                             ))}
+
+                            {getPermitCount() > 0 && (
+                                <li className="list-group-item">
+                                    <div className="d-flex">
+                                        <div className="fw-semibold me-auto">
+                                            Transaction and Administration Fee
+                                        </div>
+                                        <div className="fw-bold text-end ms-3">
+                                            ${formatCurrency(processingFee)}
+                                        </div>
+                                    </div>
+                                </li>
+                            )}
+
+                            <li className="list-group-item">
+                                <div className="fw-semibold mb-2 required">Shipping</div>
+
+                                <div className="d-flex">
+                                    <div className="flex-column me-auto w-100">
+                                        <select className={`form-select ${isShippingValid ? "" : "is-invalid"}`} aria-label="Shipping" value={shipping} onChange={(e: any) => shippingChange(e)}>
+                                            <option value="">{Constants.PleaseSelect}</option>
+
+                                            {shippingFeesData != undefined && shippingFeesData.length > 0 && getShippingFeesData().map(shippingMethod => (
+                                                <option value={shippingMethod.id} key={shippingMethod.id}>{shippingMethod.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="fw-bold text-end ms-3">
+                                        ${formatCurrency(getShippingPrice())}
+                                    </div>
+                                </div>
+
+                                {isStandardShippingWarningVisible() && (
+                                    <div className="form-check mt-2">
+                                        <input className={`form-check-input ${isStandardShippingWarningValid ? "" : "is-invalid"}`} type="checkbox" value="" id="cart-standard-shipping-verification" defaultChecked={standardShippingWarning} onChange={(e: any) => { setStandardShippingWarning(e.target.checked) }} />
+                                        <label className="form-check-label required" htmlFor="cart-standard-shipping-verification">
+                                            By selecting standard delivery for my permit, I assume all responsibility should my permit get lost or stolen in the mail,
+                                            or for any other reason that it is not received in the mail, and therefore agree to adhere to all Ministry of Transportation rules
+                                            for the issuance of a replacement permit.
+                                        </label>
+                                    </div>
+                                )}
+
+                                {isTrackedShippingDiscountVisible() && (
+                                    <div className="card mt-2">
+                                        <div className="card-body footer-color">
+                                            <div className="d-flex justify-content-between flex-wrap flex-sm-nowrap">
+                                                <div className="fw-semibold w-100">
+                                                    Tracked shipping discount
+                                                </div>
+                                                <div className="fw-bold text-end ms-auto">${formatCurrency(getTrackedShippingDiscount())}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </li>
                         </ul>
 
-                        {getPermitCount() > 0 && (
-                            <div className="card-footer">
-                                <div className="d-flex">
-                                    <div className="fw-bold me-auto">
-                                        Transaction and Administration Fee
-                                    </div>
-                                    <div className="fw-bold text-end ms-3">
-                                        ${formatCurrency(processingFee)}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
                         <div className="card-footer">
-                            <div className="fw-bold mb-2">Shipping</div>
-
-                            <div className="d-flex">
-                                <div className="flex-column me-auto w-100">
-                                    <select className="form-select" aria-label="Shipping" value={shipping} onChange={(e: any) => shippingChange(e)}>
-                                        <option value="">{Constants.PleaseSelect}</option>
-
-                                        {shippingFeesData != undefined && shippingFeesData.length > 0 && getShippingFeesData().map(shippingMethod => (
-                                            <option value={shippingMethod.id} key={shippingMethod.id}>{shippingMethod.name} - ${formatCurrency(shippingMethod.price)}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div className="fw-bold text-end ms-3">
-                                    ${formatCurrency(getShippingPrice())}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="card-footer">
-                            <div className="d-flex">
+                            <div className="d-flex fs-5">
                                 <div className="fw-bold me-auto">
                                     Total
                                 </div>
@@ -331,6 +369,24 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                             </div>
                         </div>
                     </div >
+
+                    <div className="card mb-3" style={{ backgroundColor: "rgb(209, 231, 221)" }}>
+                        <div className="card-body">
+                            <h5>Before you checkout...</h5>
+
+                            <div className="ms-2">
+                                <i className="fa-solid fa-snowflake fa-fw fa-lg me-2"></i>
+                                <span className="fs-5 me-3">Purchase an Ontario Snowmobile Trail Permit</span>
+                                <button type="button" className="btn btn-primary btn-sm" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchasePermitClick()}>Purchase a Permit</button>
+                            </div>
+
+                            <div className="ms-2">
+                                <i className="fa-solid fa-gift fa-fw fa-lg me-2"></i>
+                                <span className="fs-5 me-3">Purchase a Gift Card</span>
+                                <button type="button" className="btn btn-primary btn-sm" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchaseGiftCardClick()}>Purchase a Gift Card</button>
+                            </div>
+                        </div>
+                    </div>
 
                     <div className="card mb-3">
                         <div className="card-body">
@@ -528,20 +584,77 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     function calculateTotal(): number {
         let result: number = 0;
 
-        if (getCartItems() != undefined && getCartItems().length > 0) {
-            result = getCartItems().reduce((subTotal, item) => subTotal + item.price, 0);
-        }
+        // Total the price of cart items minus the price of cart items if a gift card was redeemed.
+        getCartItems()?.forEach(x => {
+            result += x.price;
 
-        result += getCartItems().reduce((subTotal, item) => subTotal + (item?.giftCardAmount ?? 0) + (item?.giftCardTrackingShippingAmount ?? 0), 0);
+            if (x?.redemptionCode != undefined) {
+                result -= x.price;
+            }
+        });
 
+        // Add processing fee if there's at least one permit in the cart.
         if (getPermitCount() > 0) {
             result += processingFee;
         }
 
+        // Add shipping fee.
         result += getShippingPrice();
 
+        // Add negative tracked shipping discount if tracked shipping is selected and a gift card with tracked shipping is redeemed.
+        result += getTrackedShippingDiscount();
+
+        // Adjust total to zero if less than 0.
         if (result < 0) {
             result = 0;
+        }
+
+        return result;
+    }
+
+    function isStandardShippingWarningVisible(): boolean {
+        let result: boolean = false;
+
+        if (shipping != undefined) {
+            let shippingFee: IShippingFee = shippingFeesData?.filter(x => x?.id === shipping)[0];
+
+            if (shippingFee != undefined) {
+                result = shippingFee?.showConfirmation ?? false;
+            }
+        }
+
+        return result;
+    }
+
+    function isTrackedShippingDiscountVisible(): boolean {
+        let result: boolean = false;
+
+        // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then display tracked shipping discount.
+        if (shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
+            let item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
+
+            if (item != undefined && item?.name === "Tracked"
+                && getCartItems()?.some(x => x?.giftCardTrackingShippingAmount != undefined)) {
+
+                result = true;
+            }
+        }
+
+        return result;
+    }
+
+    function getTrackedShippingDiscount(): number {
+        let result: number = 0;
+
+        // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then return tracked shipping discount.
+        if (shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
+            let item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
+
+            if (item != undefined && item?.name === "Tracked"
+                && getCartItems()?.some(x => x?.giftCardTrackingShippingAmount != undefined)) {
+
+                result = -(item?.price ?? 0);
+            }
         }
 
         return result;
@@ -554,18 +667,76 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     }
 
     function checkoutClick(): void {
-        router.push("/checkout");
+        if (validateCart()) {
+            router.push("/checkout");
+        } else {
+
+        }
+    }
+
+    function validateCart(): boolean {
+        let isValid: boolean = true;
+
+        let isPermitsValid: boolean = true;
+        appContext.updater(draft => {
+            draft?.cartItems?.filter(x => x.isPermit)?.forEach(ci => {
+                let snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === ci?.itemId)[0];
+
+                if (snowmobile != undefined) {
+                    ci.uiIsClubValid = snowmobile?.permitSelections?.clubId != undefined;
+
+                    isPermitsValid &&= ci.uiIsClubValid;
+                }
+            });
+        });
+
+        if (!isPermitsValid) {
+            isValid = false;
+        }
+
+        if (shipping === "") {
+            setIsShippingValid(false);
+            isValid = false;
+        } else {
+            setIsShippingValid(true);
+        }
+
+        if (standardShippingWarning === false) {
+            setIsStandardShippingWarningValid(false);
+            isValid = false;
+        } else {
+            setIsStandardShippingWarningValid(true);
+        }
+
+        return isValid;
+    }
+
+    function isRedeemGiftCardVisible(snowmobileId?: string): boolean {
+        let result: boolean = false;
+
+        if (redeemableGiftCards != undefined && ((redeemableGiftCards?.seasonalGiftCards ?? 0) > 0 || (redeemableGiftCards?.classicGiftCards ?? 0) > 0)
+            && snowmobileId != undefined) {
+
+            let snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+
+            if (snowmobile != undefined) {
+                result = snowmobile?.isClassic && (redeemableGiftCards?.classicGiftCards ?? 0) > 0
+                    || !snowmobile?.isClassic && (redeemableGiftCards?.seasonalGiftCards ?? 0) > 0;
+            }
+        }
+
+        return (redeemableGiftCards != undefined && ((redeemableGiftCards?.seasonalGiftCards ?? 0) > 0 || (redeemableGiftCards?.classicGiftCards ?? 0) > 0)) ?? false;
     }
 
     function removeGiftCardClick(cartId?: string): void {
         if (cartId != undefined) {
             appContext.updater(draft => {
-                let cartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartId)[0];
+                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartId)[0];
 
-                if (cartItem != undefined) {
-                    cartItem.redemptionCode = undefined;
-                    cartItem.giftCardAmount = undefined;
-                    cartItem.giftCardTrackingShippingAmount = undefined;
+                if (draftCartItem != undefined) {
+                    draftCartItem.redemptionCode = undefined;
+                    draftCartItem.giftCardAmount = undefined;
+                    draftCartItem.giftCardTrackingShippingAmount = undefined;
                 }
             });
         }
@@ -574,10 +745,10 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     function redemptionCodeChange(e: any, cartId?: string): void {
         if (e != undefined && cartId != undefined) {
             appContext.updater(draft => {
-                let cartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartId)[0];
+                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartId)[0];
 
-                if (cartItem != undefined) {
-                    cartItem.uiRedemptionCode = e?.target?.value;
+                if (draftCartItem != undefined) {
+                    draftCartItem.uiRedemptionCode = e?.target?.value;
                 }
             });
         }
@@ -586,23 +757,23 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     function validateGiftCard(cartId?: string): void {
         if (cartId != undefined) {
             appContext.updater(draft => {
-                let cartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartId)[0];
+                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartId)[0];
 
-                if (cartItem != undefined) {
+                if (draftCartItem != undefined) {
                     // TODO: Replace with actual lookup.
-                    if (cartItem?.uiRedemptionCode?.startsWith("0")) {
-                        cartItem.redemptionCode = undefined;
-                        cartItem.giftCardAmount = undefined;
-                        cartItem.giftCardTrackingShippingAmount = undefined;
+                    if (draftCartItem?.uiRedemptionCode?.startsWith("0")) {
+                        draftCartItem.redemptionCode = undefined;
+                        draftCartItem.giftCardAmount = undefined;
+                        draftCartItem.giftCardTrackingShippingAmount = undefined;
 
-                        cartItem.uiShowRedemptionCodeNotFound = true;
+                        draftCartItem.uiShowRedemptionCodeNotFound = true;
                     } else {
-                        cartItem.redemptionCode = cartItem?.uiRedemptionCode;
-                        cartItem.giftCardAmount = -Number(cartItem?.price);
-                        cartItem.giftCardTrackingShippingAmount = -10;
+                        draftCartItem.redemptionCode = draftCartItem?.uiRedemptionCode;
+                        draftCartItem.giftCardAmount = -Number(draftCartItem?.price);
+                        draftCartItem.giftCardTrackingShippingAmount = -10;
 
-                        cartItem.uiRedemptionCode = "";
-                        cartItem.uiShowRedemptionCodeNotFound = false;
+                        draftCartItem.uiRedemptionCode = "";
+                        draftCartItem.uiShowRedemptionCodeNotFound = false;
                     }
                 }
             });
@@ -610,16 +781,20 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     }
 
     function shippingChange(e: any): void {
-        let shippingMethod: IShippingFee | undefined = shippingFeesData?.filter(x => x?.id === e?.target?.value)[0];
+        // let shippingMethod: IShippingFee | undefined = shippingFeesData?.filter(x => x?.id === e?.target?.value)[0];
 
-        if (shippingMethod != undefined) {
-            if (shippingMethod.showConfirmation) {
-                setPendingShipping(e.target.value);
-                setShowStandardShippingDialog(true);
-            } else {
-                setShipping(e.target.value)
-                setPendingShipping("");
-            }
+        // if (shippingMethod != undefined) {
+        //     if (shippingMethod.showConfirmation) {
+        //         setPendingShipping(e.target.value);
+        //         setShowStandardShippingDialog(true);
+        //     } else {
+        //         setShipping(e.target.value)
+        //         setPendingShipping("");
+        //     }
+        // }
+
+        if (e != undefined) {
+            setShipping(e?.target?.value ?? "");
         }
     }
 
@@ -682,6 +857,28 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         return countriesData?.filter(x => x?.key !== 'OT');
     }
 
+    function getClubReactSelectClasses(cartItemId?: string): any {
+        let result: any = {};
+
+        if (cartItemId != undefined) {
+            let cartItem: ICartItem | undefined = getCartItem(cartItemId);
+
+            if (cartItem != undefined) {
+                let isClubValid: boolean = (cartItem?.uiIsClubValid == undefined || cartItem?.uiIsClubValid) ? true : false;
+
+                result = {
+                    control: () => `react-select-control form-control ${isClubValid ? "" : "is-invalid"}`,
+                    input: () => "react-select-input",
+                    placeholder: () => "react-select-placeholder",
+                    menu: () => "react-select-menu",
+                    option: () => "react-select-option"
+                };
+            }
+        }
+
+        return result;
+    }
+
     function getSelectedClub(snowmobileId?: string): { value?: string, label?: string } {
         let result: { value?: string, label?: string } = {} as { value?: string, label?: string };
 
@@ -717,10 +914,10 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                         next: (result: IApiSavePermitSelectionForVehicleResult) => {
                             if (result?.isSuccessful && result?.data != undefined) {
                                 appContext.updater(draft => {
-                                    let snowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+                                    let draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
-                                    if (snowmobile != undefined) {
-                                        snowmobile.permitSelections = {
+                                    if (draftSnowmobile != undefined) {
+                                        draftSnowmobile.permitSelections = {
                                             oPermitId: result?.data?.oPermitId ?? getGuid(),
                                             permitOptionId: result?.data?.permitOptionId,
                                             dateStart: result?.data?.dateStart,
@@ -730,7 +927,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                     }
                                 });
                             } else {
-                                
+
                             }
 
                             //setShowAlert(false);
@@ -743,6 +940,18 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                     });
                 }
             }
+        }
+    }
+
+    function purchasePermitClick(): void {
+        if (appContext.data?.isContactInfoVerified) {
+            router.push("/permits");
+        }
+    }
+
+    function purchaseGiftCardClick(): void {
+        if (appContext.data?.isContactInfoVerified) {
+            router.push("/gift-cards");
         }
     }
 }

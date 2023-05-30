@@ -93,9 +93,10 @@ export function getApiErrorMessage(key: string | undefined): string | undefined 
     let result: string | undefined = undefined;
 
     if (key != undefined && key !== "") {
-        let message: string | undefined = GlobalAppContext.translation?.i18n?.t("API." + key);
+        let lookupKey: string = "API." + key;
+        let message: string | undefined = GlobalAppContext.translation?.i18n?.t(lookupKey);
 
-        if (message !== key) {
+        if (message !== lookupKey) {
             result = message;
         }
     }

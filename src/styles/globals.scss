@@ -105,3 +105,45 @@ body {
 .bg-warning-subtle {
   background-color: rgb(255, 243, 205);
 }
+
+.react-select .react-select-control {
+  padding: 0px;
+  border-radius: $input-border-radius;
+  border-color: $gray-500;
+}
+
+.react-select .react-select-control:focus-within {
+  border-color: $gray-500;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.react-select .react-select-control.is-invalid {
+  padding-right: 25px;
+  border-color: $form-feedback-invalid-color;
+}
+
+.react-select .react-select-control.is-invalid:hover {
+  border-color: $form-feedback-invalid-color;
+}
+
+.react-select .react-select-control.is-invalid:focus-within {
+  border-color: $form-feedback-invalid-color;
+  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+.react-select .react-select-placeholder {
+  color: $gray-900;
+}
+
+.react-select .react-select-menu {
+  z-index: 10000 !important;
+}
+
+.react-select .react-select-option {
+  padding: 0px 14px 0px;
+}
+
+.footer-color {
+  background-color: rgba(0, 0, 0, 0.03);
+}

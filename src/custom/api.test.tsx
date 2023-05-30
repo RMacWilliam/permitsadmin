@@ -345,6 +345,7 @@ describe("Tested api response objects", () => {
                 expect(result.length).toBeGreaterThan(0);
 
                 result.forEach(x => {
+                    expect(x).toHaveProperty("giftcardId");
                     expect(x).toHaveProperty("productId");
                     expect(x).toHaveProperty("name");
                     expect(x).toHaveProperty("displayName");
@@ -352,17 +353,8 @@ describe("Tested api response objects", () => {
                     expect(x).toHaveProperty("amount");
                     expect(x).toHaveProperty("testAmount");
                     expect(x).toHaveProperty("classic");
-                    expect(x).toHaveProperty("multiDayUpgrade");
-                    expect(x).toHaveProperty("isMultiDay");
-                    expect(x).toHaveProperty("isSpecialEvent");
                     expect(x).toHaveProperty("isTrackedShipping");
                     expect(x).toHaveProperty("trackedShippingAmount");
-                    expect(x).toHaveProperty("eventDate");
-                    expect(x).toHaveProperty("eventName");
-                    expect(x).toHaveProperty("eventClubId");
-                    expect(x).toHaveProperty("csrOnly");
-                    expect(x).toHaveProperty("permitDays");
-                    expect(x).toHaveProperty("canBuyGiftCard");
                 });
             },
             error: (error: any) => {
@@ -398,6 +390,7 @@ describe("Tested api response objects", () => {
             next: (result: IApiGetProcessingFeeResult) => {
                 expect(result).toBeTruthy();
 
+                expect(result).toHaveProperty("fee");
                 expect(result?.fee).toBeGreaterThanOrEqual(0);
             },
             error: (error: any) => {

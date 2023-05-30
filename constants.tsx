@@ -31,6 +31,9 @@ export class WebApi {
     static GetGiftcardsForCurrentSeasonForUser: string = WebApiBaseUrl + "giftcard/getgiftcardsforcurrentseasonforuser";
     static GetAvailableGiftCards: string = WebApiBaseUrl + "giftcard/getavailablegiftcards";
     static GetRedeemableGiftCardsForUser: string = WebApiBaseUrl + "giftcard/getredeemablegiftcardsforuser";
+    static AddGiftCardForUser: string = WebApiBaseUrl + "giftcard/addgiftcardforuser";
+    static SaveGiftCardSelectionsForUser: string = WebApiBaseUrl + "giftcard/savegiftcardselectionsforuser";
+    static DeleteGiftCard: string = WebApiBaseUrl + "giftcard/deletegiftcard";
 
     // Permit
     static GetProcessingFee: string = WebApiBaseUrl + "permit/getprocessingfee";

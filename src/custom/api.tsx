@@ -475,6 +475,7 @@ export interface IApiGetGiftcardsForCurrentSeasonForUserRequest {
 }
 
 export interface IApiGetGiftcardsForCurrentSeasonForUserResult {
+    giftcardId?: number;
     oVoucherId?: string;
     orderId?: string;
     transactionDate?: Date;
@@ -504,6 +505,7 @@ export interface IApiGetAvailableGiftCardsRequest {
 }
 
 export interface IApiGetAvailableGiftCardsResult {
+    giftcardId?: number;
     productId?: number;
     name?: string;
     displayName?: string;
@@ -511,17 +513,8 @@ export interface IApiGetAvailableGiftCardsResult {
     amount?: number;
     testAmount?: number;
     classic?: boolean;
-    multiDayUpgrade?: boolean;
-    isMultiDay?: boolean;
-    isSpecialEvent?: boolean;
     isTrackedShipping?: boolean;
     trackedShippingAmount?: number;
-    eventDate?: Date;
-    eventName?: string;
-    eventClubId?: number;
-    csrOnly?: boolean;
-    permitDays: number;
-    canBuyGiftCard?: boolean;
 }
 
 export function apiGetAvailableGiftCards(params?: any): Observable<IApiGetAvailableGiftCardsResult[]> {
@@ -543,6 +536,92 @@ export interface IApiGetRedeemableGiftCardsForUserResult {
 
 export function apiGetRedeemableGiftCardsForUser(params?: any): Observable<IApiGetRedeemableGiftCardsForUserResult> {
     return httpGet<IApiGetRedeemableGiftCardsForUserResult>(WebApi.GetRedeemableGiftCardsForUser, params);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiAddGiftCardForUser
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiAddGiftCardForUserRequest {
+    asOfDate?: string;
+}
+
+export interface IApiAddGiftCardForUserGiftCardSelections {
+    oVoucherId?: string;
+    giftCardId?: number;
+    productId?: number;
+    recipientLastName?: string;
+    recipientPostal?: string;
+}
+
+export interface IApiAddGiftCardForUserResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiAddGiftCardForUserGiftCardSelections;
+}
+
+export function apiAddGiftCardForUser(body?: any, params?: any): Observable<IApiAddGiftCardForUserResult> {
+    return httpPost<IApiAddGiftCardForUserResult>(WebApi.AddGiftCardForUser, params, body);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiSaveGiftCardSelectionsForUser
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiSaveGiftCardSelectionsForUserRequest {
+    asOfDate?: string;
+
+    oVoucherId?: string;
+    giftCardId?: number;
+    productId?: number;
+    recipientLastName?: string;
+    recipientPostal?: string;
+}
+
+export interface IApiSaveGiftCardSelectionsForUserGiftCardSelections {
+    giftcardId?: number;
+    oVoucherId?: string;
+    orderId?: string;
+    transactionDate?: Date;
+    recipientLastName?: string;
+    recipientPostal?: string;
+    redemptionCode?: string;
+    purchaserEmail?: string;
+    productId?: number;
+    isRedeemed?: boolean;
+    isPurchased?: boolean;
+    useShippingAddress?: boolean;
+    shippingOption?: string;
+    clubId?: number;
+    permitId?: number;
+}
+
+export interface IApiSaveGiftCardSelectionsForUserResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiSaveGiftCardSelectionsForUserGiftCardSelections;
+}
+
+export function apiSaveGiftCardSelectionsForUser(body?: any, params?: any): Observable<IApiSaveGiftCardSelectionsForUserResult> {
+    return httpPost<IApiSaveGiftCardSelectionsForUserResult>(WebApi.SaveGiftCardSelectionsForUser, params, body);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiDeleteGiftCard
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiDeleteGiftCardRequest {
+    oVoucherId?: string;
+}
+
+export interface IApiDeleteGiftCardResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: any;
+}
+
+export function apiDeleteGiftCard(body?: any, params?: any): Observable<IApiDeleteGiftCardResult> {
+    return httpDelete<IApiDeleteGiftCardResult>(WebApi.DeleteGiftCard, params, body);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
