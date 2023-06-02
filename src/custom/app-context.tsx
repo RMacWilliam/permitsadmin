@@ -104,7 +104,6 @@ export interface ISnowmobile {
 }
 
 export interface IGiftCardType {
-    giftcardId?: number;
     productId?: number;
     name?: string;
     displayName?: string;
@@ -112,12 +111,13 @@ export interface IGiftCardType {
     amount?: number;
     testAmount?: number;
     classic?: boolean;
+    giftcardProductId?: number;
     isTrackedShipping?: boolean;
     trackedShippingAmount?: number;
 }
 
 export interface IGiftCard {
-    giftCardId?: number;
+    giftcardProductId?: number;
     oVoucherId?: string;
     orderId?: string;
     transactionDate?: Date;
@@ -125,13 +125,18 @@ export interface IGiftCard {
     recipientPostal?: string;
     redemptionCode?: string;
     purchaserEmail?: string;
-    productId?: number;
     isRedeemed?: boolean;
     isPurchased?: boolean;
     useShippingAddress?: boolean;
     shippingOption?: string;
     clubId?: number;
     permitId?: number;
+    isClassic?: boolean;
+    isTrackedShipping?: boolean;
+    trackedShippingAmount?: number;
+    amount?: number;
+    displayName?: string;
+    frenchDisplayName?: string;
 
     uiIsInEditMode?: boolean;
     uiRecipientLastName?: string;

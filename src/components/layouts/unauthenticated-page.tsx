@@ -1,25 +1,9 @@
-import { ReactNode, useContext, useEffect } from 'react';
-import { AppContext } from '@/custom/app-context';
-import { useRouter } from 'next/router';
+import { ReactNode, useContext } from 'react';
 import Head from 'next/head';
+import Image from 'next/image';
 import LanguageToggler from '../language-toggler';
 
 export default function UnauthenticatedPageLayout({ children }: { children?: ReactNode }) {
-    const appContext = useContext(AppContext);
-    const router = useRouter();
-
-    useEffect(() => {
-        if (appContext.data.isAuthenticated) {
-            router.push("/home");
-        }
-    }, [appContext.data.isAuthenticated, router])
-
-    if (appContext.data.isAuthenticated) {
-        return (
-            <></>
-        )
-    }
-
     return (
         <>
             <Head>
@@ -34,7 +18,7 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
                         <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
                             <div className="d-flex flex-fill justify-content-start align-items-center">
                                 <a className="navbar-brand" href="#">
-                                    <img src="ofsc.png" alt="Logo" width="60" height="60" />
+                                    <Image src="/ofsc.png" alt="Logo" width="60" height="60" />
                                 </a>
 
                                 <div>

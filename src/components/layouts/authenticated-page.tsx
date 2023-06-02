@@ -1,38 +1,29 @@
-import { ReactNode, useContext, useEffect, useState } from 'react';
+import { ReactNode, useContext } from 'react';
 import { AppContext } from '@/custom/app-context';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import LanguageToggler from '../language-toggler';
-import ModalProcessingAlert from '../modal-processing-alert';
-import { isUserAuthenticated, logout } from '@/custom/authentication';
+import ModalProcessingAlert, { IShowAlert } from '../modal-processing-alert';
+import { logout } from '@/custom/authentication';
+import $ from 'jquery';
 
-export default function AuthenticatedPageLayout({ children, showAlert }: { children?: ReactNode, showAlert?: boolean | { showAlert?: boolean, message?: string } }) {
+export interface IShowHoverButton {
+    showHoverButton?: boolean;
+    buttonText?: string;
+    action?: Function;
+}
+
+export default function AuthenticatedPageLayout({ children, showAlert, showHoverButton }
+    : {
+        children?: ReactNode,
+        showAlert?: boolean | IShowAlert,
+        showHoverButton?: IShowHoverButton
+    }) {
+
     const appContext = useContext(AppContext);
     const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-    let show: boolean | undefined = false;
-
-    if (typeof showAlert === "boolean") {
-        show = showAlert as boolean | undefined;
-    } else {
-        show = showAlert?.showAlert;
-    }
-
-    useEffect(() => {
-        let authenticated: boolean = isUserAuthenticated(router, appContext);
-
-        if (authenticated) {
-            setIsAuthenticated(true);
-        }
-    }, []);
-
-    if (!isAuthenticated) {
-        return (
-            <></>
-        )
-    }
 
     return (
         <>
@@ -42,13 +33,33 @@ export default function AuthenticatedPageLayout({ children, showAlert }: { child
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
+            {showHoverButton?.showHoverButton && (
+                <div id="hover-button" className="dropdown position-fixed bottom-0 end-0 z-10000 me-4 mb-2 bd-mode-toggle">
+                    <button className="btn btn-warning dropdown-toggle py-2" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"
+                        aria-label={showHoverButton?.buttonText} disabled={!isHoverButtonEnabled()}>
+
+                        <i className="fa-solid fa-plus me-1"></i>
+                        <span className="visually-hidden" id="hover-button-label">{showHoverButton?.buttonText}</span>
+                    </button>
+
+                    <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="hover-button-label">
+                        <li>
+                            <button type="button" className="dropdown-item d-flex align-items-center" aria-pressed="false"
+                                onClick={() => hoverButtonItemClick()}>
+                                {showHoverButton?.buttonText}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            )}
+
             <header>
                 <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white" style={{ minHeight: 86 }}>
                     <div className="container-fluid" style={{ minHeight: 70, maxHeight: 70 }}>
                         <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
                             <div className="d-flex flex-fill justify-content-start align-items-stretch">
                                 <a className="navbar-brand d-none d-sm-block" href="#">
-                                    <img src="ofsc.png" alt="Logo" width="60" height="60" />
+                                    <Image src="/ofsc.png" alt="Logo" width="60" height="60" />
                                 </a>
 
                                 <div className="flex-column justify-content-center justify-content-md-between">
@@ -206,11 +217,41 @@ export default function AuthenticatedPageLayout({ children, showAlert }: { child
                 </div>
             </footer>
 
-            <ModalProcessingAlert showAlert={show}></ModalProcessingAlert>
+            <ModalProcessingAlert showAlert={showAlert}></ModalProcessingAlert>
         </>
     )
 
     function doLogout() {
         logout(router, appContext);
+    }
+
+    function isHoverButtonEnabled(): boolean {
+        let result: boolean = false;
+
+        if (showAlert != undefined) {
+            if (typeof showAlert === "boolean") {
+                result = !showAlert;
+            } else {
+                result = !showAlert?.showAlert;
+            }
+        }
+
+        return result;
+    }
+
+    function hoverButtonItemClick(): void {
+        if (showHoverButton?.action != undefined) {
+            showHoverButton.action();
+        }
+
+        // Clean up hover button popup state.
+        $("#hover-button button").first()
+            .removeClass("show")
+            .attr("aria-expanded", "false");
+
+        $("#hover-button ul").first()
+            .removeClass("show")
+            .removeAttr("style")
+            .removeAttr("data-popper-placement");
     }
 }

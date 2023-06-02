@@ -9,41 +9,24 @@ import { NextRouter, useRouter } from 'next/router';
 import CartItemsAlert from '@/components/cart-items-alert';
 import { Observable, forkJoin } from 'rxjs';
 import { IApiGetCountriesResult, IApiGetProvincesResult, IApiGetUserDetailsResult, IApiGetUserPreferencesResult, IApiSaveUserDetailsRequest, IApiSaveUserDetailsResult, IApiSaveUserPreferencesRequest, IApiSaveUserPreferencesResult, IApiUpdateVehicleResult, apiGetCountries, apiGetProvinces, apiGetUserDetails, apiGetUserPreferences, apiSaveUserDetails, apiSaveUserPreferences } from '@/custom/api';
-import _ from 'lodash';
-import { isRoutePermitted, isUserAuthenticated } from '@/custom/authentication';
 import { Constants } from '../../../constants';
-import { error } from 'console';
 
 export default function ContactPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     // Display loading indicator.
-    const [showAlert, setShowAlert] = useState(false);
+    const [showAlert, setShowAlert] = useState(true);
 
     useEffect(() => {
-        setIsAuthenticated(false);
+        appContext.updater(draft => { draft.navbarPage = "contact" });
 
-        let authenticated: boolean = isUserAuthenticated(router, appContext);
-
-        if (authenticated) {
-            let permitted: boolean = isRoutePermitted(router, appContext, "contact");
-
-            if (permitted) {
-                appContext.updater(draft => { draft.navbarPage = "contact" });
-
-                setIsAuthenticated(true);
-                setShowAlert(true);
-            }
-        }
-    }, [appContext.data.isAuthenticated]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <AuthenticatedPageLayout showAlert={showAlert}>
-            {isAuthenticated && (
-                <Contact appContext={appContext} router={router} setShowAlert={setShowAlert}></Contact>
-            )}
+            <Contact appContext={appContext} router={router} setShowAlert={setShowAlert}></Contact>
         </AuthenticatedPageLayout>
     )
 }
@@ -129,7 +112,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                             country: apiGetUserDetailsResult?.country,
                             telephone: apiGetUserDetailsResult?.telephone,
                             email: apiGetUserDetailsResult?.email,
-                            adminUser: apiGetUserDetailsResult?.adminUser ?? false,
+                            adminUser: false, // apiGetUserDetailsResult?.adminUser ?? false,
                             verified: apiGetUserDetailsResult?.verified ?? false
                         };
                     });
@@ -170,6 +153,8 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                 setShowAlert(false);
             }
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -582,12 +567,12 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                         setShowContactInfoDialog(false);
                     } else {
                         setContactInfoDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
-                    }                   
+                    }
 
                     setShowAlert(false);
                 },
                 error: (error: any) => {
-                    console.log(error);                   
+                    console.log(error);
 
                     setShowAlert(false);
                 }

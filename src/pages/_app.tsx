@@ -16,10 +16,11 @@ import Script from 'next/script'
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { GlobalAppContext } from '../../constants';
+import RouteGuard from '@/custom/authentication';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [immerAppContextValues, updateImmerAppContextValues] = useImmer(initialAppContextValues.data);
-  const [showApp, setShowApp] = useState(false);
+  const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState(false);
   const [t, i18n] = useTranslation();
 
   // Restore app context from local storage.
@@ -33,13 +34,18 @@ export default function App({ Component, pageProps }: AppProps) {
         if (localStorageDataObj != undefined) {
           updateImmerAppContextValues(localStorageDataObj);
 
+          // Set WebApi token.
+          GlobalAppContext.token = localStorageDataObj.token;
+
           // Set UI language.
           i18n.changeLanguage(localStorageDataObj?.language ?? "en");
         }
       }
     }
 
-    setShowApp(true);
+    setIsLocalStorageLoaded(true);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Save app context to local storage whenever app context is updated.
@@ -47,10 +53,10 @@ export default function App({ Component, pageProps }: AppProps) {
     // Set WebApi token.
     GlobalAppContext.token = immerAppContextValues.token;
 
-    if (showApp && window.localStorage) {
+    if (isLocalStorageLoaded && window.localStorage) {
       window.localStorage.setItem("data", JSON.stringify(immerAppContextValues));
     }
-  }, [showApp, immerAppContextValues]);
+  }, [isLocalStorageLoaded, immerAppContextValues]);
 
   const appContextProviderValues: IAppContextValues = {
     data: immerAppContextValues as IAppContextData,
@@ -62,7 +68,11 @@ export default function App({ Component, pageProps }: AppProps) {
     <AppContext.Provider value={appContextProviderValues}>
       <Script src="./bootstrap.bundle.min.js" async></Script>
 
-      {showApp && <Component {...pageProps} />}
+      {isLocalStorageLoaded && (
+        <RouteGuard>
+          <Component {...pageProps} />
+        </RouteGuard>
+      )}
     </AppContext.Provider>
   )
 }

@@ -472,10 +472,11 @@ export function apiSavePermitSelectionForVehicle(body?: any, params: any = undef
 
 export interface IApiGetGiftcardsForCurrentSeasonForUserRequest {
     email?: string;
+    asOfDate?: string; // 2023-01-01
 }
 
 export interface IApiGetGiftcardsForCurrentSeasonForUserResult {
-    giftcardId?: number;
+    giftcardProductId?: number;
     oVoucherId?: string;
     orderId?: string;
     transactionDate?: Date;
@@ -483,13 +484,18 @@ export interface IApiGetGiftcardsForCurrentSeasonForUserResult {
     recipientPostal?: string;
     redemptionCode?: string;
     purchaserEmail?: string;
-    productId?: number;
     isRedeemed?: boolean;
     isPurchased?: boolean;
     useShippingAddress?: boolean;
     shippingOption?: string;
     clubId?: number;
     permitId?: number;
+    isClassic?: boolean;
+    isTrackedShipping?: boolean;
+    trackedShippingAmount?: number;
+    amount?: number;
+    displayName?: string;
+    frenchDisplayName?: string;
 }
 
 export function apiGetGiftcardsForCurrentSeasonForUser(params?: any): Observable<IApiGetGiftcardsForCurrentSeasonForUserResult[]> {
@@ -505,7 +511,6 @@ export interface IApiGetAvailableGiftCardsRequest {
 }
 
 export interface IApiGetAvailableGiftCardsResult {
-    giftcardId?: number;
     productId?: number;
     name?: string;
     displayName?: string;
@@ -513,6 +518,7 @@ export interface IApiGetAvailableGiftCardsResult {
     amount?: number;
     testAmount?: number;
     classic?: boolean;
+    giftcardProductId?: number;
     isTrackedShipping?: boolean;
     trackedShippingAmount?: number;
 }
@@ -547,11 +553,26 @@ export interface IApiAddGiftCardForUserRequest {
 }
 
 export interface IApiAddGiftCardForUserGiftCardSelections {
+    giftcardProductId?: number;
     oVoucherId?: string;
-    giftCardId?: number;
-    productId?: number;
+    orderId?: string;
+    transactionDate?: Date;
     recipientLastName?: string;
     recipientPostal?: string;
+    redemptionCode?: string;
+    purchaserEmail?: string;
+    isRedeemed?: boolean;
+    isPurchased?: boolean;
+    useShippingAddress?: boolean;
+    shippingOption?: string;
+    clubId?: number;
+    permitId?: number;
+    isClassic?: boolean;
+    isTrackedShipping?: boolean;
+    trackedShippingAmount?: number;
+    amount?: number;
+    displayName?: string;
+    frenchDisplayName?: string;
 }
 
 export interface IApiAddGiftCardForUserResult {
@@ -572,14 +593,13 @@ export interface IApiSaveGiftCardSelectionsForUserRequest {
     asOfDate?: string;
 
     oVoucherId?: string;
-    giftCardId?: number;
-    productId?: number;
+    giftcardProductId?: number;
     recipientLastName?: string;
     recipientPostal?: string;
 }
 
 export interface IApiSaveGiftCardSelectionsForUserGiftCardSelections {
-    giftcardId?: number;
+    giftcardProductId?: number;
     oVoucherId?: string;
     orderId?: string;
     transactionDate?: Date;
@@ -587,13 +607,18 @@ export interface IApiSaveGiftCardSelectionsForUserGiftCardSelections {
     recipientPostal?: string;
     redemptionCode?: string;
     purchaserEmail?: string;
-    productId?: number;
     isRedeemed?: boolean;
     isPurchased?: boolean;
     useShippingAddress?: boolean;
     shippingOption?: string;
     clubId?: number;
     permitId?: number;
+    isClassic?: boolean;
+    isTrackedShipping?: boolean;
+    trackedShippingAmount?: number;
+    amount?: number;
+    displayName?: string;
+    frenchDisplayName?: string;
 }
 
 export interface IApiSaveGiftCardSelectionsForUserResult {

@@ -41,7 +41,10 @@ export class WebApi {
 }
 
 export class Constants {
+    static MaxClassicYear: number = 1999;
+    
     static get PleaseSelect(): string {
         return GlobalAppContext?.translation?.i18n?.language === "fr" ? "(fr)Please select" : "Please select";
     }
+
 }

@@ -1,6 +1,12 @@
-// Required
+//@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+@import "../../node_modules/bootstrap/scss/mixins/banner";
+@include bsBanner("");
+
+// Configuration (required)
 @import "../../node_modules/bootstrap/scss/functions.scss";
 @import "../../node_modules/bootstrap/scss/variables.scss";
+@import "../../node_modules/bootstrap/scss/variables-dark.scss";
 @import "../../node_modules/bootstrap/scss/maps.scss";
 @import "../../node_modules/bootstrap/scss/mixins.scss";
 @import "../../node_modules/bootstrap/scss/utilities.scss";
@@ -11,7 +17,6 @@ $input-border-color: $gray-500;
 $form-select-border-color: $gray-500;
 
 // Layout & components
-//@import "../../node_modules/bootstrap/scss/bootstrap.scss";
 @import "../../node_modules/bootstrap/scss/root.scss";
 @import "../../node_modules/bootstrap/scss/reboot.scss";
 @import "../../node_modules/bootstrap/scss/type.scss";
@@ -49,8 +54,6 @@ $form-select-border-color: $gray-500;
 
 // Utilities
 @import "../../node_modules/bootstrap/scss/utilities/api.scss";
-
-//@import "https://cdn.jsdelivr.net/npm/bootswatch@5.2.3/dist/sandstone/bootstrap.min.css";
 
 .card .list-group-item {
     border-color: $gray-500;

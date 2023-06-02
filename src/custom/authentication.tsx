@@ -1,6 +1,106 @@
-import { NextRouter } from "next/router";
-import { IAppContextValues } from "./app-context";
+import { NextRouter, useRouter } from "next/router";
+import { AppContext, IAppContextValues } from "./app-context";
 import { IApiLoginResult } from "./api";
+import { ReactNode, useContext, useRef } from "react";
+import { GlobalAppContext } from "../../constants";
+
+export default function RouteGuard({ children }: { children: ReactNode }) {
+    const appContext = useContext(AppContext);
+    const router = useRouter();
+
+    const isAuthenticated = useRef(false);
+    const isAuthorized = useRef(false);
+    const redirectRoute = useRef("");
+
+    // Set WebApi token.
+    GlobalAppContext.token = appContext.data?.token;
+
+    // Reset variables otherwise they will have previous values.
+    isAuthenticated.current = false;
+    isAuthorized.current = false;
+    redirectRoute.current = "";
+
+    // Get user authentication.
+    if (appContext == undefined || appContext.data == undefined || !appContext.data.isAuthenticated) {
+        isAuthenticated.current = false;
+    } else {
+        isAuthenticated.current = true;
+    }
+
+    // Get user authorization.
+    let path: string = router.asPath;
+
+    // Admin users have full access.
+    if (appContext.data?.contactInfo?.adminUser) {
+        isAuthorized.current = true;
+    }
+
+    // Check regular user access to requested page.
+    else {
+        // Unauthenticated paths.
+        if (path === "/") {
+            isAuthorized.current = true;
+        } else if (path === "/forgot-password") {
+            isAuthorized.current = true;
+        } else if (path === "/create-account") {
+            isAuthorized.current = true;
+        }
+
+        // Authenticated paths.
+        else if (isAuthenticated.current) {
+            if (appContext.data?.isContactInfoVerified) {
+                if (path === "/home") {
+                    isAuthorized.current = true;
+                } else if (path === "/contact") {
+                    isAuthorized.current = true;
+                } else if (path === "/permits") {
+                    isAuthorized.current = true;
+                } else if (path === "/gift-cards") {
+                    isAuthorized.current = true;
+                } else if (path === "/cart") {
+                    isAuthorized.current = true;
+                } else if (path === "/checkout") {
+                    isAuthorized.current = true;
+                }
+                // Everything else (like admin pages that a regular user should not see).
+                else {
+                    isAuthorized.current = false;
+                    redirectRoute.current = "/home";
+                }
+            } else {
+                if (path === "/contact") {
+                    isAuthorized.current = true;
+                } else {
+                    isAuthorized.current = false;
+                    redirectRoute.current = "/contact";
+                }
+            }
+        }
+
+        // Everything else not specified above.
+        else {
+            isAuthorized.current = false;
+            redirectRoute.current = "/";
+        }
+    }
+
+    console.log("isAuthenticated: ", isAuthenticated.current, "isAuthorized: ", isAuthorized.current, "path: ", path, "redirectRoute: ", redirectRoute.current);
+
+    if (redirectRoute.current === "") {
+        return (
+            <>{children}</>
+        )
+    } else {
+        if (redirectRoute.current === path) {
+            return (
+                <>{children}</>
+            )
+        } else {
+            router.push(redirectRoute.current);
+            return null;
+        }
+    }
+}
 
 export function login(router: NextRouter, appContext: IAppContextValues, apiLoginResult: IApiLoginResult): void {
     appContext.updater(draft => {
@@ -54,48 +154,4 @@ export function logout(router: NextRouter, appContext: IAppContextValues): void 
     }
 
     router.push("/");
-}
-
-export function isUserAuthenticated(router: NextRouter, appContext: IAppContextValues, redirectUnauthenticated: boolean = true): boolean {
-    let result: boolean = false;
-
-    let redirectRoute: string | undefined = undefined;
-
-    if (appContext == undefined || appContext.data == undefined) {
-        redirectRoute = "/";
-    } else if (!appContext.data.isAuthenticated) {
-        redirectRoute = "/";
-    } else {
-        // User is authenticated.
-        result = true;
-    }
-
-    if (redirectUnauthenticated && router != undefined && redirectRoute != undefined) {
-        router.push(redirectRoute);
-    }
-
-    return result;
-}
-
-export function isRoutePermitted(router: NextRouter, appContext: IAppContextValues, navbarPage: string, redirectUnpermitted: boolean = true): boolean {
-    let result: boolean = false;
-
-    let redirectRoute: string | undefined = undefined;
-
-    if (appContext == undefined || appContext.data == undefined) {
-        redirectRoute = "/";
-    } else if (!appContext.data.isAuthenticated) {
-        redirectRoute = "/";
-    } else if (!appContext.data?.isContactInfoVerified && navbarPage !== "contact") {
-        redirectRoute = "/contact";
-    } else {
-        // Route is permitted.
-        result = true;
-    }
-
-    if (redirectUnpermitted && router != undefined && redirectRoute != undefined) {
-        router.push(redirectRoute);
-    }
-
-    return result;
 }

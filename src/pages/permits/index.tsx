@@ -1,6 +1,6 @@
-import { forwardRef, useContext, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, forwardRef, useContext, useEffect, useState } from 'react'
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IPermit, IPermitOption, IPermitSelections, ISnowmobile } from '@/custom/app-context';
-import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
+import AuthenticatedPageLayout, { IShowHoverButton } from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
 import { formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
 import Modal from 'react-bootstrap/Modal';
@@ -11,39 +11,28 @@ import DatePicker from 'react-datepicker';
 import CartItemsAlert from '@/components/cart-items-alert';
 import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle, IApiDeleteVehicleRequest, IApiDeleteVehicleResult, apiDeleteVehicle, IApiVehiclePermit, IApiVehiclePermitOption } from '@/custom/api';
 import { Observable, forkJoin } from 'rxjs';
-import { isRoutePermitted, isUserAuthenticated, logout } from '@/custom/authentication';
 import { Constants } from '../../../constants';
+import { logout } from '@/custom/authentication';
 
 export default function PermitsPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     // Display loading indicator.
-    const [showAlert, setShowAlert] = useState(false);
+    const [showAlert, setShowAlert] = useState(true);
+
+    // Display hover button.
+    const [showHoverButton, setShowHoverButton] = useState({} as IShowHoverButton);
 
     useEffect(() => {
-        setIsAuthenticated(false);
+        appContext.updater(draft => { draft.navbarPage = "permits" });
 
-        let authenticated: boolean = isUserAuthenticated(router, appContext);
-
-        if (authenticated) {
-            let permitted: boolean = isRoutePermitted(router, appContext, "permits");
-
-            if (permitted) {
-                appContext.updater(draft => { draft.navbarPage = "permits" });
-
-                setIsAuthenticated(true);
-                setShowAlert(true);
-            }
-        }
-    }, [appContext.data.isAuthenticated]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
-        <AuthenticatedPageLayout showAlert={showAlert}>
-            {isAuthenticated && (
-                <Permits appContext={appContext} router={router} setShowAlert={setShowAlert}></Permits>
-            )}
+        <AuthenticatedPageLayout showAlert={showAlert} showHoverButton={showHoverButton}>
+            <Permits appContext={appContext} router={router} setShowAlert={setShowAlert} setShowHoverButton={setShowHoverButton}></Permits>
         </AuthenticatedPageLayout>
     )
 }
@@ -53,7 +42,14 @@ enum DialogMode {
     Edit = 1
 }
 
-function Permits({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
+function Permits({ appContext, router, setShowAlert, setShowHoverButton }
+    : {
+        appContext: IAppContextValues,
+        router: NextRouter,
+        setShowAlert: Dispatch<SetStateAction<boolean>>,
+        setShowHoverButton: Dispatch<SetStateAction<IShowHoverButton>>
+    }) {
+
     const [showAddEditSnowmobileDialog, setShowAddEditSnowmobileDialog] = useState(false);
     const [addEditSnowmobileDialogMode, setAddEditSnowmobileDialogMode] = useState(DialogMode.Add);
     const [addEditSnowmobileDialogErrorMessage, setAddEditSnowmobileDialogErrorMessage] = useState("");
@@ -101,6 +97,12 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
     DateRangeInput.displayName = "DateRangeInput";
 
     useEffect(() => {
+        setShowHoverButton({
+            showHoverButton: true,
+            buttonText: "Add Snowmobile",
+            action: addEditSnowmobileDialogShow
+        });
+
         // Get data from api.
         let batchApi: Observable<any>[] = [
             apiGetVehiclesAndPermitsForUser(),
@@ -224,6 +226,8 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                 setShowAlert(false);
             }
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -325,11 +329,11 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                                             {snowmobile.permitOptions.map(permitOption => {
                                                 if (appContext.translation?.i18n?.language === "fr") {
                                                     return (
-                                                        <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.frenchDisplayName} - ${permitOption?.amount}</option>
+                                                        <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.frenchDisplayName} — ${permitOption?.amount}</option>
                                                     );
                                                 } else {
                                                     return (
-                                                        <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.displayName} - ${permitOption?.amount}</option>
+                                                        <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.displayName} — ${permitOption?.amount}</option>
                                                     );
                                                 }
                                             })}
@@ -409,7 +413,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
-                                    <select className={`form-select ${isVehicleYearValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-year" aria-label="Year" value={vehicleYear} onChange={(e: any) => setVehicleYear(e?.target?.value)}>
+                                    <select className={`form-select ${isVehicleYearValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-year" aria-label="Year" value={vehicleYear} onChange={(e: any) => setVehicleYear(e?.target?.value ?? "")}>
                                         <option value="" disabled>{Constants.PleaseSelect}</option>
 
                                         {yearsData != undefined && yearsData.length > 0 && yearsData.map(x => (
@@ -1039,7 +1043,7 @@ function Permits({ appContext, router, setShowAlert }: { appContext: IAppContext
                         let descriptionFr: string = `${draftSnowmobile?.vehicleYear} ${draftSnowmobile?.vehicleMake?.value} ${draftSnowmobile?.model} ${draftSnowmobile?.vin} ${draftPermitOption?.frenchDisplayName}`;
 
                         if (draftPermitOption.isMultiDay) {
-                            description += ` (${formatShortDate(draftSnowmobile?.permitSelections?.dateStart)} - ${formatShortDate(draftSnowmobile?.permitSelections?.dateEnd)}) `;
+                            description += ` (${formatShortDate(draftSnowmobile?.permitSelections?.dateStart)} — ${formatShortDate(draftSnowmobile?.permitSelections?.dateEnd)}) `;
                         }
 
                         let cartItem: ICartItem = {

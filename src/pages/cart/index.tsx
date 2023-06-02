@@ -2,7 +2,6 @@ import ConfirmationDialog from "@/components/confirmation-dialog";
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
 import { IApiGetClubsResult, IApiGetCountriesResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetShippingFeesResult, apiGetClubs, apiGetCountries, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, IApiSavePermitSelectionForVehicleRequest, apiSavePermitSelectionForVehicle, IApiSavePermitSelectionForVehicleResult } from "@/custom/api";
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IParentKeyValue, IRedeemableGiftCards, IShippingFee, ISnowmobile, IPermitSelections } from "@/custom/app-context";
-import { isRoutePermitted, isUserAuthenticated } from "@/custom/authentication";
 import { formatCurrency, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect } from "@/custom/utilities";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
@@ -10,37 +9,24 @@ import { useContext, useEffect, useState } from "react";
 import { Observable, forkJoin } from "rxjs";
 import Select from 'react-select';
 import { Constants } from "../../../constants";
+import ClubLocatorMap from "./club-locator-map";
 
 export default function CartPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     // Display loading indicator.
     const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
-        setIsAuthenticated(false);
+        appContext.updater(draft => { draft.navbarPage = "cart" });
 
-        let authenticated: boolean = isUserAuthenticated(router, appContext);
-
-        if (authenticated) {
-            let permitted: boolean = isRoutePermitted(router, appContext, "cart");
-
-            if (permitted) {
-                appContext.updater(draft => { draft.navbarPage = "cart" });
-
-                setIsAuthenticated(true);
-                setShowAlert(false);
-            }
-        }
-    }, [appContext.data.isAuthenticated]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <AuthenticatedPageLayout showAlert={showAlert}>
-            {isAuthenticated && (
-                <Cart appContext={appContext} router={router} setShowAlert={setShowAlert}></Cart>
-            )}
+            <Cart appContext={appContext} router={router} setShowAlert={setShowAlert}></Cart>
         </AuthenticatedPageLayout>
     )
 }
@@ -53,14 +39,14 @@ enum ShipTo {
 function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [showClubInfoDialog, setShowClubInfoDialog] = useState(false);
 
+    const [showClubLocatorMapDialog, setShowClubLocatorMapDialog] = useState(false);
+    const [clubLocatorMapSnowmobileId, setClubLocatorMapSnowmobileId] = useState("");
+
     const [shipping, setShipping] = useState("");
-    const [pendingShipping, setPendingShipping] = useState("");
     const [isShippingValid, setIsShippingValid] = useState(true);
 
     const [standardShippingWarning, setStandardShippingWarning] = useState(false);
     const [isStandardShippingWarningValid, setIsStandardShippingWarningValid] = useState(true);
-
-    const [showStandardShippingDialog, setShowStandardShippingDialog] = useState(false);
 
     const [shipTo, setShipTo] = useState(ShipTo.Registered);
 
@@ -169,6 +155,8 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                 setShowAlert(false);
             }
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -231,7 +219,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                                                 Remove
                                                                             </a>
                                                                         </div>
-                                                                        <div className="fw-bold text-end ms-auto">${formatCurrency(cartItem?.giftCardAmount)}</div>
+                                                                        <div className="fw-bold text-danger text-end ms-auto">${formatCurrency(cartItem?.giftCardAmount)}</div>
                                                                     </div>
                                                                 )}
 
@@ -244,18 +232,9 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                                                 <div className="container-fluid">
                                                                                     <div className="row">
                                                                                         <div className="col-12 col-md-6 g-0 w-100">
-                                                                                            <div className="d-sm-none">
-                                                                                                <label className="form-label" htmlFor={`cart-redemption-code-${cartItem?.itemId}`}>Enter the redemption code provided on your gift card.</label>
-                                                                                                <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Redemption Code" value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
-                                                                                                <button className="btn btn-primary btn-sm mt-2" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate Gift Card</button>
-                                                                                            </div>
-
-                                                                                            <div className="input-group d-none d-sm-flex">
-                                                                                                <div className="form-floating">
-                                                                                                    <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter the redemption code provided on your gift card." value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
-                                                                                                    <label htmlFor={`cart-redemption-code-${cartItem?.itemId}`}>Enter the redemption code provided on your gift card.</label>
-                                                                                                </div>
-                                                                                                <button className="btn btn-primary btn-sm" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate Gift Card</button>
+                                                                                            <div className="input-group">
+                                                                                                <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter the redemption code provided on your gift card." value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
+                                                                                                <button className="btn btn-outline-primary" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
                                                                                             </div>
 
                                                                                             {cartItem?.uiShowRedemptionCodeNotFound && (
@@ -275,11 +254,11 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                     <div className="card mt-2">
                                                         <div className="card-body footer-color">
                                                             <div className="d-flex justify-content-between align-items-center">
-                                                                <div>
-                                                                    <h6 className="card-title fw-semibold required">Select a Club</h6>
+                                                                <div className="mb-1">
+                                                                    <h6 className="card-title fw-semibold required mb-0">Select a Club</h6>
                                                                 </div>
-                                                                <div>
-                                                                    <button type="button" className="btn btn-link text-decoration-none p-0" onClick={() => clubLocatorMapDialogShow()}><i className="fa-solid fa-map fa-lg me-2"></i>Use Club Locator Map</button>
+                                                                <div className="mb-1">
+                                                                    <button type="button" className="btn btn-link text-decoration-none p-0" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}><i className="fa-solid fa-map fa-lg me-2"></i>Use Club Locator Map</button>
                                                                     <button type="button" className="btn btn-link p-0 ms-3" onClick={() => setShowClubInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
                                                                 </div>
                                                             </div>
@@ -287,10 +266,6 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                             <div className="mt-1">
                                                                 <Select id={`cart-club-${cartItem?.itemId}`} className="react-select" aria-label="Club" classNames={getClubReactSelectClasses(cartItem?.id)} isClearable={true} placeholder={Constants.PleaseSelect} options={getClubsData()} value={getSelectedClub(cartItem?.itemId)} onChange={(e: any) => permitClubChange(e, cartItem?.itemId)} />
                                                             </div>
-
-                                                            {/* <div className="btn btn-link text-decoration-none align-baseline text-start border-0 px-0 pb-0" onClick={() => clubLocatorMapDialogShow()}>
-                                                                Can't find your club? Use the Club Locator Map and enter the closest town name to get started.
-                                                            </div> */}
                                                         </div>
                                                     </div>
                                                 </>
@@ -310,6 +285,19 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                             ${formatCurrency(processingFee)}
                                         </div>
                                     </div>
+
+                                    {isTransactionAndAdministrationFeeDiscountVisible() && (
+                                        <div className="card mt-2">
+                                            <div className="card-body footer-color">
+                                                <div className="d-flex justify-content-between flex-wrap flex-sm-nowrap">
+                                                    <div className="fw-semibold w-100">
+                                                        Transaction and Administration Fee Discount
+                                                    </div>
+                                                    <div className="fw-bold text-danger text-end ms-auto">$-{formatCurrency(processingFee)}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </li>
                             )}
 
@@ -328,7 +316,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                     </div>
 
                                     <div className="fw-bold text-end ms-3">
-                                        ${formatCurrency(getShippingPrice())}
+                                        ${formatCurrency(getShippingFee())}
                                     </div>
                                 </div>
 
@@ -348,9 +336,9 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                         <div className="card-body footer-color">
                                             <div className="d-flex justify-content-between flex-wrap flex-sm-nowrap">
                                                 <div className="fw-semibold w-100">
-                                                    Tracked shipping discount
+                                                    Tracked Shipping Discount
                                                 </div>
-                                                <div className="fw-bold text-end ms-auto">${formatCurrency(getTrackedShippingDiscount())}</div>
+                                                <div className="fw-bold text-danger text-end ms-auto">${formatCurrency(getTrackedShippingDiscount())}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -369,24 +357,6 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                             </div>
                         </div>
                     </div >
-
-                    <div className="card mb-3" style={{ backgroundColor: "rgb(209, 231, 221)" }}>
-                        <div className="card-body">
-                            <h5>Before you checkout...</h5>
-
-                            <div className="ms-2">
-                                <i className="fa-solid fa-snowflake fa-fw fa-lg me-2"></i>
-                                <span className="fs-5 me-3">Purchase an Ontario Snowmobile Trail Permit</span>
-                                <button type="button" className="btn btn-primary btn-sm" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchasePermitClick()}>Purchase a Permit</button>
-                            </div>
-
-                            <div className="ms-2">
-                                <i className="fa-solid fa-gift fa-fw fa-lg me-2"></i>
-                                <span className="fs-5 me-3">Purchase a Gift Card</span>
-                                <button type="button" className="btn btn-primary btn-sm" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchaseGiftCardClick()}>Purchase a Gift Card</button>
-                            </div>
-                        </div>
-                    </div>
 
                     <div className="card mb-3">
                         <div className="card-body">
@@ -483,25 +453,21 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
 
                     <div className="card">
                         <div className="card-body text-center">
-                            <button className="btn btn-success" onClick={() => checkoutClick()}>Proceed to Checkout</button>
+                            <button className="btn btn-success mx-1" onClick={() => checkoutClick()}>Proceed to Checkout</button>
+                            <button className="btn btn-success mx-1" onClick={() => continueShoppingClick()}>Continue Shopping</button>
                         </div>
                     </div>
                 </>
-            )
-            }
+            )}
 
             <ConfirmationDialog showDialog={showClubInfoDialog} title="Information" buttons={0} icon="information" width="50"
                 okClick={() => setShowClubInfoDialog(false)} closeClick={() => setShowClubInfoDialog(false)}>
                 <div>By choosing a specific club when buying a permit, you're directly helping that club groom and maintain the trails you enjoy riding most often, so please buy where you ride and make your selection below.</div>
             </ConfirmationDialog>
 
-            <ConfirmationDialog showDialog={showStandardShippingDialog} title="Shipping Acknowledgement" buttons={2} icon="question" width="50"
-                yesClick={() => standardShippingDialogYesClick()} noClick={() => standardShippingDialogNoClick()} closeClick={() => standardShippingDialogNoClick()}>
-                <div className="fw-bold mb-2">Are you sure you want standard shipping?</div>
-                <div className="">By selecting standard delivery for your permit, you assume all responsibility should your permit get lost or stolen in the mail,
-                    or for any other reason that it is not received in the mail, and therefore agree to adhere to all Ministry of Transportation rules
-                    for the issuance of a replacement permit.</div>
-            </ConfirmationDialog>
+            <ClubLocatorMap showDialog={showClubLocatorMapDialog} closeClick={() => setShowClubLocatorMapDialog(false)}
+                clubLocatorMapSnowmobileId={clubLocatorMapSnowmobileId}
+                selectClubFromClubLocatorMapSelection={(snowmobileId?: string, selectedClub?: string) => selectClubFromClubLocatorMapSelection(snowmobileId, selectedClub)}></ClubLocatorMap>
         </>
     )
 
@@ -555,8 +521,27 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         return result;
     }
 
-    function clubLocatorMapDialogShow(): void {
+    function clubLocatorMapDialogShow(snowmobileId?: string): void {
+        if (snowmobileId != undefined) {
+            setClubLocatorMapSnowmobileId(snowmobileId);
+            setShowClubLocatorMapDialog(true);
+        }
+    }
 
+    function selectClubFromClubLocatorMapSelection(snowmobileId?: string, selectedClub?: string): void {
+        if (snowmobileId != undefined && selectedClub != undefined) {
+            appContext.updater(draft => {
+                let draftSnowmobile: ISnowmobile | undefined = draft.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+
+                if (draftSnowmobile != undefined) {
+                    let clubId: string | undefined = clubsData?.filter(x => x?.value === selectedClub)[0]?.key;
+
+                    if (clubId != undefined && draftSnowmobile.permitSelections != undefined) {
+                        draftSnowmobile.permitSelections.clubId = Number(clubId);
+                    }
+                }
+            });
+        }
     }
 
     function getPermitCount(): number {
@@ -567,7 +552,20 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         return result;
     }
 
-    function getShippingPrice(): number {
+    function getProcessingFee(): number {
+        let result: number = 0;
+
+        // If any gift cards were added to the cart, then the processing fee should be discounted.
+        if (getCartItems()?.some(x => x?.isPermit && x?.redemptionCode != undefined)) {
+            result = 0;
+        } else {
+            result = processingFee ?? 0;
+        }
+
+        return result;
+    }
+
+    function getShippingFee(): number {
         let result: number = 0;
 
         if (shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
@@ -595,11 +593,11 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
 
         // Add processing fee if there's at least one permit in the cart.
         if (getPermitCount() > 0) {
-            result += processingFee;
+            result += getProcessingFee();
         }
 
         // Add shipping fee.
-        result += getShippingPrice();
+        result += getShippingFee();
 
         // Add negative tracked shipping discount if tracked shipping is selected and a gift card with tracked shipping is redeemed.
         result += getTrackedShippingDiscount();
@@ -608,6 +606,14 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         if (result < 0) {
             result = 0;
         }
+
+        return result;
+    }
+
+    function isTransactionAndAdministrationFeeDiscountVisible(): boolean {
+        let result: boolean = false;
+
+        result = getCartItems()?.some(x => x?.isPermit && x?.redemptionCode != undefined);
 
         return result;
     }
@@ -674,6 +680,19 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         }
     }
 
+    function continueShoppingClick(): void {
+        router.push("/home");
+    }
+
+    function shippingChange(e: any): void {
+        if (e != undefined) {
+            setShipping(e?.target?.value ?? "");
+
+            setIsShippingValid(true);
+            setIsStandardShippingWarningValid(true);
+        }
+    }
+
     function validateCart(): boolean {
         let isValid: boolean = true;
 
@@ -701,7 +720,9 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
             setIsShippingValid(true);
         }
 
-        if (standardShippingWarning === false) {
+        console.log(isValid);
+
+        if (isStandardShippingWarningVisible() && standardShippingWarning === false) {
             setIsStandardShippingWarningValid(false);
             isValid = false;
         } else {
@@ -728,10 +749,10 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         return (redeemableGiftCards != undefined && ((redeemableGiftCards?.seasonalGiftCards ?? 0) > 0 || (redeemableGiftCards?.classicGiftCards ?? 0) > 0)) ?? false;
     }
 
-    function removeGiftCardClick(cartId?: string): void {
-        if (cartId != undefined) {
+    function removeGiftCardClick(cartItemId?: string): void {
+        if (cartItemId != undefined) {
             appContext.updater(draft => {
-                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartId)[0];
+                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
 
                 if (draftCartItem != undefined) {
                     draftCartItem.redemptionCode = undefined;
@@ -742,10 +763,10 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         }
     }
 
-    function redemptionCodeChange(e: any, cartId?: string): void {
-        if (e != undefined && cartId != undefined) {
+    function redemptionCodeChange(e: any, cartItemId?: string): void {
+        if (e != undefined && cartItemId != undefined) {
             appContext.updater(draft => {
-                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartId)[0];
+                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
 
                 if (draftCartItem != undefined) {
                     draftCartItem.uiRedemptionCode = e?.target?.value;
@@ -754,10 +775,10 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         }
     }
 
-    function validateGiftCard(cartId?: string): void {
-        if (cartId != undefined) {
+    function validateGiftCard(cartItemId?: string): void {
+        if (cartItemId != undefined) {
             appContext.updater(draft => {
-                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartId)[0];
+                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
 
                 if (draftCartItem != undefined) {
                     // TODO: Replace with actual lookup.
@@ -774,40 +795,16 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
 
                         draftCartItem.uiRedemptionCode = "";
                         draftCartItem.uiShowRedemptionCodeNotFound = false;
+
+                        let trackedShipping: string | undefined = shippingFeesData?.filter(x => x?.name === "Tracked")[0]?.id;
+
+                        if (trackedShipping != undefined) {
+                            setShipping(trackedShipping);
+                        }
                     }
                 }
             });
         }
-    }
-
-    function shippingChange(e: any): void {
-        // let shippingMethod: IShippingFee | undefined = shippingFeesData?.filter(x => x?.id === e?.target?.value)[0];
-
-        // if (shippingMethod != undefined) {
-        //     if (shippingMethod.showConfirmation) {
-        //         setPendingShipping(e.target.value);
-        //         setShowStandardShippingDialog(true);
-        //     } else {
-        //         setShipping(e.target.value)
-        //         setPendingShipping("");
-        //     }
-        // }
-
-        if (e != undefined) {
-            setShipping(e?.target?.value ?? "");
-        }
-    }
-
-    function standardShippingDialogYesClick(): void {
-        // Apply confirmed shipping fee.
-        setShipping(pendingShipping);
-        setPendingShipping("");
-
-        setShowStandardShippingDialog(false);
-    }
-
-    function standardShippingDialogNoClick(): void {
-        setShowStandardShippingDialog(false);
     }
 
     function shipToAddressChange(shipToLocation: number): void {
@@ -940,18 +937,6 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                     });
                 }
             }
-        }
-    }
-
-    function purchasePermitClick(): void {
-        if (appContext.data?.isContactInfoVerified) {
-            router.push("/permits");
-        }
-    }
-
-    function purchaseGiftCardClick(): void {
-        if (appContext.data?.isContactInfoVerified) {
-            router.push("/gift-cards");
         }
     }
 }
