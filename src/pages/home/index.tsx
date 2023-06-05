@@ -38,7 +38,7 @@ function Home({ appContext, router, setShowAlert }: { appContext: IAppContextVal
 
             {!appContext.data?.isContactInfoVerified && (
                 <div className="alert alert-primary" role="alert">
-                    <div className="d-flex justify-content-between align-items-center flex-wrap flex-sm-wrap flex-md-wrap flex-md-nowrap w-100">
+                    <div className="d-flex justify-content-between align-items-center flex-wrap flex-sm-wrap flex-md-wrap w-100">
                         <div>
                             <i className="fa-solid fa-comment fa-xl me-2"></i>
                             Please confirm your contact information and preferences to gain full access to your account.

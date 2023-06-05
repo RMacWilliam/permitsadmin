@@ -47,11 +47,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     const [giftCardTypesData, setGiftCardTypesData] = useState([] as IGiftCardType[]);
 
     useEffect(() => {
-        setShowHoverButton({
-            showHoverButton: true,
-            buttonText: "Add Gift Card",
-            action: addGiftCardClick
-        });
+        setHoverButtonVisibility(true);
 
         // Get data from api.
         let batchApi: Observable<any>[] = [
@@ -153,8 +149,8 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             {getGiftCards() != undefined && getGiftCards().length > 0 && getGiftCards().map(giftCard => (
                 <div className="card mb-3" key={giftCard.oVoucherId}>
-                    <h5 className="card-header d-flex justify-content-between align-items-center">
-                        <div>
+                    <h5 className="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div className="d-flex flex-fill">
                             {giftCard.isPurchased && appContext.translation?.i18n?.language === "en" && (
                                 <span>Purchased {getGiftCardName(giftCard?.oVoucherId)}</span>
                             )}
@@ -167,13 +163,13 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                             )}
                         </div>
 
-                        <div>
+                        <div className="d-flex flex-fill justify-content-end">
                             {giftCard?.isPurchased && !giftCard?.isRedeemed && (
-                                <button className="btn btn-primary btn-sm" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>Edit</button>
+                                <button className="btn btn-outline-secondary btn-sm" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>Edit</button>
                             )}
 
                             {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                <button className="btn btn-danger btn-sm ms-1" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>Remove</button>
+                                <button className="btn btn-outline-secondary btn-sm ms-1" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>Remove</button>
                             )}
                         </div>
                     </h5>
@@ -181,14 +177,14 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                     <ul className="list-group list-group-flush">
                         {giftCard?.isPurchased && (
                             <li className="list-group-item">
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <label htmlFor="exampleFormControlInput1" className="form-label">Redemption Code</label>
-                                        <p className="font-monospace mb-0">{giftCard?.redemptionCode}</p>
+                                <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div className="d-flex flex-fill flex-column">
+                                        <label htmlFor={`redemption-code-${giftCard?.oVoucherId}`} className="form-label mb-0">Redemption Code</label>
+                                        <p id={`redemption-code-${giftCard?.oVoucherId}`} className="font-monospace mb-0">{giftCard?.redemptionCode}</p>
                                     </div>
 
-                                    <div>
-                                        <button className="btn btn-primary btn-sm">Resend E-mail</button>
+                                    <div className="d-flex flex-fill justify-content-end">
+                                        <button className="btn btn-outline-secondary btn-sm">Resend E-mail</button>
                                     </div>
                                 </div>
                             </li>
@@ -225,15 +221,15 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                             <div className="row">
                                 <div className="col-12 col-sm-12 col-md-6">
                                     <div className="form-floating mb-2">
-                                        <input type="text" className="form-control" id="gift-cards-last-name-${giftCard.id}" placeholder="Recipient's LAST Name ONLY" value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
-                                        <label className="required" htmlFor="gift-cards-last-name-${giftCard.id}">Recipient's LAST Name ONLY</label>
+                                        <input type="text" className="form-control" id={`gift-card-last-name-${giftCard?.oVoucherId}`} placeholder="Recipient's LAST Name ONLY" value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
+                                        <label className="required" htmlFor={`gift-card-last-name-${giftCard?.oVoucherId}`}>Recipient's LAST Name ONLY</label>
                                     </div>
                                 </div>
 
                                 <div className="col-12 col-sm-12 col-md-6">
                                     <div className="form-floating mb-2">
-                                        <input type="text" className="form-control" id="gift-cards-postal-code-${giftCard.id}" placeholder="Recipient's Postal Code" value={getGiftCardRecipientPostalCode(giftCard?.oVoucherId)} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardPostalCodeEnabled(giftCard?.oVoucherId)} />
-                                        <label className="required" htmlFor="gift-cards-postal-code-${giftCard.id}">Recipient's Postal Code</label>
+                                        <input type="text" className="form-control" id={`gift-card-postal-code-${giftCard?.oVoucherId}`} placeholder="Recipient's Postal Code" value={getGiftCardRecipientPostalCode(giftCard?.oVoucherId)} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardPostalCodeEnabled(giftCard?.oVoucherId)} />
+                                        <label className="required" htmlFor={`gift-card-postal-code-${giftCard?.oVoucherId}`}>Recipient's Postal Code</label>
                                     </div>
                                 </div>
                             </div>
@@ -724,6 +720,8 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             setGiftCardIdToDelete(oVoucherId);
             setDeleteGiftCardDialogErrorMessage("");
             setShowDeleteGiftCardDialog(true);
+
+            setHoverButtonVisibility(false);
         }
     }
 
@@ -745,6 +743,8 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                     setGiftCardIdToDelete("");
                     setDeleteGiftCardDialogErrorMessage("");
                     setShowDeleteGiftCardDialog(false);
+
+                    setHoverButtonVisibility(true);
                 } else {
                     setDeleteGiftCardDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                 }
@@ -763,6 +763,8 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         setGiftCardIdToDelete("");
         setDeleteGiftCardDialogErrorMessage("");
         setShowDeleteGiftCardDialog(false);
+
+        setHoverButtonVisibility(true);
     }
 
     function getSelectedGiftCardOption(oVoucherId?: string): string {
@@ -789,5 +791,13 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 saveGiftCardSelections(oVoucherId, giftcardProductId, giftCard?.recipientLastName, giftCard?.recipientPostal);
             }
         }
+    }
+
+    function setHoverButtonVisibility(isVisible: boolean): void {
+        setShowHoverButton({
+            showHoverButton: isVisible,
+            buttonText: "Add Gift Card",
+            action: addGiftCardClick
+        });
     }
 }

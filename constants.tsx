@@ -1,43 +1,43 @@
 import { ITranslation } from "@/custom/app-context";
 import { Translation, getI18n } from "react-i18next";
 
-const WebApiBaseUrl: string = "https://permitsapi.azurewebsites.net/api/";
-
 export const GlobalAppContext: { token?: string, translation?: ITranslation } = { token: "", translation: { t: Translation, i18n: getI18n() } };
 
 export class WebApi {
+    static BaseUrl: string = "https://permitsapi.azurewebsites.net/api/";
+
     // User
-    static LoginUrl: string = WebApiBaseUrl + "user/validateuser";
-    static LogoutUrl: string = WebApiBaseUrl + "............................";
-    static GetUserDetails: string = WebApiBaseUrl + "user/getuserdetails";
-    static SaveUserDetails: string = WebApiBaseUrl + "user/saveuserdetails";
-    static GetUserPreferences: string = WebApiBaseUrl + "user/getuserpreferences";
-    static SaveUserPreferences: string = WebApiBaseUrl + "user/saveuserpreferences";
+    static LoginUrl: string = WebApi.BaseUrl + "user/validateuser";
+    static LogoutUrl: string = WebApi.BaseUrl + "............................";
+    static GetUserDetails: string = WebApi.BaseUrl + "user/getuserdetails";
+    static SaveUserDetails: string = WebApi.BaseUrl + "user/saveuserdetails";
+    static GetUserPreferences: string = WebApi.BaseUrl + "user/getuserpreferences";
+    static SaveUserPreferences: string = WebApi.BaseUrl + "user/saveuserpreferences";
 
     // Utils
-    static GetProvinces: string = WebApiBaseUrl + "utils/getprovinces";
-    static GetCountries: string = WebApiBaseUrl + "utils/getcountries";
-    static GetClubs: string = WebApiBaseUrl + "utils/getclubs";
+    static GetProvinces: string = WebApi.BaseUrl + "utils/getprovinces";
+    static GetCountries: string = WebApi.BaseUrl + "utils/getcountries";
+    static GetClubs: string = WebApi.BaseUrl + "utils/getclubs";
 
     // Vehicle
-    static GetVehiclesAndPermitsForUser: string = WebApiBaseUrl + "vehicle/getvehiclesandpermitsforuser";
-    static GetVehicleMakes: string = WebApiBaseUrl + "vehicle/getvehiclemakes";
-    static AddVehicleForUser: string = WebApiBaseUrl + "vehicle/addvehicleforuser";
-    static UpdateVehicle: string = WebApiBaseUrl + "vehicle/updatevehicle";
-    static DeleteVehicle: string = WebApiBaseUrl + "vehicle/deletevehicle";
-    static SavePermitSelectionForVehicle: string = WebApiBaseUrl + "vehicle/savepermitselectionforvehicle";
+    static GetVehiclesAndPermitsForUser: string = WebApi.BaseUrl + "vehicle/getvehiclesandpermitsforuser";
+    static GetVehicleMakes: string = WebApi.BaseUrl + "vehicle/getvehiclemakes";
+    static AddVehicleForUser: string = WebApi.BaseUrl + "vehicle/addvehicleforuser";
+    static UpdateVehicle: string = WebApi.BaseUrl + "vehicle/updatevehicle";
+    static DeleteVehicle: string = WebApi.BaseUrl + "vehicle/deletevehicle";
+    static SavePermitSelectionForVehicle: string = WebApi.BaseUrl + "vehicle/savepermitselectionforvehicle";
 
     // GiftCard
-    static GetGiftcardsForCurrentSeasonForUser: string = WebApiBaseUrl + "giftcard/getgiftcardsforcurrentseasonforuser";
-    static GetAvailableGiftCards: string = WebApiBaseUrl + "giftcard/getavailablegiftcards";
-    static GetRedeemableGiftCardsForUser: string = WebApiBaseUrl + "giftcard/getredeemablegiftcardsforuser";
-    static AddGiftCardForUser: string = WebApiBaseUrl + "giftcard/addgiftcardforuser";
-    static SaveGiftCardSelectionsForUser: string = WebApiBaseUrl + "giftcard/savegiftcardselectionsforuser";
-    static DeleteGiftCard: string = WebApiBaseUrl + "giftcard/deletegiftcard";
+    static GetGiftcardsForCurrentSeasonForUser: string = WebApi.BaseUrl + "giftcard/getgiftcardsforcurrentseasonforuser";
+    static GetAvailableGiftCards: string = WebApi.BaseUrl + "giftcard/getavailablegiftcards";
+    static GetRedeemableGiftCardsForUser: string = WebApi.BaseUrl + "giftcard/getredeemablegiftcardsforuser";
+    static AddGiftCardForUser: string = WebApi.BaseUrl + "giftcard/addgiftcardforuser";
+    static SaveGiftCardSelectionsForUser: string = WebApi.BaseUrl + "giftcard/savegiftcardselectionsforuser";
+    static DeleteGiftCard: string = WebApi.BaseUrl + "giftcard/deletegiftcard";
 
     // Permit
-    static GetProcessingFee: string = WebApiBaseUrl + "permit/getprocessingfee";
-    static GetShippingFees: string = WebApiBaseUrl + "permit/getshippingfees";
+    static GetProcessingFee: string = WebApi.BaseUrl + "permit/getprocessingfee";
+    static GetShippingFees: string = WebApi.BaseUrl + "permit/getshippingfees";
 }
 
 export class Constants {
@@ -47,4 +47,7 @@ export class Constants {
         return GlobalAppContext?.translation?.i18n?.language === "fr" ? "(fr)Please select" : "Please select";
     }
 
+    static MtoWaiverPdf: string = "MTO Waiver ENG-FRE 2022-09-22.pdf";
+    static OfscWaiverPdfEn: string = "OFSC PS Waiver July 2022-23.pdf";
+    static OfscWaiverPdfFr: string = "OFSC PS Waiver July 2022-23 FR.pdf";
 }

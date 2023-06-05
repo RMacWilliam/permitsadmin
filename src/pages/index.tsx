@@ -31,7 +31,7 @@ function Index() {
                 <title>Index | Ontario Federation of Snowmobile Clubs</title>
             </Head>
 
-            <div className="d-flex justify-content-between flex-wrap flex-sm-wrap flex-md-nowrap w-100">
+            <div className="d-flex justify-content-between flex-wrap flex-sm-wrap w-100">
                 <div className="flex-fill px-2">
                     <div>
                         <h3>Welcome to Ontario Federation of Snowmobile Clubs</h3>
@@ -78,12 +78,12 @@ function Index() {
 
                             <div className="mt-4">
                                 <div className="form-floating mb-2">
-                                    <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com" value={email} onChange={(e: any) => setEmail(e.target.value)} onBlur={(e: any) => setEmail(e?.target?.value?.trim() ?? "")} />
-                                    <label htmlFor="floatingInput">Email address</label>
+                                    <input type="email" className="form-control" id="login-email" placeholder="name@example.com" value={email} onChange={(e: any) => setEmail(e.target.value)} onBlur={(e: any) => setEmail(e?.target?.value?.trim() ?? "")} />
+                                    <label htmlFor="login-email">Email address</label>
                                 </div>
                                 <div className="form-floating">
-                                    <input type="password" className="form-control" id="floatingPassword" placeholder="Password" value={password} onChange={(e: any) => setPassword(e.target.value)} onBlur={(e: any) => setPassword(e?.target?.value?.trim() ?? "")} />
-                                    <label htmlFor="floatingPassword">Password</label>
+                                    <input type="password" className="form-control" id="login-password" placeholder="Password" value={password} onChange={(e: any) => setPassword(e.target.value)} onBlur={(e: any) => setPassword(e?.target?.value?.trim() ?? "")} />
+                                    <label htmlFor="login-password">Password</label>
                                 </div>
                             </div>
 

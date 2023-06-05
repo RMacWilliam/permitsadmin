@@ -97,11 +97,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
     DateRangeInput.displayName = "DateRangeInput";
 
     useEffect(() => {
-        setShowHoverButton({
-            showHoverButton: true,
-            buttonText: "Add Snowmobile",
-            action: addEditSnowmobileDialogShow
-        });
+        setHoverButtonVisibility(true);
 
         // Get data from api.
         let batchApi: Observable<any>[] = [
@@ -246,43 +242,44 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
             {getSnowmobiles() != undefined && getSnowmobiles().length > 0 && getSnowmobiles().map(snowmobile => (
                 <div className="card w-100 mb-3" key={snowmobile.oVehicleId}>
-                    <div className="card-header d-flex justify-content-between align-items-center flex-wrap flex-sm-nowrap">
-                        <div className="row row-cols-lg-auto g-3">
-                            <div className="d-none d-sm-none d-md-flex">
+                    <div className="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div className="d-flex flex-fill g-3">
+                            <div className="d-none d-md-flex">
                                 <div className="form-floating" style={{ minWidth: 54 }}>
-                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{snowmobile?.vehicleYear}</div>
-                                    <label htmlFor="floatingPlaintextInput">Year</label>
+                                    <div className="form-control-plaintext fw-bold ps-0" id={`snowmobile-year-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vehicleYear}</div>
+                                    <label className="ps-0" htmlFor={`snowmobile-year-label-${snowmobile?.oVehicleId}`}>Year</label>
                                 </div>
 
                                 <div className="form-floating" style={{ minWidth: 63 }}>
-                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{snowmobile?.vehicleMake?.value}</div>
-                                    <label htmlFor="floatingPlaintextInput">Make</label>
+                                    <div className="form-control-plaintext fw-bold" id={`snowmobile-make-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vehicleMake?.value}</div>
+                                    <label htmlFor={`snowmobile-make-label-${snowmobile?.oVehicleId}`}>Make</label>
                                 </div>
 
                                 <div className="form-floating" style={{ minWidth: 70 }}>
-                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{snowmobile?.model}</div>
-                                    <label htmlFor="floatingPlaintextInput">Model</label>
+                                    <div className="form-control-plaintext fw-bold" id={`snowmobile-model-label-${snowmobile?.oVehicleId}`}>{snowmobile?.model}</div>
+                                    <label htmlFor={`snowmobile-model-label-${snowmobile?.oVehicleId}`}>Model</label>
                                 </div>
 
                                 <div className="form-floating" style={{ minWidth: 51 }}>
-                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{snowmobile?.vin}</div>
-                                    <label htmlFor="floatingPlaintextInput">VIN</label>
+                                    <div className="form-control-plaintext fw-bold" id={`snowmobile-vin-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vin}</div>
+                                    <label htmlFor={`snowmobile-vin-label-${snowmobile?.oVehicleId}`}>VIN</label>
                                 </div>
 
                                 <div className="form-floating" style={{ minWidth: 59 }}>
-                                    <div className="form-control-plaintext fw-bold" id="floatingPlaintextInput">{snowmobile?.licensePlate}</div>
-                                    <label htmlFor="floatingPlaintextInput">Plate</label>
+                                    <div className="form-control-plaintext fw-bold" id={`snowmobile-license-plate-label-${snowmobile?.oVehicleId}`}>{snowmobile?.licensePlate}</div>
+                                    <label htmlFor={`snowmobile-license-plate-label-${snowmobile?.oVehicleId}`}>Plate</label>
                                 </div>
                             </div>
                             <div className="d-md-none">
                                 {`${snowmobile?.vehicleYear} ${snowmobile?.vehicleMake?.value} ${snowmobile?.model} ${snowmobile?.vin} ${snowmobile?.licensePlate}`}
                             </div>
                         </div>
-                        <div className="d-flex justify-content-end">
+
+                        <div className="d-flex flex-fill justify-content-end">
                             {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
                                 <>
-                                    <button className="btn btn-primary btn-sm mt-2 mt-sm-0" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>Edit</button>
-                                    <button className="btn btn-danger btn-sm mt-2 mt-sm-0 ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>Remove</button>
+                                    <button className="btn btn-outline-secondary btn-sm" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>Edit</button>
+                                    <button className="btn btn-outline-secondary btn-sm ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>Remove</button>
                                 </>
                             )}
 
@@ -392,7 +389,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 <div>Are you sure you want to delete this snowmobile?</div>
             </ConfirmationDialog>
 
-            <Modal show={showAddEditSnowmobileDialog} onHide={addEditSnowmobileDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-75-percent">
+            <Modal show={showAddEditSnowmobileDialog} onHide={() => addEditSnowmobileDialogHide()} backdrop="static" keyboard={false} dialogClassName="modal-width-75-percent">
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {addEditSnowmobileDialogMode === DialogMode.Add && (<div>Add Snowmobile</div>)}
@@ -489,13 +486,15 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 </Modal.Body>
                 <Modal.Footer>
                     <div className="container-fluid">
-                        <div className="row">
-                            <div className="col">
-                                <span className="text-danger me-1">*</span>= mandatory field
+                        <div className="row gap-2">
+                            <div className="col d-flex align-items-center">
+                                <div className="text-nowrap">
+                                    <span className="text-danger me-1">*</span>= mandatory field
+                                </div>
                             </div>
-                            <div className="col d-flex justify-content-end">
+                            <div className="col d-flex justify-content-end align-items-center">
                                 <Button className="me-2" variant="primary" onClick={() => addEditSnowmobileDialogSave()}>Save</Button>
-                                <Button variant="primary" onClick={addEditSnowmobileDialogHide}>Cancel</Button>
+                                <Button variant="primary" onClick={() => addEditSnowmobileDialogHide()}>Cancel</Button>
                             </div>
                         </div>
                     </div>
@@ -561,6 +560,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
         setAddEditSnowmobileDialogErrorMessage("");
         setShowAddEditSnowmobileDialog(true);
+
+        setHoverButtonVisibility(false);
     }
 
     function getVehicleMakesData(): IKeyValue[] {
@@ -665,6 +666,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             });
 
                             setShowAddEditSnowmobileDialog(false);
+
+                            setHoverButtonVisibility(true);
                         } else {
                             setAddEditSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                         }
@@ -705,6 +708,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             });
 
                             setShowAddEditSnowmobileDialog(false);
+
+                            setHoverButtonVisibility(true);
                         } else {
                             setAddEditSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                         }
@@ -788,6 +793,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
     function addEditSnowmobileDialogHide(): void {
         setShowAddEditSnowmobileDialog(false);
+
+        setHoverButtonVisibility(true);
     }
 
     function deleteSnowmobileDialogShow(snowmobileId?: string): void {
@@ -799,6 +806,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 setSnowmobileNameToDelete(`${snowmobile.vehicleYear} ${snowmobile?.vehicleMake?.value} ${snowmobile?.model} ${snowmobile?.vin}`);
                 setDeleteSnowmobileDialogErrorMessage("");
                 setShowDeleteSnowmobileDialog(true);
+
+                setHoverButtonVisibility(false);
             }
         }
     }
@@ -822,6 +831,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                     setSnowmobileNameToDelete("");
                     setDeleteSnowmobileDialogErrorMessage("");
                     setShowDeleteSnowmobileDialog(false);
+
+                    setHoverButtonVisibility(true);
                 } else {
                     setDeleteSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                 }
@@ -841,6 +852,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
         setSnowmobileNameToDelete("");
         setDeleteSnowmobileDialogErrorMessage("");
         setShowDeleteSnowmobileDialog(false);
+
+        setHoverButtonVisibility(true);
     }
 
     function getSelectedPermitOption(snowmobileId?: string): string {
@@ -1081,5 +1094,13 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
         }
 
         return result;
+    }
+
+    function setHoverButtonVisibility(isVisible: boolean): void {
+        setShowHoverButton({
+            showHoverButton: isVisible,
+            buttonText: "Add Snowmobile",
+            action: addEditSnowmobileDialogShow
+        });
     }
 }

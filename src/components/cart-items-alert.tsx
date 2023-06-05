@@ -9,13 +9,13 @@ export default function CartItemsAlert() {
     if (appContext.data?.cartItems != undefined && appContext.data?.cartItems?.length > 0) {
         return (
             <div className="alert alert-primary" role="alert">
-                <div className="d-flex justify-content-between align-items-center flex-wrap flex-sm-wrap flex-md-wrap flex-md-nowrap w-100">
-                    <div>
+                <div className="d-flex justify-content-end justify-content-md-between align-items-center flex-wrap gap-2">
+                    <div className="flex-fill">
                         <i className="fa-solid fa-cart-shopping fa-xl me-2"></i>
                         {getMessage()}
                     </div>
                     <div>
-                        <button type="button" className="btn btn-primary btn-sm mt-2 mt-sm-2 mt-md-0" onClick={() => goToCartClick()}>Go to Cart</button>
+                        <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => goToCartClick()}>Go to Cart</button>
                     </div>
                 </div>
             </div >

@@ -57,18 +57,17 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                 <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark text-white" style={{ minHeight: 86 }}>
                     <div className="container-fluid" style={{ minHeight: 70, maxHeight: 70 }}>
                         <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
-                            <div className="d-flex flex-fill justify-content-start align-items-stretch">
-                                <a className="navbar-brand d-none d-sm-block" href="#">
+                            <div className="d-flex flex-fill justify-content-start align-items-center">
+                                <a className="navbar-brand d-none d-md-block" href="#">
                                     <Image src="/ofsc.png" alt="Logo" width="60" height="60" />
                                 </a>
 
                                 <div className="flex-column justify-content-center justify-content-md-between">
-                                    <h2 className="mb-0 d-none d-sm-block">Ontario Federation of Snowmobile Clubs</h2>
-                                    <h5 className="mb-0 d-sm-none">Ontario Federation of Snowmobile Clubs</h5>
+                                    <h2 className="mb-0 d-none d-md-block">Ontario Federation of Snowmobile Clubs</h2>
+                                    <h5 className="mb-0 d-md-none">Ontario Federation of Snowmobile Clubs</h5>
 
-                                    <div className="d-none d-sm-none d-md-block">
-                                        Logged in as {appContext.data.email}.
-
+                                    <div className="d-none d-md-block">
+                                        Logged in as {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName} ({appContext.data.email})
                                         <span className="btn btn-link align-baseline border-0 ms-2 p-0" onClick={() => doLogout()}>
                                             Logout
                                         </span>
@@ -156,7 +155,8 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                             </li>
                             <li className="nav-item">
                                 <i className="fa-solid fa-user fa-fw me-2"></i>
-                                Logged in as {appContext.data.email}.
+                                {/* {appContext.data.email} */}
+                                {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName}
                                 <span className="ms-2">
                                     <Link className="text-decoration-none" href="" onClick={() => doLogout()}>Logout</Link>
                                 </span>
@@ -208,11 +208,11 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                         <a href="https://www.instagram.com/gosnowmobilingontario"><i className="fa-brands fa-instagram ms-4 text-white"></i></a>
                         <a href="https://www.linkedin.com/company/ontario-federation-of-snowmobile-clubs"><i className="fa-brands fa-linkedin-in ms-4 text-white"></i></a>
                         <a href="https://www.youtube.com/user/GoSnowmobiling/videos"><i className="fa-brands fa-youtube ms-4 text-white"></i></a>
-                        {/* <span className="d-sm-none">XS</span>
+                        <span className="d-sm-none">XS</span>
                         <span className="d-none d-sm-block d-md-none">SM</span>
                         <span className="d-none d-md-block d-lg-none">MD</span>
                         <span className="d-none d-lg-block d-xl-none">LG</span>
-                        <span className="d-none d-xl-block d-xxl-none">XL</span> */}
+                        <span className="d-none d-xl-block d-xxl-none">XL</span>
                     </div>
                 </div>
             </footer>

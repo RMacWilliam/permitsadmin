@@ -17,13 +17,13 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
                     <div className="container-fluid" style={{ minHeight: 70, maxHeight: 70 }}>
                         <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
                             <div className="d-flex flex-fill justify-content-start align-items-center">
-                                <a className="navbar-brand" href="#">
+                                <a className="navbar-brand d-none d-md-block" href="#">
                                     <Image src="/ofsc.png" alt="Logo" width="60" height="60" />
                                 </a>
 
                                 <div>
-                                    <h2 className="mb-0 d-none d-sm-block">Ontario Federation of Snowmobile Clubs</h2>
-                                    <h5 className="mb-0 d-sm-none">Ontario Federation of Snowmobile Clubs</h5>
+                                    <h2 className="mb-0 d-none d-md-block">Ontario Federation of Snowmobile Clubs</h2>
+                                    <h5 className="mb-0 d-md-none">Ontario Federation of Snowmobile Clubs</h5>
                                 </div>
                             </div>
 

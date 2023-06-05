@@ -51,11 +51,21 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     const [shipTo, setShipTo] = useState(ShipTo.Registered);
 
     const [addressLine1, setAddressLine1] = useState("");
+    const [isAddressLine1Valid, setIsAddressLine1Valid] = useState(true);
+
     const [addressLine2, setAddressLine2] = useState("");
+
     const [city, setCity] = useState("");
+    const [isCityValid, setIsCityValid] = useState(true);
+
     const [province, setProvince] = useState({ parent: "", key: "", value: "" });
+    const [isProvinceValid, setIsProvinceValid] = useState(true);
+
     const [country, setCountry] = useState({ key: "", value: "" });
+    const [isCountryValid, setIsCountryValid] = useState(true);
+
     const [postalCode, setPostalCode] = useState("");
+    const [isPostalCodeValid, setIsPostalCodeValid] = useState(true);
 
     const [processingFee, setProcessingFee] = useState(0);
     const [shippingFeesData, setShippingFeesData] = useState([] as IShippingFee[])
@@ -211,14 +221,15 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                         <div className="card mt-2">
                                                             <div className="card-body footer-color">
                                                                 {cartItem?.redemptionCode != undefined && (
-                                                                    <div className="d-flex justify-content-between flex-wrap flex-sm-nowrap">
+                                                                    <div className="d-flex justify-content-between flex-wrap gap-2">
                                                                         <div className="fw-semibold w-100">
                                                                             <span className="me-2">Gift card redemption ({cartItem?.redemptionCode})</span>
 
-                                                                            <a className="btn btn-link text-danger text-nowrap" style={{ display: "contents" }} type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
+                                                                            <a className="btn btn-link text-danger" style={{ display: "contents" }} type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
                                                                                 Remove
                                                                             </a>
                                                                         </div>
+
                                                                         <div className="fw-bold text-danger text-end ms-auto">${formatCurrency(cartItem?.giftCardAmount)}</div>
                                                                     </div>
                                                                 )}
@@ -228,21 +239,17 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                                         <div className="fw-semibold mb-2">Redeem Gift Card</div>
 
                                                                         <div className="d-flex">
-                                                                            <div className="flex-column me-auto w-100">
-                                                                                <div className="container-fluid">
-                                                                                    <div className="row">
-                                                                                        <div className="col-12 col-md-6 g-0 w-100">
-                                                                                            <div className="input-group">
-                                                                                                <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter the redemption code provided on your gift card." value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
-                                                                                                <button className="btn btn-outline-primary" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
-                                                                                            </div>
-
-                                                                                            {cartItem?.uiShowRedemptionCodeNotFound && (
-                                                                                                <div className="text-danger mt-1">Redemption code not found.</div>
-                                                                                            )}
-                                                                                        </div>
-                                                                                    </div>
+                                                                            <div className="d-flex flex-column gap-2 w-100">
+                                                                                <div className="input-group">
+                                                                                    <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter gift card redemption code" value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
+                                                                                    <button className="btn btn-outline-primary d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
                                                                                 </div>
+
+                                                                                <button className="btn btn-outline-primary btn-sm d-sm-none" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
+
+                                                                                {cartItem?.uiShowRedemptionCodeNotFound && (
+                                                                                    <div className="text-danger">Redemption code not found.</div>
+                                                                                )}
                                                                             </div>
                                                                         </div>
                                                                     </>
@@ -253,11 +260,12 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
 
                                                     <div className="card mt-2">
                                                         <div className="card-body footer-color">
-                                                            <div className="d-flex justify-content-between align-items-center">
-                                                                <div className="mb-1">
+                                                            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                                                <div className="d-flex flex-fill align-items-center">
                                                                     <h6 className="card-title fw-semibold required mb-0">Select a Club</h6>
                                                                 </div>
-                                                                <div className="mb-1">
+
+                                                                <div className="d-flex flex-fill justify-content-end align-items-center">
                                                                     <button type="button" className="btn btn-link text-decoration-none p-0" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}><i className="fa-solid fa-map fa-lg me-2"></i>Use Club Locator Map</button>
                                                                     <button type="button" className="btn btn-link p-0 ms-3" onClick={() => setShowClubInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
                                                                 </div>
@@ -289,10 +297,11 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                     {isTransactionAndAdministrationFeeDiscountVisible() && (
                                         <div className="card mt-2">
                                             <div className="card-body footer-color">
-                                                <div className="d-flex justify-content-between flex-wrap flex-sm-nowrap">
+                                                <div className="d-flex justify-content-between flex-wrap gap-2">
                                                     <div className="fw-semibold w-100">
                                                         Transaction and Administration Fee Discount
                                                     </div>
+
                                                     <div className="fw-bold text-danger text-end ms-auto">$-{formatCurrency(processingFee)}</div>
                                                 </div>
                                             </div>
@@ -334,10 +343,11 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                 {isTrackedShippingDiscountVisible() && (
                                     <div className="card mt-2">
                                         <div className="card-body footer-color">
-                                            <div className="d-flex justify-content-between flex-wrap flex-sm-nowrap">
+                                            <div className="d-flex justify-content-between flex-wrap gap-2">
                                                 <div className="fw-semibold w-100">
                                                     Tracked Shipping Discount
                                                 </div>
+
                                                 <div className="fw-bold text-danger text-end ms-auto">${formatCurrency(getTrackedShippingDiscount())}</div>
                                             </div>
                                         </div>
@@ -395,7 +405,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-6">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className="form-control" id="alternate-address-address-line-1" placeholder="Address Line 1" value={addressLine1} onChange={(e: any) => setAddressLine1(e.target.value)} />
+                                                    <input type="text" className={`form-control ${isAddressLine1Valid ? "" : "is-invalid"}`} id="alternate-address-address-line-1" placeholder="Address Line 1" value={addressLine1} onChange={(e: any) => setAddressLine1(e.target.value)} />
                                                     <label className="required" htmlFor="alternate-address-address-line-1">Address Line 1</label>
                                                 </div>
                                             </div>
@@ -410,13 +420,13 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className="form-control" id="alternate-address-city" placeholder="City, Town, or Village" value={city} onChange={(e: any) => setCity(e.target.value)} />
+                                                    <input type="text" className={`form-control ${isCityValid ? "" : "is-invalid"}`} id="alternate-address-city" placeholder="City, Town, or Village" value={city} onChange={(e: any) => setCity(e.target.value)} />
                                                     <label className="required" htmlFor="alternate-address-city">City, Town, or Village</label>
                                                 </div>
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <select className="form-select" id="alternate-address-province" aria-label="Province/State" value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
+                                                    <select className={`form-select ${isProvinceValid ? "" : "is-invalid"}`} id="alternate-address-province" aria-label="Province/State" value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
                                                         <option value="" disabled>{Constants.PleaseSelect}</option>
 
                                                         {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
@@ -428,7 +438,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <select className="form-select" id="alternate-address-country" aria-label="Country" value={country.key} onChange={(e: any) => countryChange(e)}>
+                                                    <select className={`form-select ${isCountryValid ? "" : "is-invalid"}`} id="alternate-address-country" aria-label="Country" value={country.key} onChange={(e: any) => countryChange(e)}>
                                                         <option value="" disabled>{Constants.PleaseSelect}</option>
 
                                                         {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
@@ -440,7 +450,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className="form-control" id="alternate-address-postal-code" placeholder="Postal/Zip Code" value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
+                                                    <input type="text" className={`form-control ${isPostalCodeValid ? "" : "is-invalid"}`} id="alternate-address-postal-code" placeholder="Postal/Zip Code" value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
                                                     <label className="required" htmlFor="alternate-address-postal-code">Postal/Zip Code</label>
                                                 </div>
                                             </div>
@@ -452,9 +462,9 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                     </div>
 
                     <div className="card">
-                        <div className="card-body text-center">
-                            <button className="btn btn-success mx-1" onClick={() => checkoutClick()}>Proceed to Checkout</button>
-                            <button className="btn btn-success mx-1" onClick={() => continueShoppingClick()}>Continue Shopping</button>
+                        <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
+                            <button className="btn btn-success" onClick={() => checkoutClick()}>Proceed to Checkout</button>
+                            <button className="btn btn-success" onClick={() => continueShoppingClick()}>Continue Shopping</button>
                         </div>
                     </div>
                 </>
@@ -696,6 +706,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     function validateCart(): boolean {
         let isValid: boolean = true;
 
+        // Validate that all permits has a selected club.
         let isPermitsValid: boolean = true;
         appContext.updater(draft => {
             draft?.cartItems?.filter(x => x.isPermit)?.forEach(ci => {
@@ -713,6 +724,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
             isValid = false;
         }
 
+        // Validate that a shipping method is selected.
         if (shipping === "") {
             setIsShippingValid(false);
             isValid = false;
@@ -720,13 +732,50 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
             setIsShippingValid(true);
         }
 
-        console.log(isValid);
-
+        // Validate that standard shipping warning is accepted by user.
         if (isStandardShippingWarningVisible() && standardShippingWarning === false) {
             setIsStandardShippingWarningValid(false);
             isValid = false;
         } else {
             setIsStandardShippingWarningValid(true);
+        }
+
+        // Validate that alternate address fields have values if ship to alternate address is selected.
+        if (shipTo === ShipTo.Alternate) {
+            if (addressLine1 === "") {
+                setIsAddressLine1Valid(false);
+                isValid = false;
+            } else {
+                setIsAddressLine1Valid(true);
+            }
+
+            if (city === "") {
+                setIsCityValid(false);
+                isValid = false;
+            } else {
+                setIsCityValid(true);
+            }
+
+            if (province?.key == undefined || province.key === "") {
+                setIsProvinceValid(false);
+                isValid = false;
+            } else {
+                setIsProvinceValid(true);
+            }
+
+            if (country?.key == undefined || country.key === "") {
+                setIsCountryValid(false);
+                isValid = false;
+            } else {
+                setIsCountryValid(true);
+            }
+
+            if (postalCode === "") {
+                setIsPostalCodeValid(false);
+                isValid = false;
+            } else {
+                setIsPostalCodeValid(true);
+            }
         }
 
         return isValid;

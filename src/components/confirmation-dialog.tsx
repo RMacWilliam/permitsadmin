@@ -20,11 +20,11 @@ export default function ConfirmationDialog({ showDialog, title, message, errorMe
     }
 
     if (icon === "question") {
-        icon = "fa-solid fa-circle-question";
+        icon = "fa-solid fa-circle-question text-warning";
     } else if (icon === "warning") {
-        icon = "fa-solid fa-circle-exclamation";
+        icon = "fa-solid fa-circle-exclamation text-warning";
     } else if (icon === "information") {
-        icon = "fa-solid fa-circle-info";
+        icon = "fa-solid fa-circle-info text-warning";
     }
 
     return (

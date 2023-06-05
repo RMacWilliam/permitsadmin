@@ -173,7 +173,7 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                         {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName}`}
                     </div>
                     <div>
-                        <button className="btn btn-primary btn-sm" onClick={contactInfoDialogShow}>Edit</button>
+                        <button className="btn btn-outline-secondary btn-sm" onClick={contactInfoDialogShow}>Edit</button>
                     </div>
                 </h5>
                 <ul className="list-group list-group-flush">
@@ -199,13 +199,13 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                 </ul>
             </div>
 
-            <div className="card w-100">
+            <div className="card mb-3 w-100">
                 <h5 className="card-header d-flex justify-content-between align-items-center">
                     <div>
                         Preferences
                     </div>
                     <div>
-                        <button className="btn btn-primary btn-sm" onClick={accountPreferencesDialogShow}>Edit</button>
+                        <button className="btn btn-outline-secondary btn-sm" onClick={accountPreferencesDialogShow}>Edit</button>
                     </div>
                 </h5>
                 <ul className="list-group list-group-flush">
@@ -250,7 +250,11 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
             </div>
 
             {!appContext.data?.isContactInfoVerified && (
-                <button type="button" className="btn btn-success mt-3" onClick={() => confirmContactInfoClick()}>Confirm Contact Information</button>
+                <div className="card">
+                    <div className="card-body text-center">
+                        <button type="button" className="btn btn-success" onClick={() => confirmContactInfoClick()}>Confirm Contact Information</button>
+                    </div>
+                </div>
             )}
 
             <Modal show={showContactInfoDialog} onHide={contactInfoDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-75-percent">
@@ -365,11 +369,13 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                 </Modal.Body>
                 <Modal.Footer>
                     <div className="container-fluid">
-                        <div className="row">
-                            <div className="col">
-                                <span className="text-danger me-1">*</span>= mandatory field
+                        <div className="row gap-2">
+                            <div className="col d-flex align-items-center">
+                                <div className="text-nowrap">
+                                    <span className="text-danger me-1">*</span>= mandatory field
+                                </div>
                             </div>
-                            <div className="col d-flex justify-content-end">
+                            <div className="col d-flex justify-content-end align-items-center">
                                 <Button className="me-2" variant="primary" onClick={() => contactInfoDialogSave()}>Save</Button>
                                 <Button variant="primary" onClick={() => contactInfoDialogHide()}>Cancel</Button>
                             </div>
@@ -449,11 +455,13 @@ function Contact({ appContext, router, setShowAlert }: { appContext: IAppContext
                 </Modal.Body>
                 <Modal.Footer>
                     <div className="container-fluid">
-                        <div className="row">
-                            <div className="col">
-                                <span className="text-danger me-1">*</span>= mandatory field
+                        <div className="row gap-2">
+                            <div className="col d-flex align-items-center">
+                                <div className="text-nowrap">
+                                    <span className="text-danger me-1">*</span>= mandatory field
+                                </div>
                             </div>
-                            <div className="col d-flex justify-content-end">
+                            <div className="col d-flex justify-content-end align-items-center">
                                 <Button className="me-2" variant="primary" onClick={() => accountPreferencesDialogSave()}>Save</Button>
                                 <Button variant="primary" onClick={() => accountPreferencesDialogHide()}>Cancel</Button>
                             </div>

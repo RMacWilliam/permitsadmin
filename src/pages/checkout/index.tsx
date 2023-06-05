@@ -4,6 +4,7 @@ import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import Image from 'next/image';
 import { useContext, useEffect, useState } from "react";
+import { Constants } from "../../../constants";
 
 export default function CheckoutPage() {
     const appContext = useContext(AppContext);
@@ -45,6 +46,10 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
 
                 <div className="card mb-2">
                     <div className="card-body">
+                        <div className="d-flex justify-content-end">
+                            <a className="btn btn-outline-secondary" href={`/${Constants.MtoWaiverPdf}`} target="_blank">Printable Version</a>
+                        </div>
+
                         <div className="text-center">
                             <Image className="img-fluid" src="/ontario.png" alt="Ontario Logo" width="715" height="286" />
                         </div>
@@ -77,25 +82,21 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
 
                         <hr />
 
-                        <div className="d-flex justify-content-between align-items-center">
+                        <div>
                             <div className="form-check">
                                 <input className="form-check-input" type="checkbox" value="" id="checkout-step1-accept-terms" defaultChecked={step1AcceptTerms} onChange={(e: any) => setStep1AcceptTerms(e.target.checked)} />
                                 <label className="form-check-label" htmlFor="checkout-step1-accept-terms">
                                     I have read and agree to the terms listed above
                                 </label>
                             </div>
-
-                            <div>
-                                <button className="btn btn-primary" onClick={() => printableVersionClick()}>Printable Version</button>
-                            </div>
                         </div>
                     </div>
-                </div>
+                </div >
 
                 <div className="card">
-                    <div className="card-body text-center">
-                        <button className="btn btn-primary me-2" onClick={() => step1GoBackClick()}>Back</button>
-                        <button className="btn btn-primary me-2" disabled={!isStep1ContinueCheckoutEnabled()} onClick={() => step1ContinueCheckoutClick()}>Continue Checkout</button>
+                    <div className="card-body d-flex justify-content-center flex-wrap gap-2">
+                        <button className="btn btn-primary" onClick={() => step1GoBackClick()}>Back</button>
+                        <button className="btn btn-primary" disabled={!isStep1ContinueCheckoutEnabled()} onClick={() => step1ContinueCheckoutClick()}>Continue Checkout</button>
                         <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
                     </div>
                 </div>
@@ -114,6 +115,10 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
                     <div className="card-body">
                         {appContext.translation?.i18n?.language === "en" && (
                             <>
+                                <div className="d-flex justify-content-end mb-2">
+                                    <a className="btn btn-outline-secondary" href={`/${Constants.OfscWaiverPdfEn}`} target="_blank">Printable Version</a>
+                                </div>
+
                                 <p className="fw-bold">Please read and acknowledge all sections.</p>
 
                                 <div className="card bg-warning-subtle mb-2">
@@ -201,7 +206,7 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
                                         <p className="mb-0"><i>Snowmobiling is an inherently risky off-road activity that occurs in an unpredictable natural environment. Prior to entering onto a recreational Prescribed Trail, every snowmobiler must be familiar with the Expectations for recreational Prescribed Trail Use:</i></p>
                                     </div>
                                     <div className="card-body bg-warning-subtle">
-                                        <div className="d-flex flex-wrap flex-md-nowrap">
+                                        <div className="d-flex flex-wrap">
                                             <div className="px-4 w-100">
                                                 <ol className="p-0">
                                                     <li className="justify-text lh-sm mb-3">All snowmobiles will be operated under a lawful trail use permit;</li>
@@ -241,6 +246,10 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
 
                         {appContext.translation?.i18n?.language === "fr" && (
                             <>
+                                <div className="d-flex justify-content-end mb-2">
+                                    <a className="btn btn-outline-secondary" href={`/${Constants.OfscWaiverPdfFr}`} target="_blank">Printable Version</a>
+                                </div>
+
                                 <p className="fw-bold">(fr)Please read and acknowledge all sections.</p>
 
                                 <div className="card bg-warning-subtle mb-2">
@@ -328,7 +337,7 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
                                         <p className="mb-0"><i>Snowmobiling is an inherently risky off-road activity that occurs in an unpredictable natural environment. Prior to entering onto a recreational Prescribed Trail, every snowmobiler must be familiar with the Expectations for recreational Prescribed Trail Use:</i></p>
                                     </div>
                                     <div className="card-body bg-warning-subtle">
-                                        <div className="d-flex flex-wrap flex-md-nowrap">
+                                        <div className="d-flex flex-wrap">
                                             <div className="px-4 w-100">
                                                 <ol className="p-0">
                                                     <li className="justify-text lh-sm mb-3">All snowmobiles will be operated under a lawful trail use permit;</li>
@@ -369,9 +378,9 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
                 </div >
 
                 <div className="card">
-                    <div className="card-body text-center">
-                        <button className="btn btn-primary me-2" onClick={() => step2GoBackClick()}>Back</button>
-                        <button className="btn btn-primary me-2" disabled={!isStep2ContinueCheckoutEnabled()} onClick={() => step2ContinueCheckoutClick()}>Continue Checkout</button>
+                    <div className="card-body d-flex justify-content-center flex-wrap gap-2">
+                        <button className="btn btn-primary" onClick={() => step2GoBackClick()}>Back</button>
+                        <button className="btn btn-primary" disabled={!isStep2ContinueCheckoutEnabled()} onClick={() => step2ContinueCheckoutClick()}>Continue Checkout</button>
                         <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
                     </div>
                 </div>
@@ -383,7 +392,7 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
         )
     }
 
-    function printableVersionClick(): void {
+    function mtoWaiverPrintableVersionClick(): void {
 
     }
 

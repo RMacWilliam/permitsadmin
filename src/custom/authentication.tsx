@@ -84,7 +84,7 @@ export default function RouteGuard({ children }: { children: ReactNode }) {
         }
     }
 
-    console.log("isAuthenticated: ", isAuthenticated.current, "isAuthorized: ", isAuthorized.current, "path: ", path, "redirectRoute: ", redirectRoute.current);
+    //console.log("isAuthenticated: ", isAuthenticated.current, "isAuthorized: ", isAuthorized.current, "path: ", path, "redirectRoute: ", redirectRoute.current);
 
     if (redirectRoute.current === "") {
         return (
