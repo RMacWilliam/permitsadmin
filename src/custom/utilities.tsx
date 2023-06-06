@@ -108,6 +108,6 @@ export function getImagePath(filename: string): string {
     if (Constants.AppMode === "PROD") {
         return Constants.AppBasePath + filename;
     } else {
-        return "/" + filename;
+        return "./" + filename;
     }
 }
