@@ -2,6 +2,7 @@ import { ReactNode, useContext } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import LanguageToggler from '../language-toggler';
+import { getImagePath } from '@/custom/utilities';
 
 export default function UnauthenticatedPageLayout({ children }: { children?: ReactNode }) {
     return (
@@ -18,7 +19,7 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
                         <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
                             <div className="d-flex flex-fill justify-content-start align-items-center">
                                 <a className="navbar-brand d-none d-md-block" href="#">
-                                    <Image src="/ofsc.png" alt="Logo" width="60" height="60" />
+                                    <Image src={getImagePath("ofsc.png")} alt="Logo" width="60" height="60" />
                                 </a>
 
                                 <div>

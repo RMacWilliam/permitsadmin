@@ -263,11 +263,11 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                                 <div className="d-flex flex-fill align-items-center">
                                                                     <h6 className="card-title fw-semibold required mb-0">Select a Club</h6>
+                                                                    <button type="button" className="btn btn-link p-0 ms-2" onClick={() => setShowClubInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
                                                                 </div>
 
                                                                 <div className="d-flex flex-fill justify-content-end align-items-center">
                                                                     <button type="button" className="btn btn-link text-decoration-none p-0" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}><i className="fa-solid fa-map fa-lg me-2"></i>Use Club Locator Map</button>
-                                                                    <button type="button" className="btn btn-link p-0 ms-3" onClick={() => setShowClubInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
                                                                 </div>
                                                             </div>
 

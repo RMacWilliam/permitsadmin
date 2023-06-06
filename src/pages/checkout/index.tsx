@@ -5,6 +5,7 @@ import { NextRouter, useRouter } from "next/router";
 import Image from 'next/image';
 import { useContext, useEffect, useState } from "react";
 import { Constants } from "../../../constants";
+import { getImagePath } from "@/custom/utilities";
 
 export default function CheckoutPage() {
     const appContext = useContext(AppContext);
@@ -46,12 +47,12 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
 
                 <div className="card mb-2">
                     <div className="card-body">
-                        <div className="d-flex justify-content-end">
-                            <a className="btn btn-outline-secondary" href={`/${Constants.MtoWaiverPdf}`} target="_blank">Printable Version</a>
+                        <div className="d-flex justify-content-center">
+                            <a className="btn btn-outline-secondary btn-sm w-100" href={`/${Constants.MtoWaiverPdf}`} target="_blank">Printable Version</a>
                         </div>
 
                         <div className="text-center">
-                            <Image className="img-fluid" src="/ontario.png" alt="Ontario Logo" width="715" height="286" />
+                            <Image className="img-fluid" src={getImagePath("ontario.png")} alt="Ontario Logo" width="715" height="286" />
                         </div>
 
                         {appContext.translation?.i18n?.language === "en" && (
@@ -115,8 +116,8 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
                     <div className="card-body">
                         {appContext.translation?.i18n?.language === "en" && (
                             <>
-                                <div className="d-flex justify-content-end mb-2">
-                                    <a className="btn btn-outline-secondary" href={`/${Constants.OfscWaiverPdfEn}`} target="_blank">Printable Version</a>
+                                <div className="d-flex justify-content-center mb-2">
+                                    <a className="btn btn-outline-secondary btn-sm mb-2 w-100" href={`/${Constants.OfscWaiverPdfEn}`} target="_blank">Printable Version</a>
                                 </div>
 
                                 <p className="fw-bold">Please read and acknowledge all sections.</p>
@@ -246,8 +247,8 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
 
                         {appContext.translation?.i18n?.language === "fr" && (
                             <>
-                                <div className="d-flex justify-content-end mb-2">
-                                    <a className="btn btn-outline-secondary" href={`/${Constants.OfscWaiverPdfFr}`} target="_blank">Printable Version</a>
+                                <div className="d-flex justify-content-center mb-2">
+                                    <a className="btn btn-outline-secondary btn-sm mb-2 w-100" href={`/${Constants.OfscWaiverPdfFr}`} target="_blank">Printable Version</a>
                                 </div>
 
                                 <p className="fw-bold">(fr)Please read and acknowledge all sections.</p>

@@ -2,7 +2,7 @@ import moment from "moment";
 import { IKeyValue, IParentKeyValue } from "./app-context";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
-import { GlobalAppContext } from "../../constants";
+import { Constants, GlobalAppContext } from "../../constants";
 
 export function getParentKeyValueFromSelect(e: any): IParentKeyValue | undefined {
     let result: IParentKeyValue | undefined = undefined;
@@ -102,4 +102,12 @@ export function getApiErrorMessage(key: string | undefined): string | undefined 
     }
 
     return result;
+}
+
+export function getImagePath(filename: string): string {
+    if (Constants.AppMode === "PROD") {
+        return Constants.AppBasePath + filename;
+    } else {
+        return "/" + filename;
+    }
 }

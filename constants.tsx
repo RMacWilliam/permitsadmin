@@ -41,6 +41,9 @@ export class WebApi {
 }
 
 export class Constants {
+    static AppBasePath: string = "/permitsadmin/";
+    static AppMode: "DEV" | "PROD" = "PROD";
+
     static MaxClassicYear: number = 1999;
     
     static get PleaseSelect(): string {

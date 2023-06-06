@@ -8,6 +8,7 @@ import LanguageToggler from '../language-toggler';
 import ModalProcessingAlert, { IShowAlert } from '../modal-processing-alert';
 import { logout } from '@/custom/authentication';
 import $ from 'jquery';
+import { getImagePath } from '@/custom/utilities';
 
 export interface IShowHoverButton {
     showHoverButton?: boolean;
@@ -59,7 +60,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                         <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
                             <div className="d-flex flex-fill justify-content-start align-items-center">
                                 <a className="navbar-brand d-none d-md-block" href="#">
-                                    <Image src="/ofsc.png" alt="Logo" width="60" height="60" />
+                                    <Image src={getImagePath("ofsc.png")} alt="Logo" width="60" height="60" />
                                 </a>
 
                                 <div className="flex-column justify-content-center justify-content-md-between">
