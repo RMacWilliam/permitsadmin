@@ -52,7 +52,7 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
                         </div>
 
                         <div className="text-center">
-                            <Image className="img-fluid" src={getImagePath("ontario.png")} alt="Ontario Logo" width="715" height="286" />
+                            <img className="img-fluid" src={getImagePath("ontario.png")} alt="Ontario Logo" width="715" height="286" />
                         </div>
 
                         {appContext.translation?.i18n?.language === "en" && (
