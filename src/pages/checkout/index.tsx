@@ -2,9 +2,8 @@ import AuthenticatedPageLayout from "@/components/layouts/authenticated-page";
 import { AppContext, IAppContextValues } from "@/custom/app-context";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
-import Image from 'next/image';
 import { useContext, useEffect, useState } from "react";
-import { Constants } from "../../../constants";
+import { Constants, Images } from "../../../constants";
 import { getImagePath } from "@/custom/utilities";
 
 export default function CheckoutPage() {
@@ -52,7 +51,7 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
                         </div>
 
                         <div className="text-center">
-                            <img className="img-fluid" src={getImagePath("ontario.png")} alt="Ontario Logo" width="715" height="286" />
+                            <img className="img-fluid" src={Images.Ontario} alt="Ontario Logo" width="715" height="286" />
                         </div>
 
                         {appContext.translation?.i18n?.language === "en" && (

@@ -1,8 +1,8 @@
 import { ReactNode, useContext } from 'react';
 import Head from 'next/head';
-import Image from 'next/image';
 import LanguageToggler from '../language-toggler';
 import { getImagePath } from '@/custom/utilities';
+import { Images } from '../../../constants';
 
 export default function UnauthenticatedPageLayout({ children }: { children?: ReactNode }) {
     return (
@@ -19,7 +19,7 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
                         <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
                             <div className="d-flex flex-fill justify-content-start align-items-center">
                                 <a className="navbar-brand d-none d-md-block" href="#">
-                                    <img src={getImagePath("ofsc.png")} alt="Logo" width="60" height="60" />
+                                    <img src={Images.Ofsc} alt="Logo" width="60" height="60" />
                                 </a>
 
                                 <div>
