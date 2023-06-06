@@ -238,19 +238,17 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                                     <>
                                                                         <div className="fw-semibold mb-2">Redeem Gift Card</div>
 
-                                                                        <div className="d-flex">
-                                                                            <div className="d-flex flex-column gap-2 w-100">
-                                                                                <div className="input-group">
-                                                                                    <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter gift card redemption code" value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
-                                                                                    <button className="btn btn-outline-primary d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
-                                                                                </div>
-
-                                                                                <button className="btn btn-outline-primary btn-sm d-sm-none" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
-
-                                                                                {cartItem?.uiShowRedemptionCodeNotFound && (
-                                                                                    <div className="text-danger">Redemption code not found.</div>
-                                                                                )}
+                                                                        <div className="d-flex flex-column gap-2 ">
+                                                                            <div className="input-group">
+                                                                                <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter gift card redemption code" value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
+                                                                                <button className="btn btn-outline-primary d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
                                                                             </div>
+
+                                                                            <button className="btn btn-outline-primary btn-sm d-sm-none" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
+
+                                                                            {cartItem?.uiShowRedemptionCodeNotFound && (
+                                                                                <div className="text-danger">Redemption code not found.</div>
+                                                                            )}
                                                                         </div>
                                                                     </>
                                                                 )}
@@ -266,13 +264,14 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                                     <button type="button" className="btn btn-link p-0 ms-2" onClick={() => setShowClubInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
                                                                 </div>
 
-                                                                <div className="d-flex flex-fill justify-content-end align-items-center">
+                                                                <div className="d-none d-sm-block">
                                                                     <button type="button" className="btn btn-link text-decoration-none p-0" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}><i className="fa-solid fa-map fa-lg me-2"></i>Use Club Locator Map</button>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="mt-1">
+                                                            <div className="mt-2">
                                                                 <Select id={`cart-club-${cartItem?.itemId}`} className="react-select" aria-label="Club" classNames={getClubReactSelectClasses(cartItem?.id)} isClearable={true} placeholder={Constants.PleaseSelect} options={getClubsData()} value={getSelectedClub(cartItem?.itemId)} onChange={(e: any) => permitClubChange(e, cartItem?.itemId)} />
+                                                                <button type="button" className="btn btn-link text-decoration-none d-sm-none p-0 mt-2" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}><i className="fa-solid fa-map fa-lg me-2"></i>Use Club Locator Map</button>
                                                             </div>
                                                         </div>
                                                     </div>
