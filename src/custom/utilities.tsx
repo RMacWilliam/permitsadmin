@@ -105,7 +105,7 @@ export function getApiErrorMessage(key: string | undefined): string | undefined 
 }
 
 export function getImagePath(filename: string): string {
-    if (Constants.AppMode === "PROD") {
+    if (Constants.AppMode === "DEV") {
         return Constants.AppBasePath + filename;
     } else {
         return "./" + filename;
