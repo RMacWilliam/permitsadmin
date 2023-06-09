@@ -1,39 +1,168 @@
 export const resources_en = {
   translation: {
-    "INDEX": {
-      "TITLE": "Welcome to Ontario Federation of Snowmobile Clubs"
+    "Common": {
+      "Ofsc": "Ontario Federation of Snowmobile Clubs",
+      "Add": "Add",
+      "Edit": "Edit",
+      "Delete": "Delete",
+      "Ok": "Ok",
+      "Save": "Save",
+      "Cancel": "Cancel",
+      "Yes": "Yes",
+      "No": "No",
+      "Close": "Close",
+      "Back": "Back",
+      "Next": "Next",
+      "PleaseSelect": "Please select",      
+      "Logout": "Logout",
+      "HoverButton": "Show Context Menu"
     },
-    "FORGOT_PASSWORD": {
+    "Header": {
 
     },
-    "CREATE_ACCOUNT": {
+    "Footer": {
 
     },
-    "HOME": {
-      "MENU_TITLE": "Home",
-      "TITLE": "Welcome to Ontario Federation of Snowmobile Clubs"
+    "CartItemsAlert": {
+      "YouHave": "You have",
+      "Permit": "permit",
+      "Permits": "permits",
+      "GiftCard": "gift card",
+      "GiftCards": "gift cards",
+      "InYourCart": "in your cart.",
+      "And": "and",
+      "GoToCartButton": "Go to Cart"
     },
-    "CONTACT_INFORMATION": {
-      "MENU_TITLE": "Contact Information",
-      "TITLE": "Contact Information"
+    "LanguageToggler": {
+      "English": "English",
+      "EnglishFr": "Anglais",
+      "French": "French",
+      "FrenchFr": "Français"
     },
-    "SNOWMOBILES_AND_PERMITS": {
-      "MENU_TITLE": "Snowmobiles & Permits",
-      "TITLE": "Snowmobiles & Permits"
+    "ModalProcessingAlert": {
+      "ProcessingRequestPleaseWait": "Processing request. Please wait.",
     },
-    "GIFT_CARDS": {
-      "MENU_TITLE": "Gift Cards",
-      "TITLE": "Gift Cards"
+    "Index": {
+      "Title": "Welcome to Ontario Federation of Snowmobile Clubs",
+      "LoginToMyAccount": "Login to my account",
+      "EmailAddressLabel": "E-mail address",
+      "PasswordLabel": "Password",
+      "LoginButton": "Login",
+      "ForgotPasswordButton": "Forgot your password?",
+      "CreateAnAccountButton": "Create an account",
+      "InvalidEmailAndOrPassword": "Invalid e-mail and/or password"
     },
-    "CART": {
-      "TITLE": "My Purchases"
+    "ForgotPassword": {
+      "Title": "Forgot Password",
+      "Section1": "If you are unable to login to your account, please try resetting your password and an email will be sent to you to change your password. For all other issues, please contact Permit customer service at 705-739-7669 or send an email to permits@ofsc.on.ca.",
+      "EmailAddressLabel": "Enter your email address",
+      "ResetPasswordButton": "Reset Password"
     },
-    "CHECKOUT": {
-      "TITLE": "Checkout"
+    "CreateAccount": {
+      "Title": "Create Account"
+    },
+    "Home": {
+      "MenuTitle": "Home",
+      "Title": "Welcome to Ontario Federation of Snowmobile Clubs"
+    },
+    "ContactInfo": {
+      "MenuTitle": "Contact Information",
+      "Title": "Contact Information",
+      "Preferences": "Preferences",
+      "OfscConsent": "Consent for OFSC to contact me",
+      "RiderAdvantage": "Rider Advantage",
+      "Volunteering": "Interested in volunteering",
+      "CorrespondenceLanguage": "Correspondence Language",
+      "ConfirmButton": "I Confirm",
+      "ContactInfoEditDialog": {
+        "Title": "Edit Contact Information",
+        "FirstName": "First Name",
+        "MiddleInitial": "Middle Initial",
+        "LastName": "Last Name",
+        "AddressLine1": "Address Line 1",
+        "AddressLine2": "Address Line 2",
+        "CityTownOrVillage": "City, Town, or Village",
+        "ProvinceState": "Province/State",
+        "Country": "Country",
+        "PostalZipCode": "Postal/Zip Code",
+        "Telephone": "Telephone",
+        "EmailAddress": "E-mail Address",
+        "MandatoryField": "= mandatory field"
+      },
+      "PreferencesEditDialog": {
+        "Title": "Edit Account Preferences",
+        "OfscConsent": "Do you consent to the OFSC contacting you with information regarding permits, Rider Advantage, and other information related to snowmobiling?",
+        "OfscConsentMore": "I understand that the OFSC values my privacy and the protection of personal information, by authorizing the release of my name and address information, I consent to the OFSC's use of this information for the purposes related to the mandate of the OFSC (www.ofsc.on.ca). I further understand that any information provided to the OFSC is out of custody and control of the Ministry of Transportation and that the OFSC will have sole responsibility of the information.",
+        "OfscConsentLabel": "Consent for OFSC to contact me",
+        "RiderAdvantage": "Do you want to participate in eligible Rider Advantage programs as offered and/or available?",
+        "RiderAdvantageLabel": "Rider Advantage",
+        "Volunteering": "Do you want to volunteer to support your local Snowmobile Club and consent to the Club contacting you by phone or email?",
+        "VolunteeringLabel": "Interested in volunteering",
+        "CorrespondenceLanguage": "What is your prefered correspondence language with OFSC?",
+        "CorrespondenceLanguageLabel": "Correspondence Language"
+      }
+    },
+    "Permits": {
+      "MenuTitle": "Snowmobiles and Permits",
+      "Title": "Snowmobiles and Permits",
+      "Vehicle": {
+        "Year": "Year",
+        "Make": "Make",
+        "Model": "Model",
+        "Vin": "VIN",
+        "LicensePlate": "License Plate",
+        "Permit": "Permit",
+        "PermitStartDate": "Permit Start Date",
+        "PermitValidUntil": "Permit Valid Until",
+        "Purchased": "Purchased",
+        "TrackingNumber": "Tracking #",
+        "AddPermitToCart": "Add Permit to Cart",
+        "RemovePermitFromCart": "Remove Permit from Cart",
+        "AddSnowmobile": "Add Snowmobile"
+      },
+      "HoverButtons": {
+        "AddSnowmobile": "Add Snowmobile"
+      },
+      "AddEditSnowmobileDialog": {
+        "AddTitle": "Add Snowmobile",
+        "EditTitle": "Edit Snowmobile",
+        "Year": "Year",
+        "Make": "Make",
+        "Model": "Model",
+        "Vin": "VIN",
+        "LicensePlate": "License Plate",
+        "PermitForThisSnowmobileOnly": "I understand that the trail permit for which I am applying is valid only for the motorized snow vehicle identified in this application and is valid only where the sticker (permit) issued under this application is permanently affixed in the required position on that motorized snow vehicle. I certify that the information contained in this application is true and acknowledge and accept the responsibilities imposed by law.",
+        "RegisteredOwner": "I confirm I am the registered owner of this vehicle.",
+        "MandatoryField": "= champ obligatoire"
+      },
+      "DeleteSnowmobileDialog": {
+        "Title": "Delete Snowmobile",
+        "Message": "Are you sure you want to delete this snowmobile?"
+      },
+      "VehicleCannotBeModifiedDialog": {
+        "Title": "Information",
+        "Message": "This vehicle cannot be modified as a Ministry of Transportation Ontario Snowmobile Trail Permit has been registered to it."
+      }
+    },
+    "GiftCards": {
+      "MenuTitle": "Gift Cards",
+      "Title": "Gift Cards"
+    },
+    "Cart": {
+      "Title": "My Purchases"
+    },
+    "Checkout": {
+      "Title": "Checkout"
     },
     "API": {
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "VIN assigned to another vehicle on account.",
-      "API_INVALID_VIN_FORMAT": "Invalid VIN format."
+      "API_INVALID_VIN_FORMAT": "Invalid VIN format.",
+      "API_UNEXPECTED_ERROR": "An unexpected error occured. Please try again later.",
+      "API_REDEMPTION_CODE_INVALID": "",
+      "API_REDEMPTION_CODE_REDEEMED": "",
+      "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "",
+      "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "",
+      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": ""
     }
   }
 };

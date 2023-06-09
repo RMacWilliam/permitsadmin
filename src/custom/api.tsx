@@ -21,7 +21,7 @@ function httpFetch<T>(method: "GET" | "POST" | "DELETE", url: string, params?: a
         };
     }
 
-    let init = {
+    const init = {
         method: method,
         headers: headers,
         body: method === 'GET' ? undefined : JSON.stringify(body),
@@ -34,7 +34,7 @@ function httpFetch<T>(method: "GET" | "POST" | "DELETE", url: string, params?: a
         }
     };
 
-    let queryParams: string[] = [];
+    const queryParams: string[] = [];
 
     queryParams.push(
         ...Object.entries(WebApiGlobalQueryParams).map(([prop, propValue]) => (`${prop}=${encodeURIComponent(propValue as string)}`))
@@ -175,6 +175,7 @@ export interface IApiUserPreferences {
     ofscContactPermission?: number;
     riderAdvantage?: number;
     volunteering?: number;
+    correspondenceLanguage?: string;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,6 +202,7 @@ export interface IApiSaveUserPreferencesRequest {
     ofscContactPermission?: number;
     riderAdvantage?: number;
     volunteering?: number;
+    correspondenceLanguage?: string;
 }
 
 export interface IApiSaveUserPreferencesUserPreferences extends IApiUserPreferences {
@@ -225,10 +227,8 @@ export interface IApiGetProvincesRequest {
 
 }
 
-export interface IApiGetProvincesResult {
-    parent?: string;
-    key?: string;
-    value?: string;
+export interface IApiGetProvincesResult extends IParentKeyValue {
+
 }
 
 export function apiGetProvinces(params?: any): Observable<IApiGetProvincesResult[]> {
@@ -243,13 +243,28 @@ export interface IApiGetCountriesRequest {
 
 }
 
-export interface IApiGetCountriesResult {
-    key?: string;
-    value?: string;
+export interface IApiGetCountriesResult extends IKeyValue {
+
 }
 
 export function apiGetCountries(params?: any): Observable<IApiGetCountriesResult[]> {
     return httpGet<IApiGetCountriesResult[]>(WebApi.GetCountries, params);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiGetCorrespondenceLanguages
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiGetCorrespondenceLanguagesRequest {
+
+}
+
+export interface IApiGetCorrespondenceLanguagesResult extends IKeyValue {
+
+}
+
+export function apiGetCorrespondenceLanguages(params?: any): Observable<IApiGetCorrespondenceLanguagesResult[]> {
+    return httpGet<IApiGetCorrespondenceLanguagesResult[]>(WebApi.GetCorrespondenceLanguages, params);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,9 +275,8 @@ export interface IApiGetClubsRequest {
 
 }
 
-export interface IApiGetClubsResult {
-    key?: string;
-    value?: string;
+export interface IApiGetClubsResult extends IKeyValue {
+
 }
 
 export function apiGetClubs(params?: any): Observable<IApiGetClubsResult[]> {
@@ -363,9 +377,8 @@ export interface IApiGetVehicleMakesRequest {
 
 }
 
-export interface IApiGetVehicleMakesResult {
-    key?: string;
-    value?: string;
+export interface IApiGetVehicleMakesResult extends IKeyValue {
+
 }
 
 export function apiGetVehicleMakes(params?: any): Observable<IApiGetVehicleMakesResult[]> {
@@ -682,4 +695,26 @@ export interface IApiGetShippingFeesResult {
 
 export function apiGetShippingFees(params?: any): Observable<IApiGetShippingFeesResult[]> {
     return httpGet<IApiGetShippingFeesResult[]>(WebApi.GetShippingFees, params);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiGetGoogleMapKey
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiGetGoogleMapKeyRequest {
+
+}
+
+export interface IApiGetGoogleMapKeyData {
+    key?: string;
+}
+
+export interface IApiGetGoogleMapKeyResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiGetGoogleMapKeyData;
+}
+
+export function apiGetGoogleMapKey(params?: any): Observable<IApiGetGoogleMapKeyResult[]> {
+    return httpGet<IApiGetGoogleMapKeyResult[]>(WebApi.GetGoogleMapKey, params);
 }

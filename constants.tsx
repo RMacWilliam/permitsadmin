@@ -13,6 +13,7 @@ export class WebApi {
     static SaveUserDetails: string = WebApi.BaseUrl + "user/saveuserdetails";
     static GetUserPreferences: string = WebApi.BaseUrl + "user/getuserpreferences";
     static SaveUserPreferences: string = WebApi.BaseUrl + "user/saveuserpreferences";
+    static GetCorrespondenceLanguages: string = WebApi.BaseUrl + "user/getcorrespondencelanguages";
 
     // Utils
     static GetProvinces: string = WebApi.BaseUrl + "utils/getprovinces";
@@ -38,6 +39,7 @@ export class WebApi {
     // Permit
     static GetProcessingFee: string = WebApi.BaseUrl + "permit/getprocessingfee";
     static GetShippingFees: string = WebApi.BaseUrl + "permit/getshippingfees";
+    static GetGoogleMapKey: string = WebApi.BaseUrl + "permit/getgooglemapkey";
 }
 
 export class Constants {
@@ -45,10 +47,6 @@ export class Constants {
     static AppMode: "DEV" | "PROD" = "PROD";
 
     static MaxClassicYear: number = 1999;
-
-    static get PleaseSelect(): string {
-        return GlobalAppContext?.translation?.i18n?.language === "fr" ? "(fr)Please select" : "Please select";
-    }
 
     static MtoWaiverPdf: string = "MTO Waiver ENG-FRE 2022-09-22.pdf";
     static OfscWaiverPdfEn: string = "OFSC PS Waiver July 2022-23.pdf";

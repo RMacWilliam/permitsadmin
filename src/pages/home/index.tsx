@@ -25,14 +25,22 @@ export default function HomePage() {
     )
 }
 
-function Home({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
+function Home({ appContext, router, setShowAlert }:
+    {
+        appContext: IAppContextValues,
+        router: NextRouter,
+        setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
+    }) {
+
+    const t: Function = appContext.translation.t;
+
     return (
         <>
             <Head>
-                <title>Home | Ontario Federation of Snowmobile Clubs</title>
+                <title>{t("Home.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{appContext.translation?.t("HOME.TITLE")}</h4>
+            <h4>{t("Home.Title")}</h4>
 
             <CartItemsAlert></CartItemsAlert>
 

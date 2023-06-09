@@ -3,8 +3,13 @@ import Head from 'next/head';
 import LanguageToggler from '../language-toggler';
 import { getImagePath } from '@/custom/utilities';
 import { Images } from '../../../constants';
+import { AppContext } from '@/custom/app-context';
 
 export default function UnauthenticatedPageLayout({ children }: { children?: ReactNode }) {
+    const appContext = useContext(AppContext);
+
+    const t: Function = appContext.translation.t;
+
     return (
         <>
             <Head>
@@ -23,18 +28,20 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
                                 </a>
 
                                 <div>
-                                    <h2 className="mb-0 d-none d-md-block">Ontario Federation of Snowmobile Clubs</h2>
-                                    <h5 className="mb-0 d-md-none">Ontario Federation of Snowmobile Clubs</h5>
+                                    <h3 className="mb-0 d-none d-md-block">{t("Common.Ofsc")}</h3>
+                                    <h5 className="mb-0 d-md-none">{t("Common.Ofsc")}</h5>
                                 </div>
                             </div>
 
                             <div>
-                                <span className="d-none d-md-block">
+                                <LanguageToggler isTogglerItem={false} isTextShort={false} className="ms-3"></LanguageToggler>
+
+                                {/* <span className="d-none d-md-block">
                                     <LanguageToggler isTogglerItem={false} isTextShort={false} className="ms-3"></LanguageToggler>
                                 </span>
                                 <span className="d-md-none">
                                     <LanguageToggler isTogglerItem={false} isTextShort={true} className="ms-3"></LanguageToggler>
-                                </span>
+                                </span> */}
                             </div>
                         </div>
                     </div>
@@ -56,11 +63,11 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
                         <a href="https://www.instagram.com/gosnowmobilingontario"><i className="fa-brands fa-instagram ms-4 text-white"></i></a>
                         <a href="https://www.linkedin.com/company/ontario-federation-of-snowmobile-clubs"><i className="fa-brands fa-linkedin-in ms-4 text-white"></i></a>
                         <a href="https://www.youtube.com/user/GoSnowmobiling/videos"><i className="fa-brands fa-youtube ms-4 text-white"></i></a>
-                        {/* <span className="d-sm-none">XS</span>
+                        <span className="d-sm-none">XS</span>
                         <span className="d-none d-sm-block d-md-none">SM</span>
                         <span className="d-none d-md-block d-lg-none">MD</span>
                         <span className="d-none d-lg-block d-xl-none">LG</span>
-                        <span className="d-none d-xl-block d-xxl-none">XL</span> */}
+                        <span className="d-none d-xl-block d-xxl-none">XL</span>
                     </div>
                 </div>
             </footer>

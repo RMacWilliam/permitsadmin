@@ -26,7 +26,13 @@ export default function CheckoutPage() {
     )
 }
 
-function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
+function Checkout({ appContext, router, setShowAlert }
+    : {
+        appContext: IAppContextValues,
+        router: NextRouter,
+        setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
+    }) {
+
     const [checkoutStep, setCheckoutStep] = useState(0);
 
     const [step1AcceptTerms, setStep1AcceptTerms] = useState(false);
@@ -35,14 +41,16 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
     const [step2AcceptTerms2, setStep2AcceptTerms2] = useState(false);
     const [step2AcceptTerms3, setStep2AcceptTerms3] = useState(false);
 
+    const t: Function = appContext.translation.t;
+
     if (checkoutStep === 0) {
         return (
             <>
                 <Head>
-                    <title>Checkout | Ontario Federation of Snowmobile Clubs</title>
+                    <title>{t("Checkout.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
 
-                <h4>{appContext.translation?.t("CHECKOUT.TITLE")}</h4>
+                <h4>{t("Checkout.Title")}</h4>
 
                 <div className="card mb-2">
                     <div className="card-body">
@@ -95,8 +103,8 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
 
                 <div className="card">
                     <div className="card-body d-flex justify-content-center flex-wrap gap-2">
-                        <button className="btn btn-primary" onClick={() => step1GoBackClick()}>Back</button>
-                        <button className="btn btn-primary" disabled={!isStep1ContinueCheckoutEnabled()} onClick={() => step1ContinueCheckoutClick()}>Continue Checkout</button>
+                        <button className="btn btn-primary" onClick={() => step1GoBackClick()}>{t("Common.Back")}</button>
+                        <button className="btn btn-primary" disabled={!isStep1ContinueCheckoutEnabled()} onClick={() => step1ContinueCheckoutClick()}>{t("Common.Next")}</button>
                         <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
                     </div>
                 </div>
@@ -106,10 +114,10 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
         return (
             <>
                 <Head>
-                    <title>Checkout | Ontario Federation of Snowmobile Clubs</title>
+                    <title>{t("Checkout.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
 
-                <h4>{appContext.translation?.t("CHECKOUT.TITLE")}</h4>
+                <h4>{t("Checkout.Title")}</h4>
 
                 <div className="card mb-2">
                     <div className="card-body">
@@ -379,8 +387,8 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
 
                 <div className="card">
                     <div className="card-body d-flex justify-content-center flex-wrap gap-2">
-                        <button className="btn btn-primary" onClick={() => step2GoBackClick()}>Back</button>
-                        <button className="btn btn-primary" disabled={!isStep2ContinueCheckoutEnabled()} onClick={() => step2ContinueCheckoutClick()}>Continue Checkout</button>
+                        <button className="btn btn-primary" onClick={() => step2GoBackClick()}>{t("Common.Back")}</button>
+                        <button className="btn btn-primary" disabled={!isStep2ContinueCheckoutEnabled()} onClick={() => step2ContinueCheckoutClick()}>{t("Common.Next")}</button>
                         <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
                     </div>
                 </div>
@@ -390,10 +398,6 @@ function Checkout({ appContext, router, setShowAlert }: { appContext: IAppContex
         return (
             <>Payment..........</>
         )
-    }
-
-    function mtoWaiverPrintableVersionClick(): void {
-
     }
 
     function isStep1ContinueCheckoutEnabled(): boolean {

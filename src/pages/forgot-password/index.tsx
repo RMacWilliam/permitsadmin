@@ -1,39 +1,47 @@
 import UnauthenticatedPageLayout from "@/components/layouts/unauthenticated-page"
+import { AppContext, IAppContextValues } from "@/custom/app-context";
 import Head from "next/head"
-import { useState } from "react";
+import { NextRouter, useRouter } from "next/router";
+import { useContext, useState } from "react";
 
 export default function ForgotPasswordPage() {
+    const appContext = useContext(AppContext);
+    const router = useRouter();
+
     return (
         <UnauthenticatedPageLayout>
-            <ForgotPassword></ForgotPassword>
+            <ForgotPassword appContext={appContext} router={router}></ForgotPassword>
         </UnauthenticatedPageLayout>
     )
 }
 
-function ForgotPassword() {
+function ForgotPassword({ appContext, router }
+    : {
+        appContext: IAppContextValues,
+        router: NextRouter
+    }) {
+
     const [email, setEmail] = useState("");
     const [isEmailValid, setIsEmailValid] = useState(true);
+
+    const t: Function = appContext.translation.t;
 
     return (
         <>
             <Head>
-                <title>Forgot Password | Ontario Federation of Snowmobile Clubs</title>
+                <title>{t("ForgotPassword.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>Forgot Password</h4>
+            <h4>{t("ForgotPassword.Title")}</h4>
 
-            <p>
-                If you are unable to login to your account, please try resetting your password and an email will be sent to you to change your password.
-                For all other issues, please contact Permit customer service at 705-739-7669 or send an email
-                to <a href="mailto:permits@ofsc.on.ca">permits@ofsc.on.ca</a>.
-            </p>
+            <p>{t("ForgotPassword.Section1")}</p>
 
             <div className="form-floating mb-2">
-                <input type="email" className={`form-control ${isEmailValid ? "" : "is-invalid"}`} id="forgot-password-email" placeholder="name@example.com" value={email} onChange={(e: any) => setEmail(e.target.value)} />
-                <label className="required" htmlFor="forgot-password-email">Enter your email address</label>
+                <input type="email" className={`form-control ${isEmailValid ? "" : "is-invalid"}`} id="forgot-password-email" placeholder={t("ForgotPassword.EmailAddressLabel")} value={email} onChange={(e: any) => setEmail(e.target.value)} />
+                <label className="required" htmlFor="forgot-password-email">{t("ForgotPassword.EmailAddressLabel")}</label>
             </div>
 
-            <button className="btn btn-primary" onClick={() => resetPasswordClick()} disabled={email.trim().length === 0}>Reset Password</button>
+            <button className="btn btn-primary" onClick={() => resetPasswordClick()} disabled={email.trim().length === 0}>{t("ForgotPassword.ResetPasswordButton")}</button>
         </>
     )
 

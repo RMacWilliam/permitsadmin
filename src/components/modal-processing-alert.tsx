@@ -1,3 +1,5 @@
+import { AppContext } from '@/custom/app-context';
+import { useContext } from 'react';
 import Modal from 'react-bootstrap/Modal';
 
 export interface IShowAlert {
@@ -6,7 +8,9 @@ export interface IShowAlert {
 }
 
 export default function ModalProcessingAlert({ showAlert }: { showAlert?: boolean | IShowAlert }) {
-    const defaultMessage: string = "Processing request. Please wait.";
+    const appContext = useContext(AppContext);
+
+    const t: Function = appContext.translation.t;
 
     let show: boolean | undefined = false;
 
@@ -30,7 +34,7 @@ export default function ModalProcessingAlert({ showAlert }: { showAlert?: boolea
                         <i className="fa-solid fa-spinner fa-spin fa-2xl"></i>
                     </div>
                     <div>
-                        {message ?? defaultMessage}
+                        {message ?? t("ModalProcessingAlert.ProcessingRequestPleaseWait")}
                     </div>
                 </div>
             </Modal.Body>

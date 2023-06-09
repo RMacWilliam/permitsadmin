@@ -3,22 +3,26 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import $ from 'jquery';
 
-export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapSnowmobileId, selectClubFromClubLocatorMapSelection }
-    : { showDialog: boolean, closeClick: Function, clubLocatorMapSnowmobileId: string, selectClubFromClubLocatorMapSelection: Function }) {
+export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapSnowmobileId, googleMapKey, selectClubFromClubLocatorMapSelection }
+    : {
+        showDialog: boolean,
+        closeClick: Function,
+        clubLocatorMapSnowmobileId: string,
+        googleMapKey: string | undefined,
+        selectClubFromClubLocatorMapSelection: Function
+    }) {
 
     const [errorMessage, setErrorMessage] = useState("");
 
     const selectedClub = useRef(undefined as string | undefined);
 
-    setTimeout(() => {
-        if (window.google == undefined) {
-            $.getScript("https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyCx5rzxD747hdmia99UtmRxPlMyl45RR8g", function () {
-                initializeMap();
-            });
-        } else {
+    if (window.google == undefined) {
+        $.getScript(`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=${googleMapKey}`, function () {
             initializeMap();
-        }
-    }, 3000);
+        });
+    } else {
+        initializeMap();
+    }
 
     return (
         <>
@@ -129,9 +133,9 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
         let clubPolys: any[];
         let hereMarker: google.maps.Marker;
 
-        let colors = ['#3aa6d0', '#62b1d0', '#0776a0', '#226078', '#024c68', '#bf9630', '#a67600', '#bf4930', '#a61d00', '#ffb600', '#ff2c00', '#ffc840', '#ffd773', '#ff6140', '#ff8b73'];
+        const colors = ['#3aa6d0', '#62b1d0', '#0776a0', '#226078', '#024c68', '#bf9630', '#a67600', '#bf4930', '#a61d00', '#ffb600', '#ff2c00', '#ffc840', '#ffd773', '#ff6140', '#ff8b73'];
 
-        let mapStyle = [
+        const mapStyle = [
             { "featureType": "landscape", "stylers": [{ "hue": "#F1FF00" }, { "saturation": -27.4 }, { "lightness": 9.4 }, { "gamma": 1 }] },
             { "featureType": "road.highway", "stylers": [{ "hue": "#0099FF" }, { "saturation": -20 }, { "lightness": 36.4 }, { "gamma": 1 }] },
             { "featureType": "road.arterial", "stylers": [{ "hue": "#00FF4F" }, { "saturation": 0 }, { "lightness": 0 }, { "gamma": 1 }] },
@@ -140,7 +144,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
             { "featureType": "poi", "stylers": [{ "hue": "#9FFF00" }, { "saturation": 0 }, { "lightness": 0 }, { "gamma": 1 }] }
         ];
 
-        let image = {
+        const image = {
             url: './blue-marker.png',
             size: new google.maps.Size(16, 16),
             origin: new google.maps.Point(0, 0),
@@ -149,21 +153,21 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
         // This function is called when a location is submitted in the input form.
         function codeAddress() {
-            let searchValue: string = $('#club-locator-map-input')?.val()?.toString()?.trim() ?? "";
+            const searchValue: string = $('#club-locator-map-input')?.val()?.toString()?.trim() ?? "";
 
             if (searchValue !== "") {
                 $("#club-locator-map-input-message").empty();
 
                 resetMap();
 
-                let geocoder: google.maps.Geocoder = new google.maps.Geocoder();
+                const geocoder: google.maps.Geocoder = new google.maps.Geocoder();
                 geocoder.geocode({ 'address': searchValue + ', ONTARIO CANADA' }, function (results: google.maps.GeocoderResult[] | null, status: google.maps.GeocoderStatus) {
                     if (status === google.maps.GeocoderStatus.OK) {
                         if (results != undefined && results.length > 0) {
                             // Center map at coordinates.
                             map.setCenter(results[0].geometry.location);
 
-                            let locOut: google.maps.LatLng = results[0].geometry.location;
+                            const locOut: google.maps.LatLng = results[0].geometry.location;
 
                             // Place marker at coordinates.
                             hereMarker.setPosition(locOut);
@@ -182,15 +186,15 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
         }
 
         function findCloseClubs(map: google.maps.Map, origin: google.maps.LatLng) {
-            let closestClubs: number[] = [];
-            let clubSearchLimit: number = 20;
-            let distances: number[] = [];
+            const closestClubs: number[] = [];
+            const clubSearchLimit: number = 20;
+            const distances: number[] = [];
 
             // calculate club distances from location and populate distance array
             for (let z: number = 0; z < clubMarkers.length; z++) {
-                let club: any = clubMarkers[z];
-                let latLng: any = club.getPosition();
-                let distance: number = getDistance(latLng, origin);
+                const club: any = clubMarkers[z];
+                const latLng: any = club.getPosition();
+                const distance: number = getDistance(latLng, origin);
                 distances.push(distance);
             }
 
@@ -225,7 +229,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
             // Iterate through closest clubs and add to map.
             for (let i: number = 0; i < closestClubs.length; i++) {
-                let index: number = closestClubs[i];
+                const index: number = closestClubs[i];
                 toggleClub(index);
             }
 
@@ -236,7 +240,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
         function drawAllClubs(): void {
             // Iterate through clubs and draw their polgons
             for (let i: number = 0; i < mapData.clubs.length; i++) {
-                let paths: any[] = mapData.clubs[i].paths;
+                const paths: any[] = mapData.clubs[i].paths;
 
                 for (let y: number = 0; y < paths.length; y++) {
                     drawPoly(paths[y], i);
@@ -302,7 +306,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
         }
 
         function drawClub(i: number): void {
-            let paths = mapData.clubs[i].paths;
+            const paths = mapData.clubs[i].paths;
 
             for (let y: number = 0; y < paths.length; y++) {
                 drawPoly(paths[y], i);
@@ -312,7 +316,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
         }
 
         function drawCenter(coords: any[], title: string, index: number): void {
-            let latLng: google.maps.LatLng = new google.maps.LatLng(coords[0], coords[1]);
+            const latLng: google.maps.LatLng = new google.maps.LatLng(coords[0], coords[1]);
 
             clubMarkers[index] = new google.maps.Marker({
                 position: latLng,
@@ -323,14 +327,14 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
         }
 
         function drawPoly(path: any[], index: number): void {
-            let coords: any[] = [];
+            const coords: any[] = [];
 
             for (let i: number = 0; i < path.length; i++) {
                 coords.push(new google.maps.LatLng(path[i].lat, path[i].lng))
             }
 
-            let rand: number = Math.floor(Math.random() * colors.length);
-            let fillCol: string = colors[rand];
+            const rand: number = Math.floor(Math.random() * colors.length);
+            const fillCol: string = colors[rand];
 
             clubPolys[index] = new google.maps.Polygon({
                 paths: coords,
@@ -362,14 +366,14 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
         // These functions handle calculating distance between two points.
         function getDistance(first: any, second: any) {
             // Haversine formula to calculate distance between two points.
-            let R: number = 6378137; // Earth's mean radius in meters
-            let dLat: number = rad(second.lat() - first.lat());
-            let dLong: number = rad(second.lng() - first.lng());
-            let a: number = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            const R: number = 6378137; // Earth's mean radius in meters
+            const dLat: number = rad(second.lat() - first.lat());
+            const dLong: number = rad(second.lng() - first.lng());
+            const a: number = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(rad(first.lat())) * Math.cos(rad(second.lat())) *
                 Math.sin(dLong / 2) * Math.sin(dLong / 2);
-            let c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            let d: number = R * c;
+            const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const d: number = R * c;
 
             // Returns the distance in km.
             return d / 1000;
@@ -380,13 +384,13 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
         }
 
         function parseCoordString(coords: string): any[] {
-            let returnObj: any[] = [];
-            let pairs = coords.split(" ");
+            const returnObj: any[] = [];
+            const pairs = coords.split(" ");
 
             if (pairs != undefined && pairs.length > 0) {
                 for (let i: number = 0; i < pairs.length; i++) {
-                    let splitPair: string[] = pairs[i].split(",");
-                    let pair: { lng: string, lat: string } = {} as { lng: string, lat: string };
+                    const splitPair: string[] = pairs[i].split(",");
+                    const pair: { lng: string, lat: string } = {} as { lng: string, lat: string };
                     pair.lng = splitPair[0];
                     pair.lat = splitPair[1];
                     returnObj.push(pair);
@@ -399,13 +403,13 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
         function parseKML(): void {
             // Get kml file in json form, parse it, draw club poly data.
             $.getJSON("./map_data_093015_for2022.txt", function (json: any) {
-                let placemarks = json.Document.Folder.Placemark;
+                const placemarks = json.Document.Folder.Placemark;
 
                 mapData = {};
                 mapData.clubs = [];
 
                 for (let i: number = 0; i < placemarks.length; i++) {
-                    let club: any = {};
+                    const club: any = {};
 
                     club.name = placemarks[i].ExtendedData.SchemaData.SimpleData[0];
                     club.website = placemarks[i].ExtendedData.SchemaData.SimpleData[2];
@@ -414,16 +418,16 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
                     // Polygon is comprised of a single path.
                     if (placemarks[i].Polygon != undefined) {
-                        let brokenPath: any[] = parseCoordString(placemarks[i].Polygon.outerBoundaryIs.LinearRing.coordinates);
+                        const brokenPath: any[] = parseCoordString(placemarks[i].Polygon.outerBoundaryIs.LinearRing.coordinates);
                         club.paths.push(brokenPath);
                     }
 
                     // Polygon is made up of multiple paths.
                     else {
-                        let polygon: any[] = placemarks[i].MultiGeometry.Polygon;
+                        const polygon: any[] = placemarks[i].MultiGeometry.Polygon;
 
                         for (let y: number = 0; y < polygon.length; y++) {
-                            let brokenPath: any[] = parseCoordString(polygon[y].outerBoundaryIs.LinearRing.coordinates);
+                            const brokenPath: any[] = parseCoordString(polygon[y].outerBoundaryIs.LinearRing.coordinates);
                             club.paths.push(brokenPath);
                         }
                     }
@@ -454,15 +458,15 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
             closeInfoWindows();
 
             // Define geographic location to center map at.
-            let latlng: google.maps.LatLng = new google.maps.LatLng(46.846224, -83.952648);
+            const latlng: google.maps.LatLng = new google.maps.LatLng(46.846224, -83.952648);
 
             if (map == undefined) {
-                let mapDiv: HTMLElement | undefined = $("#map-canvas")[0];
+                const mapDiv: HTMLElement | undefined = $("#map-canvas")[0];
 
                 if (mapDiv != undefined) {
                     mapDiv.style.height = "300px";
 
-                    let mapOptions: google.maps.MapOptions = {
+                    const mapOptions: google.maps.MapOptions = {
                         center: latlng,
                         zoom: 5,
                         mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -520,29 +524,5 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
         parseKML();
         initializeIt();
-
-        //var club_permit_index = 0;
-
-        // function choose_club_modal() {
-        //     var el = document.getElementById(club_permit_index);
-        //     var sel = document.getElementById('club-selected');
-
-        //     el.value = sel.value;
-
-        //     jQuery('a.close-reveal-modal').trigger('click');
-        // }
-
-        // function choose_profile_club_modal() {
-        //     var el = document.getElementById('profile_club_selection');
-        //     var sel = document.getElementById('club-selected');
-
-        //     el.value = sel.value;
-
-        //     jQuery('a.close-reveal-modal').trigger('click');
-        // }
-
-        // function club_modal_set(index) {
-        //     club_permit_index = "club_" + index;
-        // }
     }
 }

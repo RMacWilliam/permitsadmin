@@ -12,7 +12,7 @@ import { Images } from '../../../constants';
 
 export interface IShowHoverButton {
     showHoverButton?: boolean;
-    buttonText?: string;
+    getButtonText: Function;
     action?: Function;
 }
 
@@ -26,6 +26,8 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
     const appContext = useContext(AppContext);
     const router = useRouter();
 
+    const t: Function = appContext.translation.t;
+
     return (
         <>
             <Head>
@@ -37,17 +39,17 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
             {showHoverButton?.showHoverButton && (
                 <div id="hover-button" className="dropdown position-fixed bottom-0 end-0 z-10000 me-4 mb-2 bd-mode-toggle">
                     <button className="btn btn-warning dropdown-toggle py-2" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"
-                        aria-label={showHoverButton?.buttonText} disabled={!isHoverButtonEnabled()}>
+                        aria-label={t("Common.HoverButton")} disabled={!isHoverButtonEnabled()}>
 
                         <i className="fa-solid fa-plus me-1"></i>
-                        <span className="visually-hidden" id="hover-button-label">{showHoverButton?.buttonText}</span>
+                        <span className="visually-hidden" id="hover-button-label">{t("Common.HoverButton")}</span>
                     </button>
 
                     <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="hover-button-label">
                         <li>
                             <button type="button" className="dropdown-item d-flex align-items-center" aria-pressed="false"
                                 onClick={() => hoverButtonItemClick()}>
-                                {showHoverButton?.buttonText}
+                                {showHoverButton.getButtonText()}
                             </button>
                         </li>
                     </ul>
@@ -64,13 +66,13 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                 </a>
 
                                 <div className="flex-column justify-content-center justify-content-md-between">
-                                    <h2 className="mb-0 d-none d-md-block">Ontario Federation of Snowmobile Clubs</h2>
-                                    <h5 className="mb-0 d-md-none">Ontario Federation of Snowmobile Clubs</h5>
+                                    <h3 className="mb-0 d-none d-md-block">{t("Common.Ofsc")}</h3>
+                                    <h5 className="mb-0 d-md-none">{t("Common.Ofsc")}</h5>
 
                                     <div className="d-none d-md-block">
-                                        Logged in as {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName} ({appContext.data.email})
-                                        <span className="btn btn-link align-baseline border-0 ms-2 p-0" onClick={() => doLogout()}>
-                                            Logout
+                                        Logged in as {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName}
+                                        <span className="ms-2" style={{ cursor: "pointer" }} onClick={() => doLogout()}>
+                                            {t("Common.Logout")}
                                         </span>
                                     </div>
                                 </div>
@@ -118,14 +120,14 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                 <li className="nav-item">
                                     <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/home"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                         <i className="fa-solid fa-house fa-fw me-2"></i>
-                                        {appContext.translation?.t("HOME.MENU_TITLE")}
+                                        {t("Home.MenuTitle")}
                                     </Link>
                                 </li>
                             )}
                             <li className="nav-item">
                                 <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                     <i className="fa-solid fa-address-card fa-fw me-2"></i>
-                                    {appContext.translation?.t("CONTACT_INFORMATION.MENU_TITLE")}
+                                    {t("ContactInfo.MenuTitle")}
                                 </Link>
                             </li>
                             {appContext.data?.isContactInfoVerified && (
@@ -133,13 +135,13 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                     <li className="nav-item">
                                         <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/permits"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                             <i className="fa-solid fa-snowflake fa-fw me-2"></i>
-                                            {appContext.translation?.t("SNOWMOBILES_AND_PERMITS.MENU_TITLE")}
+                                            {t("Permits.MenuTitle")}
                                         </Link>
                                     </li>
                                     <li className="nav-item">
                                         <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/gift-cards"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                             <i className="fa-solid fa-gift fa-fw me-2"></i>
-                                            {appContext.translation?.t("GIFT_CARDS.MENU_TITLE")}
+                                            {t("GiftCards.MenuTitle")}
                                         </Link>
                                     </li>
                                 </>
@@ -171,22 +173,22 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                         {appContext.data?.isContactInfoVerified && (
                             <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "home" ? "active" : ""}`} href="/home">
                                 <i className="fa-solid fa-house me-2"></i>
-                                {appContext.translation?.t("HOME.MENU_TITLE")}
+                                {t("Home.MenuTitle")}
                             </Link>
                         )}
                         <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact">
                             <i className="fa-solid fa-address-card me-2"></i>
-                            {appContext.translation?.t("CONTACT_INFORMATION.MENU_TITLE")}
+                            {t("ContactInfo.MenuTitle")}
                         </Link>
                         {appContext.data?.isContactInfoVerified && (
                             <>
                                 <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "permits" ? "active" : ""}`} href="/permits">
                                     <i className="fa-solid fa-snowflake me-2"></i>
-                                    {appContext.translation?.t("SNOWMOBILES_AND_PERMITS.MENU_TITLE")}
+                                    {t("Permits.MenuTitle")}
                                 </Link>
                                 <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "gift-cards" ? "active" : ""}`} href="/gift-cards">
                                     <i className="fa-solid fa-gift me-2"></i>
-                                    {appContext.translation?.t("GIFT_CARDS.MENU_TITLE")}
+                                    {t("GiftCards.MenuTitle")}
                                 </Link>
                             </>
                         )}

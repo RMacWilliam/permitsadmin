@@ -23,7 +23,7 @@ export default function LanguageToggler({ isTogglerItem, isTextShort, className 
 
     function getLanguageTextLong(): string {
         let result: string = "Français";
-
+        
         result = (appContext.translation?.i18n?.language ?? "en") === "en" ? "Français" : "English";
 
         return result;
@@ -39,8 +39,8 @@ export default function LanguageToggler({ isTogglerItem, isTextShort, className 
 
     function toggleLanguage(): void {
         if (appContext.translation?.i18n != undefined) {
-            let currentLanguage: string = appContext.translation.i18n?.language ?? "en";
-            let newLanguage: string = currentLanguage === "en" ? "fr" : "en";
+            const currentLanguage: string = appContext.translation.i18n?.language ?? "en";
+            const newLanguage: string = currentLanguage === "en" ? "fr" : "en";
 
             appContext.translation.i18n.changeLanguage(newLanguage);
 

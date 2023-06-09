@@ -28,7 +28,7 @@ export default function RouteGuard({ children }: { children: ReactNode }) {
     }
 
     // Get user authorization.
-    let path: string = router.asPath;
+    const path: string = router.asPath;
 
     // Admin users have full access.
     if (appContext.data?.contactInfo?.adminUser) {

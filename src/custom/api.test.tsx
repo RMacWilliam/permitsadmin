@@ -20,7 +20,7 @@ function getToken(): Promise<string> {
 
 describe("Tested api response objects", () => {
     test("Test apiLogin()", async () => {
-        let body: IApiLoginRequest = { email: email, password: password };
+        const body: IApiLoginRequest = { email: email, password: password };
 
         apiLogin(body).subscribe({
             next: (result: IApiLoginResult) => {

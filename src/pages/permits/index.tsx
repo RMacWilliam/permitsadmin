@@ -5,13 +5,12 @@ import Head from 'next/head';
 import { formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import ConfirmationDialog from '@/components/confirmation-dialog';
+import ConfirmationDialog, { ConfirmationDialogButtons } from '@/components/confirmation-dialog';
 import { NextRouter, useRouter } from 'next/router';
 import DatePicker from 'react-datepicker';
 import CartItemsAlert from '@/components/cart-items-alert';
 import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle, IApiDeleteVehicleRequest, IApiDeleteVehicleResult, apiDeleteVehicle, IApiVehiclePermit, IApiVehiclePermitOption } from '@/custom/api';
-import { Observable, forkJoin } from 'rxjs';
-import { Constants } from '../../../constants';
+import { Observable, Subscription, forkJoin } from 'rxjs';
 import { logout } from '@/custom/authentication';
 
 export default function PermitsPage() {
@@ -90,31 +89,33 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
     const DateRangeInput = forwardRef(({ value, snowmobile, onClick }: { value?: Date, snowmobile: ISnowmobile, onClick?: (e: any) => void }, ref: any) => (
         <div className="form-floating mb-2">
-            <input type="text" className="form-control" id={`permit-from-${snowmobile.oVehicleId}`} placeholder="From" value={formatShortDate(value)} onClick={onClick} onChange={() => null} disabled={isPermitAddedToCart(snowmobile.oVehicleId)} readOnly={true} ref={ref} />
-            <label className="required" htmlFor={`permit-from-${snowmobile.oVehicleId}`}>Select start date for permit</label>
+            <input type="text" className="form-control" id={`permit-from-${snowmobile.oVehicleId}`} placeholder={t("Permits.Vehicle.PermitStartDate")} value={formatShortDate(value)} onClick={onClick} onChange={() => null} disabled={isPermitAddedToCart(snowmobile.oVehicleId)} readOnly={true} ref={ref} />
+            <label className="required" htmlFor={`permit-from-${snowmobile.oVehicleId}`}>{t("Permits.Vehicle.PermitStartDate")}</label>
         </div>
     ));
     DateRangeInput.displayName = "DateRangeInput";
+
+    const t: Function = appContext.translation.t;
 
     useEffect(() => {
         setHoverButtonVisibility(true);
 
         // Get data from api.
-        let batchApi: Observable<any>[] = [
+        const batchApi: Observable<any>[] = [
             apiGetVehiclesAndPermitsForUser(),
             apiGetVehicleMakes()
         ];
 
-        forkJoin(batchApi).subscribe({
+        const subscription: Subscription = forkJoin(batchApi).subscribe({
             next: (results: any[]) => {
                 // apiGetVehiclesAndPermitsForUser
                 const apiGetVehiclesAndPermitsForUserResult: IApiGetVehiclesAndPermitsForUserResult[] = results[0] as IApiGetVehiclesAndPermitsForUserResult[];
 
                 if (apiGetVehiclesAndPermitsForUserResult != undefined && results.length > 0) {
-                    let snowmobiles: ISnowmobile[] = [];
+                    const snowmobiles: ISnowmobile[] = [];
 
                     apiGetVehiclesAndPermitsForUserResult.forEach(x => {
-                        let snowmobile: ISnowmobile = {
+                        const snowmobile: ISnowmobile = {
                             oVehicleId: x?.oVehicleId,
                             vehicleMake: x?.vehicleMake,
                             model: x?.model,
@@ -198,7 +199,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 }
 
                 // non-api
-                let years: number[] = [];
+                const years: number[] = [];
 
                 for (let i: number = endYear; i >= startYear; i--) {
                     years.push(i);
@@ -223,16 +224,20 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
             }
         });
 
+        return () => {
+            subscription.unsubscribe();
+        }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
         <>
             <Head>
-                <title>Permits | Ontario Federation of Snowmobile Clubs</title>
+                <title>{t("Permits.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{appContext.translation?.t("SNOWMOBILES_AND_PERMITS.TITLE")}</h4>
+            <h4>{t("Permits.Title")}</h4>
 
             <CartItemsAlert></CartItemsAlert>
 
@@ -246,28 +251,28 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="d-flex flex-fill g-3">
                             <div className="d-none d-md-flex">
                                 <div className="form-floating" style={{ minWidth: 54 }}>
-                                    <div className="form-control-plaintext fw-bold ps-0" id={`snowmobile-year-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vehicleYear}</div>
-                                    <label className="ps-0" htmlFor={`snowmobile-year-label-${snowmobile?.oVehicleId}`}>Year</label>
-                                </div>
-
-                                <div className="form-floating" style={{ minWidth: 63 }}>
-                                    <div className="form-control-plaintext fw-bold" id={`snowmobile-make-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vehicleMake?.value}</div>
-                                    <label htmlFor={`snowmobile-make-label-${snowmobile?.oVehicleId}`}>Make</label>
+                                    <div className="form-control-plaintext fw-semibold ps-0 pe-2" id={`snowmobile-year-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vehicleYear}</div>
+                                    <label className="ps-0 pe-2" htmlFor={`snowmobile-year-label-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.Year")}</label>
                                 </div>
 
                                 <div className="form-floating" style={{ minWidth: 70 }}>
-                                    <div className="form-control-plaintext fw-bold" id={`snowmobile-model-label-${snowmobile?.oVehicleId}`}>{snowmobile?.model}</div>
-                                    <label htmlFor={`snowmobile-model-label-${snowmobile?.oVehicleId}`}>Model</label>
+                                    <div className="form-control-plaintext fw-semibold px-2" id={`snowmobile-make-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vehicleMake?.value}</div>
+                                    <label className="px-2" htmlFor={`snowmobile-make-label-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.Make")}</label>
                                 </div>
 
-                                <div className="form-floating" style={{ minWidth: 51 }}>
-                                    <div className="form-control-plaintext fw-bold" id={`snowmobile-vin-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vin}</div>
-                                    <label htmlFor={`snowmobile-vin-label-${snowmobile?.oVehicleId}`}>VIN</label>
+                                <div className="form-floating" style={{ minWidth: 70 }}>
+                                    <div className="form-control-plaintext fw-semibold px-2" id={`snowmobile-model-label-${snowmobile?.oVehicleId}`}>{snowmobile?.model}</div>
+                                    <label className="px-2" htmlFor={`snowmobile-model-label-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.Model")}</label>
                                 </div>
 
-                                <div className="form-floating" style={{ minWidth: 59 }}>
-                                    <div className="form-control-plaintext fw-bold" id={`snowmobile-license-plate-label-${snowmobile?.oVehicleId}`}>{snowmobile?.licensePlate}</div>
-                                    <label htmlFor={`snowmobile-license-plate-label-${snowmobile?.oVehicleId}`}>Plate</label>
+                                <div className="form-floating" style={{ minWidth: 70 }}>
+                                    <div className="form-control-plaintext fw-semibold px-2" id={`snowmobile-vin-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vin}</div>
+                                    <label className="px-2" htmlFor={`snowmobile-vin-label-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.Vin")}</label>
+                                </div>
+
+                                <div className="form-floating" style={{ minWidth: 200 }}>
+                                    <div className="form-control-plaintext fw-semibold px-2" id={`snowmobile-license-plate-label-${snowmobile?.oVehicleId}`}>{snowmobile?.licensePlate}</div>
+                                    <label className="px-2" htmlFor={`snowmobile-license-plate-label-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.LicensePlate")}</label>
                                 </div>
                             </div>
                             <div className="d-md-none">
@@ -278,8 +283,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="d-flex flex-fill justify-content-end">
                             {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
                                 <>
-                                    <button className="btn btn-outline-secondary btn-sm" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>Edit</button>
-                                    <button className="btn btn-outline-secondary btn-sm ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>Remove</button>
+                                    <button className="btn btn-outline-secondary btn-sm" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>{t("Common.Edit")}</button>
+                                    <button className="btn btn-outline-secondary btn-sm ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>{t("Common.Delete")}</button>
                                 </>
                             )}
 
@@ -293,7 +298,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         {snowmobile?.permits != undefined && snowmobile.permits.length > 0 && snowmobile.permits.map(permit => (
                             <li className="list-group-item" key={permit?.oPermitId}>
                                 <div>
-                                    <span className="me-1"><b>Permit:</b></span>
+                                    <span className="me-1"><b>{t("Permits.Vehicle.Permit")}:</b></span>
 
                                     {appContext?.translation?.i18n?.language === "en" && (
                                         <span className="me-1">{permit?.permitType?.value}</span>
@@ -305,8 +310,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                     <span>- {permit?.linkedPermit}</span>
                                 </div>
 
-                                <div><b>Purchased:</b> {formatShortDate(permit?.purchaseDate)}</div>
-                                <div><b>Tracking #:</b> {permit?.trackingNumber}</div>
+                                <div><b>{t("Permits.Vehicle.Purchased")}:</b> {formatShortDate(permit?.purchaseDate)}</div>
+                                <div><b>{t("Permits.Vehicle.TrackingNumber")}:</b> {permit?.trackingNumber}</div>
                             </li>
                         ))}
 
@@ -320,8 +325,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             <>
                                 <li className="list-group-item">
                                     <div className="form-floating">
-                                        <select className="form-select" id={`permits-permit-options-${snowmobile?.oVehicleId}`} aria-label="Select permit to purchase" value={getSelectedPermitOption(snowmobile?.oVehicleId)} onChange={(e: any) => permitOptionChange(e, snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
-                                            <option value="" disabled>{Constants.PleaseSelect}</option>
+                                        <select className="form-select" id={`permits-permit-options-${snowmobile?.oVehicleId}`} aria-label={t("Permits.Vehicle.Permit")} value={getSelectedPermitOption(snowmobile?.oVehicleId)} onChange={(e: any) => permitOptionChange(e, snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
+                                            <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                             {snowmobile.permitOptions.map(permitOption => {
                                                 if (appContext.translation?.i18n?.language === "fr") {
@@ -335,7 +340,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                                 }
                                             })}
                                         </select>
-                                        <label className="required" htmlFor={`permits-permit-options-${snowmobile?.oVehicleId}`}>Select permit to purchase</label>
+                                        <label className="required" htmlFor={`permits-permit-options-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.Permit")}</label>
                                     </div>
 
                                     {showDateRangeForSelectedPermit(snowmobile?.oVehicleId) && (
@@ -346,8 +351,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                                             <div className="col-12 col-sm-12 col-md-6">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className="form-control" id={`permit-to-${snowmobile?.oVehicleId}`} placeholder="To" value={getPermitDateRangeToDate(snowmobile?.oVehicleId)} onChange={() => null} disabled={true} />
-                                                    <label className="" htmlFor={`permit-to-${snowmobile?.oVehicleId}`}>Permit will be valid until</label>
+                                                    <input type="text" className="form-control" id={`permit-to-${snowmobile?.oVehicleId}`} placeholder={t("Permits.Vehicle.PermitValidUntil")} value={getPermitDateRangeToDate(snowmobile?.oVehicleId)} onChange={() => null} disabled={true} />
+                                                    <label className="" htmlFor={`permit-to-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.PermitValidUntil")}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -360,11 +365,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                     {snowmobile?.isEditable && snowmobile?.permitOptions != undefined && snowmobile.permitOptions.length > 0 && (
                         <div className="card-footer">
                             {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
-                                <button className="btn btn-success btn-sm" onClick={() => addPermitToCartClick(snowmobile?.oVehicleId)} disabled={!isAddToCartEnabled(snowmobile?.oVehicleId)}>Add Permit to Cart</button>
+                                <button className="btn btn-success btn-sm" onClick={() => addPermitToCartClick(snowmobile?.oVehicleId)} disabled={!isAddToCartEnabled(snowmobile?.oVehicleId)}>{t("Permits.Vehicle.AddPermitToCart")}</button>
                             )}
 
                             {snowmobile?.isEditable && isPermitAddedToCart(snowmobile?.oVehicleId) && (
-                                <button className="btn btn-danger btn-sm" onClick={() => removePermitFromCartClick(snowmobile?.oVehicleId)}>Remove Permit from Cart</button>
+                                <button className="btn btn-danger btn-sm" onClick={() => removePermitFromCartClick(snowmobile?.oVehicleId)}>{t("Permits.Vehicle.RemovePermitFromCart")}</button>
                             )}
                         </div>
                     )}
@@ -373,27 +378,27 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
             <div className="card">
                 <div className="card-body text-center">
-                    <button className="btn btn-primary" onClick={() => addEditSnowmobileDialogShow()}>Add Snowmobile</button>
+                    <button className="btn btn-primary" onClick={() => addEditSnowmobileDialogShow()}>{t("Permits.Vehicle.AddSnowmobile")}</button>
                 </div>
             </div>
 
-            <ConfirmationDialog showDialog={showSnowmobileInfoDialog} title="Information" buttons={0} icon="information" width="50"
+            <ConfirmationDialog showDialog={showSnowmobileInfoDialog} title={t("Permits.VehicleCannotBeModifiedDialog.Title")} buttons={ConfirmationDialogButtons.Ok} icon="information" width="50"
                 okClick={() => setShowSnowmobileInfoDialog(false)} closeClick={() => setShowSnowmobileInfoDialog(false)}>
-                <div>This vehicle cannot be modified as a Ministry of Transportation Ontario Snowmobile Trail Permit has been registered to it.</div>
+                <div>{t("Permits.VehicleCannotBeModifiedDialog.Message")}</div>
             </ConfirmationDialog>
 
-            <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title="Delete Snowmobile" errorMessage={deleteSnowmobileDialogErrorMessage} buttons={2}
+            <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title={t("Permits.DeleteSnowmobileDialog.Title")} errorMessage={deleteSnowmobileDialogErrorMessage} buttons={2}
                 icon="question" width="50" yesClick={() => deleteSnowmobileDialogYesClick()} noClick={() => deleteSnowmobileDialogNoClick()}
                 closeClick={() => deleteSnowmobileDialogNoClick()}>
                 <div className="fw-bold mb-2">{snowmobileNameToDelete}</div>
-                <div>Are you sure you want to delete this snowmobile?</div>
+                <div>{t("Permits.DeleteSnowmobileDialog.Message")}</div>
             </ConfirmationDialog>
 
             <Modal show={showAddEditSnowmobileDialog} onHide={() => addEditSnowmobileDialogHide()} backdrop="static" keyboard={false} dialogClassName="modal-width-75-percent">
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        {addEditSnowmobileDialogMode === DialogMode.Add && (<div>Add Snowmobile</div>)}
-                        {addEditSnowmobileDialogMode === DialogMode.Edit && (<div>Edit Snowmobile</div>)}
+                        {addEditSnowmobileDialogMode === DialogMode.Add && (<div>{t("Permits.AddEditSnowmobileDialog.AddTitle")}</div>)}
+                        {addEditSnowmobileDialogMode === DialogMode.Edit && (<div>{t("Permits.AddEditSnowmobileDialog.EditTitle")}</div>)}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -410,27 +415,27 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
-                                    <select className={`form-select ${isVehicleYearValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-year" aria-label="Year" value={vehicleYear} onChange={(e: any) => setVehicleYear(e?.target?.value ?? "")}>
-                                        <option value="" disabled>{Constants.PleaseSelect}</option>
+                                    <select className={`form-select ${isVehicleYearValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-year" aria-label={t("Permits.AddEditSnowmobileDialog.Year")} value={vehicleYear} onChange={(e: any) => setVehicleYear(e?.target?.value ?? "")}>
+                                        <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                         {yearsData != undefined && yearsData.length > 0 && yearsData.map(x => (
                                             <option value={x} key={x}>{x}</option>
                                         ))}
                                     </select>
-                                    <label className="required" htmlFor="add-edit-snowmobile-year">Year</label>
+                                    <label className="required" htmlFor="add-edit-snowmobile-year">{t("Permits.AddEditSnowmobileDialog.Year")}</label>
                                 </div>
                             </div>
 
                             <div className="col-12 col-sm-12 col-md-6">
                                 <div className="form-floating mb-2">
-                                    <select className={`form-select ${isMakeValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-make" aria-label="Make" value={make?.key} onChange={(e: any) => setMake(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
-                                        <option value="" disabled>{Constants.PleaseSelect}</option>
+                                    <select className={`form-select ${isMakeValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-make" aria-label={t("Permits.AddEditSnowmobileDialog.Make")} value={make?.key} onChange={(e: any) => setMake(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
+                                        <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                         {vehicleMakesData != undefined && vehicleMakesData.length > 0 && getVehicleMakesData().map(x => (
                                             <option value={x.key} key={x.key}>{x.value}</option>
                                         ))}
                                     </select>
-                                    <label className="required" htmlFor="add-edit-snowmobile-make">Make</label>
+                                    <label className="required" htmlFor="add-edit-snowmobile-make">{t("Permits.AddEditSnowmobileDialog.Make")}</label>
                                 </div>
                             </div>
                         </div>
@@ -438,22 +443,22 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className={`form-control ${isModelValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-model" placeholder="Model" value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} onBlur={(e: any) => setModel(e?.target?.value?.trim() ?? "")} />
-                                    <label className="required" htmlFor="add-edit-snowmobile-model">Model</label>
+                                    <input type="text" className={`form-control ${isModelValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-model" placeholder={t("Permits.AddEditSnowmobileDialog.Model")} maxLength={50} value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} onBlur={(e: any) => setModel(e?.target?.value?.trim() ?? "")} />
+                                    <label className="required" htmlFor="add-edit-snowmobile-model">{t("Permits.AddEditSnowmobileDialog.Model")}</label>
                                 </div>
                             </div>
 
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className={`form-control ${isVinValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-vin" placeholder="VIN" value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} onBlur={(e: any) => setVin(e?.target?.value?.trim() ?? "")} />
-                                    <label className="required" htmlFor="add-edit-snowmobile-vin">VIN</label>
+                                    <input type="text" className={`form-control ${isVinValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-vin" placeholder={t("Permits.AddEditSnowmobileDialog.Vin")} maxLength={17} value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} onBlur={(e: any) => setVin(e?.target?.value?.trim() ?? "")} />
+                                    <label className="required" htmlFor="add-edit-snowmobile-vin">{t("Permits.AddEditSnowmobileDialog.Vin")}</label>
                                 </div>
                             </div>
 
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className={`form-control ${isLicensePlateValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-license-plate" placeholder="License Plate" value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} onBlur={(e: any) => setLicensePlate(e?.target?.value?.trim() ?? "")} />
-                                    <label className="required" htmlFor="add-edit-snowmobile-license-plate">License Plate</label>
+                                    <input type="text" className={`form-control ${isLicensePlateValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-license-plate" placeholder={t("Permits.AddEditSnowmobileDialog.LicensePlate")} maxLength={10} value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} onBlur={(e: any) => setLicensePlate(e?.target?.value?.trim() ?? "")} />
+                                    <label className="required" htmlFor="add-edit-snowmobile-license-plate">{t("Permits.AddEditSnowmobileDialog.LicensePlate")}</label>
                                 </div>
                             </div>
                         </div>
@@ -462,12 +467,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             <div className="col-12">
                                 <div className="form-check mb-2">
                                     <input className={`form-check-input ${isPermitForThisSnowmobileOnlyValid ? "" : "is-invalid"}`} type="checkbox" value="" id="add-edit-snowmobile-permit-for-this-snowmobile-only" defaultChecked={permitForThisSnowmobileOnly} onChange={(e: any) => { setPermitForThisSnowmobileOnly(e.target.checked) }} />
-                                    <label className="form-check-label required" htmlFor="add-edit-snowmobile-permit-for-this-snowmobile-only">
-                                        I understand that the trail permit for which I am applying is valid only for the motorized snow vehicle identified in this application
-                                        and is valid only where the sticker (permit) issued under this application is permanently affixed in the required position on that
-                                        motorized snow vehicle. I certify that the information contained in this application is true and acknowledge and accept the responsibilities
-                                        imposed by law.
-                                    </label>
+                                    <label className="form-check-label required" htmlFor="add-edit-snowmobile-permit-for-this-snowmobile-only">{t("Permits.AddEditSnowmobileDialog.PermitForThisSnowmobileOnly")}</label>
                                 </div>
                             </div>
                         </div>
@@ -476,9 +476,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             <div className="col-12">
                                 <div className="form-check">
                                     <input className={`form-check-input ${isRegisteredOwnerValid ? "" : "is-invalid"}`} type="checkbox" value="" id="add-edit-snowmobile-registered-owner" defaultChecked={registeredOwner} onChange={(e: any) => setRegisteredOwner(e.target.checked)} />
-                                    <label className="form-check-label required" htmlFor="add-edit-snowmobile-registered-owner">
-                                        I confirm I am the registered owner of this vehicle.
-                                    </label>
+                                    <label className="form-check-label required" htmlFor="add-edit-snowmobile-registered-owner">{t("Permits.AddEditSnowmobileDialog.RegisteredOwner")}</label>
                                 </div>
                             </div>
                         </div>
@@ -489,12 +487,12 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="row gap-2">
                             <div className="col d-flex align-items-center">
                                 <div className="text-nowrap">
-                                    <span className="text-danger me-1">*</span>= mandatory field
+                                    <span className="text-danger me-1">*</span>{t("Permits.AddEditSnowmobileDialog.MandatoryField")}
                                 </div>
                             </div>
                             <div className="col d-flex justify-content-end align-items-center">
-                                <Button className="me-2" variant="primary" onClick={() => addEditSnowmobileDialogSave()}>Save</Button>
-                                <Button variant="primary" onClick={() => addEditSnowmobileDialogHide()}>Cancel</Button>
+                                <Button className="me-2" variant="primary" onClick={() => addEditSnowmobileDialogSave()}>{t("Common.Save")}</Button>
+                                <Button variant="primary" onClick={() => addEditSnowmobileDialogHide()}>{t("Common.Cancel")}</Button>
                             </div>
                         </div>
                     </div>
@@ -539,7 +537,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
             setAddEditSnowmobileDialogMode(DialogMode.Edit);
             setEditedSnowmobileId(snowmobileId);
 
-            let snowmobile: ISnowmobile = getSnowmobiles()?.filter(x => x?.oVehicleId === snowmobileId)[0];
+            const snowmobile: ISnowmobile = getSnowmobiles()?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
             setVehicleYear(snowmobile?.vehicleYear ?? "");
             setMake(snowmobile?.vehicleMake ?? { key: "", value: "" });
@@ -577,7 +575,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
     function addEditSnowmobileDialogSave(): void {
         if (validateAddEditSnowmobileDialog()) {
             if (addEditSnowmobileDialogMode === DialogMode.Add) {
-                let apiAddVehicleForUserRequest: IApiAddVehicleForUserRequest = {
+                const apiAddVehicleForUserRequest: IApiAddVehicleForUserRequest = {
                     oVehicleId: editedSnowmobileId,
                     makeId: Number(make?.key),
                     model: model,
@@ -591,7 +589,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 apiAddVehicleForUser(apiAddVehicleForUserRequest).subscribe({
                     next: (result: IApiAddVehicleForUserResult) => {
                         if (result?.isSuccessful && result?.data != undefined) {
-                            let newSnowmobile: ISnowmobile = {
+                            const newSnowmobile: ISnowmobile = {
                                 oVehicleId: result?.data?.oVehicleId,
                                 vehicleMake: result?.data?.vehicleMake,
                                 model: result?.data?.model,
@@ -681,7 +679,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                     }
                 });
             } else if (addEditSnowmobileDialogMode === DialogMode.Edit) {
-                let apiUpdateVehicleRequest: IApiUpdateVehicleRequest = {
+                const apiUpdateVehicleRequest: IApiUpdateVehicleRequest = {
                     oVehicleId: editedSnowmobileId,
                     makeId: Number(make?.key),
                     model: model,
@@ -695,11 +693,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 apiUpdateVehicle(apiUpdateVehicleRequest).subscribe({
                     next: (result: IApiUpdateVehicleResult) => {
                         if (result?.isSuccessful && result?.data != undefined) {
-                            let updatedSnowmobile: ISnowmobile = result.data as ISnowmobile;
+                            const updatedSnowmobile: ISnowmobile = result.data as ISnowmobile;
 
                             appContext.updater(draft => {
                                 if (draft?.snowmobiles != undefined) {
-                                    let index: number = draft.snowmobiles.findIndex(x => x?.oVehicleId === editedSnowmobileId) ?? -1;
+                                    const index: number = draft.snowmobiles.findIndex(x => x?.oVehicleId === editedSnowmobileId) ?? -1;
 
                                     if (index != -1) {
                                         draft.snowmobiles[index] = updatedSnowmobile;
@@ -799,7 +797,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
     function deleteSnowmobileDialogShow(snowmobileId?: string): void {
         if (snowmobileId != undefined) {
-            let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
+            const snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
                 setSnowmobileIdToDelete(snowmobileId);
@@ -813,7 +811,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
     }
 
     function deleteSnowmobileDialogYesClick(): void {
-        let apiDeleteVehicleRequest: IApiDeleteVehicleRequest = {
+        const apiDeleteVehicleRequest: IApiDeleteVehicleRequest = {
             oVehicleId: snowmobileIdToDelete,
         };
 
@@ -860,7 +858,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
         let result: string = "";
 
         if (snowmobileId != undefined) {
-            let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
+            const snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
                 result = snowmobile?.permitSelections?.permitOptionId?.toString() ?? "";
@@ -872,13 +870,13 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
     function permitOptionChange(e: any, snowmobileId?: string): void {
         if (e != undefined && snowmobileId != undefined) {
-            let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
+            const snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
-                let permitSelections: IPermitSelections | undefined = snowmobile?.permitSelections;
+                const permitSelections: IPermitSelections | undefined = snowmobile?.permitSelections;
 
                 if (permitSelections != undefined) {
-                    let apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
+                    const apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
                         oVehicleId: snowmobileId,
                         oPermitId: permitSelections?.oPermitId ?? getGuid(),
                         permitOptionId: Number(e?.target?.value), // New value
@@ -891,7 +889,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         next: (result: IApiSavePermitSelectionForVehicleResult) => {
                             if (result?.isSuccessful && result?.data != undefined) {
                                 appContext.updater(draft => {
-                                    let draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+                                    const draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
                                     if (draftSnowmobile != undefined) {
                                         draftSnowmobile.permitSelections = {
@@ -924,7 +922,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
         let result: Date | undefined = undefined;
 
         if (snowmobileId != undefined) {
-            let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
+            const snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
                 result = parseDate(snowmobile?.permitSelections?.dateStart);
@@ -938,7 +936,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
         let result: string = "";
 
         if (snowmobileId != undefined) {
-            let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
+            const snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined && snowmobile?.permitSelections?.dateEnd != undefined) {
                 result = formatShortDate(snowmobile?.permitSelections?.dateEnd);
@@ -950,18 +948,18 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
     function permitDateRangeChange(date?: Date, snowmobileId?: string): void {
         if (date != undefined && snowmobileId != undefined) {
-            let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
+            const snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
-                let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
+                const permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
 
                 if (permitOption != undefined) {
-                    let permitSelections: IPermitSelections | undefined = snowmobile?.permitSelections;
+                    const permitSelections: IPermitSelections | undefined = snowmobile?.permitSelections;
 
                     if (permitSelections != undefined) {
-                        let daysToAdd: number = (permitOption?.permitDays ?? 0) - 1;
+                        const daysToAdd: number = (permitOption?.permitDays ?? 0) - 1;
 
-                        let apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
+                        const apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
                             oVehicleId: snowmobileId,
                             oPermitId: permitSelections?.oPermitId ?? getGuid(),
                             permitOptionId: permitSelections?.permitOptionId,
@@ -976,7 +974,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             next: (result: IApiSavePermitSelectionForVehicleResult) => {
                                 if (result?.isSuccessful && result?.data != undefined) {
                                     appContext.updater(draft => {
-                                        let draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+                                        const draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
                                         if (draftSnowmobile != undefined) {
                                             draftSnowmobile.permitSelections = {
@@ -1010,10 +1008,10 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
         let result = false;
 
         if (snowmobileId != undefined) {
-            let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
+            const snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
-                let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
+                const permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
 
                 if (permitOption != undefined) {
                     result = permitOption?.isMultiDay ?? false;
@@ -1028,10 +1026,10 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
         let result: boolean = false;
 
         if (snowmobileId != undefined) {
-            let snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
+            const snowmobile: ISnowmobile | undefined = getSnowmobile(snowmobileId);
 
             if (snowmobile != undefined) {
-                let permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
+                const permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
 
                 if (permitOption != undefined) {
                     result = snowmobile?.permitSelections?.permitOptionId != undefined
@@ -1046,20 +1044,20 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
     function addPermitToCartClick(snowmobileId?: string): void {
         if (snowmobileId != undefined) {
             appContext.updater(draft => {
-                let draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+                const draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
                 if (draftSnowmobile != undefined) {
-                    let draftPermitOption: IPermitOption | undefined = draftSnowmobile?.permitOptions?.filter(x => x?.productId === draftSnowmobile?.permitSelections?.permitOptionId)[0];
+                    const draftPermitOption: IPermitOption | undefined = draftSnowmobile?.permitOptions?.filter(x => x?.productId === draftSnowmobile?.permitSelections?.permitOptionId)[0];
 
                     if (draftPermitOption != undefined) {
                         let description: string = `${draftSnowmobile?.vehicleYear} ${draftSnowmobile?.vehicleMake?.value} ${draftSnowmobile?.model} ${draftSnowmobile?.vin} ${draftPermitOption?.displayName}`;
-                        let descriptionFr: string = `${draftSnowmobile?.vehicleYear} ${draftSnowmobile?.vehicleMake?.value} ${draftSnowmobile?.model} ${draftSnowmobile?.vin} ${draftPermitOption?.frenchDisplayName}`;
+                        const descriptionFr: string = `${draftSnowmobile?.vehicleYear} ${draftSnowmobile?.vehicleMake?.value} ${draftSnowmobile?.model} ${draftSnowmobile?.vin} ${draftPermitOption?.frenchDisplayName}`;
 
                         if (draftPermitOption.isMultiDay) {
                             description += ` (${formatShortDate(draftSnowmobile?.permitSelections?.dateStart)} — ${formatShortDate(draftSnowmobile?.permitSelections?.dateEnd)}) `;
                         }
 
-                        let cartItem: ICartItem = {
+                        const cartItem: ICartItem = {
                             id: getGuid(),
                             description: description,
                             descriptionFr: descriptionFr,
@@ -1099,7 +1097,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
     function setHoverButtonVisibility(isVisible: boolean): void {
         setShowHoverButton({
             showHoverButton: isVisible,
-            buttonText: "Add Snowmobile",
+            getButtonText: (): string => { return t("Permits.HoverButtons.AddSnowmobile"); },
             action: addEditSnowmobileDialogShow
         });
     }

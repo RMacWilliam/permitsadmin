@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import CartItemsAlert from '@/components/cart-items-alert';
 import { formatCurrency, getApiErrorMessage, getGuid, parseDate } from '@/custom/utilities';
-import { Observable, forkJoin } from 'rxjs';
+import { Observable, Subscription, forkJoin } from 'rxjs';
 import { IApiAddGiftCardForUserRequest, IApiAddGiftCardForUserResult, IApiDeleteGiftCardRequest, IApiDeleteGiftCardResult, IApiGetAvailableGiftCardsResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiSaveGiftCardSelectionsForUserRequest, IApiSaveGiftCardSelectionsForUserResult, apiAddGiftCardForUser, apiDeleteGiftCard, apiGetAvailableGiftCards, apiGetGiftcardsForCurrentSeasonForUser, apiSaveGiftCardSelectionsForUser } from '@/custom/api';
 import ConfirmationDialog from '@/components/confirmation-dialog';
 import { Constants } from '../../../constants';
@@ -46,22 +46,24 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
     const [giftCardTypesData, setGiftCardTypesData] = useState([] as IGiftCardType[]);
 
+    const t: Function = appContext.translation.t;
+
     useEffect(() => {
         setHoverButtonVisibility(true);
 
         // Get data from api.
-        let batchApi: Observable<any>[] = [
+        const batchApi: Observable<any>[] = [
             apiGetGiftcardsForCurrentSeasonForUser(),
             apiGetAvailableGiftCards()
         ];
 
-        forkJoin(batchApi).subscribe({
+        const subscription: Subscription = forkJoin(batchApi).subscribe({
             next: (results: any[]) => {
                 // apiGetGiftcardsForCurrentSeasonForUser
                 const apiGetGiftcardsForCurrentSeasonForUserResult: IApiGetGiftcardsForCurrentSeasonForUserResult[] = results[0] as IApiGetGiftcardsForCurrentSeasonForUserResult[];
 
                 if (apiGetGiftcardsForCurrentSeasonForUserResult != undefined) {
-                    let giftCards: IGiftCard[] = apiGetGiftcardsForCurrentSeasonForUserResult.map<IGiftCard>((x: IApiGetGiftcardsForCurrentSeasonForUserResult) => ({
+                    const giftCards: IGiftCard[] = apiGetGiftcardsForCurrentSeasonForUserResult.map<IGiftCard>((x: IApiGetGiftcardsForCurrentSeasonForUserResult) => ({
                         giftcardProductId: x?.giftcardProductId,
                         oVoucherId: x?.oVoucherId,
                         orderId: x?.orderId,
@@ -97,7 +99,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 const apiGetAvailableGiftCardsResult: IApiGetAvailableGiftCardsResult[] = results[1] as IApiGetAvailableGiftCardsResult[];
 
                 if (apiGetAvailableGiftCardsResult != undefined) {
-                    let giftCardTypes: IGiftCardType[] = apiGetAvailableGiftCardsResult.map<IGiftCardType>((x: IApiGetAvailableGiftCardsResult) => ({
+                    const giftCardTypes: IGiftCardType[] = apiGetAvailableGiftCardsResult.map<IGiftCardType>((x: IApiGetAvailableGiftCardsResult) => ({
                         productId: x?.productId,
                         name: x?.name,
                         displayName: x?.displayName,
@@ -122,16 +124,20 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             }
         });
 
+        return () => {
+            subscription.unsubscribe();
+        }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
         <>
             <Head>
-                <title>Gift Cards | Ontario Federation of Snowmobile Clubs</title>
+                <title>{t("GiftCards.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{appContext.translation?.t("GIFT_CARDS.TITLE")}</h4>
+            <h4>{t("GiftCards.Title")}</h4>
 
             <CartItemsAlert></CartItemsAlert>
 
@@ -179,7 +185,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                             <li className="list-group-item">
                                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                     <div className="d-flex flex-fill flex-column">
-                                        <label htmlFor={`redemption-code-${giftCard?.oVoucherId}`} className="form-label mb-0">Redemption Code</label>
+                                        <label htmlFor={`redemption-code-${giftCard?.oVoucherId}`} className="form-label fw-semibold">Redemption Code</label>
                                         <p id={`redemption-code-${giftCard?.oVoucherId}`} className="font-monospace mb-0">{giftCard?.redemptionCode}</p>
                                     </div>
 
@@ -194,7 +200,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                             <li className="list-group-item">
                                 <div className="form-floating">
                                     <select className="form-select" id={`gift-cards-permit-options-${giftCard?.oVoucherId}`} aria-label="Select gift card to purchase" value={getSelectedGiftCardOption(giftCard?.oVoucherId)} onChange={(e: any) => giftCardOptionChange(e, giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
-                                        <option value="" disabled>{Constants.PleaseSelect}</option>
+                                        <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                         {giftCardTypesData != undefined && giftCardTypesData.length > 0 && getGiftCardTypesData().map(giftCardType => {
                                             let displayText: string = "";
@@ -321,7 +327,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         let result: string = "";
 
         if (oVoucherId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
                 if (language === "fr") {
@@ -351,7 +357,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         let result: number = 0;
 
         if (oVoucherId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
                 result = (giftCard?.amount ?? 0) + (giftCard?.isTrackedShipping ? (giftCard?.trackedShippingAmount ?? 0) : 0);
@@ -365,7 +371,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         let result: string = "";
 
         if (giftcardProductId != undefined) {
-            let giftCardType: IGiftCardType | undefined = getGiftCardType(giftcardProductId);
+            const giftCardType: IGiftCardType | undefined = getGiftCardType(giftcardProductId);
 
             if (giftCardType != undefined) {
                 if (language === "fr") {
@@ -395,7 +401,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         let result: number = 0;
 
         if (giftcardProductId != undefined) {
-            let giftCardType: IGiftCardType | undefined = getGiftCardType(giftcardProductId);
+            const giftCardType: IGiftCardType | undefined = getGiftCardType(giftcardProductId);
 
             if (giftCardType != undefined) {
                 result = (giftCardType?.amount ?? 0) + (giftCardType?.isTrackedShipping ? (giftCardType?.trackedShippingAmount ?? 0) : 0);
@@ -407,14 +413,14 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     }
 
     function addGiftCardClick(): void {
-        let addGiftCardRequest: IApiAddGiftCardForUserRequest = {};
+        const addGiftCardRequest: IApiAddGiftCardForUserRequest = {};
 
         setShowAlert(true);
 
         apiAddGiftCardForUser(addGiftCardRequest).subscribe({
             next: (result: IApiAddGiftCardForUserResult) => {
                 if (result?.isSuccessful && result?.data != undefined) {
-                    let newGiftCard: IGiftCard = {
+                    const newGiftCard: IGiftCard = {
                         giftcardProductId: result?.data?.giftcardProductId,
                         oVoucherId: result?.data?.oVoucherId,
                         orderId: result?.data?.orderId,
@@ -457,7 +463,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     function editGiftCardClick(oVoucherId?: string): void {
         if (oVoucherId != undefined) {
             appContext.updater(draft => {
-                let draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
+                const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
 
                 if (draftGiftCard != undefined) {
                     draftGiftCard.uiRecipientLastName = draftGiftCard?.recipientLastName;
@@ -472,7 +478,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         let result: string | undefined = undefined;
 
         if (oVoucherId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
                 if (giftCard?.uiIsInEditMode) {
@@ -489,10 +495,10 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     function giftCardLastNameChange(e: any, oVoucherId?: string): void {
         if (e != undefined && oVoucherId != undefined) {
             appContext.updater(draft => {
-                let draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
+                const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
 
                 if (draftGiftCard != undefined) {
-                    let lastName: string | undefined = e?.target?.value;
+                    const lastName: string | undefined = e?.target?.value;
 
                     if (draftGiftCard?.isPurchased) {
                         draftGiftCard.uiRecipientLastName = lastName;
@@ -509,7 +515,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         let result: boolean = false;
 
         if (oVoucherId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
                 result = (!isGiftCardAddedToCart(oVoucherId)
@@ -526,7 +532,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         let result: string | undefined = undefined;
 
         if (oVoucherId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
                 if (giftCard?.uiIsInEditMode) {
@@ -543,10 +549,10 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     function giftCardPostalCodeChange(e: any, oVoucherId?: string): void {
         if (e != undefined && oVoucherId != undefined) {
             appContext.updater(draft => {
-                let draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
+                const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
 
                 if (draftGiftCard != undefined) {
-                    let postalCode: string | undefined = e?.target?.value;
+                    const postalCode: string | undefined = e?.target?.value;
 
                     if (draftGiftCard?.isPurchased) {
                         draftGiftCard.uiRecipientPostal = postalCode;
@@ -563,7 +569,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         let result: boolean = false;
 
         if (oVoucherId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
                 result = (!isGiftCardAddedToCart(oVoucherId)
@@ -578,7 +584,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
     function saveGiftCardSelections(oVoucherId?: string, giftcardProductId?: number, recipientLastName?: string, recipientPostal?: string): void {
         if (oVoucherId != undefined) {
-            let apiSaveGiftCardSelectionsForUserRequest: IApiSaveGiftCardSelectionsForUserRequest | undefined = {
+            const apiSaveGiftCardSelectionsForUserRequest: IApiSaveGiftCardSelectionsForUserRequest | undefined = {
                 oVoucherId: oVoucherId,
                 giftcardProductId: giftcardProductId,
                 recipientLastName: recipientLastName,
@@ -591,7 +597,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 next: (result: IApiSaveGiftCardSelectionsForUserResult) => {
                     if (result?.isSuccessful && result?.data != undefined) {
                         appContext.updater(draft => {
-                            let draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
+                            const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
 
                             if (draftGiftCard != undefined) {
                                 draftGiftCard.giftcardProductId = result?.data?.giftcardProductId;
@@ -633,10 +639,10 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
     function addGiftCardToCartClick(oVoucherId?: string): void {
         if (oVoucherId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
-                let cartItem: ICartItem = {
+                const cartItem: ICartItem = {
                     id: getGuid(),
                     description: getGiftCardTypeName(giftCard?.giftcardProductId) + ` — ${giftCard?.recipientLastName} — ${giftCard?.recipientPostal}`,
                     descriptionFr: getGiftCardTypeName(giftCard?.giftcardProductId, "fr") + ` — ${giftCard?.recipientLastName} — ${giftCard?.recipientPostal}`,
@@ -666,7 +672,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     function saveGiftCardChangesClick(oVoucherId?: string): void {
         if (oVoucherId != undefined) {
             appContext.updater(draft => {
-                let draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
+                const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
 
                 if (draftGiftCard != undefined) {
                     draftGiftCard.recipientLastName = draftGiftCard?.uiRecipientLastName;
@@ -680,7 +686,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     function cancelGiftCardChangesClick(oVoucherId?: string): void {
         if (oVoucherId != undefined) {
             appContext.updater(draft => {
-                let draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
+                const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
 
                 if (draftGiftCard != undefined) {
                     draftGiftCard.uiIsInEditMode = false;
@@ -693,7 +699,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         let result: boolean = false;
 
         if (oVoucherId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
                 result = giftCard?.giftcardProductId != undefined && giftCard?.giftcardProductId !== 0
@@ -726,7 +732,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     }
 
     function deleteGiftCardDialogYesClick(): void {
-        let apiDeleteGiftCardRequest: IApiDeleteGiftCardRequest = {
+        const apiDeleteGiftCardRequest: IApiDeleteGiftCardRequest = {
             oVoucherId: giftCardIdToDelete
         };
 
@@ -771,7 +777,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         let result: string = "";
 
         if (oVoucherId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined && giftCard?.giftcardProductId != undefined) {
                 result = giftCard?.giftcardProductId?.toString() ?? "";
@@ -783,10 +789,10 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
     function giftCardOptionChange(e: any, oVoucherId?: string): void {
         if (e != undefined && oVoucherId != undefined) {
-            let giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
-                let giftcardProductId: number = Number(e?.target?.value);
+                const giftcardProductId: number = Number(e?.target?.value);
 
                 saveGiftCardSelections(oVoucherId, giftcardProductId, giftCard?.recipientLastName, giftCard?.recipientPostal);
             }
@@ -796,7 +802,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     function setHoverButtonVisibility(isVisible: boolean): void {
         setShowHoverButton({
             showHoverButton: isVisible,
-            buttonText: "Add Gift Card",
+            getButtonText: (): string => { return t("Permits.HoverButtons.AddSnowmobilexxxxxxxx"); },
             action: addGiftCardClick
         });
     }

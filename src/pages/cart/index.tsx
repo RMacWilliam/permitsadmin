@@ -1,12 +1,12 @@
 import ConfirmationDialog from "@/components/confirmation-dialog";
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
-import { IApiGetClubsResult, IApiGetCountriesResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetShippingFeesResult, apiGetClubs, apiGetCountries, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, IApiSavePermitSelectionForVehicleRequest, apiSavePermitSelectionForVehicle, IApiSavePermitSelectionForVehicleResult } from "@/custom/api";
+import { IApiGetClubsResult, IApiGetCountriesResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetShippingFeesResult, apiGetClubs, apiGetCountries, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, IApiSavePermitSelectionForVehicleRequest, apiSavePermitSelectionForVehicle, IApiSavePermitSelectionForVehicleResult, apiGetGoogleMapKey, IApiGetGoogleMapKeyResult } from "@/custom/api";
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IParentKeyValue, IRedeemableGiftCards, IShippingFee, ISnowmobile, IPermitSelections } from "@/custom/app-context";
 import { formatCurrency, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect } from "@/custom/utilities";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { Observable, forkJoin } from "rxjs";
+import { Observable, Subscription, forkJoin } from "rxjs";
 import Select from 'react-select';
 import { Constants } from "../../../constants";
 import ClubLocatorMap from "./club-locator-map";
@@ -36,7 +36,13 @@ enum ShipTo {
     Alternate = 1
 }
 
-function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextValues, router: NextRouter, setShowAlert: React.Dispatch<React.SetStateAction<boolean>> }) {
+function Cart({ appContext, router, setShowAlert }:
+    {
+        appContext: IAppContextValues,
+        router: NextRouter,
+        setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
+    }) {
+
     const [showClubInfoDialog, setShowClubInfoDialog] = useState(false);
 
     const [showClubLocatorMapDialog, setShowClubLocatorMapDialog] = useState(false);
@@ -74,18 +80,23 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     const [redeemableGiftCards, setRedeemableGiftCards] = useState({} as IRedeemableGiftCards);
     const [clubsData, setClubsData] = useState([] as IKeyValue[]);
 
+    const [googleMapKey, setGoogleMapKey] = useState(undefined as string | undefined);
+
+    const t: Function = appContext.translation.t;
+
     useEffect(() => {
         // Get data from api.
-        let batchApi: Observable<any>[] = [
+        const batchApi: Observable<any>[] = [
             apiGetProcessingFee(),
             apiGetShippingFees(),
             apiGetProvinces(),
             apiGetCountries(),
             apiGetRedeemableGiftCardsForUser(),
-            apiGetClubs()
+            apiGetClubs(),
+            apiGetGoogleMapKey()
         ];
 
-        forkJoin(batchApi).subscribe({
+        const subscription: Subscription = forkJoin(batchApi).subscribe({
             next: (results: any[]) => {
                 // apiGetProcessingFee
                 const apiGetProcessingFeeResult: IApiGetProcessingFeeResult = results[0] as IApiGetProcessingFeeResult;
@@ -98,7 +109,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                 const apiGetShippingFeesResult: IApiGetShippingFeesResult[] = results[1] as IApiGetShippingFeesResult[];
 
                 if (apiGetShippingFeesResult != undefined) {
-                    let shippingFees: IShippingFee[] = apiGetShippingFeesResult.map<IShippingFee>((x: IApiGetShippingFeesResult) => ({
+                    const shippingFees: IShippingFee[] = apiGetShippingFeesResult.map<IShippingFee>((x: IApiGetShippingFeesResult) => ({
                         id: x?.id,
                         name: x?.name,
                         price: x?.price,
@@ -112,7 +123,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                 const apiGetProvincesResult: IApiGetProvincesResult[] = results[2] as IApiGetProvincesResult[];
 
                 if (apiGetProvincesResult != undefined) {
-                    let provinces: IParentKeyValue[] = apiGetProvincesResult.map<IParentKeyValue>(x => ({
+                    const provinces: IParentKeyValue[] = apiGetProvincesResult.map<IParentKeyValue>(x => ({
                         parent: x?.parent ?? "",
                         key: x?.key ?? "",
                         value: x?.value ?? ""
@@ -125,7 +136,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                 const apiGetCountriesResult: IApiGetCountriesResult[] = results[3] as IApiGetCountriesResult[];
 
                 if (apiGetCountriesResult != undefined) {
-                    let countries: IKeyValue[] = apiGetCountriesResult.map<IKeyValue>(x => ({
+                    const countries: IKeyValue[] = apiGetCountriesResult.map<IKeyValue>(x => ({
                         key: x?.key ?? "",
                         value: x?.value ?? ""
                     }));
@@ -150,12 +161,21 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                     setClubsData(apiGetClubsResult.map<IKeyValue>(x => ({ key: x?.key ?? "", value: x?.value ?? "" })));
                 }
 
+                // apiGetGoogleMapKey
+                const apiGetGoogleMapKeyResult: IApiGetGoogleMapKeyResult = results[6] as IApiGetGoogleMapKeyResult;
+
+                if (apiGetGoogleMapKeyResult != undefined) {
+                    if (apiGetGoogleMapKeyResult?.isSuccessful && apiGetGoogleMapKeyResult?.data != undefined) {
+                        setGoogleMapKey(apiGetGoogleMapKeyResult.data?.key);
+                    }
+                }
+
                 // Reset validation.
                 appContext.updater(draft => {
                     draft?.cartItems?.filter(x => x.isPermit)?.forEach(x => {
                         x.uiIsClubValid = undefined;
                     });
-                })
+                });
 
                 setShowAlert(false);
             },
@@ -166,16 +186,20 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
             }
         });
 
+        return () => {
+            subscription.unsubscribe();
+        }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
         <>
             <Head>
-                <title>Cart | Ontario Federation of Snowmobile Clubs</title>
+                <title>{t("Cart.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{appContext.translation?.t("CART.TITLE")}</h4>
+            <h4>{t("Cart.Title")}</h4>
 
             {getCartItems() != undefined && getCartItems().length === 0 && (
                 <div>You have not added any items to your cart.</div>
@@ -238,7 +262,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                                     <>
                                                                         <div className="fw-semibold mb-2">Redeem Gift Card</div>
 
-                                                                        <div className="d-flex flex-column gap-2 ">
+                                                                        <div className="d-flex flex-column gap-2">
                                                                             <div className="input-group">
                                                                                 <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter gift card redemption code" value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
                                                                                 <button className="btn btn-outline-primary d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
@@ -260,7 +284,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                         <div className="card-body footer-color">
                                                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                                 <div className="d-flex flex-fill align-items-center">
-                                                                    <h6 className="card-title fw-semibold required mb-0">Select a Club</h6>
+                                                                    <div className="fw-semibold required">Select a Club</div>
                                                                     <button type="button" className="btn btn-link p-0 ms-2" onClick={() => setShowClubInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
                                                                 </div>
 
@@ -270,7 +294,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                                             </div>
 
                                                             <div className="mt-2">
-                                                                <Select id={`cart-club-${cartItem?.itemId}`} className="react-select" aria-label="Club" classNames={getClubReactSelectClasses(cartItem?.id)} isClearable={true} placeholder={Constants.PleaseSelect} options={getClubsData()} value={getSelectedClub(cartItem?.itemId)} onChange={(e: any) => permitClubChange(e, cartItem?.itemId)} />
+                                                                <Select id={`cart-club-${cartItem?.itemId}`} className="react-select" aria-label="Club" classNames={getClubReactSelectClasses(cartItem?.id)} isClearable={true} placeholder={t("Common.PleaseSelect")} options={getClubsData()} value={getSelectedClub(cartItem?.itemId)} onChange={(e: any) => permitClubChange(e, cartItem?.itemId)} />
                                                                 <button type="button" className="btn btn-link text-decoration-none d-sm-none p-0 mt-2" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}><i className="fa-solid fa-map fa-lg me-2"></i>Use Club Locator Map</button>
                                                             </div>
                                                         </div>
@@ -315,7 +339,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                 <div className="d-flex">
                                     <div className="flex-column me-auto w-100">
                                         <select className={`form-select ${isShippingValid ? "" : "is-invalid"}`} aria-label="Shipping" value={shipping} onChange={(e: any) => shippingChange(e)}>
-                                            <option value="">{Constants.PleaseSelect}</option>
+                                            <option value="">{t("Common.PleaseSelect")}</option>
 
                                             {shippingFeesData != undefined && shippingFeesData.length > 0 && getShippingFeesData().map(shippingMethod => (
                                                 <option value={shippingMethod.id} key={shippingMethod.id}>{shippingMethod.name}</option>
@@ -369,7 +393,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
 
                     <div className="card mb-3">
                         <div className="card-body">
-                            <div className="fw-bold mb-2">Ship To</div>
+                            <div className="fw-semibold mb-2">Ship To</div>
 
                             <div className="form-check">
                                 <input className="form-check-input" type="radio" name="shipTo" id="shipToRegistered" checked={shipTo === ShipTo.Registered} value={ShipTo.Registered} onChange={() => shipToAddressChange(ShipTo.Registered)} />
@@ -426,7 +450,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
                                                     <select className={`form-select ${isProvinceValid ? "" : "is-invalid"}`} id="alternate-address-province" aria-label="Province/State" value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
-                                                        <option value="" disabled>{Constants.PleaseSelect}</option>
+                                                        <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                                         {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
                                                             <option value={`${country.key}|${provinceData.key}`} key={`${country.key}|${provinceData.key}`}>{provinceData.value}</option>
@@ -438,7 +462,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
                                                     <select className={`form-select ${isCountryValid ? "" : "is-invalid"}`} id="alternate-address-country" aria-label="Country" value={country.key} onChange={(e: any) => countryChange(e)}>
-                                                        <option value="" disabled>{Constants.PleaseSelect}</option>
+                                                        <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                                         {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
                                                             <option value={countryData.key} key={countryData.key}>{countryData.value}</option>
@@ -460,11 +484,15 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                         </div>
                     </div>
 
-                    <div className="card">
+                    <div className="card mb-3">
                         <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
                             <button className="btn btn-success" onClick={() => checkoutClick()}>Proceed to Checkout</button>
                             <button className="btn btn-success" onClick={() => continueShoppingClick()}>Continue Shopping</button>
                         </div>
+                    </div>
+
+                    <div className="d-flex justify-content-center">
+                        <span className="text-danger me-1">*</span>= mandatory field
                     </div>
                 </>
             )}
@@ -474,9 +502,11 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                 <div>By choosing a specific club when buying a permit, you're directly helping that club groom and maintain the trails you enjoy riding most often, so please buy where you ride and make your selection below.</div>
             </ConfirmationDialog>
 
-            <ClubLocatorMap showDialog={showClubLocatorMapDialog} closeClick={() => setShowClubLocatorMapDialog(false)}
-                clubLocatorMapSnowmobileId={clubLocatorMapSnowmobileId}
-                selectClubFromClubLocatorMapSelection={(snowmobileId?: string, selectedClub?: string) => selectClubFromClubLocatorMapSelection(snowmobileId, selectedClub)}></ClubLocatorMap>
+            {googleMapKey != undefined && (
+                <ClubLocatorMap showDialog={showClubLocatorMapDialog} closeClick={() => setShowClubLocatorMapDialog(false)}
+                    clubLocatorMapSnowmobileId={clubLocatorMapSnowmobileId} googleMapKey={googleMapKey}
+                    selectClubFromClubLocatorMapSelection={(snowmobileId?: string, selectedClub?: string) => selectClubFromClubLocatorMapSelection(snowmobileId, selectedClub)} />
+            )}
         </>
     )
 
@@ -540,10 +570,10 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     function selectClubFromClubLocatorMapSelection(snowmobileId?: string, selectedClub?: string): void {
         if (snowmobileId != undefined && selectedClub != undefined) {
             appContext.updater(draft => {
-                let draftSnowmobile: ISnowmobile | undefined = draft.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+                const draftSnowmobile: ISnowmobile | undefined = draft.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
                 if (draftSnowmobile != undefined) {
-                    let clubId: string | undefined = clubsData?.filter(x => x?.value === selectedClub)[0]?.key;
+                    const clubId: string | undefined = clubsData?.filter(x => x?.value === selectedClub)[0]?.key;
 
                     if (clubId != undefined && draftSnowmobile.permitSelections != undefined) {
                         draftSnowmobile.permitSelections.clubId = Number(clubId);
@@ -578,7 +608,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         let result: number = 0;
 
         if (shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
-            let item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
+            const item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
 
             if (item != undefined) {
                 result = item?.price ?? 0;
@@ -631,7 +661,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         let result: boolean = false;
 
         if (shipping != undefined) {
-            let shippingFee: IShippingFee = shippingFeesData?.filter(x => x?.id === shipping)[0];
+            const shippingFee: IShippingFee = shippingFeesData?.filter(x => x?.id === shipping)[0];
 
             if (shippingFee != undefined) {
                 result = shippingFee?.showConfirmation ?? false;
@@ -646,7 +676,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
 
         // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then display tracked shipping discount.
         if (shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
-            let item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
+            const item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
 
             if (item != undefined && item?.name === "Tracked"
                 && getCartItems()?.some(x => x?.giftCardTrackingShippingAmount != undefined)) {
@@ -663,7 +693,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
 
         // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then return tracked shipping discount.
         if (shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
-            let item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
+            const item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
 
             if (item != undefined && item?.name === "Tracked"
                 && getCartItems()?.some(x => x?.giftCardTrackingShippingAmount != undefined)) {
@@ -709,7 +739,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         let isPermitsValid: boolean = true;
         appContext.updater(draft => {
             draft?.cartItems?.filter(x => x.isPermit)?.forEach(ci => {
-                let snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === ci?.itemId)[0];
+                const snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === ci?.itemId)[0];
 
                 if (snowmobile != undefined) {
                     ci.uiIsClubValid = snowmobile?.permitSelections?.clubId != undefined;
@@ -786,7 +816,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         if (redeemableGiftCards != undefined && ((redeemableGiftCards?.seasonalGiftCards ?? 0) > 0 || (redeemableGiftCards?.classicGiftCards ?? 0) > 0)
             && snowmobileId != undefined) {
 
-            let snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+            const snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
             if (snowmobile != undefined) {
                 result = snowmobile?.isClassic && (redeemableGiftCards?.classicGiftCards ?? 0) > 0
@@ -800,7 +830,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     function removeGiftCardClick(cartItemId?: string): void {
         if (cartItemId != undefined) {
             appContext.updater(draft => {
-                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
+                const draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
 
                 if (draftCartItem != undefined) {
                     draftCartItem.redemptionCode = undefined;
@@ -814,7 +844,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     function redemptionCodeChange(e: any, cartItemId?: string): void {
         if (e != undefined && cartItemId != undefined) {
             appContext.updater(draft => {
-                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
+                const draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
 
                 if (draftCartItem != undefined) {
                     draftCartItem.uiRedemptionCode = e?.target?.value;
@@ -826,7 +856,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
     function validateGiftCard(cartItemId?: string): void {
         if (cartItemId != undefined) {
             appContext.updater(draft => {
-                let draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
+                const draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
 
                 if (draftCartItem != undefined) {
                     // TODO: Replace with actual lookup.
@@ -844,7 +874,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                         draftCartItem.uiRedemptionCode = "";
                         draftCartItem.uiShowRedemptionCodeNotFound = false;
 
-                        let trackedShipping: string | undefined = shippingFeesData?.filter(x => x?.name === "Tracked")[0]?.id;
+                        const trackedShipping: string | undefined = shippingFeesData?.filter(x => x?.name === "Tracked")[0]?.id;
 
                         if (trackedShipping != undefined) {
                             setShipping(trackedShipping);
@@ -859,7 +889,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         setShipTo(shipToLocation);
 
         if (country == undefined || country?.key === undefined || country.key === "") {
-            let country: IKeyValue | undefined = appContext.data?.contactInfo?.country ?? { key: "CA", value: "Canada" };
+            const country: IKeyValue | undefined = appContext.data?.contactInfo?.country ?? { key: "CA", value: "Canada" };
 
             if (country != undefined) {
                 setCountry({ key: country.key, value: country.value });
@@ -906,10 +936,10 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         let result: any = {};
 
         if (cartItemId != undefined) {
-            let cartItem: ICartItem | undefined = getCartItem(cartItemId);
+            const cartItem: ICartItem | undefined = getCartItem(cartItemId);
 
             if (cartItem != undefined) {
-                let isClubValid: boolean = (cartItem?.uiIsClubValid == undefined || cartItem?.uiIsClubValid) ? true : false;
+                const isClubValid: boolean = (cartItem?.uiIsClubValid == undefined || cartItem?.uiIsClubValid) ? true : false;
 
                 result = {
                     control: () => `react-select-control form-control ${isClubValid ? "" : "is-invalid"}`,
@@ -928,7 +958,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
         let result: { value?: string, label?: string } = {} as { value?: string, label?: string };
 
         if (snowmobileId != undefined) {
-            let snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x.oVehicleId === snowmobileId)[0];
+            const snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x.oVehicleId === snowmobileId)[0];
 
             if (snowmobile != undefined) {
                 result = getClubsData()?.filter(x => x?.value === snowmobile?.permitSelections?.clubId?.toString())[0];
@@ -940,13 +970,13 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
 
     function permitClubChange(e: any, snowmobileId?: string): void {
         if (snowmobileId != undefined) {
-            let snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+            const snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
             if (snowmobile != undefined) {
-                let permitSelections: IPermitSelections | undefined = snowmobile?.permitSelections;
+                const permitSelections: IPermitSelections | undefined = snowmobile?.permitSelections;
 
                 if (permitSelections != undefined) {
-                    let apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
+                    const apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
                         oVehicleId: snowmobileId,
                         oPermitId: permitSelections?.oPermitId ?? getGuid(),
                         permitOptionId: permitSelections?.permitOptionId,
@@ -959,7 +989,7 @@ function Cart({ appContext, router, setShowAlert }: { appContext: IAppContextVal
                         next: (result: IApiSavePermitSelectionForVehicleResult) => {
                             if (result?.isSuccessful && result?.data != undefined) {
                                 appContext.updater(draft => {
-                                    let draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+                                    const draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
                                     if (draftSnowmobile != undefined) {
                                         draftSnowmobile.permitSelections = {

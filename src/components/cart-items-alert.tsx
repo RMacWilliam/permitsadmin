@@ -6,6 +6,8 @@ export default function CartItemsAlert() {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
+    const t: Function = appContext.translation.t;
+
     if (appContext.data?.cartItems != undefined && appContext.data?.cartItems?.length > 0) {
         return (
             <div className="alert alert-primary" role="alert">
@@ -15,7 +17,7 @@ export default function CartItemsAlert() {
                         {getMessage()}
                     </div>
                     <div>
-                        <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => goToCartClick()}>Go to Cart</button>
+                        <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => goToCartClick()}>{t("CartItemsAlert.GoToCartButton")}</button>
                     </div>
                 </div>
             </div >
@@ -27,25 +29,31 @@ export default function CartItemsAlert() {
     function getMessage(): string {
         let result: string = "";
 
-        let permitCount: number = appContext.data?.cartItems?.filter(x => x.isPermit)?.length ?? 0;
-        let giftCardCount: number = appContext.data?.cartItems?.filter(x => x.isGiftCard)?.length ?? 0;
+        const permitCount: number = appContext.data?.cartItems?.filter(x => x.isPermit)?.length ?? 0;
+        const giftCardCount: number = appContext.data?.cartItems?.filter(x => x.isGiftCard)?.length ?? 0;
+
+        const segments: string[] = [];
 
         if (permitCount > 0 || giftCardCount > 0) {
-            result = "You have ";
+            segments.push(t("CartItemsAlert.YouHave"));
 
             if (permitCount > 0) {
-                result += permitCount.toString() + (permitCount === 1 ? " permit " : " permits ");
+                segments.push(permitCount.toString());
+                segments.push(permitCount === 1 ? t("CartItemsAlert.Permit") : t("CartItemsAlert.Permits"));
             }
 
             if (giftCardCount > 0) {
                 if (permitCount > 0) {
-                    result += "and ";
+                    segments.push(t("CartItemsAlert.And"));
                 }
 
-                result += giftCardCount.toString() + (giftCardCount === 1 ? " gift card " : " gift cards ");
+                segments.push(giftCardCount.toString());
+                segments.push(giftCardCount === 1 ? t("CartItemsAlert.GiftCard") : t("CartItemsAlert.GiftCards"));
             }
 
-            result += "in your cart.";
+            segments.push(t("CartItemsAlert.InYourCart"));
+
+            result = segments.join(" ");
         }
 
         return result;

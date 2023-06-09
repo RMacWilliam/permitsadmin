@@ -36,6 +36,7 @@ export interface IAccountPreferences {
     ofscContactPermission?: number; // -1=Unset; 0=No; 1=Yes
     riderAdvantage?: number; // -1=Unset; 0=No; 1=Yes
     volunteering?: number; // -1=Unset; 0=No; 1=Yes, I already volunteer; 2=Yes, I'd like to volunteer
+    correspondenceLanguage?: string; // en-CA, fr-CA
 }
 
 export interface IPermitOption {

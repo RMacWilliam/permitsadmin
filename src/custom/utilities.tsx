@@ -7,12 +7,12 @@ import { Constants, GlobalAppContext } from "../../constants";
 export function getParentKeyValueFromSelect(e: any): IParentKeyValue | undefined {
     let result: IParentKeyValue | undefined = undefined;
 
-    let splitValues: string[] | undefined = e?.target?.value?.split("|");
+    const splitValues: string[] | undefined = e?.target?.value?.split("|");
 
     if (splitValues != undefined) {
-        let parent: string = splitValues[0];
-        let key: string = splitValues[1];
-        let value: string = e?.target?.selectedOptions[0]?.text;
+        const parent: string = splitValues[0];
+        const key: string = splitValues[1];
+        const value: string = e?.target?.selectedOptions[0]?.text;
 
         if (parent != undefined && key != undefined && value != undefined) {
             result = { parent: parent, key: key, value: value };
@@ -25,8 +25,8 @@ export function getParentKeyValueFromSelect(e: any): IParentKeyValue | undefined
 export function getKeyValueFromSelect(e: any): IKeyValue | undefined {
     let result: IKeyValue | undefined = undefined;
 
-    let key: string = e?.target?.value;
-    let value: string = e?.target?.selectedOptions[0]?.text;
+    const key: string = e?.target?.value;
+    const value: string = e?.target?.selectedOptions[0]?.text;
 
     if (key != undefined && value != undefined) {
         result = { key: key, value: value };
@@ -93,8 +93,8 @@ export function getApiErrorMessage(key: string | undefined): string | undefined 
     let result: string | undefined = undefined;
 
     if (key != undefined && key !== "") {
-        let lookupKey: string = "API." + key;
-        let message: string | undefined = GlobalAppContext.translation?.i18n?.t(lookupKey);
+        const lookupKey: string = "API." + key;
+        const message: string | undefined = GlobalAppContext.translation?.i18n?.t(lookupKey);
 
         if (message !== lookupKey) {
             result = message;
