@@ -62,7 +62,7 @@ function Checkout({ appContext, router, setShowAlert }
                             <img className="img-fluid" src={Images.Ontario} alt="Ontario Logo" width="715" height="286" />
                         </div>
 
-                        {appContext.translation?.i18n?.language === "en" && (
+                        {appContext.translation.i18n.language === "en" && (
                             <>
                                 <h5 className="text-center mb-4">Application for Trail Permit - Terms & Conditions</h5>
 
@@ -75,7 +75,7 @@ function Checkout({ appContext, router, setShowAlert }
                             </>
                         )}
 
-                        {appContext.translation?.i18n?.language === "fr" && (
+                        {appContext.translation.i18n.language === "fr" && (
                             <>
                                 <h5 className="text-center mb-4">Application for Trail Permit - Terms & Conditions</h5>
 
@@ -121,7 +121,7 @@ function Checkout({ appContext, router, setShowAlert }
 
                 <div className="card mb-2">
                     <div className="card-body">
-                        {appContext.translation?.i18n?.language === "en" && (
+                        {appContext.translation.i18n.language === "en" && (
                             <>
                                 <div className="d-flex justify-content-center mb-2">
                                     <a className="btn btn-outline-secondary btn-sm mb-2 w-100" href={`/${Constants.OfscWaiverPdfEn}`} target="_blank">Printable Version</a>
@@ -252,7 +252,7 @@ function Checkout({ appContext, router, setShowAlert }
                             </>
                         )}
 
-                        {appContext.translation?.i18n?.language === "fr" && (
+                        {appContext.translation.i18n.language === "fr" && (
                             <>
                                 <div className="d-flex justify-content-center mb-2">
                                     <a className="btn btn-outline-secondary btn-sm mb-2 w-100" href={`/${Constants.OfscWaiverPdfFr}`} target="_blank">Printable Version</a>

@@ -2,7 +2,7 @@ import ConfirmationDialog from "@/components/confirmation-dialog";
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
 import { IApiGetClubsResult, IApiGetCountriesResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetShippingFeesResult, apiGetClubs, apiGetCountries, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, IApiSavePermitSelectionForVehicleRequest, apiSavePermitSelectionForVehicle, IApiSavePermitSelectionForVehicleResult, apiGetGoogleMapKey, IApiGetGoogleMapKeyResult } from "@/custom/api";
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IParentKeyValue, IRedeemableGiftCards, IShippingFee, ISnowmobile, IPermitSelections } from "@/custom/app-context";
-import { formatCurrency, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect } from "@/custom/utilities";
+import { formatCurrency, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from "@/custom/utilities";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { Observable, Subscription, forkJoin } from "rxjs";
 import Select from 'react-select';
 import { Constants } from "../../../constants";
 import ClubLocatorMap from "./club-locator-map";
+import { getLocalizedValue } from "@/localization/i18n";
 
 export default function CartPage() {
     const appContext = useContext(AppContext);
@@ -108,7 +109,7 @@ function Cart({ appContext, router, setShowAlert }:
                 // apiGetShippingFees
                 const apiGetShippingFeesResult: IApiGetShippingFeesResult[] = results[1] as IApiGetShippingFeesResult[];
 
-                if (apiGetShippingFeesResult != undefined) {
+                if (apiGetShippingFeesResult != undefined && apiGetShippingFeesResult.length > 0) {
                     const shippingFees: IShippingFee[] = apiGetShippingFeesResult.map<IShippingFee>((x: IApiGetShippingFeesResult) => ({
                         id: x?.id,
                         name: x?.name,
@@ -122,11 +123,12 @@ function Cart({ appContext, router, setShowAlert }:
                 // apiGetProvinces
                 const apiGetProvincesResult: IApiGetProvincesResult[] = results[2] as IApiGetProvincesResult[];
 
-                if (apiGetProvincesResult != undefined) {
+                if (apiGetProvincesResult != undefined && apiGetProvincesResult.length > 0) {
                     const provinces: IParentKeyValue[] = apiGetProvincesResult.map<IParentKeyValue>(x => ({
                         parent: x?.parent ?? "",
                         key: x?.key ?? "",
-                        value: x?.value ?? ""
+                        value: x?.value ?? "",
+                        valueFr: x?.valueFr ?? ""
                     }));
 
                     setProvincesData(provinces);
@@ -135,10 +137,11 @@ function Cart({ appContext, router, setShowAlert }:
                 // apiGetCountries
                 const apiGetCountriesResult: IApiGetCountriesResult[] = results[3] as IApiGetCountriesResult[];
 
-                if (apiGetCountriesResult != undefined) {
+                if (apiGetCountriesResult != undefined && apiGetCountriesResult.length > 0) {
                     const countries: IKeyValue[] = apiGetCountriesResult.map<IKeyValue>(x => ({
                         key: x?.key ?? "",
-                        value: x?.value ?? ""
+                        value: x?.value ?? "",
+                        valueFr: x?.valueFr ?? ""
                     }));
 
                     setCountriesData(countries);
@@ -221,16 +224,16 @@ function Cart({ appContext, router, setShowAlert }:
                                                     <i className="fa-solid fa-gift me-2"></i>
                                                 )}
 
-                                                {appContext.translation?.i18n?.language === "fr" && (
+                                                {appContext.translation.i18n.language === "fr" && (
                                                     <span>{cartItem.descriptionFr}</span>
                                                 )}
-                                                {appContext.translation?.i18n?.language === "en" && (
+                                                {appContext.translation.i18n.language === "en" && (
                                                     <span>{cartItem.description}</span>
                                                 )}
                                             </span>
 
                                             <button className="btn btn-link text-danger" style={{ display: "contents" }} type="button" onClick={() => removeCartItemClick(cartItem.id)}>
-                                                Remove
+                                                {t("Common.Delete")}
                                             </button>
                                         </div>
                                         <div className="fw-bold text-end ms-3">
@@ -250,7 +253,7 @@ function Cart({ appContext, router, setShowAlert }:
                                                                             <span className="me-2">Gift card redemption ({cartItem?.redemptionCode})</span>
 
                                                                             <a className="btn btn-link text-danger" style={{ display: "contents" }} type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
-                                                                                Remove
+                                                                                {t("Common.Delete")}
                                                                             </a>
                                                                         </div>
 
@@ -310,7 +313,7 @@ function Cart({ appContext, router, setShowAlert }:
                                 <li className="list-group-item">
                                     <div className="d-flex">
                                         <div className="fw-semibold me-auto">
-                                            Transaction and Administration Fee
+                                            {t("Cart.TransactionAndAdminFee")}
                                         </div>
                                         <div className="fw-bold text-end ms-3">
                                             ${formatCurrency(processingFee)}
@@ -334,11 +337,11 @@ function Cart({ appContext, router, setShowAlert }:
                             )}
 
                             <li className="list-group-item">
-                                <div className="fw-semibold mb-2 required">Shipping</div>
+                                <div className="fw-semibold mb-2 required">{t("Cart.Shipping")}</div>
 
                                 <div className="d-flex">
                                     <div className="flex-column me-auto w-100">
-                                        <select className={`form-select ${isShippingValid ? "" : "is-invalid"}`} aria-label="Shipping" value={shipping} onChange={(e: any) => shippingChange(e)}>
+                                        <select id="cart-shipping" className={`form-select ${isShippingValid ? "" : "is-invalid"}`} aria-label="Shipping" value={shipping} onChange={(e: any) => shippingChange(e)}>
                                             <option value="">{t("Common.PleaseSelect")}</option>
 
                                             {shippingFeesData != undefined && shippingFeesData.length > 0 && getShippingFeesData().map(shippingMethod => (
@@ -382,7 +385,7 @@ function Cart({ appContext, router, setShowAlert }:
                         <div className="card-footer">
                             <div className="d-flex fs-5">
                                 <div className="fw-bold me-auto">
-                                    Total
+                                    {t("Cart.TotalAmount")}
                                 </div>
                                 <div className="fw-bold text-end ms-3">
                                     ${formatCurrency(calculateTotal())}
@@ -393,12 +396,12 @@ function Cart({ appContext, router, setShowAlert }:
 
                     <div className="card mb-3">
                         <div className="card-body">
-                            <div className="fw-semibold mb-2">Ship To</div>
+                            <div className="fw-semibold mb-2">{t("Cart.ShippingAddress")}</div>
 
                             <div className="form-check">
                                 <input className="form-check-input" type="radio" name="shipTo" id="shipToRegistered" checked={shipTo === ShipTo.Registered} value={ShipTo.Registered} onChange={() => shipToAddressChange(ShipTo.Registered)} />
                                 <label className="form-check-label" htmlFor="shipToRegistered">
-                                    Registered Owner Address
+                                    {t("Cart.RegisteredOwnerAddress")}
                                 </label>
                                 <div className="mt-1">
                                     <div>{`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial} ${appContext.data?.contactInfo?.lastName}`}</div>
@@ -420,7 +423,7 @@ function Cart({ appContext, router, setShowAlert }:
                             <div className="form-check mt-2">
                                 <input className="form-check-input" type="radio" name="shipTo" id="shipToAlternate" checked={shipTo === ShipTo.Alternate} value={ShipTo.Alternate} onChange={() => shipToAddressChange(ShipTo.Alternate)} />
                                 <label className="form-check-label" htmlFor="shipToAlternate">
-                                    Alternate Address
+                                    {t("Cart.AlternateAddress")}
                                 </label>
 
                                 {shipTo === ShipTo.Alternate && (
@@ -428,14 +431,14 @@ function Cart({ appContext, router, setShowAlert }:
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-6">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className={`form-control ${isAddressLine1Valid ? "" : "is-invalid"}`} id="alternate-address-address-line-1" placeholder="Address Line 1" value={addressLine1} onChange={(e: any) => setAddressLine1(e.target.value)} />
-                                                    <label className="required" htmlFor="alternate-address-address-line-1">Address Line 1</label>
+                                                    <input type="text" className={`form-control ${isAddressLine1Valid ? "" : "is-invalid"}`} id="alternate-address-address-line-1" placeholder={t("Cart.AlternateAddressFields.AddressLine1")} value={addressLine1} onChange={(e: any) => setAddressLine1(e.target.value)} />
+                                                    <label className="required" htmlFor="alternate-address-address-line-1">{t("Cart.AlternateAddressFields.AddressLine1")}</label>
                                                 </div>
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-6">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className="form-control" id="alternate-address-address-line-2" placeholder="Address Line 2" value={addressLine2} onChange={(e: any) => setAddressLine2(e.target.value)} />
-                                                    <label htmlFor="alternate-address-address-line-2">Address Line 2</label>
+                                                    <input type="text" className="form-control" id="alternate-address-address-line-2" placeholder={t("Cart.AlternateAddressFields.AddressLine2")} value={addressLine2} onChange={(e: any) => setAddressLine2(e.target.value)} />
+                                                    <label htmlFor="alternate-address-address-line-2">{t("Cart.AlternateAddressFields.AddressLine2")}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -443,38 +446,38 @@ function Cart({ appContext, router, setShowAlert }:
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className={`form-control ${isCityValid ? "" : "is-invalid"}`} id="alternate-address-city" placeholder="City, Town, or Village" value={city} onChange={(e: any) => setCity(e.target.value)} />
-                                                    <label className="required" htmlFor="alternate-address-city">City, Town, or Village</label>
+                                                    <input type="text" className={`form-control ${isCityValid ? "" : "is-invalid"}`} id="alternate-address-city" placeholder={t("Cart.AlternateAddressFields.CityTownOrVillage")} value={city} onChange={(e: any) => setCity(e.target.value)} />
+                                                    <label className="required" htmlFor="alternate-address-city">{t("Cart.AlternateAddressFields.CityTownOrVillage")}</label>
                                                 </div>
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <select className={`form-select ${isProvinceValid ? "" : "is-invalid"}`} id="alternate-address-province" aria-label="Province/State" value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
+                                                    <select className={`form-select ${isProvinceValid ? "" : "is-invalid"}`} id="alternate-address-province" aria-label={t("Cart.AlternateAddressFields.ProvinceState")} value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
                                                         <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                                         {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
-                                                            <option value={`${country.key}|${provinceData.key}`} key={`${country.key}|${provinceData.key}`}>{provinceData.value}</option>
+                                                            <option value={`${country.key}|${provinceData.key}`} key={`${country.key}|${provinceData.key}`}>{getLocalizedValue(provinceData)}</option>
                                                         ))}
                                                     </select>
-                                                    <label className="required" htmlFor="alternate-address-province">Province/State</label>
+                                                    <label className="required" htmlFor="alternate-address-province">{t("Cart.AlternateAddressFields.ProvinceState")}</label>
                                                 </div>
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <select className={`form-select ${isCountryValid ? "" : "is-invalid"}`} id="alternate-address-country" aria-label="Country" value={country.key} onChange={(e: any) => countryChange(e)}>
+                                                    <select className={`form-select ${isCountryValid ? "" : "is-invalid"}`} id="alternate-address-country" aria-label={t("Cart.AlternateAddressFields.Country")} value={country.key} onChange={(e: any) => countryChange(e)}>
                                                         <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                                         {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
-                                                            <option value={countryData.key} key={countryData.key}>{countryData.value}</option>
+                                                            <option value={countryData.key} key={countryData.key}>{getLocalizedValue(countryData)}</option>
                                                         ))}
                                                     </select>
-                                                    <label className="required" htmlFor="alternate-address-country">Country</label>
+                                                    <label className="required" htmlFor="alternate-address-country">{t("Cart.AlternateAddressFields.Country")}</label>
                                                 </div>
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className={`form-control ${isPostalCodeValid ? "" : "is-invalid"}`} id="alternate-address-postal-code" placeholder="Postal/Zip Code" value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
-                                                    <label className="required" htmlFor="alternate-address-postal-code">Postal/Zip Code</label>
+                                                    <input type="text" className={`form-control ${isPostalCodeValid ? "" : "is-invalid"}`} id="alternate-address-postal-code" placeholder={t("Cart.AlternateAddressFields.PostalZipCode")} value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
+                                                    <label className="required" htmlFor="alternate-address-postal-code">{t("Cart.AlternateAddressFields.PostalZipCode")}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -486,13 +489,13 @@ function Cart({ appContext, router, setShowAlert }:
 
                     <div className="card mb-3">
                         <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
-                            <button className="btn btn-success" onClick={() => checkoutClick()}>Proceed to Checkout</button>
-                            <button className="btn btn-success" onClick={() => continueShoppingClick()}>Continue Shopping</button>
+                            <button className="btn btn-success" onClick={() => checkoutClick()}>{t("Cart.ProceedToCheckout")}</button>
+                            <button className="btn btn-success" onClick={() => continueShoppingClick()}>{t("Cart.ContinueShopping")}</button>
                         </div>
                     </div>
 
                     <div className="d-flex justify-content-center">
-                        <span className="text-danger me-1">*</span>= mandatory field
+                        <span className="text-danger me-1">*</span>= {t("Cart.MandatoryField")}
                     </div>
                 </>
             )}
@@ -917,7 +920,11 @@ function Cart({ appContext, router, setShowAlert }:
         let result: IParentKeyValue[] = [];
 
         if (provincesData != undefined && provincesData.length > 0) {
-            result = provincesData.filter(x => x.parent === country.key);
+            if (appContext.translation.i18n.language === "fr") {
+                result = sortArray(provincesData.filter(x => x.parent === country.key), ["valueFr"]);
+            } else {
+                result = sortArray(provincesData.filter(x => x.parent === country.key), ["value"]);
+            }
         }
 
         return result;

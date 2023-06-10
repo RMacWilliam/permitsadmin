@@ -94,7 +94,7 @@ export function getApiErrorMessage(key: string | undefined): string | undefined 
 
     if (key != undefined && key !== "") {
         const lookupKey: string = "API." + key;
-        const message: string | undefined = GlobalAppContext.translation?.i18n?.t(lookupKey);
+        const message: string | undefined = GlobalAppContext?.translation?.i18n?.t(lookupKey);
 
         if (message !== lookupKey) {
             result = message;
@@ -110,4 +110,23 @@ export function getImagePath(filename: string): string {
     } else {
         return "./" + filename;
     }
+}
+
+export function pseudoUnobfuscate(obfuscatedString?: string): number | undefined {
+    let result: number | undefined = undefined;
+
+    if (obfuscatedString != undefined && obfuscatedString !== "") {
+        let secretKey: string = "1111111111111111111111";
+        let obfuscatedBytes = Buffer.from(obfuscatedString, 'base64');
+        let key = Buffer.from(secretKey, 'ascii');
+        let bytes = new Uint8Array(obfuscatedBytes.length);
+
+        for (let i: number = 0; i < obfuscatedBytes.length; i++) {
+            bytes[i] = obfuscatedBytes[i] ^ key[i % key.length];
+        }
+
+        result = new DataView(bytes.buffer).getInt32(0, true);
+    }
+
+    return result;
 }

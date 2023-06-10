@@ -18,10 +18,10 @@ export const resources_fr = {
       "HoverButton": "(fr)Show Context Menu"
     },
     "Header": {
-
+      "LoggedInAs": "(fr)Logged in as"
     },
     "Footer": {
-
+      "Message": "Besoin d'aide? Contactez la FCMO au 705-739-7669 ou permits@ofsc.on.ca"
     },
     "CartItemsAlert": {
       "YouHave": "Vouz avez",
@@ -69,10 +69,10 @@ export const resources_fr = {
       "MenuTitle": "Propriétaire enregistré",
       "Title": "Propriétaire enregistré",
       "Preferences": "Préférences",
-      "OfscConsent": "Consentement à ce que l'OFSC me contacte",
+      "OfscConsent": "Consentement à ce que la FCMO me contacte",
       "RiderAdvantage": "(fr)Rider Advantage",
       "Volunteering": "Intéressé(e) par le bénévolat",
-      "CorrespondenceLanguage": "(fr)Correspondence Language",
+      "CorrespondenceLanguage": "Langue de correspondance préférée",
       "ConfirmButton": "Je confirme",
       "ContactInfoEditDialog": {
         "Title": "(fr)Edit Contact Information",
@@ -87,24 +87,25 @@ export const resources_fr = {
         "PostalZipCode": "code postal/code zip",
         "Telephone": "N˚ de téléphone",
         "EmailAddress": "adresse courriel",
-        "MandatoryField": "= champ obligatoire"
+        "MandatoryField": "champ obligatoire"
       },
       "PreferencesEditDialog": {
         "Title": "Edit Account Preferences",
         "OfscConsent": "Consentez-vous à ce que la FCMO communique avec vous pour vous fournir des renseignements sur les permis, les avantages pour les motoneigistes, et d'autres renseignements relatifs à la motoneige?",
         "OfscConsentMore": "Je comprends que ma vie privée et la protection de mes renseignements personnels sont importantes pour la FCMO, mais en autorisant la divulgation de mes nom et adresse, je consens à ce que la FCMO utilise ces renseignements à des fins liées au mandat de la FCMO (www.ofsc.on.ca). Je réitère en outre que toute information fournie à la FCMO échappe à la garde et au contrôle du ministère des Transports et que la FCMO sera seule responsable de cette information.",
-        "OfscConsentLabel": "Consentement à ce que l'OFSC me contacte",
-        "RiderAdvantage": "(fr)I would like to participate in eligible Rider Advantage programs as offered/available.",
-        "RiderAdvantageLabel": "(fr)Rider Advantage",
-        "Volunteering": "J'aimerais faire du bénévolat pour soutenir le club de ma région. Veuillez me contacter.",
-        "VolunteeringLabel": "Intéressé(e) par le bénévolat",
-        "CorrespondenceLanguage": "(fr)Select your prefered correspondence language with OFSC.",
-        "CorrespondenceLanguageLabel": "(fr)Correspondence Language"
+        "RiderAdvantage": "(fr)Do you want to participate in eligible Rider Advantage programs as offered and/or available?",
+        "NoIAmNotInterestedInVolunteering": "Non, je ne suis pas intéressé par le bénévolat",
+        "YesIAlreadyVolunteer": "Oui, je suis déjà bénévole",
+        "YesIdLikeToVolunteer": "Oui, je veux faire du bénévolat",
+        "Volunteering": "Voulez-vous faire du bénévolat pour soutenir votre club de motoneige local et consentez-vous à ce que le club vous contacte par téléphone et/ou par courriel?",
+        "CorrespondenceLanguage": "Quelle est votre langue de correspondance préférée avec la FCMO?"
       }
     },
     "Permits": {
       "MenuTitle": "Motoneiges et permis",
       "Title": "Motoneiges et permis",
+      "YouHaveNotAddedAnySnowmobiles": "Vous n'avez ajouté aucune motoneige.",
+      "NoPermitsAvailableAtThisTime": "Il n'y a pas de permis que vous pouvez acheter pour cette motoneige pour le moment.",
       "Vehicle": {
         "Year": "Année",
         "Make": "Marque",
@@ -112,10 +113,10 @@ export const resources_fr = {
         "Vin": "NIV",
         "LicensePlate": "Plaque d'immatriculation",
         "Permit": "Permis",
-        "PermitStartDate": "(fr)Permit Start Date",
-        "PermitValidUntil": "(fr)Permit Valid Until",
-        "Purchased": "(fr)Purchased",
-        "TrackingNumber": "(fr)Tracking #",
+        "PermitStartDate": "Date de début du permis",
+        "PermitValidUntil": "Permis valable jusqu'au",
+        "Purchased": "Acheté",
+        "TrackingNumber": "N˚ de suivi",
         "AddPermitToCart": "Ajouter le permis au panier",
         "RemovePermitFromCart": "Supprimer le permis du panier",
         "AddSnowmobile": "Ajouter une motoneige"
@@ -133,11 +134,11 @@ export const resources_fr = {
         "LicensePlate": "Plaque d'immatriculation",
         "PermitForThisSnowmobileOnly": "Je comprends que le permis de sentier pour lequel je fais une demande ne s'applique qu'à la motoneige indiquée dans la présente demande et n'est valide que lorsque l'autocollant (permis) émis conformément à la présente demande est appliqué de façon permanente à l'endroit requis sur cette motoneige. J'atteste que les renseignements contenus dans la présente demande sont exacts et je reconnais et j'accepte les responsabilités imposées par la loi.",
         "RegisteredOwner": "Je confirme que je suis le propriétaire enregistré de ce véhicule.",
-        "MandatoryField": "= champ obligatoire"
+        "MandatoryField": "champ obligatoire"
       },
       "DeleteSnowmobileDialog": {
-        "Title": "(fr)Delete Snowmobile",
-        "Message": "(fr)Are you sure you want to delete this snowmobile?"
+        "Title": "Supprimer la motoneige",
+        "Message": "Voulez-vous vraiment supprimer cette motoneige ?"
       },
       "VehicleCannotBeModifiedDialog": {
         "Title": "Information",
@@ -146,10 +147,43 @@ export const resources_fr = {
     },
     "GiftCards": {
       "MenuTitle": "Cartes cadeaux",
-      "Title": "Cartes cadeaux"
+      "Title": "Cartes cadeaux",
+      "RedemptionCode": "Code d'échange",
+      "ResendEmail": "Renvoyer le courriel",
+      "SelectGiftCard": "sélectionner la carte cadeau",
+      "RecipientsLastNameOnly": "Nom de famille du bénéficiaire UNIQUEMENT",
+      "RecipientsPostalCode": "Code postal du bénéficiaire",
+      "MandatoryFieldMustMatch": "champ obligatoire et doit correspondre au compte du bénéficiaire à la FCMO",
+      "AddGiftCardToCart": "Ajouter la carte cadeau au panier",
+      "RemoveGiftCardFromCart": "Supprimer la carte cadeau du panier",
+      "AddGiftCard": "Ajouter une carte cadeau",
+      "HoverButtons": {
+        "AddGiftCard": "Ajouter une carte cadeau",
+      },
+      "DeleteGiftCardDialog": {
+        "Title": "Supprimer la carte cadeau",
+        "Message": "Voulez-vous vraiment supprimer cette carte-cadeau?"
+      }
     },
     "Cart": {
-      "Title": "(fr)My Purchases"
+      "Title": "Panier",
+      "TransactionAndAdminFee": "Frais de transaction et d'administration",
+      "Shipping": "Mode de livraison",
+      "TotalAmount": "Montant total",
+      "ShippingAddress": "Adresse d'expédition",
+      "RegisteredOwnerAddress": "Adresse du propriétaire enregistré",
+      "AlternateAddress": "Autre adresse",
+      "AlternateAddressFields": {
+        "AddressLine1": "addresse - N˚ et rue",
+        "AddressLine2": "deuxième ligne d'addresse",
+        "CityTownOrVillage": "ville, village",
+        "ProvinceState": "province/état",
+        "Country": "pays",
+        "PostalZipCode": "code postal/code zip"
+      },
+      "ProceedToCheckout": "(fr)Proceed to Checkout",
+      "ContinueShopping": "(fr)Continue Shopping",
+      "MandatoryField": "champ obligatoire"
     },
     "Checkout": {
       "Title": "(fr)Checkout"

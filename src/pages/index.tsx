@@ -40,7 +40,7 @@ function Index() {
 
             <div className="d-flex justify-content-between flex-wrap flex-md-nowrap gap-4">
                 <div className="flex-fill">
-                    {appContext.translation?.i18n?.language === "en" && (
+                    {appContext.translation.i18n.language === "en" && (
                         <>
                             <div>
                                 <h3>Welcome to Ontario Federation of Snowmobile Clubs</h3>
@@ -87,7 +87,7 @@ function Index() {
                         </>
                     )}
 
-                    {appContext.translation?.i18n?.language === "fr" && (
+                    {appContext.translation.i18n.language === "fr" && (
                         <>
                             <div>
                                 <h3>Bienvenue à la Fédération des clubs de motoneigistes de l'Ontario</h3>
@@ -145,11 +145,11 @@ function Index() {
 
                             <div className="mt-4">
                                 <div className="form-floating mb-2">
-                                    <input type="email" className={`form-control ${isEmailValid ? "" : "is-invalid"}`} id="login-email" placeholder={t("Index.EmailAddressLabel")} value={email} onChange={(e: any) => setEmail(e.target.value)} onBlur={(e: any) => setEmail(e?.target?.value?.trim() ?? "")} />
+                                    <input type="email" className={`form-control ${isEmailValid ? "" : "is-invalid"}`} id="login-email" placeholder={t("Index.EmailAddressLabel")} disabled={loginInProgress} value={email} onChange={(e: any) => setEmail(e.target.value)} onBlur={(e: any) => setEmail(e?.target?.value?.trim() ?? "")} />
                                     <label htmlFor="login-email">{t("Index.EmailAddressLabel")}</label>
                                 </div>
                                 <div className="form-floating">
-                                    <input type="password" className={`form-control ${isPasswordValid ? "" : "is-invalid"}`} id="login-password" placeholder={t("Index.PasswordLabel")} value={password} onChange={(e: any) => setPassword(e.target.value)} onBlur={(e: any) => setPassword(e?.target?.value?.trim() ?? "")} />
+                                    <input type="password" className={`form-control ${isPasswordValid ? "" : "is-invalid"}`} id="login-password" placeholder={t("Index.PasswordLabel")} disabled={loginInProgress} value={password} onChange={(e: any) => setPassword(e.target.value)} onBlur={(e: any) => setPassword(e?.target?.value?.trim() ?? "")} />
                                     <label htmlFor="login-password">{t("Index.PasswordLabel")}</label>
                                 </div>
                             </div>
@@ -171,11 +171,11 @@ function Index() {
                             </div>
 
                             <div className="text-center mt-4">
-                                <Button variant="link text-decoration-none" onClick={() => doForgotPassword()}>{t("Index.ForgotPasswordButton")}</Button>
+                                <Button variant="link text-decoration-none" disabled={loginInProgress} onClick={() => doForgotPassword()}>{t("Index.ForgotPasswordButton")}</Button>
                             </div>
 
                             <div className="mt-4 mb-2">
-                                <Button className="w-100" variant="outline-primary" onClick={() => doCreateAccount()}>{t("Index.CreateAnAccountButton")}</Button>
+                                <Button className="w-100" variant="outline-primary" disabled={loginInProgress} onClick={() => doCreateAccount()}>{t("Index.CreateAnAccountButton")}</Button>
                             </div>
                         </div>
                     </div>

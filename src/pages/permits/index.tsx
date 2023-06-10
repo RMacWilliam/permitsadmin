@@ -12,6 +12,7 @@ import CartItemsAlert from '@/components/cart-items-alert';
 import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle, IApiDeleteVehicleRequest, IApiDeleteVehicleResult, apiDeleteVehicle, IApiVehiclePermit, IApiVehiclePermitOption } from '@/custom/api';
 import { Observable, Subscription, forkJoin } from 'rxjs';
 import { logout } from '@/custom/authentication';
+import { getLocalizedValue } from '@/localization/i18n';
 
 export default function PermitsPage() {
     const appContext = useContext(AppContext);
@@ -242,37 +243,37 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
             <CartItemsAlert></CartItemsAlert>
 
             {getSnowmobiles() != undefined && getSnowmobiles().length === 0 && (
-                <div className="mb-2">You have not added any snowmobiles.</div>
+                <div className="mb-2">{t("Permits.YouHaveNotAddedAnySnowmobiles")}</div>
             )}
 
             {getSnowmobiles() != undefined && getSnowmobiles().length > 0 && getSnowmobiles().map(snowmobile => (
                 <div className="card w-100 mb-3" key={snowmobile.oVehicleId}>
                     <div className="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div className="d-flex flex-fill g-3">
-                            <div className="d-none d-md-flex">
-                                <div className="form-floating" style={{ minWidth: 54 }}>
-                                    <div className="form-control-plaintext fw-semibold ps-0 pe-2" id={`snowmobile-year-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vehicleYear}</div>
-                                    <label className="ps-0 pe-2" htmlFor={`snowmobile-year-label-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.Year")}</label>
+                            <div className="d-none d-md-flex my-2">
+                                <div className="me-3">
+                                    <div className="floating-info-label">{t("Permits.Vehicle.Year")}</div>
+                                    <div className="floating-info-text fw-semibold">{snowmobile?.vehicleYear}</div>
                                 </div>
 
-                                <div className="form-floating" style={{ minWidth: 70 }}>
-                                    <div className="form-control-plaintext fw-semibold px-2" id={`snowmobile-make-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vehicleMake?.value}</div>
-                                    <label className="px-2" htmlFor={`snowmobile-make-label-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.Make")}</label>
+                                <div className="me-3">
+                                    <div className="floating-info-label">{t("Permits.Vehicle.Make")}</div>
+                                    <div className="floating-info-text fw-semibold">{snowmobile?.vehicleMake?.value}</div>
                                 </div>
 
-                                <div className="form-floating" style={{ minWidth: 70 }}>
-                                    <div className="form-control-plaintext fw-semibold px-2" id={`snowmobile-model-label-${snowmobile?.oVehicleId}`}>{snowmobile?.model}</div>
-                                    <label className="px-2" htmlFor={`snowmobile-model-label-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.Model")}</label>
+                                <div className="me-3">
+                                    <div className="floating-info-label">{t("Permits.Vehicle.Model")}</div>
+                                    <div className="floating-info-text fw-semibold">{snowmobile?.model}</div>
                                 </div>
 
-                                <div className="form-floating" style={{ minWidth: 70 }}>
-                                    <div className="form-control-plaintext fw-semibold px-2" id={`snowmobile-vin-label-${snowmobile?.oVehicleId}`}>{snowmobile?.vin}</div>
-                                    <label className="px-2" htmlFor={`snowmobile-vin-label-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.Vin")}</label>
+                                <div className="me-3">
+                                    <div className="floating-info-label">{t("Permits.Vehicle.Vin")}</div>
+                                    <div className="floating-info-text fw-semibold">{snowmobile?.vin}</div>
                                 </div>
 
-                                <div className="form-floating" style={{ minWidth: 200 }}>
-                                    <div className="form-control-plaintext fw-semibold px-2" id={`snowmobile-license-plate-label-${snowmobile?.oVehicleId}`}>{snowmobile?.licensePlate}</div>
-                                    <label className="px-2" htmlFor={`snowmobile-license-plate-label-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.LicensePlate")}</label>
+                                <div className="">
+                                    <div className="floating-info-label">{t("Permits.Vehicle.LicensePlate")}</div>
+                                    <div className="floating-info-text fw-semibold">{snowmobile?.licensePlate}</div>
                                 </div>
                             </div>
                             <div className="d-md-none">
@@ -299,14 +300,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             <li className="list-group-item" key={permit?.oPermitId}>
                                 <div>
                                     <span className="me-1"><b>{t("Permits.Vehicle.Permit")}:</b></span>
-
-                                    {appContext?.translation?.i18n?.language === "en" && (
-                                        <span className="me-1">{permit?.permitType?.value}</span>
-                                    )}
-                                    {appContext?.translation?.i18n?.language === "fr" && (
-                                        <span className="me-1">{permit?.permitType?.valueFr}</span>
-                                    )}
-
+                                    <span className="me-1">{getLocalizedValue(permit?.permitType)}</span>
                                     <span>- {permit?.linkedPermit}</span>
                                 </div>
 
@@ -317,7 +311,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                         {snowmobile?.isEditable && (snowmobile?.permitOptions == undefined || snowmobile.permitOptions.length === 0) && (
                             <li className="list-group-item">
-                                <div>There are no permits that you can purchase for this snowmobile at this time.</div>
+                                <div>{t("Permits.NoPermitsAvailableAtThisTime")}</div>
                             </li>
                         )}
 
@@ -329,7 +323,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                             <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                             {snowmobile.permitOptions.map(permitOption => {
-                                                if (appContext.translation?.i18n?.language === "fr") {
+                                                if (appContext.translation.i18n.language === "fr") {
                                                     return (
                                                         <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.frenchDisplayName} — ${permitOption?.amount}</option>
                                                     );
@@ -432,7 +426,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                         <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                         {vehicleMakesData != undefined && vehicleMakesData.length > 0 && getVehicleMakesData().map(x => (
-                                            <option value={x.key} key={x.key}>{x.value}</option>
+                                            <option value={x.key} key={x.key}>{getLocalizedValue(x)}</option>
                                         ))}
                                     </select>
                                     <label className="required" htmlFor="add-edit-snowmobile-make">{t("Permits.AddEditSnowmobileDialog.Make")}</label>
@@ -578,9 +572,9 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 const apiAddVehicleForUserRequest: IApiAddVehicleForUserRequest = {
                     oVehicleId: editedSnowmobileId,
                     makeId: Number(make?.key),
-                    model: model,
-                    vin: vin,
-                    licensePlate: licensePlate,
+                    model: model?.substring(0, 50),
+                    vin: vin?.substring(0, 17),
+                    licensePlate: licensePlate?.substring(0, 10),
                     vehicleYear: vehicleYear
                 };
 

@@ -13,15 +13,15 @@ export const resources_en = {
       "Close": "Close",
       "Back": "Back",
       "Next": "Next",
-      "PleaseSelect": "Please select",      
+      "PleaseSelect": "Please select",
       "Logout": "Logout",
       "HoverButton": "Show Context Menu"
     },
     "Header": {
-
+      "LoggedInAs": "Logged in as"
     },
     "Footer": {
-
+      "Message": "Need help? Contact OFSC at 705-739-7669 or permits@ofsc.on.ca"
     },
     "CartItemsAlert": {
       "YouHave": "You have",
@@ -72,7 +72,7 @@ export const resources_en = {
       "OfscConsent": "Consent for OFSC to contact me",
       "RiderAdvantage": "Rider Advantage",
       "Volunteering": "Interested in volunteering",
-      "CorrespondenceLanguage": "Correspondence Language",
+      "CorrespondenceLanguage": "Correspondence language",
       "ConfirmButton": "I Confirm",
       "ContactInfoEditDialog": {
         "Title": "Edit Contact Information",
@@ -87,24 +87,25 @@ export const resources_en = {
         "PostalZipCode": "Postal/Zip Code",
         "Telephone": "Telephone",
         "EmailAddress": "E-mail Address",
-        "MandatoryField": "= mandatory field"
+        "MandatoryField": "mandatory field"
       },
       "PreferencesEditDialog": {
         "Title": "Edit Account Preferences",
         "OfscConsent": "Do you consent to the OFSC contacting you with information regarding permits, Rider Advantage, and other information related to snowmobiling?",
         "OfscConsentMore": "I understand that the OFSC values my privacy and the protection of personal information, by authorizing the release of my name and address information, I consent to the OFSC's use of this information for the purposes related to the mandate of the OFSC (www.ofsc.on.ca). I further understand that any information provided to the OFSC is out of custody and control of the Ministry of Transportation and that the OFSC will have sole responsibility of the information.",
-        "OfscConsentLabel": "Consent for OFSC to contact me",
         "RiderAdvantage": "Do you want to participate in eligible Rider Advantage programs as offered and/or available?",
-        "RiderAdvantageLabel": "Rider Advantage",
-        "Volunteering": "Do you want to volunteer to support your local Snowmobile Club and consent to the Club contacting you by phone or email?",
-        "VolunteeringLabel": "Interested in volunteering",
-        "CorrespondenceLanguage": "What is your prefered correspondence language with OFSC?",
-        "CorrespondenceLanguageLabel": "Correspondence Language"
+        "NoIAmNotInterestedInVolunteering": "No, I am not interested in volunteering",
+        "YesIAlreadyVolunteer": "Yes, I already volunteer",
+        "YesIdLikeToVolunteer": "Yes, I want to volunteer",
+        "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or email?",
+        "CorrespondenceLanguage": "What is your prefered correspondence language with OFSC?"
       }
     },
     "Permits": {
       "MenuTitle": "Snowmobiles and Permits",
       "Title": "Snowmobiles and Permits",
+      "YouHaveNotAddedAnySnowmobiles": "You have not added any snowmobiles.",
+      "NoPermitsAvailableAtThisTime": "There are no permits that you can purchase for this snowmobile at this time.",
       "Vehicle": {
         "Year": "Year",
         "Make": "Make",
@@ -133,7 +134,7 @@ export const resources_en = {
         "LicensePlate": "License Plate",
         "PermitForThisSnowmobileOnly": "I understand that the trail permit for which I am applying is valid only for the motorized snow vehicle identified in this application and is valid only where the sticker (permit) issued under this application is permanently affixed in the required position on that motorized snow vehicle. I certify that the information contained in this application is true and acknowledge and accept the responsibilities imposed by law.",
         "RegisteredOwner": "I confirm I am the registered owner of this vehicle.",
-        "MandatoryField": "= champ obligatoire"
+        "MandatoryField": "mandatory field"
       },
       "DeleteSnowmobileDialog": {
         "Title": "Delete Snowmobile",
@@ -146,10 +147,43 @@ export const resources_en = {
     },
     "GiftCards": {
       "MenuTitle": "Gift Cards",
-      "Title": "Gift Cards"
+      "Title": "Gift Cards",
+      "RedemptionCode": "Redemption Code",
+      "ResendEmail": "Resend E-mail",
+      "SelectGiftCard": "Select Gift Card",
+      "RecipientsLastNameOnly": "Recipient's LAST Name ONLY",
+      "RecipientsPostalCode": "Recipient's Postal Code",
+      "MandatoryFieldMustMatch": "Mandatory field and must match the recipient's OFSC account information",
+      "AddGiftCardToCart": "Add Gift Card to Cart",
+      "RemoveGiftCardFromCart": "Remove Gift Card from Cart",
+      "AddGiftCard": "Add Gift Card",
+      "HoverButtons": {
+        "AddGiftCard": "Add Gift Card",
+      },
+      "DeleteGiftCardDialog": {
+        "Title": "Delete Gift Card",
+        "Message": "Are you sure you want to remove this gift card?"
+      }
     },
     "Cart": {
-      "Title": "My Purchases"
+      "Title": "Shopping Cart",
+      "TransactionAndAdminFee": "Transaction and Administration Fee",
+      "Shipping": "Shipping Method",
+      "TotalAmount": "Total Amount",
+      "ShippingAddress": "Shipping Address",
+      "RegisteredOwnerAddress": "Registered Owner Address",
+      "AlternateAddress": "Alternate Address",
+      "AlternateAddressFields": {
+        "AddressLine1": "Address Line 1",
+        "AddressLine2": "Address Line 2",
+        "CityTownOrVillage": "City, Town, or Village",
+        "ProvinceState": "Province/State",
+        "Country": "Country",
+        "PostalZipCode": "Postal/Zip Code"
+      },
+      "ProceedToCheckout": "Proceed to Checkout",
+      "ContinueShopping": "Continue Shopping",
+      "MandatoryField": "mandatory field"
     },
     "Checkout": {
       "Title": "Checkout"

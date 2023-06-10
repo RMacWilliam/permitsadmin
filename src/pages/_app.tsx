@@ -52,6 +52,7 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     // Set WebApi token.
     GlobalAppContext.token = immerAppContextValues.token;
+    GlobalAppContext.translation = { t, i18n };
 
     if (isLocalStorageLoaded && window.localStorage) {
       window.localStorage.setItem("data", JSON.stringify(immerAppContextValues));

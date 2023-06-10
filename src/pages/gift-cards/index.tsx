@@ -141,26 +141,46 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             <CartItemsAlert></CartItemsAlert>
 
-            <div className="fw-semibold">Gift Cards are ideal for those who:</div>
-            <ul>
-                <li>Do not yet have a VIN and want to take advantage of pre-season fees</li>
-                <li>Want to gift a permit for a family member, friend, business associate, customer, etc.</li>
-            </ul>
+            {appContext.translation.i18n.language === "en" && (
+                <>
+                    <div className="fw-semibold">Gift Cards are ideal for those who:</div>
+                    <ul>
+                        <li>Do not yet have a VIN and want to take advantage of pre-season fees</li>
+                        <li>Want to gift a permit for a family member, friend, business associate, customer, etc.</li>
+                    </ul>
 
-            <div className="fw-semibold">Gift card options based on recipient's vehicle model year:</div>
-            <ul>
-                <li>Classic (1999 or older)</li>
-                <li>Seasonal (2000 or newer)</li>
-            </ul>
+                    <div className="fw-semibold">Gift card options based on recipient's vehicle model year:</div>
+                    <ul>
+                        <li>Classic (1999 or older)</li>
+                        <li>Seasonal (2000 or newer)</li>
+                    </ul>
+                </>
+            )}
+
+            {appContext.translation.i18n.language === "fr" && (
+                <>
+                    <div className="fw-semibold">Gift Cards are ideal for those who:</div>
+                    <ul>
+                        <li>Do not yet have a VIN and want to take advantage of pre-season fees</li>
+                        <li>Want to gift a permit for a family member, friend, business associate, customer, etc.</li>
+                    </ul>
+
+                    <div className="fw-semibold">Gift card options based on recipient's vehicle model year:</div>
+                    <ul>
+                        <li>Classique (1999 ou avant)</li>
+                        <li>Saisonnier (2000 ou plus récent)</li>
+                    </ul>
+                </>
+            )}
 
             {getGiftCards() != undefined && getGiftCards().length > 0 && getGiftCards().map(giftCard => (
                 <div className="card mb-3" key={giftCard.oVoucherId}>
                     <h5 className="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div className="d-flex flex-fill">
-                            {giftCard.isPurchased && appContext.translation?.i18n?.language === "en" && (
+                            {giftCard.isPurchased && appContext.translation.i18n.language === "en" && (
                                 <span>Purchased {getGiftCardName(giftCard?.oVoucherId)}</span>
                             )}
-                            {giftCard.isPurchased && appContext.translation?.i18n?.language === "fr" && (
+                            {giftCard.isPurchased && appContext.translation.i18n.language === "fr" && (
                                 <span>Purchased {getGiftCardName(giftCard?.oVoucherId, "fr")}</span>
                             )}
 
@@ -171,11 +191,11 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                         <div className="d-flex flex-fill justify-content-end">
                             {giftCard?.isPurchased && !giftCard?.isRedeemed && (
-                                <button className="btn btn-outline-secondary btn-sm" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>Edit</button>
+                                <button className="btn btn-outline-secondary btn-sm" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>{t("Common.Edit")}</button>
                             )}
 
                             {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                <button className="btn btn-outline-secondary btn-sm ms-1" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>Remove</button>
+                                <button className="btn btn-outline-secondary btn-sm ms-1" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>{t("Common.Delete")}</button>
                             )}
                         </div>
                     </h5>
@@ -185,12 +205,12 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                             <li className="list-group-item">
                                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                     <div className="d-flex flex-fill flex-column">
-                                        <label htmlFor={`redemption-code-${giftCard?.oVoucherId}`} className="form-label fw-semibold">Redemption Code</label>
-                                        <p id={`redemption-code-${giftCard?.oVoucherId}`} className="font-monospace mb-0">{giftCard?.redemptionCode}</p>
+                                        <label htmlFor={`redemption-code-${giftCard?.oVoucherId}`} className="form-label fw-semibold mb-0">{t("GiftCards.RedemptionCode")}</label>
+                                        <input id={`redemption-code-${giftCard?.oVoucherId}`} type="text" readOnly={true} className="form-control-plaintext font-monospace mb-0" value={giftCard?.redemptionCode} />
                                     </div>
 
                                     <div className="d-flex flex-fill justify-content-end">
-                                        <button className="btn btn-outline-secondary btn-sm">Resend E-mail</button>
+                                        <button className="btn btn-outline-secondary btn-sm">{t("GiftCards.ResendEmail")}</button>
                                     </div>
                                 </div>
                             </li>
@@ -205,7 +225,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                         {giftCardTypesData != undefined && giftCardTypesData.length > 0 && getGiftCardTypesData().map(giftCardType => {
                                             let displayText: string = "";
 
-                                            if (appContext.translation?.i18n?.language === "fr") {
+                                            if (appContext.translation.i18n.language === "fr") {
                                                 displayText = getGiftCardTypeName(giftCardType?.giftcardProductId, "fr");
                                             } else {
                                                 displayText = getGiftCardTypeName(giftCardType?.giftcardProductId);
@@ -218,7 +238,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                             )
                                         })}
                                     </select>
-                                    <label className="required" htmlFor={`gift-cards-permit-options-${giftCard?.oVoucherId}`}>Select gift card to purchase</label>
+                                    <label className="required" htmlFor={`gift-cards-permit-options-${giftCard?.oVoucherId}`}>{t("GiftCards.SelectGiftCard")}</label>
                                 </div>
                             </li>
                         )}
@@ -228,20 +248,20 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                 <div className="col-12 col-sm-12 col-md-6">
                                     <div className="form-floating mb-2">
                                         <input type="text" className="form-control" id={`gift-card-last-name-${giftCard?.oVoucherId}`} placeholder="Recipient's LAST Name ONLY" value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
-                                        <label className="required" htmlFor={`gift-card-last-name-${giftCard?.oVoucherId}`}>Recipient's LAST Name ONLY</label>
+                                        <label className="required" htmlFor={`gift-card-last-name-${giftCard?.oVoucherId}`}>{t("GiftCards.RecipientsLastNameOnly")}</label>
                                     </div>
                                 </div>
 
                                 <div className="col-12 col-sm-12 col-md-6">
                                     <div className="form-floating mb-2">
                                         <input type="text" className="form-control" id={`gift-card-postal-code-${giftCard?.oVoucherId}`} placeholder="Recipient's Postal Code" value={getGiftCardRecipientPostalCode(giftCard?.oVoucherId)} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardPostalCodeEnabled(giftCard?.oVoucherId)} />
-                                        <label className="required" htmlFor={`gift-card-postal-code-${giftCard?.oVoucherId}`}>Recipient's Postal Code</label>
+                                        <label className="required" htmlFor={`gift-card-postal-code-${giftCard?.oVoucherId}`}>{t("GiftCards.RecipientsPostalCode")}</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div>
-                                <span className="text-danger me-1">*</span>= mandatory field and must match the recipient's OFSC account information
+                                <span className="text-danger me-1">*</span>= {t("GiftCards.MandatoryFieldMustMatch")}
                             </div>
                         </li>
                     </ul>
@@ -251,11 +271,11 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         || (giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode)) && (
                             <div className="card-footer">
                                 {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                    <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)} disabled={!isAddToCartEnabled(giftCard?.oVoucherId)}>Add Gift Card to Cart</button>
+                                    <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)} disabled={!isAddToCartEnabled(giftCard?.oVoucherId)}>{t("GiftCards.AddGiftCardToCart")}</button>
                                 )}
 
                                 {!giftCard?.isPurchased && !giftCard?.isRedeemed && isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                    <button className="btn btn-danger btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>Remove Gift Card from Cart</button>
+                                    <button className="btn btn-danger btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>{t("GiftCards.RemoveGiftCardFromCart")}</button>
                                 )}
 
                                 {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode && (
@@ -272,13 +292,13 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             <div className="card">
                 <div className="card-body text-center">
-                    <button className="btn btn-primary btn-sm mt-2" onClick={() => addGiftCardClick()}>Add Gift Card</button>
+                    <button className="btn btn-primary btn-sm mt-2" onClick={() => addGiftCardClick()}>{t("GiftCards.AddGiftCard")}</button>
                 </div>
             </div>
 
-            <ConfirmationDialog showDialog={showDeleteGiftCardDialog} title="Remove Gift Card" errorMessage={deleteGiftCardDialogErrorMessage} buttons={2} icon="question" width="50"
+            <ConfirmationDialog showDialog={showDeleteGiftCardDialog} title={t("GiftCards.DeleteGiftCardDialog.Title")} errorMessage={deleteGiftCardDialogErrorMessage} buttons={2} icon="question" width="50"
                 yesClick={() => deleteGiftCardDialogYesClick()} noClick={() => deleteGiftCardDialogNoClick()} closeClick={() => deleteGiftCardDialogNoClick()}>
-                <div>Are you sure you want to remove this gift card?</div>
+                <div>{t("GiftCards.DeleteGiftCardDialog.Message")}</div>
             </ConfirmationDialog>
         </>
     )
@@ -802,7 +822,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     function setHoverButtonVisibility(isVisible: boolean): void {
         setShowHoverButton({
             showHoverButton: isVisible,
-            getButtonText: (): string => { return t("Permits.HoverButtons.AddSnowmobilexxxxxxxx"); },
+            getButtonText: (): string => { return t("GiftCards.HoverButtons.AddGiftCard"); },
             action: addGiftCardClick
         });
     }

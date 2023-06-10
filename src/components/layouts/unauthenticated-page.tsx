@@ -56,18 +56,18 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
 
             <footer className="footer bg-secondary mt-auto py-2">
                 <div className="container-fluid" style={{ padding: 0 }}>
-                    <div className="text-white text-center">Need help? Contact OFSC at 705-739-7669 or permits@ofsc.on.ca</div>
+                    <div className="text-white text-center">{t("Footer.Message")}</div>
                     <div className="text-white text-center mt-2">
                         <a href="https://www.facebook.com/pages/The-Ontario-Federation-of-Snowmobile-Clubs-OFSC/125178027502192"><i className="fa-brands fa-facebook-f text-white"></i></a>
                         <a href="https://twitter.com/GoSnowmobiling"><i className="fa-brands fa-twitter ms-4 text-white"></i></a>
                         <a href="https://www.instagram.com/gosnowmobilingontario"><i className="fa-brands fa-instagram ms-4 text-white"></i></a>
                         <a href="https://www.linkedin.com/company/ontario-federation-of-snowmobile-clubs"><i className="fa-brands fa-linkedin-in ms-4 text-white"></i></a>
                         <a href="https://www.youtube.com/user/GoSnowmobiling/videos"><i className="fa-brands fa-youtube ms-4 text-white"></i></a>
-                        <span className="d-sm-none">XS</span>
-                        <span className="d-none d-sm-block d-md-none">SM</span>
-                        <span className="d-none d-md-block d-lg-none">MD</span>
-                        <span className="d-none d-lg-block d-xl-none">LG</span>
-                        <span className="d-none d-xl-block d-xxl-none">XL</span>
+                        (<span className="d-sm-none">XS</span>
+                        <span className="d-none d-sm-inline d-md-none">SM</span>
+                        <span className="d-none d-md-inline d-lg-none">MD</span>
+                        <span className="d-none d-lg-inline d-xl-none">LG</span>
+                        <span className="d-none d-xl-inline d-xxl-none">XL</span>)
                     </div>
                 </div>
             </footer>
