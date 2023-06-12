@@ -78,22 +78,22 @@ export default function ConfirmationDialog({ showDialog, title, message, errorMe
             </Modal.Body>
             <Modal.Footer>
                 {(buttons == undefined || buttons === ConfirmationDialogButtons.Ok || buttons === ConfirmationDialogButtons.OkCancel) && (
-                    <Button variant="primary" onClick={() => dialogOkClick()}>{t("Common.Ok")}</Button>
+                    <Button variant="outline-dark" onClick={() => dialogOkClick()}>{t("Common.Ok")}</Button>
                 )}
 
                 {buttons === ConfirmationDialogButtons.YesNo && (
                     <>
-                        <Button variant="primary" onClick={() => dialogYesClick()}>{t("Common.Yes")}</Button>
-                        <Button variant="primary" onClick={() => dialogNoClick()}>{t("Common.No")}</Button>
+                        <Button variant="outline-dark" onClick={() => dialogYesClick()}>{t("Common.Yes")}</Button>
+                        <Button variant="outline-dark" onClick={() => dialogNoClick()}>{t("Common.No")}</Button>
                     </>
                 )}
 
                 {(buttons === ConfirmationDialogButtons.OkCancel || buttons === ConfirmationDialogButtons.YesNoCancel) && (
-                    <Button variant="secondary" onClick={() => dialogCancelClick()}>{t("Common.Cancel")}</Button>
+                    <Button variant="outline-dark" onClick={() => dialogCancelClick()}>{t("Common.Cancel")}</Button>
                 )}
 
                 {buttons === ConfirmationDialogButtons.Close && (
-                    <Button variant="secondary" onClick={() => dialogCloseClick()}>{t("Common.Close")}</Button>
+                    <Button variant="outline-dark" onClick={() => dialogCloseClick()}>{t("Common.Close")}</Button>
                 )}
             </Modal.Footer>
         </Modal>

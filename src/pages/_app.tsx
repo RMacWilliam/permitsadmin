@@ -34,11 +34,15 @@ export default function App({ Component, pageProps }: AppProps) {
         if (localStorageDataObj != undefined) {
           updateImmerAppContextValues(localStorageDataObj);
 
-          // Set WebApi token.
-          GlobalAppContext.token = localStorageDataObj.token;
-
           // Set UI language.
           i18n.changeLanguage(localStorageDataObj?.language ?? "en");
+
+          // Set GlobalAppContext.
+          GlobalAppContext.token = localStorageDataObj.token;
+          GlobalAppContext.translation = { t, i18n };
+
+          // Set language for html tag.
+          document.getElementsByTagName("html")[0].lang = localStorageDataObj?.language ?? "en";
         }
       }
     }
@@ -50,9 +54,12 @@ export default function App({ Component, pageProps }: AppProps) {
 
   // Save app context to local storage whenever app context is updated.
   useEffect(() => {
-    // Set WebApi token.
+    // Set GlobalAppContext.
     GlobalAppContext.token = immerAppContextValues.token;
     GlobalAppContext.translation = { t, i18n };
+
+    // Set language for html tag.
+    document.getElementsByTagName("html")[0].lang = immerAppContextValues?.language ?? "en";
 
     if (isLocalStorageLoaded && window.localStorage) {
       window.localStorage.setItem("data", JSON.stringify(immerAppContextValues));

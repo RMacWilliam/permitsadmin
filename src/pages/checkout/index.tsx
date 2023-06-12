@@ -36,10 +36,16 @@ function Checkout({ appContext, router, setShowAlert }
     const [checkoutStep, setCheckoutStep] = useState(0);
 
     const [step1AcceptTerms, setStep1AcceptTerms] = useState(false);
+    const [isStep1AcceptTermsValid, setIsStep1AcceptTermsValid] = useState(true);
 
     const [step2AcceptTerms1, setStep2AcceptTerms1] = useState(false);
+    const [isStep2AcceptTerms1Valid, setIsStep2AcceptTerms1Valid] = useState(true);
+
     const [step2AcceptTerms2, setStep2AcceptTerms2] = useState(false);
+    const [isStep2AcceptTerms2Valid, setIsStep2AcceptTerms2Valid] = useState(true);
+
     const [step2AcceptTerms3, setStep2AcceptTerms3] = useState(false);
+    const [isStep2AcceptTerms3Valid, setIsStep2AcceptTerms3Valid] = useState(true);
 
     const t: Function = appContext.translation.t;
 
@@ -55,7 +61,7 @@ function Checkout({ appContext, router, setShowAlert }
                 <div className="card mb-2">
                     <div className="card-body">
                         <div className="d-flex justify-content-center">
-                            <a className="btn btn-outline-secondary btn-sm w-100" href={`/${Constants.MtoWaiverPdf}`} target="_blank">Printable Version</a>
+                            <a className="btn btn-outline-dark btn-sm w-100" href={`/${Constants.MtoWaiverPdf}`} target="_blank">Printable Version</a>
                         </div>
 
                         <div className="text-center">
@@ -92,9 +98,9 @@ function Checkout({ appContext, router, setShowAlert }
 
                         <div>
                             <div className="form-check">
-                                <input className="form-check-input" type="checkbox" value="" id="checkout-step1-accept-terms" defaultChecked={step1AcceptTerms} onChange={(e: any) => setStep1AcceptTerms(e.target.checked)} />
+                                <input className={`form-check-input ${isStep1AcceptTermsValid ? "" : "is-invalid"}`} type="checkbox" value="" id="checkout-step1-accept-terms" defaultChecked={step1AcceptTerms} onChange={(e: any) => setStep1AcceptTerms(e.target.checked)} />
                                 <label className="form-check-label" htmlFor="checkout-step1-accept-terms">
-                                    I have read and agree to the terms listed above
+                                    {t("Checkout.ReadAndAgree")}
                                 </label>
                             </div>
                         </div>
@@ -103,9 +109,11 @@ function Checkout({ appContext, router, setShowAlert }
 
                 <div className="card">
                     <div className="card-body d-flex justify-content-center flex-wrap gap-2">
-                        <button className="btn btn-primary" onClick={() => step1GoBackClick()}>{t("Common.Back")}</button>
-                        <button className="btn btn-primary" disabled={!isStep1ContinueCheckoutEnabled()} onClick={() => step1ContinueCheckoutClick()}>{t("Common.Next")}</button>
-                        <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
+                        <button className="btn btn-outline-dark" onClick={() => step1ContinueCheckoutClick()}>
+                            {t("Common.Next")}
+                            <i className="fa-solid fa-chevron-right fa-sm ms-2"></i>
+                        </button>
+                        <button className="btn btn-outline-dark" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
                     </div>
                 </div>
             </>
@@ -124,7 +132,7 @@ function Checkout({ appContext, router, setShowAlert }
                         {appContext.translation.i18n.language === "en" && (
                             <>
                                 <div className="d-flex justify-content-center mb-2">
-                                    <a className="btn btn-outline-secondary btn-sm mb-2 w-100" href={`/${Constants.OfscWaiverPdfEn}`} target="_blank">Printable Version</a>
+                                    <a className="btn btn-outline-dark btn-sm mb-2 w-100" href={`/${Constants.OfscWaiverPdfEn}`} target="_blank">Printable Version</a>
                                 </div>
 
                                 <p className="fw-bold">Please read and acknowledge all sections.</p>
@@ -151,9 +159,9 @@ function Checkout({ appContext, router, setShowAlert }
 
                                         <div className="d-flex justify-content-end">
                                             <div className="form-check">
-                                                <input className="form-check-input" type="checkbox" value="" id="checkout-step2-accept-terms1" defaultChecked={step2AcceptTerms1} onChange={(e: any) => setStep2AcceptTerms1(e.target.checked)} />
+                                                <input className={`form-check-input ${isStep2AcceptTerms1Valid ? "" : "is-invalid"}`} type="checkbox" value="" id="checkout-step2-accept-terms1" defaultChecked={step2AcceptTerms1} onChange={(e: any) => setStep2AcceptTerms1(e.target.checked)} />
                                                 <label className="form-check-label fw-semibold" htmlFor="checkout-step2-accept-terms1">
-                                                    Click to agree
+                                                    {t("Checkout.ClickToAgree")}
                                                 </label>
                                             </div>
                                         </div>
@@ -176,9 +184,9 @@ function Checkout({ appContext, router, setShowAlert }
 
                                         <div className="d-flex justify-content-end">
                                             <div className="form-check">
-                                                <input className="form-check-input" type="checkbox" value="" id="checkout-step2-accept-terms2" defaultChecked={step2AcceptTerms2} onChange={(e: any) => setStep2AcceptTerms2(e.target.checked)} />
+                                                <input className={`form-check-input ${isStep2AcceptTerms2Valid ? "" : "is-invalid"}`} type="checkbox" value="" id="checkout-step2-accept-terms2" defaultChecked={step2AcceptTerms2} onChange={(e: any) => setStep2AcceptTerms2(e.target.checked)} />
                                                 <label className="form-check-label fw-semibold" htmlFor="checkout-step2-accept-terms2">
-                                                    Click to agree
+                                                    {t("Checkout.ClickToAgree")}
                                                 </label>
                                             </div>
                                         </div>
@@ -241,9 +249,9 @@ function Checkout({ appContext, router, setShowAlert }
 
                                         <div className="d-flex justify-content-end">
                                             <div className="form-check">
-                                                <input className="form-check-input" type="checkbox" value="" id="checkout-step2-accept-terms3" defaultChecked={step2AcceptTerms3} onChange={(e: any) => setStep2AcceptTerms3(e.target.checked)} />
+                                                <input className={`form-check-input ${isStep2AcceptTerms3Valid ? "" : "is-invalid"}`} type="checkbox" value="" id="checkout-step2-accept-terms3" defaultChecked={step2AcceptTerms3} onChange={(e: any) => setStep2AcceptTerms3(e.target.checked)} />
                                                 <label className="form-check-label fw-semibold" htmlFor="checkout-step2-accept-terms3">
-                                                    Click to agree
+                                                    {t("Checkout.ClickToAgree")}
                                                 </label>
                                             </div>
                                         </div>
@@ -255,7 +263,7 @@ function Checkout({ appContext, router, setShowAlert }
                         {appContext.translation.i18n.language === "fr" && (
                             <>
                                 <div className="d-flex justify-content-center mb-2">
-                                    <a className="btn btn-outline-secondary btn-sm mb-2 w-100" href={`/${Constants.OfscWaiverPdfFr}`} target="_blank">Printable Version</a>
+                                    <a className="btn btn-outline-dark btn-sm mb-2 w-100" href={`/${Constants.OfscWaiverPdfFr}`} target="_blank">Printable Version</a>
                                 </div>
 
                                 <p className="fw-bold">(fr)Please read and acknowledge all sections.</p>
@@ -282,9 +290,9 @@ function Checkout({ appContext, router, setShowAlert }
 
                                         <div className="d-flex justify-content-end">
                                             <div className="form-check">
-                                                <input className="form-check-input" type="checkbox" value="" id="checkout-step2-accept-terms1" defaultChecked={step2AcceptTerms1} onChange={(e: any) => setStep2AcceptTerms1(e.target.checked)} />
+                                                <input className={`form-check-input ${isStep2AcceptTerms1Valid ? "" : "is-invalid"}`} type="checkbox" value="" id="checkout-step2-accept-terms1" defaultChecked={step2AcceptTerms1} onChange={(e: any) => setStep2AcceptTerms1(e.target.checked)} />
                                                 <label className="form-check-label fw-semibold" htmlFor="checkout-step2-accept-terms1">
-                                                    Click to agree
+                                                    {t("Checkout.ClickToAgree")}
                                                 </label>
                                             </div>
                                         </div>
@@ -307,9 +315,9 @@ function Checkout({ appContext, router, setShowAlert }
 
                                         <div className="d-flex justify-content-end">
                                             <div className="form-check">
-                                                <input className="form-check-input" type="checkbox" value="" id="checkout-step2-accept-terms2" defaultChecked={step2AcceptTerms2} onChange={(e: any) => setStep2AcceptTerms2(e.target.checked)} />
+                                                <input className={`form-check-input ${isStep2AcceptTerms2Valid ? "" : "is-invalid"}`} type="checkbox" value="" id="checkout-step2-accept-terms2" defaultChecked={step2AcceptTerms2} onChange={(e: any) => setStep2AcceptTerms2(e.target.checked)} />
                                                 <label className="form-check-label fw-semibold" htmlFor="checkout-step2-accept-terms2">
-                                                    Click to agree
+                                                    {t("Checkout.ClickToAgree")}
                                                 </label>
                                             </div>
                                         </div>
@@ -372,9 +380,9 @@ function Checkout({ appContext, router, setShowAlert }
 
                                         <div className="d-flex justify-content-end">
                                             <div className="form-check">
-                                                <input className="form-check-input" type="checkbox" value="" id="checkout-step2-accept-terms3" defaultChecked={step2AcceptTerms3} onChange={(e: any) => setStep2AcceptTerms3(e.target.checked)} />
+                                                <input className={`form-check-input ${isStep2AcceptTerms3Valid ? "" : "is-invalid"}`} type="checkbox" value="" id="checkout-step2-accept-terms3" defaultChecked={step2AcceptTerms3} onChange={(e: any) => setStep2AcceptTerms3(e.target.checked)} />
                                                 <label className="form-check-label fw-semibold" htmlFor="checkout-step2-accept-terms3">
-                                                    Click to agree
+                                                    {t("Checkout.ClickToAgree")}
                                                 </label>
                                             </div>
                                         </div>
@@ -387,21 +395,19 @@ function Checkout({ appContext, router, setShowAlert }
 
                 <div className="card">
                     <div className="card-body d-flex justify-content-center flex-wrap gap-2">
-                        <button className="btn btn-primary" onClick={() => step2GoBackClick()}>{t("Common.Back")}</button>
-                        <button className="btn btn-primary" disabled={!isStep2ContinueCheckoutEnabled()} onClick={() => step2ContinueCheckoutClick()}>{t("Common.Next")}</button>
-                        <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
+                        <button className="btn btn-outline-dark" onClick={() => step2GoBackClick()}>
+                            <i className="fa-solid fa-chevron-left fa-sm me-2"></i>
+                            {t("Common.Back")}
+                        </button>
+                        <button className="btn btn-outline-dark" onClick={() => step2ContinueCheckoutClick()}>
+                            {t("Common.Next")}
+                            <i className="fa-solid fa-chevron-right fa-sm ms-2"></i>
+                        </button>
+                        <button className="btn btn-outline-dark" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
                     </div>
                 </div>
             </>
         )
-    } else {
-        return (
-            <>Payment..........</>
-        )
-    }
-
-    function isStep1ContinueCheckoutEnabled(): boolean {
-        return step1AcceptTerms ?? false;
     }
 
     function step1GoBackClick(): void {
@@ -411,28 +417,74 @@ function Checkout({ appContext, router, setShowAlert }
     }
 
     function step1ContinueCheckoutClick(): void {
-        setCheckoutStep(1);
+        if (validateCheckoutStep1()) {
+            setCheckoutStep(1);
+        }
+    }
+
+    function validateCheckoutStep1(): boolean {
+        let isValid: boolean = true;
+
+        if (!step1AcceptTerms) {
+            setIsStep1AcceptTermsValid(false);
+            isValid = false;
+        } else {
+            setIsStep1AcceptTermsValid(true);
+        }
+
+        return isValid;
     }
 
     function cancelCheckoutClick(): void {
         router.push("/cart");
     }
 
-    function isStep2ContinueCheckoutEnabled(): boolean {
-        return (step2AcceptTerms1 ?? false)
-            && (step2AcceptTerms2 ?? false)
-            && (step2AcceptTerms3 ?? false);
-    }
-
     function step2GoBackClick(): void {
+        setStep1AcceptTerms(false);
+        setIsStep1AcceptTermsValid(true);
+
         setStep2AcceptTerms1(false);
+        setIsStep2AcceptTerms1Valid(true);
+
         setStep2AcceptTerms2(false);
+        setIsStep2AcceptTerms2Valid(true);
+
         setStep2AcceptTerms3(false);
+        setIsStep2AcceptTerms3Valid(true);
 
         setCheckoutStep(0);
     }
 
     function step2ContinueCheckoutClick(): void {
-        setCheckoutStep(2);
+        if (validateCheckoutStep2()) {
+            router.push("/payment");
+        }
+    }
+
+    function validateCheckoutStep2(): boolean {
+        let isValid: boolean = true;
+
+        if (!step2AcceptTerms1) {
+            setIsStep2AcceptTerms1Valid(false);
+            isValid = false;
+        } else {
+            setIsStep2AcceptTerms1Valid(true);
+        }
+
+        if (!step2AcceptTerms2) {
+            setIsStep2AcceptTerms2Valid(false);
+            isValid = false;
+        } else {
+            setIsStep2AcceptTerms2Valid(true);
+        }
+
+        if (!step2AcceptTerms3) {
+            setIsStep2AcceptTerms3Valid(false);
+            isValid = false;
+        } else {
+            setIsStep2AcceptTerms3Valid(true);
+        }
+
+        return isValid;
     }
 }

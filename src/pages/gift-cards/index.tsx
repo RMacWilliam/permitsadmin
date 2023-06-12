@@ -191,11 +191,11 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                         <div className="d-flex flex-fill justify-content-end">
                             {giftCard?.isPurchased && !giftCard?.isRedeemed && (
-                                <button className="btn btn-outline-secondary btn-sm" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>{t("Common.Edit")}</button>
+                                <button className="btn btn-outline-dark btn-sm" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>{t("Common.Edit")}</button>
                             )}
 
                             {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                <button className="btn btn-outline-secondary btn-sm ms-1" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>{t("Common.Delete")}</button>
+                                <button className="btn btn-outline-dark btn-sm ms-1" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>{t("Common.Delete")}</button>
                             )}
                         </div>
                     </h5>
@@ -210,7 +210,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                     </div>
 
                                     <div className="d-flex flex-fill justify-content-end">
-                                        <button className="btn btn-outline-secondary btn-sm">{t("GiftCards.ResendEmail")}</button>
+                                        <button className="btn btn-outline-dark btn-sm">{t("GiftCards.ResendEmail")}</button>
                                     </div>
                                 </div>
                             </li>
@@ -271,19 +271,19 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         || (giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode)) && (
                             <div className="card-footer">
                                 {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                    <button className="btn btn-success btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)} disabled={!isAddToCartEnabled(giftCard?.oVoucherId)}>{t("GiftCards.AddGiftCardToCart")}</button>
+                                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)} disabled={!isAddToCartEnabled(giftCard?.oVoucherId)}>{t("GiftCards.AddGiftCardToCart")}</button>
                                 )}
 
                                 {!giftCard?.isPurchased && !giftCard?.isRedeemed && isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                    <button className="btn btn-danger btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>{t("GiftCards.RemoveGiftCardFromCart")}</button>
+                                    <button className="btn btn-outline-dark btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>{t("GiftCards.RemoveGiftCardFromCart")}</button>
                                 )}
 
                                 {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode && (
-                                    <button className="btn btn-primary btn-sm me-2" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>Save Changes</button>
+                                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>{t("GiftCards.SaveChanges")}</button>
                                 )}
 
                                 {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode && (
-                                    <button className="btn btn-primary btn-sm" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>Cancel Changes</button>
+                                    <button className="btn btn-outline-dark btn-sm" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>{t("GiftCards.CancelChanges")}</button>
                                 )}
                             </div>
                         )}
@@ -292,7 +292,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             <div className="card">
                 <div className="card-body text-center">
-                    <button className="btn btn-primary btn-sm mt-2" onClick={() => addGiftCardClick()}>{t("GiftCards.AddGiftCard")}</button>
+                    <button className="btn btn-dark mt-2" onClick={() => addGiftCardClick()}>{t("GiftCards.AddGiftCard")}</button>
                 </div>
             </div>
 

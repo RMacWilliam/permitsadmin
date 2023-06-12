@@ -155,13 +155,13 @@ function Index() {
                             </div>
 
                             <div className="mt-2">
-                                <Button className="w-100" variant="primary" disabled={loginInProgress} onClick={() => doLogin()}>
+                                <button className="btn btn-outline-dark w-100" disabled={loginInProgress} onClick={() => doLogin()}>
                                     {t("Index.LoginButton")}
 
                                     {loginInProgress && (
                                         <i className="fa-solid fa-spinner fa-spin ms-2"></i>
                                     )}
-                                </Button>
+                                </button>
 
                                 {showInvalidLogin && (
                                     <div className="text-danger text-center mt-2">
@@ -171,11 +171,11 @@ function Index() {
                             </div>
 
                             <div className="text-center mt-4">
-                                <Button variant="link text-decoration-none" disabled={loginInProgress} onClick={() => doForgotPassword()}>{t("Index.ForgotPasswordButton")}</Button>
+                                <button className="btn btn-link text-decoration-none" disabled={loginInProgress} onClick={() => doForgotPassword()}>{t("Index.ForgotPasswordButton")}</button>
                             </div>
 
                             <div className="mt-4 mb-2">
-                                <Button className="w-100" variant="outline-primary" disabled={loginInProgress} onClick={() => doCreateAccount()}>{t("Index.CreateAnAccountButton")}</Button>
+                                <button className="btn btn-outline-dark w-100" disabled={loginInProgress} onClick={() => doCreateAccount()}>{t("Index.CreateAnAccountButton")}</button>
                             </div>
                         </div>
                     </div>
@@ -211,9 +211,8 @@ function Index() {
                         login(router, appContext, apiLoginResult);
                     } else {
                         setShowInvalidLogin(true);
+                        setLoginInProgress(false);
                     }
-
-                    setLoginInProgress(false);
                 },
                 error: (error: any) => {
                     console.log(error);

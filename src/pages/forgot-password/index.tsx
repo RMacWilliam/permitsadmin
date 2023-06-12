@@ -41,7 +41,7 @@ function ForgotPassword({ appContext, router }
                 <label className="required" htmlFor="forgot-password-email">{t("ForgotPassword.EmailAddressLabel")}</label>
             </div>
 
-            <button className="btn btn-primary" onClick={() => resetPasswordClick()} disabled={email.trim().length === 0}>{t("ForgotPassword.ResetPasswordButton")}</button>
+            <button className="btn btn-outline-dark" onClick={() => resetPasswordClick()} disabled={email.trim().length === 0}>{t("ForgotPassword.ResetPasswordButton")}</button>
         </>
     )
 

@@ -156,6 +156,8 @@ export const resources_en = {
       "MandatoryFieldMustMatch": "Mandatory field and must match the recipient's OFSC account information",
       "AddGiftCardToCart": "Add Gift Card to Cart",
       "RemoveGiftCardFromCart": "Remove Gift Card from Cart",
+      "SaveChanges": "Save Changes",
+      "CancelChanges": "Cancel Changes",
       "AddGiftCard": "Add Gift Card",
       "HoverButtons": {
         "AddGiftCard": "Add Gift Card",
@@ -186,7 +188,12 @@ export const resources_en = {
       "MandatoryField": "mandatory field"
     },
     "Checkout": {
-      "Title": "Checkout"
+      "Title": "Checkout",
+      "ReadAndAgree": "I have read and agree to the terms listed above",
+      "ClickToAgree": "Click to agree"
+    },
+    "Payment": {
+      "Title": "Payment"
     },
     "API": {
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "VIN assigned to another vehicle on account.",

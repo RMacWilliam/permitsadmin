@@ -61,6 +61,8 @@ export default function RouteGuard({ children }: { children: ReactNode }) {
                     isAuthorized.current = true;
                 } else if (path === "/checkout") {
                     isAuthorized.current = true;
+                } else if (path === "/payment") {
+                    isAuthorized.current = true;
                 }
                 // Everything else (like admin pages that a regular user should not see).
                 else {

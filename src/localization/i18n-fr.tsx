@@ -156,6 +156,8 @@ export const resources_fr = {
       "MandatoryFieldMustMatch": "champ obligatoire et doit correspondre au compte du bénéficiaire à la FCMO",
       "AddGiftCardToCart": "Ajouter la carte cadeau au panier",
       "RemoveGiftCardFromCart": "Supprimer la carte cadeau du panier",
+      "SaveChanges": "(fr)Save Changes",
+      "CancelChanges": "(fr)Cancel Changes",
       "AddGiftCard": "Ajouter une carte cadeau",
       "HoverButtons": {
         "AddGiftCard": "Ajouter une carte cadeau",
@@ -186,7 +188,9 @@ export const resources_fr = {
       "MandatoryField": "champ obligatoire"
     },
     "Checkout": {
-      "Title": "(fr)Checkout"
+      "Title": "(fr)Checkout",
+      "ReadAndAgree": "J'ai lu les modalités ci-dessus et je les accepte",
+      "ClickToAgree": "Cliquez pour accepter"
     },
     "API": {
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "(fr)VIN assigned to another vehicle on account.",

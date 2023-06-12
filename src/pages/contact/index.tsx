@@ -217,7 +217,7 @@ function Contact({ appContext, router, setShowAlert }
                         {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName}`}
                     </div>
                     <div>
-                        <button className="btn btn-outline-secondary btn-sm" onClick={contactInfoDialogShow}>{t("Common.Edit")}</button>
+                        <button className="btn btn-outline-dark btn-sm" onClick={contactInfoDialogShow}>{t("Common.Edit")}</button>
                     </div>
                 </h5>
                 <ul className="list-group list-group-flush">
@@ -249,7 +249,7 @@ function Contact({ appContext, router, setShowAlert }
                         {t("ContactInfo.Preferences")}
                     </div>
                     <div>
-                        <button className="btn btn-outline-secondary btn-sm" onClick={accountPreferencesDialogShow}>{t("Common.Edit")}</button>
+                        <button className="btn btn-outline-dark btn-sm" onClick={accountPreferencesDialogShow}>{t("Common.Edit")}</button>
                     </div>
                 </h5>
                 <ul className="list-group list-group-flush">
@@ -303,7 +303,7 @@ function Contact({ appContext, router, setShowAlert }
             {!appContext.data?.isContactInfoVerified && (
                 <div className="card">
                     <div className="card-body text-center">
-                        <button type="button" className="btn btn-success" onClick={() => confirmContactInfoClick()}>{t("ContactInfo.ConfirmButton")}</button>
+                        <button type="button" className="btn btn-outline-dark" onClick={() => confirmContactInfoClick()}>{t("ContactInfo.ConfirmButton")}</button>
                     </div>
                 </div>
             )}
@@ -427,8 +427,8 @@ function Contact({ appContext, router, setShowAlert }
                                 </div>
                             </div>
                             <div className="col d-flex justify-content-end align-items-center">
-                                <Button className="me-2" variant="primary" onClick={() => contactInfoDialogSave()}>{t("Common.Save")}</Button>
-                                <Button variant="primary" onClick={() => contactInfoDialogHide()}>{t("Common.Cancel")}</Button>
+                                <Button className="me-2" variant="outline-dark" onClick={() => contactInfoDialogSave()}>{t("Common.Save")}</Button>
+                                <Button variant="outline-dark" onClick={() => contactInfoDialogHide()}>{t("Common.Cancel")}</Button>
                             </div>
                         </div>
                     </div>
@@ -508,8 +508,8 @@ function Contact({ appContext, router, setShowAlert }
                                 </div>
                             </div>
                             <div className="col d-flex justify-content-end align-items-center">
-                                <Button className="me-2" variant="primary" onClick={() => accountPreferencesDialogSave()}>{t("Common.Save")}</Button>
-                                <Button variant="primary" onClick={() => accountPreferencesDialogHide()}>{t("Common.Cancel")}</Button>
+                                <Button className="me-2" variant="outline-dark" onClick={() => accountPreferencesDialogSave()}>{t("Common.Save")}</Button>
+                                <Button variant="outline-dark" onClick={() => accountPreferencesDialogHide()}>{t("Common.Cancel")}</Button>
                             </div>
                         </div>
                     </div>

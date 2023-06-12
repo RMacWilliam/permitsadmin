@@ -62,7 +62,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                         <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
                             <div className="d-flex flex-fill justify-content-start align-items-center">
                                 <a className="navbar-brand d-none d-md-block" href="#">
-                                    <img src={Images.Ofsc} alt="Logo" width="60" height="60" />
+                                    <img src={Images.Ofsc} alt="Logo" width="65" height="70" />
                                 </a>
 
                                 <div className="flex-column justify-content-center justify-content-md-between">
@@ -84,7 +84,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
 
                                 {appContext.data?.isContactInfoVerified && (
                                     <div className="ms-3 me-2">
-                                        <Link className="nav-link position-relative" aria-current="page" href="/cart">
+                                        <Link className="nav-link position-relative" aria-current="page" aria-label="Cart" href="/cart">
                                             <div className="d-md-none">
                                                 <i className="fa-solid fa-cart-shopping fa-xl"></i>
                                                 {appContext.data?.cartItems != undefined && appContext.data.cartItems.length > 0 && (
@@ -119,14 +119,14 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                         <ul className="navbar-nav me-auto mb-2 mb-md-0 d-block d-sm-block d-md-none">
                             {appContext.data?.isContactInfoVerified && (
                                 <li className="nav-item">
-                                    <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/home"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                    <Link className="nav-link" aria-current="page" aria-label={t("Home.MenuTitle")} href="" onClick={() => { router.push("/home"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                         <i className="fa-solid fa-house fa-fw me-2"></i>
                                         {t("Home.MenuTitle")}
                                     </Link>
                                 </li>
                             )}
                             <li className="nav-item">
-                                <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                <Link className="nav-link" aria-current="page" aria-label={t("ContactInfo.MenuTitle")} href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                     <i className="fa-solid fa-address-card fa-fw me-2"></i>
                                     {t("ContactInfo.MenuTitle")}
                                 </Link>
@@ -134,13 +134,13 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                             {appContext.data?.isContactInfoVerified && (
                                 <>
                                     <li className="nav-item">
-                                        <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/permits"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                        <Link className="nav-link" aria-current="page" aria-label={t("Permits.MenuTitle")} href="" onClick={() => { router.push("/permits"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                             <i className="fa-solid fa-snowflake fa-fw me-2"></i>
                                             {t("Permits.MenuTitle")}
                                         </Link>
                                     </li>
                                     <li className="nav-item">
-                                        <Link className="nav-link" aria-current="page" href="" onClick={() => { router.push("/gift-cards"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                        <Link className="nav-link" aria-current="page" aria-label={t("GiftCards.MenuTitle")} href="" onClick={() => { router.push("/gift-cards"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                             <i className="fa-solid fa-gift fa-fw me-2"></i>
                                             {t("GiftCards.MenuTitle")}
                                         </Link>
@@ -171,22 +171,22 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                 <div className="nav-scroller bg-body shadow-sm d-none d-sm-none d-md-block">
                     <nav className="nav justify-content-center" aria-label="Secondary navigation">
                         {appContext.data?.isContactInfoVerified && (
-                            <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "home" ? "active" : ""}`} href="/home">
+                            <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "home" ? "active" : ""}`} href="/home" aria-label={t("Home.MenuTitle")}>
                                 <i className="fa-solid fa-house me-2"></i>
                                 {t("Home.MenuTitle")}
                             </Link>
                         )}
-                        <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact">
+                        <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact" aria-label={t("ContactInfo.MenuTitle")}>
                             <i className="fa-solid fa-address-card me-2"></i>
                             {t("ContactInfo.MenuTitle")}
                         </Link>
                         {appContext.data?.isContactInfoVerified && (
                             <>
-                                <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "permits" ? "active" : ""}`} href="/permits">
+                                <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "permits" ? "active" : ""}`} href="/permits" aria-label={t("Permits.MenuTitle")}>
                                     <i className="fa-solid fa-snowflake me-2"></i>
                                     {t("Permits.MenuTitle")}
                                 </Link>
-                                <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "gift-cards" ? "active" : ""}`} href="/gift-cards">
+                                <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "gift-cards" ? "active" : ""}`} href="/gift-cards" aria-label={t("GiftCards.MenuTitle")}>
                                     <i className="fa-solid fa-gift me-2"></i>
                                     {t("GiftCards.MenuTitle")}
                                 </Link>
@@ -205,12 +205,23 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
             <footer className="footer bg-secondary mt-auto py-2">
                 <div className="container-fluid" style={{ padding: 0 }}>
                     <div className="text-white text-center">{t("Footer.Message")}</div>
+
                     <div className="text-white text-center mt-2">
-                        <a href="https://www.facebook.com/pages/The-Ontario-Federation-of-Snowmobile-Clubs-OFSC/125178027502192"><i className="fa-brands fa-facebook-f text-white"></i></a>
-                        <a href="https://twitter.com/GoSnowmobiling"><i className="fa-brands fa-twitter ms-4 text-white"></i></a>
-                        <a href="https://www.instagram.com/gosnowmobilingontario"><i className="fa-brands fa-instagram ms-4 text-white"></i></a>
-                        <a href="https://www.linkedin.com/company/ontario-federation-of-snowmobile-clubs"><i className="fa-brands fa-linkedin-in ms-4 text-white"></i></a>
-                        <a href="https://www.youtube.com/user/GoSnowmobiling/videos"><i className="fa-brands fa-youtube ms-4 text-white"></i></a>
+                        <a href="https://www.facebook.com/pages/The-Ontario-Federation-of-Snowmobile-Clubs-OFSC/125178027502192" title="OFSC Facebook" aria-label="OFSC Facebook">
+                            <i className="fa-brands fa-facebook-f text-white"></i>
+                        </a>
+                        <a href="https://twitter.com/GoSnowmobiling" title="OFSC Twitter" aria-label="OFSC Twitter">
+                            <i className="fa-brands fa-twitter ms-4 text-white"></i>
+                        </a>
+                        <a href="https://www.instagram.com/gosnowmobilingontario" title="OFSC Instagram" aria-label="OFSC Instagram">
+                            <i className="fa-brands fa-instagram ms-4 text-white"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/company/ontario-federation-of-snowmobile-clubs" title="OFSC LinkedIn" aria-label="OFSC LinkedIn">
+                            <i className="fa-brands fa-linkedin-in ms-4 text-white"></i>
+                        </a>
+                        <a href="https://www.youtube.com/user/GoSnowmobiling/videos" title="OFSC YouTube" aria-label="OFSC YouTube">
+                            <i className="fa-brands fa-youtube ms-4 text-white"></i>
+                        </a>
                         (<span className="d-sm-none">XS</span>
                         <span className="d-none d-sm-inline d-md-none">SM</span>
                         <span className="d-none d-md-inline d-lg-none">MD</span>

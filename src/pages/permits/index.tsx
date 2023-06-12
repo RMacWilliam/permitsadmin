@@ -196,7 +196,13 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 const apiGetVehicleMakesResult: IApiGetVehicleMakesResult[] = results[1] as IApiGetVehicleMakesResult[];
 
                 if (apiGetVehicleMakesResult != undefined && apiGetVehicleMakesResult.length > 0) {
-                    setVehicleMakesData(apiGetVehicleMakesResult.map<IKeyValue>(x => ({ key: x?.key ?? "", value: x?.value ?? "" })));
+                    const vehicleMakes: IKeyValue[] = apiGetVehicleMakesResult.map<IKeyValue>(x => ({
+                        key: x?.key ?? "",
+                        value: x?.value ?? "",
+                        valueFr: x?.valueFr ?? ""
+                    }));
+
+                    setVehicleMakesData(vehicleMakes);
                 }
 
                 // non-api
@@ -284,8 +290,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="d-flex flex-fill justify-content-end">
                             {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
                                 <>
-                                    <button className="btn btn-outline-secondary btn-sm" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>{t("Common.Edit")}</button>
-                                    <button className="btn btn-outline-secondary btn-sm ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>{t("Common.Delete")}</button>
+                                    <button className="btn btn-outline-dark btn-sm" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>{t("Common.Edit")}</button>
+                                    <button className="btn btn-outline-dark btn-sm ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>{t("Common.Delete")}</button>
                                 </>
                             )}
 
@@ -359,11 +365,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                     {snowmobile?.isEditable && snowmobile?.permitOptions != undefined && snowmobile.permitOptions.length > 0 && (
                         <div className="card-footer">
                             {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
-                                <button className="btn btn-success btn-sm" onClick={() => addPermitToCartClick(snowmobile?.oVehicleId)} disabled={!isAddToCartEnabled(snowmobile?.oVehicleId)}>{t("Permits.Vehicle.AddPermitToCart")}</button>
+                                <button className="btn btn-outline-dark btn-sm" onClick={() => addPermitToCartClick(snowmobile?.oVehicleId)} disabled={!isAddToCartEnabled(snowmobile?.oVehicleId)}>{t("Permits.Vehicle.AddPermitToCart")}</button>
                             )}
 
                             {snowmobile?.isEditable && isPermitAddedToCart(snowmobile?.oVehicleId) && (
-                                <button className="btn btn-danger btn-sm" onClick={() => removePermitFromCartClick(snowmobile?.oVehicleId)}>{t("Permits.Vehicle.RemovePermitFromCart")}</button>
+                                <button className="btn btn-outline-dark btn-sm" onClick={() => removePermitFromCartClick(snowmobile?.oVehicleId)}>{t("Permits.Vehicle.RemovePermitFromCart")}</button>
                             )}
                         </div>
                     )}
@@ -372,7 +378,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
             <div className="card">
                 <div className="card-body text-center">
-                    <button className="btn btn-primary" onClick={() => addEditSnowmobileDialogShow()}>{t("Permits.Vehicle.AddSnowmobile")}</button>
+                    <button className="btn btn-dark" onClick={() => addEditSnowmobileDialogShow()}>{t("Permits.Vehicle.AddSnowmobile")}</button>
                 </div>
             </div>
 
@@ -485,8 +491,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             </div>
                             <div className="col d-flex justify-content-end align-items-center">
-                                <Button className="me-2" variant="primary" onClick={() => addEditSnowmobileDialogSave()}>{t("Common.Save")}</Button>
-                                <Button variant="primary" onClick={() => addEditSnowmobileDialogHide()}>{t("Common.Cancel")}</Button>
+                                <Button className="me-2" variant="outline-dark" onClick={() => addEditSnowmobileDialogSave()}>{t("Common.Save")}</Button>
+                                <Button variant="outline-dark" onClick={() => addEditSnowmobileDialogHide()}>{t("Common.Cancel")}</Button>
                             </div>
                         </div>
                     </div>

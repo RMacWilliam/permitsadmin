@@ -268,10 +268,10 @@ function Cart({ appContext, router, setShowAlert }:
                                                                         <div className="d-flex flex-column gap-2">
                                                                             <div className="input-group">
                                                                                 <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter gift card redemption code" value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
-                                                                                <button className="btn btn-outline-primary d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
+                                                                                <button className="btn btn-outline-dark d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
                                                                             </div>
 
-                                                                            <button className="btn btn-outline-primary btn-sm d-sm-none" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
+                                                                            <button className="btn btn-outline-dark btn-sm d-sm-none" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
 
                                                                             {cartItem?.uiShowRedemptionCodeNotFound && (
                                                                                 <div className="text-danger">Redemption code not found.</div>
@@ -489,8 +489,8 @@ function Cart({ appContext, router, setShowAlert }:
 
                     <div className="card mb-3">
                         <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
-                            <button className="btn btn-success" onClick={() => checkoutClick()}>{t("Cart.ProceedToCheckout")}</button>
-                            <button className="btn btn-success" onClick={() => continueShoppingClick()}>{t("Cart.ContinueShopping")}</button>
+                            <button className="btn btn-outline-dark" onClick={() => checkoutClick()}>{t("Cart.ProceedToCheckout")}</button>
+                            <button className="btn btn-outline-dark" onClick={() => continueShoppingClick()}>{t("Cart.ContinueShopping")}</button>
                         </div>
                     </div>
 
@@ -717,8 +717,6 @@ function Cart({ appContext, router, setShowAlert }:
     function checkoutClick(): void {
         if (validateCart()) {
             router.push("/checkout");
-        } else {
-
         }
     }
 
