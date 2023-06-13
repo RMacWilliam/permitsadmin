@@ -149,6 +149,19 @@ export interface IRedeemableGiftCards {
     classicGiftCards?: number;
 }
 
+export interface ICart {
+    shipping?: string;
+    shipTo?: number; // Undefined=Unselected, 0=Registered; 1=Alternate
+    alternateAddress: {
+        addressLine1?: string;
+        addressLine2?: string;
+        city?: string;
+        province?: IParentKeyValue;
+        postalCode?: string;
+        country?: IKeyValue;
+    }
+}
+
 export interface ICartItem {
     id: string; // guid
     description: string;
@@ -165,6 +178,7 @@ export interface ICartItem {
 
     uiRedemptionCode: string; // This is a controlled field. Cannot be undefined.
     uiShowRedemptionCodeNotFound?: boolean;
+    uiRedemptionCodeErrorMessage?: string;
 
     uiIsClubValid?: boolean;
 }
@@ -172,6 +186,7 @@ export interface ICartItem {
 export interface IShippingFee {
     id?: string;
     name?: string;
+    nameFr?: string;
     price?: number;
     showConfirmation?: boolean;
 }
@@ -188,6 +203,7 @@ export interface IAppContextData {
     isContactInfoVerified?: boolean;
 
     // Shopping Cart
+    cart?: ICart;
     cartItems?: ICartItem[];
 
     // Navbar selection
@@ -226,6 +242,7 @@ export const initialAppContextValues: IAppContextValues = {
         isFirstLoginOfSeason: false,
         isContactInfoVerified: false,
 
+        cart: { shipping: undefined, shipTo: undefined, alternateAddress: {} },
         cartItems: undefined,
 
         navbarPage: undefined,

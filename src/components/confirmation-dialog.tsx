@@ -11,9 +11,15 @@ export enum ConfirmationDialogButtons {
     Close = 4
 }
 
+export enum ConfirmationDialogIcons {
+    Question = 0,
+    Warning = 1,
+    Information = 2
+}
+
 export default function ConfirmationDialog({ showDialog, title, message, errorMessage, buttons, icon, width, okClick, cancelClick, yesClick, noClick, closeClick, children }
     : {
-        showDialog: boolean, title?: string, message?: string, errorMessage?: string, buttons?: ConfirmationDialogButtons, icon?: string, width?: string,
+        showDialog: boolean, title?: string, message?: string, errorMessage?: string, buttons?: ConfirmationDialogButtons, icon?: ConfirmationDialogIcons, width?: string,
         okClick?: Function, cancelClick?: Function, yesClick?: Function, noClick?: Function, closeClick: Function, children?: ReactNode
     }) {
 
@@ -27,12 +33,8 @@ export default function ConfirmationDialog({ showDialog, title, message, errorMe
         buttons = ConfirmationDialogButtons.Ok;
     }
 
-    if (icon === "question") {
-        icon = "fa-solid fa-circle-question text-warning";
-    } else if (icon === "warning") {
-        icon = "fa-solid fa-circle-exclamation text-warning";
-    } else if (icon === "information") {
-        icon = "fa-solid fa-circle-info text-warning";
+    if (icon != undefined && icon !== ConfirmationDialogIcons.Question && icon !== ConfirmationDialogIcons.Warning && icon !== ConfirmationDialogIcons.Information) {
+        icon = undefined
     }
 
     return (
@@ -57,7 +59,15 @@ export default function ConfirmationDialog({ showDialog, title, message, errorMe
                         <div className="col-12">
                             <div className="d-flex align-items-center">
                                 <div>
-                                    <i className={`${icon} fa-2xl`}></i>
+                                    {icon === ConfirmationDialogIcons.Question && (
+                                        <i className="fa-solid fa-circle-question text-warning fa-2xl"></i>
+                                    )}
+                                    {icon === ConfirmationDialogIcons.Warning && (
+                                        <i className="fa-solid fa-circle-exclamation text-warning fa-2xl"></i>
+                                    )}
+                                    {icon === ConfirmationDialogIcons.Information && (
+                                        <i className="fa-solid fa-circle-info text-warning fa-2xl"></i>
+                                    )}
                                 </div>
                                 <div className="ms-3">
                                     {message == undefined && (

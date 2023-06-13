@@ -13,6 +13,7 @@ export const resources_en = {
       "Close": "Close",
       "Back": "Back",
       "Next": "Next",
+      "Select": "Select",
       "PleaseSelect": "Please select",
       "Logout": "Logout",
       "HoverButton": "Show Context Menu"
@@ -148,6 +149,11 @@ export const resources_en = {
     "GiftCards": {
       "MenuTitle": "Gift Cards",
       "Title": "Gift Cards",
+      "Purchased": "Purchased",
+      "GiftCard": "gift card",
+      "WithTracking": "with tracking",
+      "WithoutTracking": "without tracking",
+      "BuyNewGiftCard": "Buy New Gift Card",
       "RedemptionCode": "Redemption Code",
       "ResendEmail": "Resend E-mail",
       "SelectGiftCard": "Select Gift Card",
@@ -165,12 +171,22 @@ export const resources_en = {
       "DeleteGiftCardDialog": {
         "Title": "Delete Gift Card",
         "Message": "Are you sure you want to remove this gift card?"
+      },
+      "ResendGiftCardEmailDialog": {
+        "Title": "Resend Gift Card E-mail",
+        "Successful": "Gift card e-mail was sent successfully. Please check your e-mail.",
+        "Unsuccessful": "Sorry, there was a problem sending the gift card e-mail. Please try again later."
       }
     },
     "Cart": {
       "Title": "Shopping Cart",
+      "SelectClub": "Sélectionner un club",
+      "UseClubLocatorMap": "Use club locator map",
       "TransactionAndAdminFee": "Transaction and Administration Fee",
+      "TransactionAndAdminFeeDiscount": "Transaction and Administration Fee Discount",
       "Shipping": "Shipping Method",
+      "StandardShippingAcceptTerms": "By selecting standard delivery for my permit, I assume all responsibility should my permit get lost or stolen in the mail, or for any other reason that it is not received in the mail, and therefore agree to adhere to all Ministry of Transportation rules for the issuance of a replacement permit.",
+      "TrackedShippingDiscount": "Tracked Shipping Discount",
       "TotalAmount": "Total Amount",
       "ShippingAddress": "Shipping Address",
       "RegisteredOwnerAddress": "Registered Owner Address",
@@ -182,6 +198,18 @@ export const resources_en = {
         "ProvinceState": "Province/State",
         "Country": "Country",
         "PostalZipCode": "Postal/Zip Code"
+      },
+      "ClubLocatorMapDialog": {
+        "Title": "Club Locator Map",
+        "SearchForTheLocation": "Search for the location where you plan on doing most of your riding this season.",
+        "LoadingMapPleaseWait": "Loading map. Please wait.",
+        "SearchBoxPlaceholder": "Enter city, town, postal code, or address",
+        "SearchButtonTitle": "Search",
+        "ResetButtonTitle": "Réinitialiser",
+        "SelectedClub": "Selected Club",
+        "PleaseSelectClub": "Please select a club from the map above",
+        "SorryCouldNotFindLocation": "Sorry, we couldn't find the location you entered.",
+        "SorryThereWasAProblem": "Sorry, there was a problem searching for your location."
       },
       "ProceedToCheckout": "Proceed to Checkout",
       "ContinueShopping": "Continue Shopping",
@@ -199,11 +227,11 @@ export const resources_en = {
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "VIN assigned to another vehicle on account.",
       "API_INVALID_VIN_FORMAT": "Invalid VIN format.",
       "API_UNEXPECTED_ERROR": "An unexpected error occured. Please try again later.",
-      "API_REDEMPTION_CODE_INVALID": "",
-      "API_REDEMPTION_CODE_REDEEMED": "",
-      "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "",
-      "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "",
-      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": ""
+      "API_REDEMPTION_CODE_INVALID": "Redemption code was invalid.",
+      "API_REDEMPTION_CODE_REDEEMED": "Redemption code has already been redeemed.",
+      "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "Last name associated with the redemption code did not correspond to your account information.",
+      "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "Postal code associated with the redemption code did not correspond to your account information.",
+      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "Vehicle type of the redemption code did not correspond to this snowmobile."
     }
   }
 };

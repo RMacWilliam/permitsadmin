@@ -40,7 +40,7 @@ function Home({ appContext, router, setShowAlert }:
                 <title>{t("Home.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{t("Home.Title")}</h4>
+            <h4 className="mb-3">{t("Home.Title")}</h4>
 
             <CartItemsAlert></CartItemsAlert>
 
@@ -70,7 +70,7 @@ function Home({ appContext, router, setShowAlert }:
                                         </div>
                                     </div>
 
-                                    <button type="button" className="btn btn-outline-dark" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchasePermitClick()}>Purchase a Permit</button>
+                                    <button type="button" className="btn btn-primary" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchasePermitClick()}>Purchase a Permit</button>
                                 </div>
                             </div>
                         </div>
@@ -100,7 +100,7 @@ function Home({ appContext, router, setShowAlert }:
                                         </div>
                                     </div>
 
-                                    <button type="button" className="btn btn-outline-dark" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchaseGiftCardClick()}>Purchase a Gift Card</button>
+                                    <button type="button" className="btn btn-primary" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchaseGiftCardClick()}>Purchase a Gift Card</button>
                                 </div>
                             </div>
                         </div>
@@ -134,7 +134,7 @@ function Home({ appContext, router, setShowAlert }:
                                         </div>
                                     </div>
 
-                                    <button type="button" className="btn btn-outline-dark" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchasePermitClick()}>Purchase a Permit</button>
+                                    <button type="button" className="btn btn-primary" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchasePermitClick()}>Purchase a Permit</button>
                                 </div>
                             </div>
                         </div>
@@ -164,7 +164,7 @@ function Home({ appContext, router, setShowAlert }:
                                         </div>
                                     </div>
 
-                                    <button type="button" className="btn btn-outline-dark" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchaseGiftCardClick()}>Purchase a Gift Card</button>
+                                    <button type="button" className="btn btn-primary" disabled={!appContext.data?.isContactInfoVerified} onClick={() => purchaseGiftCardClick()}>Purchase a Gift Card</button>
                                 </div>
                             </div>
                         </div>

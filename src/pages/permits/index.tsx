@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import ConfirmationDialog, { ConfirmationDialogButtons } from '@/components/confirmation-dialog';
+import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from '@/components/confirmation-dialog';
 import { NextRouter, useRouter } from 'next/router';
 import DatePicker from 'react-datepicker';
 import CartItemsAlert from '@/components/cart-items-alert';
@@ -244,7 +244,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 <title>{t("Permits.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{t("Permits.Title")}</h4>
+            <h4 className="mb-3">{t("Permits.Title")}</h4>
 
             <CartItemsAlert></CartItemsAlert>
 
@@ -378,17 +378,17 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
             <div className="card">
                 <div className="card-body text-center">
-                    <button className="btn btn-dark" onClick={() => addEditSnowmobileDialogShow()}>{t("Permits.Vehicle.AddSnowmobile")}</button>
+                    <button className="btn btn-primary" onClick={() => addEditSnowmobileDialogShow()}>{t("Permits.Vehicle.AddSnowmobile")}</button>
                 </div>
             </div>
 
-            <ConfirmationDialog showDialog={showSnowmobileInfoDialog} title={t("Permits.VehicleCannotBeModifiedDialog.Title")} buttons={ConfirmationDialogButtons.Ok} icon="information" width="50"
+            <ConfirmationDialog showDialog={showSnowmobileInfoDialog} title={t("Permits.VehicleCannotBeModifiedDialog.Title")} buttons={ConfirmationDialogButtons.Ok} icon={ConfirmationDialogIcons.Information} width="50"
                 okClick={() => setShowSnowmobileInfoDialog(false)} closeClick={() => setShowSnowmobileInfoDialog(false)}>
                 <div>{t("Permits.VehicleCannotBeModifiedDialog.Message")}</div>
             </ConfirmationDialog>
 
-            <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title={t("Permits.DeleteSnowmobileDialog.Title")} errorMessage={deleteSnowmobileDialogErrorMessage} buttons={2}
-                icon="question" width="50" yesClick={() => deleteSnowmobileDialogYesClick()} noClick={() => deleteSnowmobileDialogNoClick()}
+            <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title={t("Permits.DeleteSnowmobileDialog.Title")} errorMessage={deleteSnowmobileDialogErrorMessage} buttons={ConfirmationDialogButtons.YesNo}
+                icon={ConfirmationDialogIcons.Question} width="50" yesClick={() => deleteSnowmobileDialogYesClick()} noClick={() => deleteSnowmobileDialogNoClick()}
                 closeClick={() => deleteSnowmobileDialogNoClick()}>
                 <div className="fw-bold mb-2">{snowmobileNameToDelete}</div>
                 <div>{t("Permits.DeleteSnowmobileDialog.Message")}</div>
@@ -484,13 +484,13 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 </Modal.Body>
                 <Modal.Footer>
                     <div className="container-fluid">
-                        <div className="row gap-2">
-                            <div className="col d-flex align-items-center">
+                        <div className="row d-flex flex-column flex-sm-row gap-2">
+                            <div className="col d-flex justify-content-center justify-content-sm-start align-items-center">
                                 <div className="text-nowrap">
                                     <span className="text-danger me-1">*</span>{t("Permits.AddEditSnowmobileDialog.MandatoryField")}
                                 </div>
                             </div>
-                            <div className="col d-flex justify-content-end align-items-center">
+                            <div className="col d-flex justify-content-center justify-content-sm-end align-items-center">
                                 <Button className="me-2" variant="outline-dark" onClick={() => addEditSnowmobileDialogSave()}>{t("Common.Save")}</Button>
                                 <Button variant="outline-dark" onClick={() => addEditSnowmobileDialogHide()}>{t("Common.Cancel")}</Button>
                             </div>
@@ -735,58 +735,58 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
     }
 
     function validateAddEditSnowmobileDialog(): boolean {
-        let isValid: boolean = true;
+        let result: boolean = true;
 
         if (vehicleYear === "") {
             setIsVehicleYearValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsVehicleYearValid(true);
         }
 
         if (make?.key == undefined || make.key === "") {
             setIsMakeValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsMakeValid(true);
         }
 
         if (model === "") {
             setIsModelValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsModelValid(true);
         }
 
         if (vin === "" || !isVinNumberValid(vin)) {
             setIsVinValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsVinValid(true);
         }
 
         if (licensePlate === "") {
             setIsLicensePlateValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsLicensePlateValid(true);
         }
 
         if (permitForThisSnowmobileOnly === false) {
             setIsPermitForThisSnowmobileOnlyValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsPermitForThisSnowmobileOnlyValid(true);
         }
 
         if (registeredOwner === false) {
             setIsRegisteredOwnerValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsRegisteredOwnerValid(true);
         }
 
-        return isValid;
+        return result;
     }
 
     function addEditSnowmobileDialogHide(): void {
@@ -1051,10 +1051,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                     if (draftPermitOption != undefined) {
                         let description: string = `${draftSnowmobile?.vehicleYear} ${draftSnowmobile?.vehicleMake?.value} ${draftSnowmobile?.model} ${draftSnowmobile?.vin} ${draftPermitOption?.displayName}`;
-                        const descriptionFr: string = `${draftSnowmobile?.vehicleYear} ${draftSnowmobile?.vehicleMake?.value} ${draftSnowmobile?.model} ${draftSnowmobile?.vin} ${draftPermitOption?.frenchDisplayName}`;
+                        let descriptionFr: string = `${draftSnowmobile?.vehicleYear} ${draftSnowmobile?.vehicleMake?.value} ${draftSnowmobile?.model} ${draftSnowmobile?.vin} ${draftPermitOption?.frenchDisplayName}`;
 
                         if (draftPermitOption.isMultiDay) {
                             description += ` (${formatShortDate(draftSnowmobile?.permitSelections?.dateStart)} — ${formatShortDate(draftSnowmobile?.permitSelections?.dateEnd)}) `;
+                            descriptionFr += ` (${formatShortDate(draftSnowmobile?.permitSelections?.dateStart)} — ${formatShortDate(draftSnowmobile?.permitSelections?.dateEnd)}) `;
                         }
 
                         const cartItem: ICartItem = {

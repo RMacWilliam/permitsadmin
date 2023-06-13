@@ -6,8 +6,8 @@ import { NextRouter, useRouter } from 'next/router';
 import CartItemsAlert from '@/components/cart-items-alert';
 import { formatCurrency, getApiErrorMessage, getGuid, parseDate } from '@/custom/utilities';
 import { Observable, Subscription, forkJoin } from 'rxjs';
-import { IApiAddGiftCardForUserRequest, IApiAddGiftCardForUserResult, IApiDeleteGiftCardRequest, IApiDeleteGiftCardResult, IApiGetAvailableGiftCardsResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiSaveGiftCardSelectionsForUserRequest, IApiSaveGiftCardSelectionsForUserResult, apiAddGiftCardForUser, apiDeleteGiftCard, apiGetAvailableGiftCards, apiGetGiftcardsForCurrentSeasonForUser, apiSaveGiftCardSelectionsForUser } from '@/custom/api';
-import ConfirmationDialog from '@/components/confirmation-dialog';
+import { IApiAddGiftCardForUserRequest, IApiAddGiftCardForUserResult, IApiDeleteGiftCardRequest, IApiDeleteGiftCardResult, IApiGetAvailableGiftCardsResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiSaveGiftCardSelectionsForUserRequest, IApiSaveGiftCardSelectionsForUserResult, IApiSendGiftCardPdfResult, apiAddGiftCardForUser, apiDeleteGiftCard, apiGetAvailableGiftCards, apiGetGiftcardsForCurrentSeasonForUser, apiSaveGiftCardSelectionsForUser, apiSendGiftCardPdf } from '@/custom/api';
+import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from '@/components/confirmation-dialog';
 import { Constants } from '../../../constants';
 
 export default function GiftCardsPage() {
@@ -43,6 +43,9 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     const [showDeleteGiftCardDialog, setShowDeleteGiftCardDialog] = useState(false);
     const [deleteGiftCardDialogErrorMessage, setDeleteGiftCardDialogErrorMessage] = useState("");
     const [giftCardIdToDelete, setGiftCardIdToDelete] = useState("");
+
+    const [showResendGiftCardEmailDialog, setShowResendGiftCardEmailDialog] = useState(false);
+    const [resendGiftCardEmailMessage, setResendGiftCardEmailMessage] = useState("");
 
     const [giftCardTypesData, setGiftCardTypesData] = useState([] as IGiftCardType[]);
 
@@ -137,7 +140,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 <title>{t("GiftCards.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{t("GiftCards.Title")}</h4>
+            <h4 className="mb-3">{t("GiftCards.Title")}</h4>
 
             <CartItemsAlert></CartItemsAlert>
 
@@ -159,13 +162,13 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             {appContext.translation.i18n.language === "fr" && (
                 <>
-                    <div className="fw-semibold">Gift Cards are ideal for those who:</div>
+                    <div className="fw-semibold">Les cartes-cadeaux sont idéales pour ceux qui:</div>
                     <ul>
-                        <li>Do not yet have a VIN and want to take advantage of pre-season fees</li>
-                        <li>Want to gift a permit for a family member, friend, business associate, customer, etc.</li>
+                        <li>n'ont pas encore la propriété du véhicule et veulent profiter des frais d'inscription hâtive</li>
+                        <li>veulent offrir un permis à un membre de leur famille, un ami, un associé, un client, etc.</li>
                     </ul>
 
-                    <div className="fw-semibold">Gift card options based on recipient's vehicle model year:</div>
+                    <div className="fw-semibold">Options de cartes-cadeaux en fonction de l'année-modèle du véhicule du bénéficiaire:</div>
                     <ul>
                         <li>Classique (1999 ou avant)</li>
                         <li>Saisonnier (2000 ou plus récent)</li>
@@ -178,14 +181,14 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                     <h5 className="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div className="d-flex flex-fill">
                             {giftCard.isPurchased && appContext.translation.i18n.language === "en" && (
-                                <span>Purchased {getGiftCardName(giftCard?.oVoucherId)}</span>
+                                <span>{getGiftCardName(giftCard?.oVoucherId)}</span>
                             )}
                             {giftCard.isPurchased && appContext.translation.i18n.language === "fr" && (
-                                <span>Purchased {getGiftCardName(giftCard?.oVoucherId, "fr")}</span>
+                                <span>{getGiftCardName(giftCard?.oVoucherId, "fr")}</span>
                             )}
 
                             {!giftCard.isPurchased && (
-                                <span>Buy New Gift Card</span>
+                                <span>{t("GiftCards.BuyNewGiftCard")}</span>
                             )}
                         </div>
 
@@ -210,7 +213,9 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                     </div>
 
                                     <div className="d-flex flex-fill justify-content-end">
-                                        <button className="btn btn-outline-dark btn-sm">{t("GiftCards.ResendEmail")}</button>
+                                        <button className="btn btn-outline-dark btn-sm" onClick={() => resendEmailClick(giftCard?.oVoucherId)}>
+                                            {t("GiftCards.ResendEmail")}
+                                        </button>
                                     </div>
                                 </div>
                             </li>
@@ -292,13 +297,18 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             <div className="card">
                 <div className="card-body text-center">
-                    <button className="btn btn-dark mt-2" onClick={() => addGiftCardClick()}>{t("GiftCards.AddGiftCard")}</button>
+                    <button className="btn btn-primary" onClick={() => addGiftCardClick()}>{t("GiftCards.AddGiftCard")}</button>
                 </div>
             </div>
 
-            <ConfirmationDialog showDialog={showDeleteGiftCardDialog} title={t("GiftCards.DeleteGiftCardDialog.Title")} errorMessage={deleteGiftCardDialogErrorMessage} buttons={2} icon="question" width="50"
+            <ConfirmationDialog showDialog={showDeleteGiftCardDialog} title={t("GiftCards.DeleteGiftCardDialog.Title")} errorMessage={deleteGiftCardDialogErrorMessage} buttons={ConfirmationDialogButtons.YesNo} icon={ConfirmationDialogIcons.Question} width="50"
                 yesClick={() => deleteGiftCardDialogYesClick()} noClick={() => deleteGiftCardDialogNoClick()} closeClick={() => deleteGiftCardDialogNoClick()}>
                 <div>{t("GiftCards.DeleteGiftCardDialog.Message")}</div>
+            </ConfirmationDialog>
+
+            <ConfirmationDialog showDialog={showResendGiftCardEmailDialog} title={t("GiftCards.ResendGiftCardEmailDialog.Title")} buttons={ConfirmationDialogButtons.Ok} icon={ConfirmationDialogIcons.Information} width="50"
+                okClick={() => setShowResendGiftCardEmailDialog(false)} closeClick={() => setShowResendGiftCardEmailDialog(false)}>
+                <div>{resendGiftCardEmailMessage}</div>
             </ConfirmationDialog>
         </>
     )
@@ -350,21 +360,21 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
-                if (language === "fr") {
-                    result = giftCard?.frenchDisplayName + " (fr) Gift Card";
+                if (language === "fr") { // Carte-cadeau classique achetée sans suivi
+                    result = t("GiftCards.GiftCard") + " " + giftCard?.frenchDisplayName?.toLowerCase() + " " + t("GiftCards.Purchased");
 
                     if (giftCard?.isTrackedShipping) {
-                        result += " (fr) with Tracking";
+                        result += " " + t("GiftCards.WithTracking");
                     } else {
-                        result += " (fr) without Tracking";
+                        result += " " + t("GiftCards.WithoutTracking");
                     }
-                } else {
-                    result = giftCard?.displayName + " Gift Card";
+                } else { // Purchased Classic gift card without tracking
+                    result = t("GiftCards.Purchased") + " " + giftCard?.displayName + " " + t("GiftCards.GiftCard");
 
                     if (giftCard?.isTrackedShipping) {
-                        result += " with Tracking";
+                        result += " " + t("GiftCards.WithTracking");
                     } else {
-                        result += " without Tracking";
+                        result += " " + t("GiftCards.WithoutTracking");
                     }
                 }
             }
@@ -825,5 +835,34 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             getButtonText: (): string => { return t("GiftCards.HoverButtons.AddGiftCard"); },
             action: addGiftCardClick
         });
+    }
+
+    function resendEmailClick(oVoucherId?: string): void {
+        if (oVoucherId != undefined) {
+            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
+
+            if (giftCard != undefined) {
+                setShowAlert(true);
+
+                apiSendGiftCardPdf(giftCard?.orderId).subscribe({
+                    next: (result: IApiSendGiftCardPdfResult) => {
+                        setShowAlert(false);
+
+                        if (result?.isSuccessful) {
+                            setResendGiftCardEmailMessage(t("GiftCards.ResendGiftCardEmailDialog.Successful"));
+                        } else {
+                            setResendGiftCardEmailMessage(t("GiftCards.ResendGiftCardEmailDialog.Unsuccessful"));
+                        }
+
+                        setShowResendGiftCardEmailDialog(true);
+                    },
+                    error: (error: any) => {
+                        console.log(error);
+
+                        setShowAlert(false);
+                    }
+                });
+            }
+        }
     }
 }

@@ -13,12 +13,13 @@ export const resources_fr = {
       "Close": "Fermer",
       "Back": "Précédent",
       "Next": "Suivant",
+      "Select": "Sélectionner",
       "PleaseSelect": "Veuillez sélectionner",
       "Logout": "Se déconnecter",
       "HoverButton": "(fr)Show Context Menu"
     },
     "Header": {
-      "LoggedInAs": "(fr)Logged in as"
+      "LoggedInAs": "Connecté en tant que"
     },
     "Footer": {
       "Message": "Besoin d'aide? Contactez la FCMO au 705-739-7669 ou permits@ofsc.on.ca"
@@ -148,6 +149,11 @@ export const resources_fr = {
     "GiftCards": {
       "MenuTitle": "Cartes cadeaux",
       "Title": "Cartes cadeaux",
+      "Purchased": "achetée",
+      "GiftCard": "Carte cadeau",
+      "WithTracking": "avec suivi",
+      "WithoutTracking": "sans suivi",
+      "BuyNewGiftCard": "Acheter une nouvelle carte-cadeau",
       "RedemptionCode": "Code d'échange",
       "ResendEmail": "Renvoyer le courriel",
       "SelectGiftCard": "sélectionner la carte cadeau",
@@ -156,8 +162,8 @@ export const resources_fr = {
       "MandatoryFieldMustMatch": "champ obligatoire et doit correspondre au compte du bénéficiaire à la FCMO",
       "AddGiftCardToCart": "Ajouter la carte cadeau au panier",
       "RemoveGiftCardFromCart": "Supprimer la carte cadeau du panier",
-      "SaveChanges": "(fr)Save Changes",
-      "CancelChanges": "(fr)Cancel Changes",
+      "SaveChanges": "Sauvegarder les modifications",
+      "CancelChanges": "Annuler les modifications",
       "AddGiftCard": "Ajouter une carte cadeau",
       "HoverButtons": {
         "AddGiftCard": "Ajouter une carte cadeau",
@@ -165,12 +171,22 @@ export const resources_fr = {
       "DeleteGiftCardDialog": {
         "Title": "Supprimer la carte cadeau",
         "Message": "Voulez-vous vraiment supprimer cette carte-cadeau?"
+      },
+      "ResendGiftCardEmailDialog": {
+        "Title": "(fr)Resend Gift Card E-mail",
+        "Successful": "(fr)Gift card e-mail was sent successfully. Please check your e-mail.",
+        "Unsuccessful": "(fr)Sorry, there was a problem sending the gift card e-mail. Please try again later."
       }
     },
     "Cart": {
       "Title": "Panier",
+      "SelectClub": "Sélectionner un club",
+      "UseClubLocatorMap": "Utiliser la carte de localisation des clubs",
       "TransactionAndAdminFee": "Frais de transaction et d'administration",
-      "Shipping": "Mode de livraison",
+      "TransactionAndAdminFeeDiscount": "Rabais sur les frais de transaction et d'administration",
+      "Shipping": "Expédition",
+      "StandardShippingAcceptTerms": "(fr)By selecting standard delivery for my permit, I assume all responsibility should my permit get lost or stolen in the mail, or for any other reason that it is not received in the mail, and therefore agree to adhere to all Ministry of Transportation rules for the issuance of a replacement permit.",
+      "TrackedShippingDiscount": "Rabais sur l'expédition",
       "TotalAmount": "Montant total",
       "ShippingAddress": "Adresse d'expédition",
       "RegisteredOwnerAddress": "Adresse du propriétaire enregistré",
@@ -183,8 +199,18 @@ export const resources_fr = {
         "Country": "pays",
         "PostalZipCode": "code postal/code zip"
       },
-      "ProceedToCheckout": "(fr)Proceed to Checkout",
-      "ContinueShopping": "(fr)Continue Shopping",
+      "ClubLocatorMapDialog": {
+        "Title": "Carte de localisation des clubs",
+        "SearchForTheLocation": "(fr)Search for the location where you plan on doing most of your riding this season.",
+        "LoadingMapPleaseWait": "Chargement de la carte. S'il vous plaît, attendez.",
+        "SearchBoxPlaceholder": "Entrez la ville, le village, le code postal, ou l'adresse",
+        "SearchButtonTitle": "Rechercher",
+        "ResetButtonTitle": "Réinitialiser",
+        "SelectedClub": "Club sélectionné",
+        "PleaseSelectClub": "Veuillez sélectionner un club sur la carte ci-dessus"
+      },
+      "ProceedToCheckout": "Passer à la caisse",
+      "ContinueShopping": "Continuer vos achats",
       "MandatoryField": "champ obligatoire"
     },
     "Checkout": {
@@ -192,15 +218,18 @@ export const resources_fr = {
       "ReadAndAgree": "J'ai lu les modalités ci-dessus et je les accepte",
       "ClickToAgree": "Cliquez pour accepter"
     },
+    "Payment": {
+      "Title": "(fr)Payment"
+    },
     "API": {
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "(fr)VIN assigned to another vehicle on account.",
       "API_INVALID_VIN_FORMAT": "(fr)Invalid VIN format.",
       "API_UNEXPECTED_ERROR": "(fr)An unexpected error occured. Please try again later.",
-      "API_REDEMPTION_CODE_INVALID": "",
-      "API_REDEMPTION_CODE_REDEEMED": "",
-      "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "",
-      "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "",
-      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": ""
+      "API_REDEMPTION_CODE_INVALID": "(fr)Redemption code was invalid.",
+      "API_REDEMPTION_CODE_REDEEMED": "(fr)Redemption code has already been redeemed.",
+      "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "(fr)Last name associated with the redemption code did not correspond to your account information.",
+      "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "(fr)Postal code associated with the redemption code did not correspond to your account information.",
+      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "(fr)Vehicle type of the redemption code did not correspond to this snowmobile."
     }
   }
 };

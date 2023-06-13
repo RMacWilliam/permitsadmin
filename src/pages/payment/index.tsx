@@ -66,7 +66,7 @@ function Payment({ appContext, router, setShowAlert }:
                 <title>{t("Payment.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{t("Payment.Title")}</h4>
+            <h4 className="mb-3">{t("Payment.Title")}</h4>
         </>
     )
 }

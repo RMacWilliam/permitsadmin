@@ -153,14 +153,14 @@ export interface IApiSaveUserDetailsRequest {
     telephone?: string;
 }
 
-export interface IApiSaveUserDetailsUserDetails extends IApiUserDetails {
+export interface IApiSaveUserDetailsResultData extends IApiUserDetails {
 
 }
 
 export interface IApiSaveUserDetailsResult {
     isSuccessful?: boolean;
     errorMessage?: string;
-    data?: IApiSaveUserDetailsUserDetails;
+    data?: IApiSaveUserDetailsResultData;
 }
 
 export function apiSaveUserDetails(body?: any, params: any = undefined): Observable<IApiSaveUserDetailsResult> {
@@ -205,14 +205,14 @@ export interface IApiSaveUserPreferencesRequest {
     correspondenceLanguage?: string;
 }
 
-export interface IApiSaveUserPreferencesUserPreferences extends IApiUserPreferences {
+export interface IApiSaveUserPreferencesResultData extends IApiUserPreferences {
 
 }
 
 export interface IApiSaveUserPreferencesResult {
     isSuccessful?: boolean;
     errorMessage?: string;
-    data?: IApiSaveUserPreferencesUserPreferences;
+    data?: IApiSaveUserPreferencesResultData;
 }
 
 export function apiSaveUserPreferences(body?: any, params: any = undefined): Observable<IApiSaveUserPreferencesResult> {
@@ -398,14 +398,14 @@ export interface IApiAddVehicleForUserRequest {
     vehicleYear?: string;
 }
 
-export interface IApiAddVehicleForUserData extends IApiVehicle {
+export interface IApiAddVehicleForUserResultData extends IApiVehicle {
 
 }
 
 export interface IApiAddVehicleForUserResult {
     isSuccessful?: boolean;
     errorMessage?: string;
-    data?: IApiAddVehicleForUserData;
+    data?: IApiAddVehicleForUserResultData;
 }
 
 export function apiAddVehicleForUser(body?: any, params: any = undefined): Observable<IApiAddVehicleForUserResult> {
@@ -425,14 +425,14 @@ export interface IApiUpdateVehicleRequest {
     vehicleYear?: string;
 }
 
-export interface IApiUpdateVehicleData extends IApiVehicle {
+export interface IApiUpdateVehicleResultData extends IApiVehicle {
 
 }
 
 export interface IApiUpdateVehicleResult {
     isSuccessful?: boolean;
     errorMessage?: string;
-    data?: IApiUpdateVehicleData;
+    data?: IApiUpdateVehicleResultData;
 }
 
 export function apiUpdateVehicle(body?: any, params: any = undefined): Observable<IApiUpdateVehicleResult> {
@@ -465,14 +465,14 @@ export interface IApiSavePermitSelectionForVehicleRequest extends IApiVehiclePer
     oVehicleId?: string;
 }
 
-export interface IApiSavePermitSelectionForVehicleData extends IApiVehiclePermitSelections {
+export interface IApiSavePermitSelectionForVehicleResultData extends IApiVehiclePermitSelections {
     oVehicleId?: string;
 }
 
 export interface IApiSavePermitSelectionForVehicleResult {
     isSuccessful?: boolean;
     errorMessage?: string;
-    data?: IApiSavePermitSelectionForVehicleData;
+    data?: IApiSavePermitSelectionForVehicleResultData;
 }
 
 export function apiSavePermitSelectionForVehicle(body?: any, params: any = undefined): Observable<IApiSavePermitSelectionForVehicleResult> {
@@ -565,7 +565,7 @@ export interface IApiAddGiftCardForUserRequest {
     asOfDate?: string;
 }
 
-export interface IApiAddGiftCardForUserGiftCardSelections {
+export interface IApiAddGiftCardForUserResultData {
     giftcardProductId?: number;
     oVoucherId?: string;
     orderId?: string;
@@ -591,7 +591,7 @@ export interface IApiAddGiftCardForUserGiftCardSelections {
 export interface IApiAddGiftCardForUserResult {
     isSuccessful?: boolean;
     errorMessage?: string;
-    data?: IApiAddGiftCardForUserGiftCardSelections;
+    data?: IApiAddGiftCardForUserResultData;
 }
 
 export function apiAddGiftCardForUser(body?: any, params?: any): Observable<IApiAddGiftCardForUserResult> {
@@ -611,7 +611,7 @@ export interface IApiSaveGiftCardSelectionsForUserRequest {
     recipientPostal?: string;
 }
 
-export interface IApiSaveGiftCardSelectionsForUserGiftCardSelections {
+export interface IApiSaveGiftCardSelectionsForUserResultData {
     giftcardProductId?: number;
     oVoucherId?: string;
     orderId?: string;
@@ -637,7 +637,7 @@ export interface IApiSaveGiftCardSelectionsForUserGiftCardSelections {
 export interface IApiSaveGiftCardSelectionsForUserResult {
     isSuccessful?: boolean;
     errorMessage?: string;
-    data?: IApiSaveGiftCardSelectionsForUserGiftCardSelections;
+    data?: IApiSaveGiftCardSelectionsForUserResultData;
 }
 
 export function apiSaveGiftCardSelectionsForUser(body?: any, params?: any): Observable<IApiSaveGiftCardSelectionsForUserResult> {
@@ -660,6 +660,30 @@ export interface IApiDeleteGiftCardResult {
 
 export function apiDeleteGiftCard(body?: any, params?: any): Observable<IApiDeleteGiftCardResult> {
     return httpDelete<IApiDeleteGiftCardResult>(WebApi.DeleteGiftCard, params, body);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiGetIsValidRedemptionCodeForVehicle
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiGetIsValidRedemptionCodeForVehicleRequest {
+    oVehicleId?: string;
+    redemptionCode?: string;
+}
+
+export interface IApiGetIsValidRedemptionCodeForVehicleResultData {
+    isValid?: boolean;
+    message?: string;
+}
+
+export interface IApiGetIsValidRedemptionCodeForVehicleResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiGetIsValidRedemptionCodeForVehicleResultData;
+}
+
+export function apiGetIsValidRedemptionCodeForVehicle(params?: any): Observable<IApiGetIsValidRedemptionCodeForVehicleResult> {
+    return httpGet<IApiGetIsValidRedemptionCodeForVehicleResult>(WebApi.GetIsValidRedemptionCodeForVehicle, params);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -689,6 +713,7 @@ export interface IApiGetShippingFeesRequest {
 export interface IApiGetShippingFeesResult {
     id?: string;
     name?: string;
+    nameFr?: string;
     price?: number;
     showConfirmation?: boolean;
 }
@@ -705,16 +730,75 @@ export interface IApiGetGoogleMapKeyRequest {
 
 }
 
-export interface IApiGetGoogleMapKeyData {
+export interface IApiGetGoogleMapKeyResultData {
     key?: string;
 }
 
 export interface IApiGetGoogleMapKeyResult {
     isSuccessful?: boolean;
     errorMessage?: string;
-    data?: IApiGetGoogleMapKeyData;
+    data?: IApiGetGoogleMapKeyResultData;
 }
 
 export function apiGetGoogleMapKey(params?: any): Observable<IApiGetGoogleMapKeyResult[]> {
     return httpGet<IApiGetGoogleMapKeyResult[]>(WebApi.GetGoogleMapKey, params);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiGetMonerisPreloadResponse
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiGetMonerisPreloadResponseRequest {
+    permits: {
+        oVehicleId: string,
+        redemptionCode: string
+    }[];
+    giftCards: {
+        oVoucherId: string
+    }[],
+    trackedShipping: boolean,
+    shippingTo: number, // 0=primary, 1=alternate
+    alternateAddress: {
+        addressLine1: string,
+        addressLine2: string,
+        city: string,
+        postalCode: string,
+        province: string, // key: ON
+        country: string // key: CA
+    }
+}
+
+export interface IApiGetMonerisPreloadResponseResultData {
+    ticket?: string;
+    orderId?: string;
+    environment?: string;
+    amount?: number;
+}
+
+export interface IApiGetMonerisPreloadResponseResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiGetMonerisPreloadResponseResultData;
+}
+
+export function apiGetMonerisPreloadResponse(params?: any): Observable<IApiGetMonerisPreloadResponseResult[]> {
+    return httpGet<IApiGetMonerisPreloadResponseResult[]>(WebApi.GetMonerisPreloadResponse, params);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// sendGiftCardPdf
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiSendGiftCardPdfRequest {
+
+}
+
+export interface IApiSendGiftCardPdfResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: any;
+}
+
+export function apiSendGiftCardPdf(body?: any, params?: any): Observable<IApiSendGiftCardPdfResult> {
+    return httpPost<IApiSendGiftCardPdfResult>(WebApi.SendGiftCardPdf, params, body);
 }

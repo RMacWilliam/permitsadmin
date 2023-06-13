@@ -207,7 +207,7 @@ function Contact({ appContext, router, setShowAlert }
                 <title>{t("ContactInfo.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{t("ContactInfo.Title")}</h4>
+            <h4 className="mb-3">{t("ContactInfo.Title")}</h4>
 
             <CartItemsAlert></CartItemsAlert>
 
@@ -420,13 +420,13 @@ function Contact({ appContext, router, setShowAlert }
                 </Modal.Body>
                 <Modal.Footer>
                     <div className="container-fluid">
-                        <div className="row gap-2">
-                            <div className="col d-flex align-items-center">
+                        <div className="row d-flex flex-column flex-sm-row gap-2">
+                            <div className="col d-flex justify-content-center justify-content-sm-start align-items-center">
                                 <div className="text-nowrap">
                                     <span className="text-danger me-1">*</span> = {t("ContactInfo.ContactInfoEditDialog.MandatoryField")}
                                 </div>
                             </div>
-                            <div className="col d-flex justify-content-end align-items-center">
+                            <div className="col d-flex justify-content-center justify-content-sm-end align-items-center">
                                 <Button className="me-2" variant="outline-dark" onClick={() => contactInfoDialogSave()}>{t("Common.Save")}</Button>
                                 <Button variant="outline-dark" onClick={() => contactInfoDialogHide()}>{t("Common.Cancel")}</Button>
                             </div>
@@ -501,13 +501,13 @@ function Contact({ appContext, router, setShowAlert }
                 </Modal.Body>
                 <Modal.Footer>
                     <div className="container-fluid">
-                        <div className="row gap-2">
-                            <div className="col d-flex align-items-center">
+                        <div className="row d-flex flex-column flex-sm-row gap-2">
+                            <div className="col d-flex justify-content-center justify-content-sm-start align-items-center">
                                 <div className="text-nowrap">
                                     <span className="text-danger me-1">*</span> = {t("ContactInfo.ContactInfoEditDialog.MandatoryField")}
                                 </div>
                             </div>
-                            <div className="col d-flex justify-content-end align-items-center">
+                            <div className="col d-flex justify-content-center justify-content-sm-end align-items-center">
                                 <Button className="me-2" variant="outline-dark" onClick={() => accountPreferencesDialogSave()}>{t("Common.Save")}</Button>
                                 <Button variant="outline-dark" onClick={() => accountPreferencesDialogHide()}>{t("Common.Cancel")}</Button>
                             </div>
@@ -653,72 +653,72 @@ function Contact({ appContext, router, setShowAlert }
     }
 
     function validateContactInfoDialog(): boolean {
-        let isValid: boolean = true;
+        let result: boolean = true;
 
         if (firstName === "") {
             setIsFirstNameValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsFirstNameValid(true);
         }
 
         if (lastName === "") {
             setIsLastNameValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsLastNameValid(true);
         }
 
         if (addressLine1 === "") {
             setIsAddressLine1Valid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsAddressLine1Valid(true);
         }
 
         if (city === "") {
             setIsCityValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsCityValid(true);
         }
 
         if (province?.key == undefined || province.key === "") {
             setIsProvinceValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsProvinceValid(true);
         }
 
         if (country?.key == undefined || country.key === "") {
             setIsCountryValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsCountryValid(true);
         }
 
         if (postalCode === "") {
             setIsPostalCodeValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsPostalCodeValid(true);
         }
 
         if (telephone === "") {
             setIsTelephoneValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsTelephoneValid(true);
         }
 
         if (email === "") {
             setIsEmailValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsEmailValid(true);
         }
 
-        return isValid;
+        return result;
     }
 
     function contactInfoDialogHide(): void {
@@ -779,37 +779,37 @@ function Contact({ appContext, router, setShowAlert }
     }
 
     function validateAccountPreferencesDialog(): boolean {
-        let isValid: boolean = true;
+        let result: boolean = true;
 
         if (ofscContactPermission === -1) {
             setIsOfscContactPermissionValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsOfscContactPermissionValid(true);
         }
 
         if (riderAdvantage === -1) {
             setIsRiderAdvantageValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsRiderAdvantageValid(true);
         }
 
         if (volunteering === -1) {
             setIsVolunteeringValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsVolunteeringValid(true);
         }
 
         if (correspondenceLanguage === "") {
             setIsCorrespondenceLanguageValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsCorrespondenceLanguageValid(true);
         }
 
-        return isValid;
+        return result;
     }
 
     function accountPreferencesDialogHide(): void {

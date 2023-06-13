@@ -115,6 +115,7 @@ export function login(router: NextRouter, appContext: IAppContextValues, apiLogi
         draft.isFirstLoginOfSeason = apiLoginResult.isFirstLoginOfSeason;
         draft.isContactInfoVerified = false;
 
+        draft.cart = { shipping: undefined, shipTo: undefined, alternateAddress: {} },
         draft.cartItems = undefined;
 
         draft.navbarPage = "contact";
@@ -139,6 +140,7 @@ export function logout(router: NextRouter, appContext: IAppContextValues): void 
         draft.isFirstLoginOfSeason = undefined;
         draft.isContactInfoVerified = undefined;
 
+        draft.cart = undefined;
         draft.cartItems = undefined;
 
         draft.navbarPage = undefined;

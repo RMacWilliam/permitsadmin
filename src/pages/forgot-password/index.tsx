@@ -32,7 +32,7 @@ function ForgotPassword({ appContext, router }
                 <title>{t("ForgotPassword.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{t("ForgotPassword.Title")}</h4>
+            <h4 className="mb-3">{t("ForgotPassword.Title")}</h4>
 
             <p>{t("ForgotPassword.Section1")}</p>
 

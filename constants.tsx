@@ -35,11 +35,16 @@ export class WebApi {
     static AddGiftCardForUser: string = WebApi.BaseUrl + "giftcard/addgiftcardforuser";
     static SaveGiftCardSelectionsForUser: string = WebApi.BaseUrl + "giftcard/savegiftcardselectionsforuser";
     static DeleteGiftCard: string = WebApi.BaseUrl + "giftcard/deletegiftcard";
+    static GetIsValidRedemptionCodeForVehicle: string = WebApi.BaseUrl + "giftcard/getIsValidRedemptionCodeForVehicle";
 
     // Permit
     static GetProcessingFee: string = WebApi.BaseUrl + "permit/getprocessingfee";
     static GetShippingFees: string = WebApi.BaseUrl + "permit/getshippingfees";
     static GetGoogleMapKey: string = WebApi.BaseUrl + "permit/getgooglemapkey";
+    static GetMonerisPreloadResponse: string = WebApi.BaseUrl + "permit/GetMonerisPreloadResponse";
+
+    // Documents
+    static SendGiftCardPdf: string = WebApi.BaseUrl + "documents/sendgiftcardpdf";
 }
 
 export class Constants {

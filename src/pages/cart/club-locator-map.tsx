@@ -2,13 +2,15 @@ import { useRef, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import $ from 'jquery';
+import { IAppContextValues } from '@/custom/app-context';
 
-export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapSnowmobileId, googleMapKey, selectClubFromClubLocatorMapSelection }
+export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapSnowmobileId, googleMapKey, appContext, selectClubFromClubLocatorMapSelection }
     : {
         showDialog: boolean,
         closeClick: Function,
         clubLocatorMapSnowmobileId: string,
         googleMapKey: string | undefined,
+        appContext: IAppContextValues,
         selectClubFromClubLocatorMapSelection: Function
     }) {
 
@@ -35,6 +37,8 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
     ];
 
     let image: any;
+
+    const t: Function = appContext.translation.t;
 
     if (window.google == undefined) {
         $.getScript(`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=${googleMapKey}`, function () {
@@ -63,7 +67,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
             <Modal show={showDialog} onHide={() => cancelClick()} backdrop="static" keyboard={false} dialogClassName="modal-width-75-percent">
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        Club Locator Map
+                        {t("Cart.ClubLocatorMapDialog.Title")}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -85,7 +89,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                                         <i className="fa-solid fa-spinner fa-spin fa-2xl"></i>
                                     </div>
                                     <div>
-                                        Loading map. Please wait.
+                                        {t("Cart.ClubLocatorMapDialog.LoadingMapPleaseWait")}
                                     </div>
                                 </div>
                             </div>
@@ -96,23 +100,23 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                                 <div className="col-12">
                                     <div className="mb-3">
                                         <label htmlFor="club-locator-map-input" className="form-label">
-                                            Search for the location where you plan on doing most of your riding this season.
+                                            {t("Cart.ClubLocatorMapDialog.SearchForTheLocation")}
                                         </label>
 
                                         <div className="input-group">
-                                            <input id="club-locator-map-input" type="text" className="form-control" placeholder="Enter city, town, postal code, or address" onKeyUp={(e: any) => searchBoxKeyUp(e)} />
+                                            <input id="club-locator-map-input" type="text" className="form-control" placeholder={t("Cart.ClubLocatorMapDialog.SearchBoxPlaceholder")} onKeyUp={(e: any) => searchBoxKeyUp(e)} />
 
-                                            <button className="btn btn-outline-dark d-none d-md-block" style={{ minWidth: "70px", borderRight: "none" }} type="button" onClick={() => codeAddress()}>
+                                            <button className="btn btn-outline-dark d-none d-md-block" style={{ minWidth: "70px", borderRight: "none" }} type="button" title={t("Cart.ClubLocatorMapDialog.SearchButtonTitle")} onClick={() => codeAddress()}>
                                                 <i className="fa-solid fa-magnifying-glass"></i>
                                             </button>
-                                            <button className="btn btn-outline-dark d-none d-md-block" style={{ minWidth: "70px" }} type="button" onClick={() => initializeIt()}>
+                                            <button className="btn btn-outline-dark d-none d-md-block" style={{ minWidth: "70px" }} type="button" title={t("Cart.ClubLocatorMapDialog.ResetButtonTitle")} onClick={() => initializeIt()}>
                                                 <i className="fa-solid fa-xmark"></i>
                                             </button>
 
-                                            <button className="btn btn-outline-dark d-md-none" style={{ borderRight: "none" }} type="button" onClick={() => codeAddress()}>
+                                            <button className="btn btn-outline-dark d-md-none" style={{ borderRight: "none" }} type="button" title={t("Cart.ClubLocatorMapDialog.SearchButtonTitle")} onClick={() => codeAddress()}>
                                                 <i className="fa-solid fa-magnifying-glass"></i>
                                             </button>
-                                            <button className="btn btn-outline-dark d-md-none" type="button" onClick={() => initializeIt()}>
+                                            <button className="btn btn-outline-dark d-md-none" type="button" title={t("Cart.ClubLocatorMapDialog.ResetButtonTitle")} onClick={() => initializeIt()}>
                                                 <i className="fa-solid fa-xmark"></i>
                                             </button>
                                         </div>
@@ -130,7 +134,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                             <div className="row">
                                 <div className="col-12">
                                     <div className="text-center fw-semibold mt-2">
-                                        Selected Club: <span id="selected-club">Please select a club from the map above</span>
+                                        {t("Cart.ClubLocatorMapDialog.SelectedClub")}: <span id="selected-club">{t("Cart.ClubLocatorMapDialog.PleaseSelectClub")}</span>
                                     </div>
                                 </div>
                             </div>
@@ -141,11 +145,11 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                     <div className="container-fluid">
                         <div className="row">
                             <div className="col">
-                                {/* <span className="text-danger me-1">*</span>= mandatory field */}
+                                &nbsp;
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="outline-dark" onClick={() => selectClick()}>Select</Button>
-                                <Button variant="outline-dark" onClick={() => cancelClick()}>Cancel</Button>
+                                <Button className="me-2" variant="outline-dark" onClick={() => selectClick()}>{t("Common.Select")}</Button>
+                                <Button variant="outline-dark" onClick={() => cancelClick()}>{t("Common.Cancel")}</Button>
                             </div>
                         </div>
                     </div>
@@ -225,7 +229,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
         selectedClub.current = undefined;
         $("#selected-club").empty();
-        $("#selected-club").append("Please select a club from the map above");
+        $("#selected-club").append(t("Cart.ClubLocatorMapDialog.PleaseSelectClub"));
 
         closeInfoWindows();
 
@@ -312,9 +316,9 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                         findCloseClubs(map, locOut);
                     }
                 } else if (status === google.maps.GeocoderStatus.ZERO_RESULTS) {
-                    $("#club-locator-map-input-message").append("Sorry, we couldn't find the location you entered.");
+                    $("#club-locator-map-input-message").append(t("Cart.ClubLocatorMapDialog.SorryCouldNotFindLocation"));
                 } else {
-                    $("#club-locator-map-input-message").append("Sorry, there was a problem searching for your location.");
+                    $("#club-locator-map-input-message").append(t("Cart.ClubLocatorMapDialog.SorryThereWasAProblem"));
                 }
             });
         }
@@ -490,7 +494,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
             selectedClub.current = undefined;
             $("#selected-club").empty();
-            $("#selected-club").append("Please select a club from the map above");
+            $("#selected-club").append(t("Cart.ClubLocatorMapDialog.PleaseSelectClub"));
         });
 
         google.maps.event.addListener(clubPolys[index], "click", function () {

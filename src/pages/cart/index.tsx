@@ -1,14 +1,13 @@
-import ConfirmationDialog from "@/components/confirmation-dialog";
+import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from "@/components/confirmation-dialog";
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
-import { IApiGetClubsResult, IApiGetCountriesResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetShippingFeesResult, apiGetClubs, apiGetCountries, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, IApiSavePermitSelectionForVehicleRequest, apiSavePermitSelectionForVehicle, IApiSavePermitSelectionForVehicleResult, apiGetGoogleMapKey, IApiGetGoogleMapKeyResult } from "@/custom/api";
+import { IApiGetClubsResult, IApiGetCountriesResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetShippingFeesResult, apiGetClubs, apiGetCountries, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, IApiSavePermitSelectionForVehicleRequest, apiSavePermitSelectionForVehicle, IApiSavePermitSelectionForVehicleResult, apiGetGoogleMapKey, IApiGetGoogleMapKeyResult, apiGetIsValidRedemptionCodeForVehicle, IApiGetIsValidRedemptionCodeForVehicleResult, IApiGetIsValidRedemptionCodeForVehicleRequest } from "@/custom/api";
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IParentKeyValue, IRedeemableGiftCards, IShippingFee, ISnowmobile, IPermitSelections } from "@/custom/app-context";
-import { formatCurrency, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from "@/custom/utilities";
+import { formatCurrency, getApiErrorMessage, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from "@/custom/utilities";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { Observable, Subscription, forkJoin } from "rxjs";
 import Select from 'react-select';
-import { Constants } from "../../../constants";
 import ClubLocatorMap from "./club-locator-map";
 import { getLocalizedValue } from "@/localization/i18n";
 
@@ -49,29 +48,15 @@ function Cart({ appContext, router, setShowAlert }:
     const [showClubLocatorMapDialog, setShowClubLocatorMapDialog] = useState(false);
     const [clubLocatorMapSnowmobileId, setClubLocatorMapSnowmobileId] = useState("");
 
-    const [shipping, setShipping] = useState("");
     const [isShippingValid, setIsShippingValid] = useState(true);
 
     const [standardShippingWarning, setStandardShippingWarning] = useState(false);
     const [isStandardShippingWarningValid, setIsStandardShippingWarningValid] = useState(true);
 
-    const [shipTo, setShipTo] = useState(ShipTo.Registered);
-
-    const [addressLine1, setAddressLine1] = useState("");
     const [isAddressLine1Valid, setIsAddressLine1Valid] = useState(true);
-
-    const [addressLine2, setAddressLine2] = useState("");
-
-    const [city, setCity] = useState("");
     const [isCityValid, setIsCityValid] = useState(true);
-
-    const [province, setProvince] = useState({ parent: "", key: "", value: "" });
     const [isProvinceValid, setIsProvinceValid] = useState(true);
-
-    const [country, setCountry] = useState({ key: "", value: "" });
     const [isCountryValid, setIsCountryValid] = useState(true);
-
-    const [postalCode, setPostalCode] = useState("");
     const [isPostalCodeValid, setIsPostalCodeValid] = useState(true);
 
     const [processingFee, setProcessingFee] = useState(0);
@@ -113,6 +98,7 @@ function Cart({ appContext, router, setShowAlert }:
                     const shippingFees: IShippingFee[] = apiGetShippingFeesResult.map<IShippingFee>((x: IApiGetShippingFeesResult) => ({
                         id: x?.id,
                         name: x?.name,
+                        nameFr: x?.nameFr,
                         price: x?.price,
                         showConfirmation: x?.showConfirmation
                     }));
@@ -138,7 +124,7 @@ function Cart({ appContext, router, setShowAlert }:
                 const apiGetCountriesResult: IApiGetCountriesResult[] = results[3] as IApiGetCountriesResult[];
 
                 if (apiGetCountriesResult != undefined && apiGetCountriesResult.length > 0) {
-                    const countries: IKeyValue[] = apiGetCountriesResult.map<IKeyValue>(x => ({
+                    const countries: IKeyValue[] = apiGetCountriesResult.slice(0, 2).map<IKeyValue>(x => ({
                         key: x?.key ?? "",
                         value: x?.value ?? "",
                         valueFr: x?.valueFr ?? ""
@@ -202,7 +188,7 @@ function Cart({ appContext, router, setShowAlert }:
                 <title>{t("Cart.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{t("Cart.Title")}</h4>
+            <h4 className="mb-3">{t("Cart.Title")}</h4>
 
             {getCartItems() != undefined && getCartItems().length === 0 && (
                 <div>You have not added any items to your cart.</div>
@@ -216,23 +202,21 @@ function Cart({ appContext, router, setShowAlert }:
                                 <li className="list-group-item" key={cartItem.id}>
                                     <div className="d-flex my-2">
                                         <div className="flex-fill">
-                                            <span className="me-2">
-                                                {cartItem.isPermit && (
-                                                    <i className="fa-solid fa-snowflake me-2"></i>
-                                                )}
-                                                {cartItem.isGiftCard && (
-                                                    <i className="fa-solid fa-gift me-2"></i>
-                                                )}
+                                            {cartItem.isPermit && (
+                                                <i className="fa-solid fa-snowflake me-2"></i>
+                                            )}
+                                            {cartItem.isGiftCard && (
+                                                <i className="fa-solid fa-gift me-2"></i>
+                                            )}
 
-                                                {appContext.translation.i18n.language === "fr" && (
-                                                    <span>{cartItem.descriptionFr}</span>
-                                                )}
-                                                {appContext.translation.i18n.language === "en" && (
-                                                    <span>{cartItem.description}</span>
-                                                )}
-                                            </span>
+                                            {appContext.translation.i18n.language === "fr" && (
+                                                <span>{cartItem.descriptionFr}</span>
+                                            )}
+                                            {appContext.translation.i18n.language === "en" && (
+                                                <span>{cartItem.description}</span>
+                                            )}
 
-                                            <button className="btn btn-link text-danger" style={{ display: "contents" }} type="button" onClick={() => removeCartItemClick(cartItem.id)}>
+                                            <button className="btn btn-link text-danger align-baseline ms-2 p-0" type="button" onClick={() => removeCartItemClick(cartItem.id)}>
                                                 {t("Common.Delete")}
                                             </button>
                                         </div>
@@ -250,11 +234,11 @@ function Cart({ appContext, router, setShowAlert }:
                                                                 {cartItem?.redemptionCode != undefined && (
                                                                     <div className="d-flex justify-content-between flex-wrap gap-2">
                                                                         <div className="fw-semibold w-100">
-                                                                            <span className="me-2">Gift card redemption ({cartItem?.redemptionCode})</span>
+                                                                            Gift card redemption ({cartItem?.redemptionCode})
 
-                                                                            <a className="btn btn-link text-danger" style={{ display: "contents" }} type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
+                                                                            <button className="btn btn-link text-danger align-baseline ms-2 p-0" type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
                                                                                 {t("Common.Delete")}
-                                                                            </a>
+                                                                            </button>
                                                                         </div>
 
                                                                         <div className="fw-bold text-danger text-end ms-auto">${formatCurrency(cartItem?.giftCardAmount)}</div>
@@ -267,14 +251,14 @@ function Cart({ appContext, router, setShowAlert }:
 
                                                                         <div className="d-flex flex-column gap-2">
                                                                             <div className="input-group">
-                                                                                <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter gift card redemption code" value={cartItem?.uiRedemptionCode} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
+                                                                                <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter gift card redemption code" value={cartItem?.uiRedemptionCode} onKeyUp={(e: any) => redemptionCodeKeyUp(e, cartItem?.id)} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
                                                                                 <button className="btn btn-outline-dark d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
                                                                             </div>
 
                                                                             <button className="btn btn-outline-dark btn-sm d-sm-none" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
 
                                                                             {cartItem?.uiShowRedemptionCodeNotFound && (
-                                                                                <div className="text-danger">Redemption code not found.</div>
+                                                                                <div className="text-danger">{cartItem?.uiRedemptionCodeErrorMessage}</div>
                                                                             )}
                                                                         </div>
                                                                     </>
@@ -287,18 +271,24 @@ function Cart({ appContext, router, setShowAlert }:
                                                         <div className="card-body footer-color">
                                                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                                 <div className="d-flex flex-fill align-items-center">
-                                                                    <div className="fw-semibold required">Select a Club</div>
-                                                                    <button type="button" className="btn btn-link p-0 ms-2" onClick={() => setShowClubInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
+                                                                    <div className="fw-semibold required">{t("Cart.SelectClub")}</div>
+                                                                    <button type="button" className="btn btn-link p-0 ms-2" onClick={() => setShowClubInfoDialog(true)}>
+                                                                        <i className="fa-solid fa-circle-info fa-lg"></i>
+                                                                    </button>
                                                                 </div>
 
                                                                 <div className="d-none d-sm-block">
-                                                                    <button type="button" className="btn btn-link text-decoration-none p-0" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}><i className="fa-solid fa-map fa-lg me-2"></i>Use Club Locator Map</button>
+                                                                    <button type="button" className="btn btn-link text-black p-0" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}>
+                                                                        <i className="fa-solid fa-map fa-lg me-2"></i>{t("Cart.UseClubLocatorMap")}
+                                                                    </button>
                                                                 </div>
                                                             </div>
 
                                                             <div className="mt-2">
                                                                 <Select id={`cart-club-${cartItem?.itemId}`} className="react-select" aria-label="Club" classNames={getClubReactSelectClasses(cartItem?.id)} isClearable={true} placeholder={t("Common.PleaseSelect")} options={getClubsData()} value={getSelectedClub(cartItem?.itemId)} onChange={(e: any) => permitClubChange(e, cartItem?.itemId)} />
-                                                                <button type="button" className="btn btn-link text-decoration-none d-sm-none p-0 mt-2" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}><i className="fa-solid fa-map fa-lg me-2"></i>Use Club Locator Map</button>
+                                                                <button type="button" className="btn btn-link text-black text-start d-sm-none p-0 mt-2" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}>
+                                                                    <i className="fa-solid fa-map fa-lg me-2"></i>{t("Cart.UseClubLocatorMap")}
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -325,7 +315,7 @@ function Cart({ appContext, router, setShowAlert }:
                                             <div className="card-body footer-color">
                                                 <div className="d-flex justify-content-between flex-wrap gap-2">
                                                     <div className="fw-semibold w-100">
-                                                        Transaction and Administration Fee Discount
+                                                        {t("Cart.TransactionAndAdminFeeDiscount")}
                                                     </div>
 
                                                     <div className="fw-bold text-danger text-end ms-auto">$-{formatCurrency(processingFee)}</div>
@@ -341,11 +331,18 @@ function Cart({ appContext, router, setShowAlert }:
 
                                 <div className="d-flex">
                                     <div className="flex-column me-auto w-100">
-                                        <select id="cart-shipping" className={`form-select ${isShippingValid ? "" : "is-invalid"}`} aria-label="Shipping" value={shipping} onChange={(e: any) => shippingChange(e)}>
+                                        <select id="cart-shipping" className={`form-select ${isShippingValid ? "" : "is-invalid"}`} aria-label="Shipping" value={getShipping()} onChange={(e: any) => shippingChange(e)}>
                                             <option value="">{t("Common.PleaseSelect")}</option>
 
                                             {shippingFeesData != undefined && shippingFeesData.length > 0 && getShippingFeesData().map(shippingMethod => (
-                                                <option value={shippingMethod.id} key={shippingMethod.id}>{shippingMethod.name}</option>
+                                                <>
+                                                    {appContext.translation.i18n.language === "en" && (
+                                                        <option value={shippingMethod?.id} key={shippingMethod?.id}>{shippingMethod?.name}</option>
+                                                    )}
+                                                    {appContext.translation.i18n.language === "fr" && (
+                                                        <option value={shippingMethod?.id} key={shippingMethod?.id}>{shippingMethod?.nameFr}</option>
+                                                    )}
+                                                </>
                                             ))}
                                         </select>
                                     </div>
@@ -359,9 +356,7 @@ function Cart({ appContext, router, setShowAlert }:
                                     <div className="form-check mt-2">
                                         <input className={`form-check-input ${isStandardShippingWarningValid ? "" : "is-invalid"}`} type="checkbox" value="" id="cart-standard-shipping-verification" defaultChecked={standardShippingWarning} onChange={(e: any) => { setStandardShippingWarning(e.target.checked) }} />
                                         <label className="form-check-label required" htmlFor="cart-standard-shipping-verification">
-                                            By selecting standard delivery for my permit, I assume all responsibility should my permit get lost or stolen in the mail,
-                                            or for any other reason that it is not received in the mail, and therefore agree to adhere to all Ministry of Transportation rules
-                                            for the issuance of a replacement permit.
+                                            {t("Cart.StandardShippingAcceptTerms")}
                                         </label>
                                     </div>
                                 )}
@@ -371,7 +366,7 @@ function Cart({ appContext, router, setShowAlert }:
                                         <div className="card-body footer-color">
                                             <div className="d-flex justify-content-between flex-wrap gap-2">
                                                 <div className="fw-semibold w-100">
-                                                    Tracked Shipping Discount
+                                                    {t("Cart.TrackedShippingDiscount")}
                                                 </div>
 
                                                 <div className="fw-bold text-danger text-end ms-auto">${formatCurrency(getTrackedShippingDiscount())}</div>
@@ -399,7 +394,7 @@ function Cart({ appContext, router, setShowAlert }:
                             <div className="fw-semibold mb-2">{t("Cart.ShippingAddress")}</div>
 
                             <div className="form-check">
-                                <input className="form-check-input" type="radio" name="shipTo" id="shipToRegistered" checked={shipTo === ShipTo.Registered} value={ShipTo.Registered} onChange={() => shipToAddressChange(ShipTo.Registered)} />
+                                <input className="form-check-input" type="radio" name="shipTo" id="shipToRegistered" checked={getShipTo() === ShipTo.Registered} value={ShipTo.Registered} onChange={() => shipToAddressChange(ShipTo.Registered)} />
                                 <label className="form-check-label" htmlFor="shipToRegistered">
                                     {t("Cart.RegisteredOwnerAddress")}
                                 </label>
@@ -421,23 +416,23 @@ function Cart({ appContext, router, setShowAlert }:
                             </div>
 
                             <div className="form-check mt-2">
-                                <input className="form-check-input" type="radio" name="shipTo" id="shipToAlternate" checked={shipTo === ShipTo.Alternate} value={ShipTo.Alternate} onChange={() => shipToAddressChange(ShipTo.Alternate)} />
+                                <input className="form-check-input" type="radio" name="shipTo" id="shipToAlternate" checked={getShipTo() === ShipTo.Alternate} value={ShipTo.Alternate} onChange={() => shipToAddressChange(ShipTo.Alternate)} />
                                 <label className="form-check-label" htmlFor="shipToAlternate">
                                     {t("Cart.AlternateAddress")}
                                 </label>
 
-                                {shipTo === ShipTo.Alternate && (
+                                {getShipTo() === ShipTo.Alternate && (
                                     <div className="container-fluid mt-1">
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-6">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className={`form-control ${isAddressLine1Valid ? "" : "is-invalid"}`} id="alternate-address-address-line-1" placeholder={t("Cart.AlternateAddressFields.AddressLine1")} value={addressLine1} onChange={(e: any) => setAddressLine1(e.target.value)} />
+                                                    <input type="text" className={`form-control ${isAddressLine1Valid ? "" : "is-invalid"}`} id="alternate-address-address-line-1" placeholder={t("Cart.AlternateAddressFields.AddressLine1")} value={getAddressLine1()} onChange={(e: any) => updateAddressLine1(e.target.value)} />
                                                     <label className="required" htmlFor="alternate-address-address-line-1">{t("Cart.AlternateAddressFields.AddressLine1")}</label>
                                                 </div>
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-6">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className="form-control" id="alternate-address-address-line-2" placeholder={t("Cart.AlternateAddressFields.AddressLine2")} value={addressLine2} onChange={(e: any) => setAddressLine2(e.target.value)} />
+                                                    <input type="text" className="form-control" id="alternate-address-address-line-2" placeholder={t("Cart.AlternateAddressFields.AddressLine2")} value={getAddressLine2()} onChange={(e: any) => updateAddressLine2(e.target.value)} />
                                                     <label htmlFor="alternate-address-address-line-2">{t("Cart.AlternateAddressFields.AddressLine2")}</label>
                                                 </div>
                                             </div>
@@ -446,17 +441,17 @@ function Cart({ appContext, router, setShowAlert }:
                                         <div className="row">
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className={`form-control ${isCityValid ? "" : "is-invalid"}`} id="alternate-address-city" placeholder={t("Cart.AlternateAddressFields.CityTownOrVillage")} value={city} onChange={(e: any) => setCity(e.target.value)} />
+                                                    <input type="text" className={`form-control ${isCityValid ? "" : "is-invalid"}`} id="alternate-address-city" placeholder={t("Cart.AlternateAddressFields.CityTownOrVillage")} value={getCity()} onChange={(e: any) => updateCity(e.target.value)} />
                                                     <label className="required" htmlFor="alternate-address-city">{t("Cart.AlternateAddressFields.CityTownOrVillage")}</label>
                                                 </div>
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <select className={`form-select ${isProvinceValid ? "" : "is-invalid"}`} id="alternate-address-province" aria-label={t("Cart.AlternateAddressFields.ProvinceState")} value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
+                                                    <select className={`form-select ${isProvinceValid ? "" : "is-invalid"}`} id="alternate-address-province" aria-label={t("Cart.AlternateAddressFields.ProvinceState")} value={getProvince()} onChange={(e: any) => updateProvince(e)}>
                                                         <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                                         {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
-                                                            <option value={`${country.key}|${provinceData.key}`} key={`${country.key}|${provinceData.key}`}>{getLocalizedValue(provinceData)}</option>
+                                                            <option value={`${appContext.data?.cart?.alternateAddress?.country?.key}|${provinceData.key}`} key={`${appContext.data?.cart?.alternateAddress?.country?.key}|${provinceData.key}`}>{getLocalizedValue(provinceData)}</option>
                                                         ))}
                                                     </select>
                                                     <label className="required" htmlFor="alternate-address-province">{t("Cart.AlternateAddressFields.ProvinceState")}</label>
@@ -464,7 +459,7 @@ function Cart({ appContext, router, setShowAlert }:
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <select className={`form-select ${isCountryValid ? "" : "is-invalid"}`} id="alternate-address-country" aria-label={t("Cart.AlternateAddressFields.Country")} value={country.key} onChange={(e: any) => countryChange(e)}>
+                                                    <select className={`form-select ${isCountryValid ? "" : "is-invalid"}`} id="alternate-address-country" aria-label={t("Cart.AlternateAddressFields.Country")} value={getCountry()} onChange={(e: any) => updateCountry(e)}>
                                                         <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                                         {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
@@ -476,7 +471,7 @@ function Cart({ appContext, router, setShowAlert }:
                                             </div>
                                             <div className="col-12 col-sm-12 col-md-3">
                                                 <div className="form-floating mb-2">
-                                                    <input type="text" className={`form-control ${isPostalCodeValid ? "" : "is-invalid"}`} id="alternate-address-postal-code" placeholder={t("Cart.AlternateAddressFields.PostalZipCode")} value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
+                                                    <input type="text" className={`form-control ${isPostalCodeValid ? "" : "is-invalid"}`} id="alternate-address-postal-code" placeholder={t("Cart.AlternateAddressFields.PostalZipCode")} value={getPostalCode()} onChange={(e: any) => updatePostalCode(e.target.value)} />
                                                     <label className="required" htmlFor="alternate-address-postal-code">{t("Cart.AlternateAddressFields.PostalZipCode")}</label>
                                                 </div>
                                             </div>
@@ -489,8 +484,8 @@ function Cart({ appContext, router, setShowAlert }:
 
                     <div className="card mb-3">
                         <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
-                            <button className="btn btn-outline-dark" onClick={() => checkoutClick()}>{t("Cart.ProceedToCheckout")}</button>
-                            <button className="btn btn-outline-dark" onClick={() => continueShoppingClick()}>{t("Cart.ContinueShopping")}</button>
+                            <button className="btn btn-primary" onClick={() => checkoutClick()}>{t("Cart.ProceedToCheckout")}</button>
+                            <button className="btn btn-primary" onClick={() => continueShoppingClick()}>{t("Cart.ContinueShopping")}</button>
                         </div>
                     </div>
 
@@ -500,14 +495,14 @@ function Cart({ appContext, router, setShowAlert }:
                 </>
             )}
 
-            <ConfirmationDialog showDialog={showClubInfoDialog} title="Information" buttons={0} icon="information" width="50"
+            <ConfirmationDialog showDialog={showClubInfoDialog} title="Information" buttons={ConfirmationDialogButtons.Ok} icon={ConfirmationDialogIcons.Information} width="50"
                 okClick={() => setShowClubInfoDialog(false)} closeClick={() => setShowClubInfoDialog(false)}>
                 <div>By choosing a specific club when buying a permit, you're directly helping that club groom and maintain the trails you enjoy riding most often, so please buy where you ride and make your selection below.</div>
             </ConfirmationDialog>
 
-            {googleMapKey != undefined && (
+            {googleMapKey != undefined && showClubLocatorMapDialog && (
                 <ClubLocatorMap showDialog={showClubLocatorMapDialog} closeClick={() => setShowClubLocatorMapDialog(false)}
-                    clubLocatorMapSnowmobileId={clubLocatorMapSnowmobileId} googleMapKey={googleMapKey}
+                    clubLocatorMapSnowmobileId={clubLocatorMapSnowmobileId} googleMapKey={googleMapKey} appContext={appContext}
                     selectClubFromClubLocatorMapSelection={(snowmobileId?: string, selectedClub?: string) => selectClubFromClubLocatorMapSelection(snowmobileId, selectedClub)} />
             )}
         </>
@@ -537,10 +532,10 @@ function Cart({ appContext, router, setShowAlert }:
         if (shippingFeesData != undefined && shippingFeesData.length > 0) {
             let countryKey: string | undefined = "";
 
-            if (shipTo === ShipTo.Registered) {
+            if (appContext.data.cart?.shipTo === ShipTo.Registered) {
                 countryKey = appContext.data?.contactInfo?.country?.key;
-            } else if (shipTo === ShipTo.Alternate) {
-                countryKey = country?.key;
+            } else if (appContext.data.cart?.shipTo === ShipTo.Alternate) {
+                countryKey = appContext.data?.cart?.alternateAddress?.country?.key;
             }
 
             if (countryKey === "CA") {
@@ -610,8 +605,8 @@ function Cart({ appContext, router, setShowAlert }:
     function getShippingFee(): number {
         let result: number = 0;
 
-        if (shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
-            const item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
+        if (appContext.data.cart?.shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
+            const item: IShippingFee = shippingFeesData.filter(x => x.id === appContext.data.cart?.shipping)[0];
 
             if (item != undefined) {
                 result = item?.price ?? 0;
@@ -663,8 +658,8 @@ function Cart({ appContext, router, setShowAlert }:
     function isStandardShippingWarningVisible(): boolean {
         let result: boolean = false;
 
-        if (shipping != undefined) {
-            const shippingFee: IShippingFee = shippingFeesData?.filter(x => x?.id === shipping)[0];
+        if (appContext.data.cart?.shipping != undefined) {
+            const shippingFee: IShippingFee = shippingFeesData?.filter(x => x?.id === appContext.data.cart?.shipping)[0];
 
             if (shippingFee != undefined) {
                 result = shippingFee?.showConfirmation ?? false;
@@ -678,8 +673,8 @@ function Cart({ appContext, router, setShowAlert }:
         let result: boolean = false;
 
         // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then display tracked shipping discount.
-        if (shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
-            const item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
+        if (appContext.data.cart?.shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
+            const item: IShippingFee = shippingFeesData.filter(x => x.id === appContext.data.cart?.shipping)[0];
 
             if (item != undefined && item?.name === "Tracked"
                 && getCartItems()?.some(x => x?.giftCardTrackingShippingAmount != undefined)) {
@@ -695,8 +690,8 @@ function Cart({ appContext, router, setShowAlert }:
         let result: number = 0;
 
         // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then return tracked shipping discount.
-        if (shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
-            const item: IShippingFee = shippingFeesData.filter(x => x.id === shipping)[0];
+        if (appContext.data.cart?.shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
+            const item: IShippingFee = shippingFeesData.filter(x => x.id === appContext.data.cart?.shipping)[0];
 
             if (item != undefined && item?.name === "Tracked"
                 && getCartItems()?.some(x => x?.giftCardTrackingShippingAmount != undefined)) {
@@ -724,9 +719,15 @@ function Cart({ appContext, router, setShowAlert }:
         router.push("/home");
     }
 
+    function getShipping(): string {
+        return appContext.data.cart?.shipping ?? "";
+    }
+
     function shippingChange(e: any): void {
         if (e != undefined) {
-            setShipping(e?.target?.value ?? "");
+            appContext.updater(draft => {
+                draft.cart!.shipping = e?.target?.value;
+            });
 
             setIsShippingValid(true);
             setIsStandardShippingWarningValid(true);
@@ -734,7 +735,7 @@ function Cart({ appContext, router, setShowAlert }:
     }
 
     function validateCart(): boolean {
-        let isValid: boolean = true;
+        let result: boolean = true;
 
         // Validate that all permits has a selected club.
         let isPermitsValid: boolean = true;
@@ -751,13 +752,13 @@ function Cart({ appContext, router, setShowAlert }:
         });
 
         if (!isPermitsValid) {
-            isValid = false;
+            result = false;
         }
 
         // Validate that a shipping method is selected.
-        if (shipping === "") {
+        if (appContext.data.cart?.shipping == undefined) {
             setIsShippingValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsShippingValid(true);
         }
@@ -765,50 +766,56 @@ function Cart({ appContext, router, setShowAlert }:
         // Validate that standard shipping warning is accepted by user.
         if (isStandardShippingWarningVisible() && standardShippingWarning === false) {
             setIsStandardShippingWarningValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsStandardShippingWarningValid(true);
         }
 
         // Validate that alternate address fields have values if ship to alternate address is selected.
-        if (shipTo === ShipTo.Alternate) {
-            if (addressLine1 === "") {
+        if (appContext.data.cart?.shipTo === ShipTo.Alternate) {
+            if (appContext.data.cart?.alternateAddress?.addressLine1 == undefined) {
                 setIsAddressLine1Valid(false);
-                isValid = false;
+                result = false;
             } else {
                 setIsAddressLine1Valid(true);
             }
 
-            if (city === "") {
+            if (appContext.data.cart?.alternateAddress?.city == undefined) {
                 setIsCityValid(false);
-                isValid = false;
+                result = false;
             } else {
                 setIsCityValid(true);
             }
 
-            if (province?.key == undefined || province.key === "") {
+            if (appContext.data.cart?.alternateAddress?.province == undefined
+                || appContext.data.cart?.alternateAddress?.province?.key == undefined
+                || appContext.data.cart?.alternateAddress?.province.key === "") {
+
                 setIsProvinceValid(false);
-                isValid = false;
+                result = false;
             } else {
                 setIsProvinceValid(true);
             }
 
-            if (country?.key == undefined || country.key === "") {
+            if (appContext.data.cart?.alternateAddress?.country == undefined
+                || appContext.data.cart?.alternateAddress?.country?.key == undefined
+                || appContext.data.cart?.alternateAddress?.country.key === "") {
+
                 setIsCountryValid(false);
-                isValid = false;
+                result = false;
             } else {
                 setIsCountryValid(true);
             }
 
-            if (postalCode === "") {
+            if (appContext.data.cart?.alternateAddress?.postalCode == undefined) {
                 setIsPostalCodeValid(false);
-                isValid = false;
+                result = false;
             } else {
                 setIsPostalCodeValid(true);
             }
         }
 
-        return isValid;
+        return result;
     }
 
     function isRedeemGiftCardVisible(snowmobileId?: string): boolean {
@@ -849,69 +856,106 @@ function Cart({ appContext, router, setShowAlert }:
 
                 if (draftCartItem != undefined) {
                     draftCartItem.uiRedemptionCode = e?.target?.value;
+                    draftCartItem.uiShowRedemptionCodeNotFound = false;
+                    draftCartItem.uiRedemptionCodeErrorMessage = "";
                 }
             });
+        }
+    }
+
+    function redemptionCodeKeyUp(e: any, cartItemId?: string): void {
+        if (e != undefined && cartItemId != undefined) {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                validateGiftCard(cartItemId);
+            }
         }
     }
 
     function validateGiftCard(cartItemId?: string): void {
         if (cartItemId != undefined) {
-            appContext.updater(draft => {
-                const draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
+            const cartItem: ICartItem | undefined = getCartItem(cartItemId);
 
-                if (draftCartItem != undefined) {
-                    // TODO: Replace with actual lookup.
-                    if (draftCartItem?.uiRedemptionCode?.startsWith("0")) {
-                        draftCartItem.redemptionCode = undefined;
-                        draftCartItem.giftCardAmount = undefined;
-                        draftCartItem.giftCardTrackingShippingAmount = undefined;
+            if (cartItem != undefined && cartItem.uiRedemptionCode.trim() !== "") {
+                setShowAlert(true);
 
-                        draftCartItem.uiShowRedemptionCodeNotFound = true;
-                    } else {
-                        draftCartItem.redemptionCode = draftCartItem?.uiRedemptionCode;
-                        draftCartItem.giftCardAmount = -Number(draftCartItem?.price);
-                        draftCartItem.giftCardTrackingShippingAmount = -10;
+                const params: IApiGetIsValidRedemptionCodeForVehicleRequest = {
+                    oVehicleId: cartItem.itemId, // oVehicleId for permit items in cart
+                    redemptionCode: cartItem.uiRedemptionCode.trim()
+                };
 
-                        draftCartItem.uiRedemptionCode = "";
-                        draftCartItem.uiShowRedemptionCodeNotFound = false;
+                apiGetIsValidRedemptionCodeForVehicle(params).subscribe({
+                    next: (result: IApiGetIsValidRedemptionCodeForVehicleResult) => {
+                        if (result?.isSuccessful) {
+                            if (result?.data?.isValid) {
+                                appContext.updater(draft => {
+                                    const draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
 
-                        const trackedShipping: string | undefined = shippingFeesData?.filter(x => x?.name === "Tracked")[0]?.id;
+                                    if (draftCartItem != undefined) {
+                                        draftCartItem.redemptionCode = draftCartItem?.uiRedemptionCode;
+                                        draftCartItem.giftCardAmount = -Number(draftCartItem?.price); // TODO: This isn't actually used.
+                                        draftCartItem.giftCardTrackingShippingAmount = -10; // TODO: Api should indicate if gift card includes tracked shipping.
 
-                        if (trackedShipping != undefined) {
-                            setShipping(trackedShipping);
+                                        draftCartItem.uiRedemptionCode = "";
+                                        draftCartItem.uiShowRedemptionCodeNotFound = false;
+                                        draftCartItem.uiRedemptionCodeErrorMessage = "";
+
+                                        const trackedShipping: string | undefined = shippingFeesData?.filter(x => x?.name === "Tracked")[0]?.id;
+
+                                        if (trackedShipping != undefined) {
+                                            draft.cart!.shipping = trackedShipping;
+                                        }
+                                    }
+                                });
+                            } else {
+                                appContext.updater(draft => {
+                                    const draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];
+
+                                    if (draftCartItem != undefined) {
+                                        draftCartItem.redemptionCode = undefined;
+                                        draftCartItem.giftCardAmount = undefined;
+                                        draftCartItem.giftCardTrackingShippingAmount = undefined;
+
+                                        draftCartItem.uiShowRedemptionCodeNotFound = true;
+                                        draftCartItem.uiRedemptionCodeErrorMessage = getApiErrorMessage(result?.data?.message);
+                                    }
+                                });
+                            }
+                        } else {
+                            // TODO: What do we do if the call was unsuccessful?
                         }
+
+                        setShowAlert(false);
+                    },
+                    error: (error: any) => {
+                        console.log(error);
+
+                        setShowAlert(false);
                     }
-                }
-            });
-        }
-    }
-
-    function shipToAddressChange(shipToLocation: number): void {
-        setShipTo(shipToLocation);
-
-        if (country == undefined || country?.key === undefined || country.key === "") {
-            const country: IKeyValue | undefined = appContext.data?.contactInfo?.country ?? { key: "CA", value: "Canada" };
-
-            if (country != undefined) {
-                setCountry({ key: country.key, value: country.value });
+                });
             }
         }
     }
 
-    function getSelectedProvinceStateOption(): string {
-        let result: string = "";
-
-        if (country != undefined && country?.key != undefined && country.key !== ""
-            && province != undefined && province?.key != undefined && province.key !== "") {
-
-            result = country?.key + "|" + province?.key
-        }
-
-        return result;
+    function getShipTo(): number | undefined {
+        return appContext.data.cart?.shipTo;
     }
 
-    function provinceChange(e: any): void {
-        setProvince(getParentKeyValueFromSelect(e) ?? { parent: "", key: "", value: "" });
+    function shipToAddressChange(shipToLocation: number): void {
+        appContext.updater(draft => {
+            draft.cart!.shipTo = shipToLocation;
+
+            if (appContext.data?.cart?.alternateAddress?.country == undefined
+                || appContext.data?.cart?.alternateAddress?.country?.key === undefined
+                || appContext.data?.cart?.alternateAddress?.country.key === "") {
+
+                const country: IKeyValue | undefined = appContext.data?.contactInfo?.country ?? { key: "CA", value: "Canada" };
+
+                if (country != undefined) {
+                    draft.cart!.alternateAddress.country = country;
+                }
+            }
+        });
     }
 
     function getProvinceData(): IParentKeyValue[] {
@@ -919,18 +963,13 @@ function Cart({ appContext, router, setShowAlert }:
 
         if (provincesData != undefined && provincesData.length > 0) {
             if (appContext.translation.i18n.language === "fr") {
-                result = sortArray(provincesData.filter(x => x.parent === country.key), ["valueFr"]);
+                result = sortArray(provincesData.slice(0, 13).filter(x => x.parent === appContext.data?.cart?.alternateAddress?.country?.key), ["valueFr"]);
             } else {
-                result = sortArray(provincesData.filter(x => x.parent === country.key), ["value"]);
+                result = sortArray(provincesData.slice(0, 13).filter(x => x.parent === appContext.data?.cart?.alternateAddress?.country?.key), ["value"]);
             }
         }
 
         return result;
-    }
-
-    function countryChange(e: any): void {
-        setCountry(getKeyValueFromSelect(e) ?? { key: "", value: "" });
-        setProvince({ parent: "", key: "", value: "" });
     }
 
     function getCountriesData(): IKeyValue[] {
@@ -1021,5 +1060,82 @@ function Cart({ appContext, router, setShowAlert }:
                 }
             }
         }
+    }
+
+    function getTrimmedStringOrUndefined(value?: string): string | undefined {
+        return value == undefined || value.trim() === "" ? undefined : value.trim();
+    }
+
+    function getAddressLine1(): string {
+        return appContext.data?.cart?.alternateAddress?.addressLine1 ?? "";
+    }
+
+    function updateAddressLine1(value?: string): void {
+        appContext.updater(draft => {
+            draft.cart!.alternateAddress.addressLine1 = getTrimmedStringOrUndefined(value);
+        });
+    }
+
+    function getAddressLine2(): string {
+        return appContext.data?.cart?.alternateAddress?.addressLine2 ?? "";
+    }
+
+    function updateAddressLine2(value?: string): void {
+        appContext.updater(draft => {
+            draft.cart!.alternateAddress.addressLine2 = getTrimmedStringOrUndefined(value);
+        });
+    }
+
+    function getCity(): string {
+        return appContext.data?.cart?.alternateAddress?.city ?? "";
+    }
+
+    function updateCity(value?: string): void {
+        appContext.updater(draft => {
+            draft.cart!.alternateAddress.city = getTrimmedStringOrUndefined(value);;
+        });
+    }
+
+    function getProvince(): string {
+        let result: string = "";
+
+        if (appContext.data.cart?.alternateAddress?.country != undefined
+            && appContext.data.cart?.alternateAddress?.country?.key != undefined
+            && appContext.data.cart?.alternateAddress?.country.key !== ""
+            && appContext.data.cart?.alternateAddress?.province != undefined
+            && appContext.data.cart?.alternateAddress?.province?.key != undefined
+            && appContext.data.cart?.alternateAddress?.province.key !== "") {
+
+            result = appContext.data.cart?.alternateAddress?.country?.key + "|" + appContext.data.cart?.alternateAddress?.province?.key;
+        }
+
+        return result;
+    }
+
+    function updateProvince(e: any): void {
+        appContext.updater(draft => {
+            draft.cart!.alternateAddress.province = getParentKeyValueFromSelect(e) ?? { parent: "", key: "", value: "" };
+        });
+    }
+
+    function getCountry(): string {
+        return appContext.data?.cart?.alternateAddress?.country?.key ?? "";
+    }
+
+    function updateCountry(e: any): void {
+        appContext.updater(draft => {
+            draft.cart!.alternateAddress.country = getKeyValueFromSelect(e) ?? { key: "", value: "" };
+            draft.cart!.alternateAddress.province = { parent: "", key: "", value: "" };
+        });
+    }
+
+    function getPostalCode(): string {
+        return appContext.data?.cart?.alternateAddress?.postalCode ?? "";
+    }
+
+    function updatePostalCode(value?: string): void {
+        appContext.updater(draft => {
+            draft.cart!.alternateAddress.postalCode = getTrimmedStringOrUndefined(value);
+        });
     }
 }

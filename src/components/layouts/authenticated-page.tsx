@@ -71,8 +71,9 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                     <h6 className="mb-0 d-sm-none">{t("Common.Ofsc")}</h6>
 
                                     <div className="d-none d-md-block">
-                                        {t("Header.LoggedInAs")} {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName}
-                                        <span className="ms-2" style={{ cursor: "pointer" }} onClick={() => doLogout()}>
+                                        {t("Header.LoggedInAs")} {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName}.
+
+                                        <span className="text-decoration-underline ms-2" style={{ cursor: "pointer" }} onClick={() => doLogout()}>
                                             {t("Common.Logout")}
                                         </span>
                                     </div>
@@ -161,7 +162,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                 <i className="fa-solid fa-user fa-fw me-2"></i>
                                 {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName}
                                 <span className="ms-2">
-                                    <Link className="text-decoration-none" href="" onClick={() => doLogout()}>Logout</Link>
+                                    <Link className="text-decoration-underline text-white" href="" onClick={() => doLogout()}>Logout</Link>
                                 </span>
                             </li>
                         </ul>

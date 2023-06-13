@@ -29,7 +29,7 @@ function CreateAccount({ appContext, router }
                 <title>{t("CreateAccount.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4>{t("CreateAccount.Title")}</h4>
+            <h4 className="mb-3">{t("CreateAccount.Title")}</h4>
         </>
     )
 }

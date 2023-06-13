@@ -155,7 +155,7 @@ function Index() {
                             </div>
 
                             <div className="mt-2">
-                                <button className="btn btn-outline-dark w-100" disabled={loginInProgress} onClick={() => doLogin()}>
+                                <button className="btn btn-primary w-100" disabled={loginInProgress} onClick={() => doLogin()}>
                                     {t("Index.LoginButton")}
 
                                     {loginInProgress && (
@@ -232,22 +232,22 @@ function Index() {
     }
 
     function validateLoginForm(): boolean {
-        let isValid: boolean = true;
+        let result: boolean = true;
 
         if (email === "") {
             setIsEmailValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsEmailValid(true);
         }
 
         if (password === "") {
             setIsPasswordValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsPasswordValid(true);
         }
 
-        return isValid;
+        return result;
     }
 }

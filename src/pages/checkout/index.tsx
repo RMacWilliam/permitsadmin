@@ -56,7 +56,7 @@ function Checkout({ appContext, router, setShowAlert }
                     <title>{t("Checkout.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
 
-                <h4>{t("Checkout.Title")}</h4>
+                <h4 className="mb-3">{t("Checkout.Title")}</h4>
 
                 <div className="card mb-2">
                     <div className="card-body">
@@ -125,7 +125,7 @@ function Checkout({ appContext, router, setShowAlert }
                     <title>{t("Checkout.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
 
-                <h4>{t("Checkout.Title")}</h4>
+                <h4 className="mb-3">{t("Checkout.Title")}</h4>
 
                 <div className="card mb-2">
                     <div className="card-body">
@@ -423,16 +423,16 @@ function Checkout({ appContext, router, setShowAlert }
     }
 
     function validateCheckoutStep1(): boolean {
-        let isValid: boolean = true;
+        let result: boolean = true;
 
         if (!step1AcceptTerms) {
             setIsStep1AcceptTermsValid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsStep1AcceptTermsValid(true);
         }
 
-        return isValid;
+        return result;
     }
 
     function cancelCheckoutClick(): void {
@@ -462,29 +462,29 @@ function Checkout({ appContext, router, setShowAlert }
     }
 
     function validateCheckoutStep2(): boolean {
-        let isValid: boolean = true;
+        let result: boolean = true;
 
         if (!step2AcceptTerms1) {
             setIsStep2AcceptTerms1Valid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsStep2AcceptTerms1Valid(true);
         }
 
         if (!step2AcceptTerms2) {
             setIsStep2AcceptTerms2Valid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsStep2AcceptTerms2Valid(true);
         }
 
         if (!step2AcceptTerms3) {
             setIsStep2AcceptTerms3Valid(false);
-            isValid = false;
+            result = false;
         } else {
             setIsStep2AcceptTerms3Valid(true);
         }
 
-        return isValid;
+        return result;
     }
 }
