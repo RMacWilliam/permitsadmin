@@ -410,12 +410,6 @@ function Checkout({ appContext, router, setShowAlert }
         )
     }
 
-    function step1GoBackClick(): void {
-        setStep1AcceptTerms(false);
-
-        router.push("/cart");
-    }
-
     function step1ContinueCheckoutClick(): void {
         if (validateCheckoutStep1()) {
             setCheckoutStep(1);

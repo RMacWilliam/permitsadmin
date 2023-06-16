@@ -180,6 +180,10 @@ export const resources_fr = {
     },
     "Cart": {
       "Title": "Panier",
+      "RedeemGiftCard": "(fr)Redeem Gift Card",
+      "GiftCardRedemption": "(fr)Gift card redemption",
+      "EnterGiftCardRedemptionCode": "(fr)Enter gift card redemption code",
+      "Validate": "Valider",
       "SelectClub": "Sélectionner un club",
       "UseClubLocatorMap": "Utiliser la carte de localisation des clubs",
       "TransactionAndAdminFee": "Frais de transaction et d'administration",

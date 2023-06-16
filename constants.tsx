@@ -1,10 +1,18 @@
-import { ITranslation } from "@/custom/app-context";
+import { IAppContextData, ITranslation } from "@/custom/app-context";
+import { NextRouter } from "next/router";
 import { Translation, getI18n } from "react-i18next";
+import { Updater } from "use-immer";
 
-export const GlobalAppContext: { token?: string, translation?: ITranslation } = { token: "", translation: { t: Translation, i18n: getI18n() } };
+export const GlobalAppContext: { data?: IAppContextData, updater?: Updater<IAppContextData>, translation?: ITranslation, router?: NextRouter } = {
+    data: undefined,
+    updater: undefined,
+    translation: { t: Translation, i18n: getI18n() },
+    router: undefined
+};
 
 export class WebApi {
     static BaseUrl: string = "https://permitsapi.azurewebsites.net/api/";
+    static MonerisBaseUrl: string = "https://localhost:7270/api/";
 
     // User
     static LoginUrl: string = WebApi.BaseUrl + "user/validateuser";
@@ -41,7 +49,7 @@ export class WebApi {
     static GetProcessingFee: string = WebApi.BaseUrl + "permit/getprocessingfee";
     static GetShippingFees: string = WebApi.BaseUrl + "permit/getshippingfees";
     static GetGoogleMapKey: string = WebApi.BaseUrl + "permit/getgooglemapkey";
-    static GetMonerisPreloadResponse: string = WebApi.BaseUrl + "permit/GetMonerisPreloadResponse";
+    static SavePrePurchaseData: string = WebApi.BaseUrl + "permit/savePrePurchaseData";
 
     // Documents
     static SendGiftCardPdf: string = WebApi.BaseUrl + "documents/sendgiftcardpdf";

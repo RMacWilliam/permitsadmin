@@ -5,9 +5,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import LanguageToggler from '../language-toggler';
 import ModalProcessingAlert, { IShowAlert } from '../modal-processing-alert';
-import { logout } from '@/custom/authentication';
+import { logoutAndCleanupAppContext } from '@/custom/authentication';
 import $ from 'jquery';
-import { getImagePath } from '@/custom/utilities';
 import { Images } from '../../../constants';
 
 export interface IShowHoverButton {
@@ -81,7 +80,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                             </div>
 
                             <div className="d-flex justify-content-end align-items-center">
-                                <LanguageToggler isTogglerItem={false} isTextShort={false} className="ms-3 d-none d-sm-none d-md-block"></LanguageToggler>
+                                <LanguageToggler isTextShort={false} className="ms-3 d-none d-sm-none d-md-block"></LanguageToggler>
 
                                 {appContext.data?.isContactInfoVerified && (
                                     <div className="ms-3 me-2">
@@ -153,7 +152,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                             </li>
                             <li className="nav-item">
                                 <i className="fa-solid fa-globe fa-fw me-2"></i>
-                                <LanguageToggler isTogglerItem={true} isTextShort={false} className=""></LanguageToggler>
+                                <LanguageToggler isTextShort={false} className=""></LanguageToggler>
                             </li>
                             <li>
                                 <hr className="dropdown-divider my-2" style={{ backgroundColor: "white", height: 1 }} />
@@ -198,7 +197,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
             </header>
 
             <main className="flex-shrink-0 py-3">
-                <div className="container-fluid container-lg">
+                <div className="container-fluid container-lg h-100">
                     {children}
                 </div>
             </main>
@@ -237,7 +236,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
     )
 
     function doLogout() {
-        logout(router, appContext);
+        logoutAndCleanupAppContext();
     }
 
     function isHoverButtonEnabled(): boolean {

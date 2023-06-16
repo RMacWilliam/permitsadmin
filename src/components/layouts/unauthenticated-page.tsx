@@ -34,7 +34,7 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
                             </div>
 
                             <div>
-                                <LanguageToggler isTogglerItem={false} isTextShort={false} className="ms-3"></LanguageToggler>
+                                <LanguageToggler isTextShort={false} className="ms-3"></LanguageToggler>
 
                                 {/* <span className="d-none d-md-block">
                                     <LanguageToggler isTogglerItem={false} isTextShort={false} className="ms-3"></LanguageToggler>

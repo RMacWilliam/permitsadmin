@@ -4,11 +4,10 @@ import AuthenticatedPageLayout, { IShowHoverButton } from '@/components/layouts/
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import CartItemsAlert from '@/components/cart-items-alert';
-import { formatCurrency, getApiErrorMessage, getGuid, parseDate } from '@/custom/utilities';
+import { checkResponseStatus, formatCurrency, getApiErrorMessage, getGuid, parseDate } from '@/custom/utilities';
 import { Observable, Subscription, forkJoin } from 'rxjs';
-import { IApiAddGiftCardForUserRequest, IApiAddGiftCardForUserResult, IApiDeleteGiftCardRequest, IApiDeleteGiftCardResult, IApiGetAvailableGiftCardsResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiSaveGiftCardSelectionsForUserRequest, IApiSaveGiftCardSelectionsForUserResult, IApiSendGiftCardPdfResult, apiAddGiftCardForUser, apiDeleteGiftCard, apiGetAvailableGiftCards, apiGetGiftcardsForCurrentSeasonForUser, apiSaveGiftCardSelectionsForUser, apiSendGiftCardPdf } from '@/custom/api';
+import { IApiAddGiftCardForUserRequest, IApiAddGiftCardForUserResult, IApiDeleteGiftCardRequest, IApiDeleteGiftCardResult, IApiGetAvailableGiftCardsResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiSaveGiftCardSelectionsForUserRequest, IApiSaveGiftCardSelectionsForUserResult, IApiSendGiftCardPdfRequest, IApiSendGiftCardPdfResult, apiAddGiftCardForUser, apiDeleteGiftCard, apiGetAvailableGiftCards, apiGetGiftcardsForCurrentSeasonForUser, apiSaveGiftCardSelectionsForUser, apiSendGiftCardPdf } from '@/custom/api';
 import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from '@/components/confirmation-dialog';
-import { Constants } from '../../../constants';
 
 export default function GiftCardsPage() {
     const appContext = useContext(AppContext);
@@ -35,7 +34,8 @@ export default function GiftCardsPage() {
 
 function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     : {
-        appContext: IAppContextValues, router: NextRouter,
+        appContext: IAppContextValues,
+        router: NextRouter,
         setShowAlert: Dispatch<SetStateAction<boolean>>,
         setShowHoverButton: Dispatch<SetStateAction<IShowHoverButton>>
     }) {
@@ -122,6 +122,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             },
             error: (error: any) => {
                 console.log(error);
+                checkResponseStatus(error);
 
                 setShowAlert(false);
             }
@@ -484,6 +485,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             },
             error: (error: any) => {
                 console.log(error);
+                checkResponseStatus(error);
 
                 setShowAlert(false);
             }
@@ -531,8 +533,10 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                     const lastName: string | undefined = e?.target?.value;
 
                     if (draftGiftCard?.isPurchased) {
+                        // This is a purchased gift card. Gift card can only be modified in edit mode.
                         draftGiftCard.uiRecipientLastName = lastName;
                     } else {
+                        // This is an unpurchased gift card. Gift card is open for modification.
                         draftGiftCard.recipientLastName = lastName;
                         saveGiftCardSelections(oVoucherId, draftGiftCard?.giftcardProductId, lastName, draftGiftCard?.recipientPostal);
                     }
@@ -585,8 +589,10 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                     const postalCode: string | undefined = e?.target?.value;
 
                     if (draftGiftCard?.isPurchased) {
+                        // This is a purchased gift card. Gift card can only be modified in edit mode.
                         draftGiftCard.uiRecipientPostal = postalCode;
                     } else {
+                        // This is an unpurchased gift card. Gift card is open for modification.
                         draftGiftCard.recipientPostal = postalCode;
                         saveGiftCardSelections(oVoucherId, draftGiftCard?.giftcardProductId, draftGiftCard?.recipientLastName, postalCode);
                     }
@@ -660,6 +666,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 },
                 error: (error: any) => {
                     console.log(error);
+                    checkResponseStatus(error);
 
                     //setShowAlert(false);
                 }
@@ -789,6 +796,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             },
             error: (error: any) => {
                 console.log(error);
+                checkResponseStatus(error);
 
                 setShowAlert(false);
             }
@@ -844,7 +852,11 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             if (giftCard != undefined) {
                 setShowAlert(true);
 
-                apiSendGiftCardPdf(giftCard?.orderId).subscribe({
+                const apiSendGiftCardPdfRequest: IApiSendGiftCardPdfRequest = {
+                    orderId: giftCard?.orderId
+                }
+
+                apiSendGiftCardPdf(apiSendGiftCardPdfRequest).subscribe({
                     next: (result: IApiSendGiftCardPdfResult) => {
                         setShowAlert(false);
 
@@ -858,6 +870,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                     },
                     error: (error: any) => {
                         console.log(error);
+                        checkResponseStatus(error);
 
                         setShowAlert(false);
                     }

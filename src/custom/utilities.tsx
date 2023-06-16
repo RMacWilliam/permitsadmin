@@ -3,6 +3,7 @@ import { IKeyValue, IParentKeyValue } from "./app-context";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
 import { Constants, GlobalAppContext } from "../../constants";
+import { logoutAndCleanupAppContext } from "./authentication";
 
 export function getParentKeyValueFromSelect(e: any): IParentKeyValue | undefined {
     let result: IParentKeyValue | undefined = undefined;
@@ -104,6 +105,45 @@ export function getApiErrorMessage(key: string | undefined): string | undefined 
     return result;
 }
 
+export function checkResponseStatus(error: any, redirectToLoginIf300OrGreater: boolean = true): string {
+    let result: string = "";
+
+    if (error != undefined && error instanceof Response) {
+        const response: Response = error as Response;
+
+        result = response.statusText;
+
+        // Informational
+        if (response.status >= 100 && response.status <= 199) {
+
+        }
+        // Successful
+        else if (response.status >= 200 && response.status <= 299) {
+
+        }
+        // Redirection
+        else if (response.status >= 300 && response.status <= 399) {
+            if (redirectToLoginIf300OrGreater) {
+                logoutAndCleanupAppContext();
+            }
+        }
+        // Client error
+        else if (response.status >= 400 && response.status <= 499) {
+            if (redirectToLoginIf300OrGreater) {
+                logoutAndCleanupAppContext();
+            }
+        }
+        // Server error
+        else if (response.status >= 500 && response.status <= 599) {
+            if (redirectToLoginIf300OrGreater) {
+                logoutAndCleanupAppContext();
+            }
+        }
+    }
+
+    return result;
+}
+
 export function getImagePath(filename: string): string {
     if (Constants.AppMode === "DEV") {
         return Constants.AppBasePath + filename;
@@ -112,21 +152,21 @@ export function getImagePath(filename: string): string {
     }
 }
 
-export function pseudoUnobfuscate(obfuscatedString?: string): number | undefined {
-    let result: number | undefined = undefined;
+// export function pseudoUnobfuscate(obfuscatedString?: string): number | undefined {
+//     let result: number | undefined = undefined;
 
-    if (obfuscatedString != undefined && obfuscatedString !== "") {
-        let secretKey: string = "1111111111111111111111";
-        let obfuscatedBytes = Buffer.from(obfuscatedString, 'base64');
-        let key = Buffer.from(secretKey, 'ascii');
-        let bytes = new Uint8Array(obfuscatedBytes.length);
+//     if (obfuscatedString != undefined && obfuscatedString !== "") {
+//         let secretKey: string = "1111111111111111111111";
+//         let obfuscatedBytes = Buffer.from(obfuscatedString, 'base64');
+//         let key = Buffer.from(secretKey, 'ascii');
+//         let bytes = new Uint8Array(obfuscatedBytes.length);
 
-        for (let i: number = 0; i < obfuscatedBytes.length; i++) {
-            bytes[i] = obfuscatedBytes[i] ^ key[i % key.length];
-        }
+//         for (let i: number = 0; i < obfuscatedBytes.length; i++) {
+//             bytes[i] = obfuscatedBytes[i] ^ key[i % key.length];
+//         }
 
-        result = new DataView(bytes.buffer).getInt32(0, true);
-    }
+//         result = new DataView(bytes.buffer).getInt32(0, true);
+//     }
 
-    return result;
-}
+//     return result;
+// }

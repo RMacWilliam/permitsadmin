@@ -150,9 +150,10 @@ export interface IRedeemableGiftCards {
 }
 
 export interface ICart {
-    shipping?: string;
+    shipping?: number;
+    isTrackedShipping?: boolean;
     shipTo?: number; // Undefined=Unselected, 0=Registered; 1=Alternate
-    alternateAddress: {
+    alternateAddress?: {
         addressLine1?: string;
         addressLine2?: string;
         city?: string;
@@ -173,8 +174,7 @@ export interface ICartItem {
 
     // TODO: Add gift card info here after lookup for use in cart.
     redemptionCode?: string;
-    giftCardAmount?: number;
-    giftCardTrackingShippingAmount?: number;
+    giftCardTrackedShippingAmount?: number;
 
     uiRedemptionCode: string; // This is a controlled field. Cannot be undefined.
     uiShowRedemptionCodeNotFound?: boolean;
@@ -184,11 +184,12 @@ export interface ICartItem {
 }
 
 export interface IShippingFee {
-    id?: string;
+    id?: number;
     name?: string;
     nameFr?: string;
     price?: number;
     showConfirmation?: boolean;
+    isTracked?: boolean;
 }
 
 export interface IAppContextData {
@@ -218,6 +219,9 @@ export interface IAppContextData {
 
     // Gift Cards
     giftCards?: IGiftCard[];
+
+    // TODO: Temp for testing. Remove.
+    monerisBaseUrl?: string;
 }
 
 export interface ITranslation {
@@ -231,31 +235,4 @@ export interface IAppContextValues {
     translation: ITranslation;
 }
 
-export const initialAppContextValues: IAppContextValues = {
-    data: {
-        isAuthenticated: false,
-        email: undefined,
-        token: undefined,
-
-        language: "en",
-
-        isFirstLoginOfSeason: false,
-        isContactInfoVerified: false,
-
-        cart: { shipping: undefined, shipTo: undefined, alternateAddress: {} },
-        cartItems: undefined,
-
-        navbarPage: undefined,
-
-        contactInfo: undefined,
-        accountPreferences: undefined,
-
-        snowmobiles: undefined,
-
-        giftCards: undefined
-    },
-    updater: () => { },
-    translation: {} as ITranslation
-};
-
-export const AppContext = createContext(initialAppContextValues);
+export const AppContext = createContext({} as IAppContextValues);

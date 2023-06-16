@@ -171,6 +171,17 @@ function Home({ appContext, router, setShowAlert }:
                     </div>
                 </div>
             )}
+
+            <div className="row mt-3">
+                <div className="col">
+                    <div className="form-floating">
+                        <input type="email" className="form-control" id="floatingInput" value={appContext.data?.monerisBaseUrl} onChange={(e: any) => monerisBaseUrlChange(e)} />
+                        <label htmlFor="floatingInput">Moneris Base Url</label>
+                    </div>
+                    <div>Original: https://permitsapi.azurewebsites.net/api/</div>
+                    <div>Localhost: https://localhost:7270/api/</div>
+                </div>
+            </div>
         </>
     )
 
@@ -184,5 +195,11 @@ function Home({ appContext, router, setShowAlert }:
         if (appContext.data?.isContactInfoVerified) {
             router.push("/gift-cards");
         }
+    }
+
+    function monerisBaseUrlChange(e: any): void {
+        appContext.updater(draft => {
+            draft.monerisBaseUrl = e?.target?.value?.trim() ?? "";
+        });
     }
 }

@@ -13,7 +13,7 @@ function httpFetch<T>(method: "GET" | "POST" | "DELETE", url: string, params?: a
     if (isAuthenticated) {
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + GlobalAppContext.token
+            "Authorization": "Bearer " + (GlobalAppContext?.data?.token ?? "")
         };
     } else {
         headers = {
@@ -674,6 +674,7 @@ export interface IApiGetIsValidRedemptionCodeForVehicleRequest {
 export interface IApiGetIsValidRedemptionCodeForVehicleResultData {
     isValid?: boolean;
     message?: string;
+    trackedShippingAmount?: number;
 }
 
 export interface IApiGetIsValidRedemptionCodeForVehicleResult {
@@ -682,8 +683,8 @@ export interface IApiGetIsValidRedemptionCodeForVehicleResult {
     data?: IApiGetIsValidRedemptionCodeForVehicleResultData;
 }
 
-export function apiGetIsValidRedemptionCodeForVehicle(params?: any): Observable<IApiGetIsValidRedemptionCodeForVehicleResult> {
-    return httpGet<IApiGetIsValidRedemptionCodeForVehicleResult>(WebApi.GetIsValidRedemptionCodeForVehicle, params);
+export function apiGetIsValidRedemptionCodeForVehicle(body?: any, params?: any): Observable<IApiGetIsValidRedemptionCodeForVehicleResult> {
+    return httpPost<IApiGetIsValidRedemptionCodeForVehicleResult>(WebApi.GetIsValidRedemptionCodeForVehicle, params, body);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -711,11 +712,12 @@ export interface IApiGetShippingFeesRequest {
 }
 
 export interface IApiGetShippingFeesResult {
-    id?: string;
+    id?: number;
     name?: string;
     nameFr?: string;
     price?: number;
     showConfirmation?: boolean;
+    isTracked?: boolean;
 }
 
 export function apiGetShippingFees(params?: any): Observable<IApiGetShippingFeesResult[]> {
@@ -745,44 +747,51 @@ export function apiGetGoogleMapKey(params?: any): Observable<IApiGetGoogleMapKey
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// apiGetMonerisPreloadResponse
+// apiSavePrePurchaseData
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export interface IApiGetMonerisPreloadResponseRequest {
-    permits: {
-        oVehicleId: string,
-        redemptionCode: string
+export interface IApiSavePrePurchaseDataRequest {
+    permits?: {
+        oVehicleId?: string,
+        redemptionCode?: string,
+        productId?: number,
+        dateStart?: Date,
+        dateEnd?: Date,
+        clubId?: string
     }[];
-    giftCards: {
-        oVoucherId: string
+    giftCards?: {
+        oVoucherId?: string,
+        giftcardProductId?: number;
+        recipientLastName?: string;
+        recipientPostal?: string;
     }[],
-    trackedShipping: boolean,
-    shippingTo: number, // 0=primary, 1=alternate
-    alternateAddress: {
-        addressLine1: string,
-        addressLine2: string,
-        city: string,
-        postalCode: string,
-        province: string, // key: ON
-        country: string // key: CA
+    trackedShipping?: boolean,
+    shippingTo?: number, // 0=primary, 1=alternate
+    alternateAddress?: {
+        addressLine1?: string,
+        addressLine2?: string,
+        city?: string,
+        postalCode?: string,
+        province?: string, // key: ON
+        country?: string // key: CA
     }
 }
 
-export interface IApiGetMonerisPreloadResponseResultData {
+export interface IApiSavePrePurchaseDataResultData {
     ticket?: string;
     orderId?: string;
     environment?: string;
     amount?: number;
 }
 
-export interface IApiGetMonerisPreloadResponseResult {
+export interface IApiSavePrePurchaseDataResult {
     isSuccessful?: boolean;
     errorMessage?: string;
-    data?: IApiGetMonerisPreloadResponseResultData;
+    data?: IApiSavePrePurchaseDataResultData;
 }
 
-export function apiGetMonerisPreloadResponse(params?: any): Observable<IApiGetMonerisPreloadResponseResult[]> {
-    return httpGet<IApiGetMonerisPreloadResponseResult[]>(WebApi.GetMonerisPreloadResponse, params);
+export function apiSavePrePurchaseData(body?: any, params?: any): Observable<IApiSavePrePurchaseDataResult> {
+    return httpPost<IApiSavePrePurchaseDataResult>(WebApi.SavePrePurchaseData, params, body);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -790,7 +799,7 @@ export function apiGetMonerisPreloadResponse(params?: any): Observable<IApiGetMo
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface IApiSendGiftCardPdfRequest {
-
+    orderId?: string;
 }
 
 export interface IApiSendGiftCardPdfResult {

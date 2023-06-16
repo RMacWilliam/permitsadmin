@@ -2,7 +2,7 @@ import { NextRouter, useRouter } from "next/router";
 import { AppContext, IAppContextValues } from "./app-context";
 import { IApiLoginResult } from "./api";
 import { ReactNode, useContext, useRef } from "react";
-import { GlobalAppContext } from "../../constants";
+import { GlobalAppContext, WebApi } from "../../constants";
 
 export default function RouteGuard({ children }: { children: ReactNode }) {
     const appContext = useContext(AppContext);
@@ -11,9 +11,6 @@ export default function RouteGuard({ children }: { children: ReactNode }) {
     const isAuthenticated = useRef(false);
     const isAuthorized = useRef(false);
     const redirectRoute = useRef("");
-
-    // Set WebApi token.
-    GlobalAppContext.token = appContext.data?.token;
 
     // Reset variables otherwise they will have previous values.
     isAuthenticated.current = false;
@@ -104,58 +101,66 @@ export default function RouteGuard({ children }: { children: ReactNode }) {
     }
 }
 
-export function login(router: NextRouter, appContext: IAppContextValues, apiLoginResult: IApiLoginResult): void {
-    appContext.updater(draft => {
-        draft.isAuthenticated = true;
-        draft.email = apiLoginResult.email;
-        draft.token = apiLoginResult.token;
+export function loginAndInitializeAppContext(apiLoginResult: IApiLoginResult): void {
+    if (GlobalAppContext != undefined && GlobalAppContext?.updater != undefined && GlobalAppContext?.router != undefined) {
+        GlobalAppContext.updater(draft => {
+            draft.isAuthenticated = true;
+            draft.email = apiLoginResult.email;
+            draft.token = apiLoginResult.token;
 
-        draft.language = draft.language ?? "en";
+            draft.language = draft.language ?? "en";
 
-        draft.isFirstLoginOfSeason = apiLoginResult.isFirstLoginOfSeason;
-        draft.isContactInfoVerified = false;
+            draft.isFirstLoginOfSeason = apiLoginResult.isFirstLoginOfSeason;
+            draft.isContactInfoVerified = false;
 
-        draft.cart = { shipping: undefined, shipTo: undefined, alternateAddress: {} },
-        draft.cartItems = undefined;
+            draft.cart = undefined;
+            draft.cartItems = undefined;
 
-        draft.navbarPage = "contact";
+            draft.navbarPage = "contact";
 
-        draft.contactInfo = undefined;
-        draft.accountPreferences = undefined;
+            draft.contactInfo = undefined;
+            draft.accountPreferences = undefined;
 
-        draft.snowmobiles = undefined;
+            draft.snowmobiles = undefined;
 
-        draft.giftCards = undefined;
-    });
+            draft.giftCards = undefined;
 
-    router.push("/contact");
+            draft.monerisBaseUrl = WebApi.BaseUrl;
+        });
+
+        GlobalAppContext.router.push("/contact");
+    }
 }
 
-export function logout(router: NextRouter, appContext: IAppContextValues): void {
-    appContext.updater(draft => {
-        draft.isAuthenticated = false;
-        draft.email = undefined;
-        draft.token = undefined;
+export function logoutAndCleanupAppContext(): void {
+    if (GlobalAppContext != undefined && GlobalAppContext?.updater != undefined && GlobalAppContext?.router != undefined) {
+        GlobalAppContext.updater(draft => {
+            draft.isAuthenticated = false;
+            draft.email = undefined;
+            draft.token = undefined;
 
-        draft.isFirstLoginOfSeason = undefined;
-        draft.isContactInfoVerified = undefined;
+            draft.isFirstLoginOfSeason = undefined;
+            draft.isContactInfoVerified = undefined;
 
-        draft.cart = undefined;
-        draft.cartItems = undefined;
+            draft.cart = undefined;
+            draft.cartItems = undefined;
 
-        draft.navbarPage = undefined;
+            draft.navbarPage = undefined;
 
-        draft.contactInfo = undefined;
-        draft.accountPreferences = undefined;
+            draft.contactInfo = undefined;
+            draft.accountPreferences = undefined;
 
-        draft.snowmobiles = undefined;
+            draft.snowmobiles = undefined;
 
-        draft.giftCards = undefined;
-    });
+            draft.giftCards = undefined;
 
-    if (window.localStorage) {
-        window.localStorage.removeItem("data");
+            draft.monerisBaseUrl = undefined;
+        });
+
+        if (window.localStorage) {
+            window.localStorage.removeItem("data");
+        }
+
+        GlobalAppContext.router.push("/");
     }
-
-    router.push("/");
 }

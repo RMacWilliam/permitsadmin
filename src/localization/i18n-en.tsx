@@ -180,7 +180,11 @@ export const resources_en = {
     },
     "Cart": {
       "Title": "Shopping Cart",
-      "SelectClub": "Sélectionner un club",
+      "RedeemGiftCard": "Redeem Gift Card",
+      "GiftCardRedemption": "Gift card redemption",
+      "EnterGiftCardRedemptionCode": "Enter gift card redemption code",
+      "Validate": "Validate",
+      "SelectClub": "Select Club",
       "UseClubLocatorMap": "Use club locator map",
       "TransactionAndAdminFee": "Transaction and Administration Fee",
       "TransactionAndAdminFeeDiscount": "Transaction and Administration Fee Discount",

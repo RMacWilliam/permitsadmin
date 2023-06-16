@@ -2,14 +2,14 @@ import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons 
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
 import { IApiGetClubsResult, IApiGetCountriesResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetShippingFeesResult, apiGetClubs, apiGetCountries, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, IApiSavePermitSelectionForVehicleRequest, apiSavePermitSelectionForVehicle, IApiSavePermitSelectionForVehicleResult, apiGetGoogleMapKey, IApiGetGoogleMapKeyResult, apiGetIsValidRedemptionCodeForVehicle, IApiGetIsValidRedemptionCodeForVehicleResult, IApiGetIsValidRedemptionCodeForVehicleRequest } from "@/custom/api";
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IParentKeyValue, IRedeemableGiftCards, IShippingFee, ISnowmobile, IPermitSelections } from "@/custom/app-context";
-import { formatCurrency, getApiErrorMessage, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from "@/custom/utilities";
+import { checkResponseStatus, formatCurrency, getApiErrorMessage, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from "@/custom/utilities";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { Observable, Subscription, forkJoin } from "rxjs";
 import Select from 'react-select';
 import ClubLocatorMap from "./club-locator-map";
-import { getLocalizedValue } from "@/localization/i18n";
+import { getLocalizedValue, getLocalizedValue2 } from "@/localization/i18n";
 
 export default function CartPage() {
     const appContext = useContext(AppContext);
@@ -60,7 +60,7 @@ function Cart({ appContext, router, setShowAlert }:
     const [isPostalCodeValid, setIsPostalCodeValid] = useState(true);
 
     const [processingFee, setProcessingFee] = useState(0);
-    const [shippingFeesData, setShippingFeesData] = useState([] as IShippingFee[])
+    const [shippingFeesData, setShippingFeesData] = useState([] as IShippingFee[]);
     const [provincesData, setProvincesData] = useState([] as IParentKeyValue[]);
     const [countriesData, setCountriesData] = useState([] as IKeyValue[]);
     const [redeemableGiftCards, setRedeemableGiftCards] = useState({} as IRedeemableGiftCards);
@@ -69,6 +69,14 @@ function Cart({ appContext, router, setShowAlert }:
     const [googleMapKey, setGoogleMapKey] = useState(undefined as string | undefined);
 
     const t: Function = appContext.translation.t;
+
+    useEffect(() => {
+        if (appContext.data?.cart == undefined) {
+            appContext.updater(draft => {
+                draft.cart = { alternateAddress: {} };
+            });
+        }
+    }, []);
 
     useEffect(() => {
         // Get data from api.
@@ -100,7 +108,8 @@ function Cart({ appContext, router, setShowAlert }:
                         name: x?.name,
                         nameFr: x?.nameFr,
                         price: x?.price,
-                        showConfirmation: x?.showConfirmation
+                        showConfirmation: x?.showConfirmation,
+                        isTracked: x?.isTracked
                     }));
 
                     setShippingFeesData(shippingFees);
@@ -124,7 +133,7 @@ function Cart({ appContext, router, setShowAlert }:
                 const apiGetCountriesResult: IApiGetCountriesResult[] = results[3] as IApiGetCountriesResult[];
 
                 if (apiGetCountriesResult != undefined && apiGetCountriesResult.length > 0) {
-                    const countries: IKeyValue[] = apiGetCountriesResult.slice(0, 2).map<IKeyValue>(x => ({
+                    const countries: IKeyValue[] = apiGetCountriesResult.map<IKeyValue>(x => ({
                         key: x?.key ?? "",
                         value: x?.value ?? "",
                         valueFr: x?.valueFr ?? ""
@@ -166,10 +175,16 @@ function Cart({ appContext, router, setShowAlert }:
                     });
                 });
 
+                // Select shipTo value if unselected.
+                if (appContext.data?.cart?.shipTo == undefined) {
+                    shipToAddressChange(ShipTo.Registered);
+                }
+
                 setShowAlert(false);
             },
             error: (error: any) => {
                 console.log(error);
+                checkResponseStatus(error);
 
                 setShowAlert(false);
             }
@@ -232,30 +247,30 @@ function Cart({ appContext, router, setShowAlert }:
                                                         <div className="card mt-2">
                                                             <div className="card-body footer-color">
                                                                 {cartItem?.redemptionCode != undefined && (
-                                                                    <div className="d-flex justify-content-between flex-wrap gap-2">
-                                                                        <div className="fw-semibold w-100">
-                                                                            Gift card redemption ({cartItem?.redemptionCode})
+                                                                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                                                        <div className="fw-semibold flex-fill">
+                                                                            <span className="me-2">{t("Cart.GiftCardRedemption")} ({cartItem?.redemptionCode})</span>
 
-                                                                            <button className="btn btn-link text-danger align-baseline ms-2 p-0" type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
+                                                                            <button className="btn btn-link text-danger align-baseline p-0" type="button" onClick={() => removeGiftCardClick(cartItem.id)}>
                                                                                 {t("Common.Delete")}
                                                                             </button>
                                                                         </div>
 
-                                                                        <div className="fw-bold text-danger text-end ms-auto">${formatCurrency(cartItem?.giftCardAmount)}</div>
+                                                                        <div className="fw-bold text-danger text-end ms-auto">${formatCurrency(cartItem?.price)}</div>
                                                                     </div>
                                                                 )}
 
                                                                 {cartItem?.redemptionCode == undefined && (
                                                                     <>
-                                                                        <div className="fw-semibold mb-2">Redeem Gift Card</div>
+                                                                        <div className="fw-semibold mb-2">{t("Cart.RedeemGiftCard")}</div>
 
                                                                         <div className="d-flex flex-column gap-2">
                                                                             <div className="input-group">
-                                                                                <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder="Enter gift card redemption code" value={cartItem?.uiRedemptionCode} onKeyUp={(e: any) => redemptionCodeKeyUp(e, cartItem?.id)} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
-                                                                                <button className="btn btn-outline-dark d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
+                                                                                <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder={t("Cart.EnterGiftCardRedemptionCode")} value={cartItem?.uiRedemptionCode} onKeyUp={(e: any) => redemptionCodeKeyUp(e, cartItem?.id)} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
+                                                                                <button className="btn btn-outline-dark d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>{t("Cart.Validate")}</button>
                                                                             </div>
 
-                                                                            <button className="btn btn-outline-dark btn-sm d-sm-none" type="button" onClick={() => validateGiftCard(cartItem?.id)}>Validate</button>
+                                                                            <button className="btn btn-outline-dark btn-sm d-sm-none" type="button" onClick={() => validateGiftCard(cartItem?.id)}>{t("Cart.Validate")}</button>
 
                                                                             {cartItem?.uiShowRedemptionCodeNotFound && (
                                                                                 <div className="text-danger">{cartItem?.uiRedemptionCodeErrorMessage}</div>
@@ -313,8 +328,8 @@ function Cart({ appContext, router, setShowAlert }:
                                     {isTransactionAndAdministrationFeeDiscountVisible() && (
                                         <div className="card mt-2">
                                             <div className="card-body footer-color">
-                                                <div className="d-flex justify-content-between flex-wrap gap-2">
-                                                    <div className="fw-semibold w-100">
+                                                <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                                    <div className="fw-semibold flex-fill">
                                                         {t("Cart.TransactionAndAdminFeeDiscount")}
                                                     </div>
 
@@ -335,14 +350,9 @@ function Cart({ appContext, router, setShowAlert }:
                                             <option value="">{t("Common.PleaseSelect")}</option>
 
                                             {shippingFeesData != undefined && shippingFeesData.length > 0 && getShippingFeesData().map(shippingMethod => (
-                                                <>
-                                                    {appContext.translation.i18n.language === "en" && (
-                                                        <option value={shippingMethod?.id} key={shippingMethod?.id}>{shippingMethod?.name}</option>
-                                                    )}
-                                                    {appContext.translation.i18n.language === "fr" && (
-                                                        <option value={shippingMethod?.id} key={shippingMethod?.id}>{shippingMethod?.nameFr}</option>
-                                                    )}
-                                                </>
+                                                <option value={shippingMethod?.id} key={shippingMethod?.id}>
+                                                    {getLocalizedValue2(shippingMethod?.name, shippingMethod?.nameFr)}
+                                                </option>
                                             ))}
                                         </select>
                                     </div>
@@ -364,8 +374,8 @@ function Cart({ appContext, router, setShowAlert }:
                                 {isTrackedShippingDiscountVisible() && (
                                     <div className="card mt-2">
                                         <div className="card-body footer-color">
-                                            <div className="d-flex justify-content-between flex-wrap gap-2">
-                                                <div className="fw-semibold w-100">
+                                            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                                <div className="fw-semibold flex-fill">
                                                     {t("Cart.TrackedShippingDiscount")}
                                                 </div>
 
@@ -674,11 +684,9 @@ function Cart({ appContext, router, setShowAlert }:
 
         // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then display tracked shipping discount.
         if (appContext.data.cart?.shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
-            const item: IShippingFee = shippingFeesData.filter(x => x.id === appContext.data.cart?.shipping)[0];
+            const shippingFee: IShippingFee | undefined = shippingFeesData.filter(x => x.id === appContext.data.cart?.shipping && x?.isTracked)[0];
 
-            if (item != undefined && item?.name === "Tracked"
-                && getCartItems()?.some(x => x?.giftCardTrackingShippingAmount != undefined)) {
-
+            if (shippingFee != undefined && getCartItems()?.some(x => x?.giftCardTrackedShippingAmount != undefined)) {
                 result = true;
             }
         }
@@ -691,12 +699,10 @@ function Cart({ appContext, router, setShowAlert }:
 
         // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then return tracked shipping discount.
         if (appContext.data.cart?.shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
-            const item: IShippingFee = shippingFeesData.filter(x => x.id === appContext.data.cart?.shipping)[0];
+            const shippingFee: IShippingFee | undefined = shippingFeesData.filter(x => x?.id === appContext.data.cart?.shipping && x?.isTracked)[0];
 
-            if (item != undefined && item?.name === "Tracked"
-                && getCartItems()?.some(x => x?.giftCardTrackingShippingAmount != undefined)) {
-
-                result = -(item?.price ?? 0);
+            if (shippingFee != undefined && getCartItems()?.some(x => x?.giftCardTrackedShippingAmount != undefined)) {
+                result = -(shippingFee?.price ?? 0);
             }
         }
 
@@ -720,13 +726,18 @@ function Cart({ appContext, router, setShowAlert }:
     }
 
     function getShipping(): string {
-        return appContext.data.cart?.shipping ?? "";
+        return appContext.data.cart?.shipping?.toString() ?? "";
     }
 
     function shippingChange(e: any): void {
         if (e != undefined) {
             appContext.updater(draft => {
-                draft.cart!.shipping = e?.target?.value;
+                const shippingFee: IShippingFee | undefined = shippingFeesData?.filter(x => x?.id === Number(e?.target?.value ?? 0))[0];
+
+                if (shippingFee != undefined) {
+                    draft.cart!.shipping = shippingFee?.id;
+                    draft.cart!.isTrackedShipping = shippingFee?.isTracked;
+                }
             });
 
             setIsShippingValid(true);
@@ -842,8 +853,7 @@ function Cart({ appContext, router, setShowAlert }:
 
                 if (draftCartItem != undefined) {
                     draftCartItem.redemptionCode = undefined;
-                    draftCartItem.giftCardAmount = undefined;
-                    draftCartItem.giftCardTrackingShippingAmount = undefined;
+                    draftCartItem.giftCardTrackedShippingAmount = undefined;
                 }
             });
         }
@@ -893,17 +903,17 @@ function Cart({ appContext, router, setShowAlert }:
 
                                     if (draftCartItem != undefined) {
                                         draftCartItem.redemptionCode = draftCartItem?.uiRedemptionCode;
-                                        draftCartItem.giftCardAmount = -Number(draftCartItem?.price); // TODO: This isn't actually used.
-                                        draftCartItem.giftCardTrackingShippingAmount = -10; // TODO: Api should indicate if gift card includes tracked shipping.
+                                        draftCartItem.giftCardTrackedShippingAmount = -(result?.data?.trackedShippingAmount ?? 0);
 
                                         draftCartItem.uiRedemptionCode = "";
                                         draftCartItem.uiShowRedemptionCodeNotFound = false;
                                         draftCartItem.uiRedemptionCodeErrorMessage = "";
 
-                                        const trackedShipping: string | undefined = shippingFeesData?.filter(x => x?.name === "Tracked")[0]?.id;
+                                        const shippingFee: IShippingFee | undefined = shippingFeesData?.filter(x => x?.isTracked)[0];
 
-                                        if (trackedShipping != undefined) {
-                                            draft.cart!.shipping = trackedShipping;
+                                        if (shippingFee != undefined) {
+                                            draft.cart!.shipping = shippingFee?.id;
+                                            draft.cart!.isTrackedShipping = shippingFee?.isTracked;
                                         }
                                     }
                                 });
@@ -913,8 +923,7 @@ function Cart({ appContext, router, setShowAlert }:
 
                                     if (draftCartItem != undefined) {
                                         draftCartItem.redemptionCode = undefined;
-                                        draftCartItem.giftCardAmount = undefined;
-                                        draftCartItem.giftCardTrackingShippingAmount = undefined;
+                                        draftCartItem.giftCardTrackedShippingAmount = undefined;
 
                                         draftCartItem.uiShowRedemptionCodeNotFound = true;
                                         draftCartItem.uiRedemptionCodeErrorMessage = getApiErrorMessage(result?.data?.message);
@@ -929,6 +938,7 @@ function Cart({ appContext, router, setShowAlert }:
                     },
                     error: (error: any) => {
                         console.log(error);
+                        checkResponseStatus(error);
 
                         setShowAlert(false);
                     }
@@ -952,7 +962,7 @@ function Cart({ appContext, router, setShowAlert }:
                 const country: IKeyValue | undefined = appContext.data?.contactInfo?.country ?? { key: "CA", value: "Canada" };
 
                 if (country != undefined) {
-                    draft.cart!.alternateAddress.country = country;
+                    draft.cart!.alternateAddress!.country = country;
                 }
             }
         });
@@ -963,9 +973,9 @@ function Cart({ appContext, router, setShowAlert }:
 
         if (provincesData != undefined && provincesData.length > 0) {
             if (appContext.translation.i18n.language === "fr") {
-                result = sortArray(provincesData.slice(0, 13).filter(x => x.parent === appContext.data?.cart?.alternateAddress?.country?.key), ["valueFr"]);
+                result = sortArray(provincesData.filter(x => x.parent === appContext.data?.cart?.alternateAddress?.country?.key), ["valueFr"]);
             } else {
-                result = sortArray(provincesData.slice(0, 13).filter(x => x.parent === appContext.data?.cart?.alternateAddress?.country?.key), ["value"]);
+                result = sortArray(provincesData.filter(x => x.parent === appContext.data?.cart?.alternateAddress?.country?.key), ["value"]);
             }
         }
 
@@ -1053,6 +1063,7 @@ function Cart({ appContext, router, setShowAlert }:
                         },
                         error: (error: any) => {
                             console.log(error);
+                            checkResponseStatus(error);
 
                             //setShowAlert(false);
                         }
@@ -1062,8 +1073,8 @@ function Cart({ appContext, router, setShowAlert }:
         }
     }
 
-    function getTrimmedStringOrUndefined(value?: string): string | undefined {
-        return value == undefined || value.trim() === "" ? undefined : value.trim();
+    function getStringOrUndefined(value?: string): string | undefined {
+        return value == undefined || value.trim() === "" ? undefined : value;
     }
 
     function getAddressLine1(): string {
@@ -1072,7 +1083,7 @@ function Cart({ appContext, router, setShowAlert }:
 
     function updateAddressLine1(value?: string): void {
         appContext.updater(draft => {
-            draft.cart!.alternateAddress.addressLine1 = getTrimmedStringOrUndefined(value);
+            draft.cart!.alternateAddress!.addressLine1 = getStringOrUndefined(value);
         });
     }
 
@@ -1082,7 +1093,7 @@ function Cart({ appContext, router, setShowAlert }:
 
     function updateAddressLine2(value?: string): void {
         appContext.updater(draft => {
-            draft.cart!.alternateAddress.addressLine2 = getTrimmedStringOrUndefined(value);
+            draft.cart!.alternateAddress!.addressLine2 = getStringOrUndefined(value);
         });
     }
 
@@ -1092,7 +1103,7 @@ function Cart({ appContext, router, setShowAlert }:
 
     function updateCity(value?: string): void {
         appContext.updater(draft => {
-            draft.cart!.alternateAddress.city = getTrimmedStringOrUndefined(value);;
+            draft.cart!.alternateAddress!.city = getStringOrUndefined(value);;
         });
     }
 
@@ -1114,7 +1125,7 @@ function Cart({ appContext, router, setShowAlert }:
 
     function updateProvince(e: any): void {
         appContext.updater(draft => {
-            draft.cart!.alternateAddress.province = getParentKeyValueFromSelect(e) ?? { parent: "", key: "", value: "" };
+            draft.cart!.alternateAddress!.province = getParentKeyValueFromSelect(e) ?? { parent: "", key: "", value: "" };
         });
     }
 
@@ -1124,8 +1135,8 @@ function Cart({ appContext, router, setShowAlert }:
 
     function updateCountry(e: any): void {
         appContext.updater(draft => {
-            draft.cart!.alternateAddress.country = getKeyValueFromSelect(e) ?? { key: "", value: "" };
-            draft.cart!.alternateAddress.province = { parent: "", key: "", value: "" };
+            draft.cart!.alternateAddress!.country = getKeyValueFromSelect(e) ?? { key: "", value: "" };
+            draft.cart!.alternateAddress!.province = { parent: "", key: "", value: "" };
         });
     }
 
@@ -1135,7 +1146,7 @@ function Cart({ appContext, router, setShowAlert }:
 
     function updatePostalCode(value?: string): void {
         appContext.updater(draft => {
-            draft.cart!.alternateAddress.postalCode = getTrimmedStringOrUndefined(value);
+            draft.cart!.alternateAddress!.postalCode = getStringOrUndefined(value);
         });
     }
 }

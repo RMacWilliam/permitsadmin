@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, forwardRef, useContext, useEffect, useState }
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IPermit, IPermitOption, IPermitSelections, ISnowmobile } from '@/custom/app-context';
 import AuthenticatedPageLayout, { IShowHoverButton } from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
-import { formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
+import { checkResponseStatus, formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from '@/components/confirmation-dialog';
@@ -11,7 +11,7 @@ import DatePicker from 'react-datepicker';
 import CartItemsAlert from '@/components/cart-items-alert';
 import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle, IApiDeleteVehicleRequest, IApiDeleteVehicleResult, apiDeleteVehicle, IApiVehiclePermit, IApiVehiclePermitOption } from '@/custom/api';
 import { Observable, Subscription, forkJoin } from 'rxjs';
-import { logout } from '@/custom/authentication';
+import { logoutAndCleanupAppContext } from '@/custom/authentication';
 import { getLocalizedValue } from '@/localization/i18n';
 
 export default function PermitsPage() {
@@ -218,14 +218,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
             },
             error: (error: any) => {
                 console.log(error);
-
-                if (error instanceof Response) {
-                    const resp: Response = error;
-
-                    if (resp?.status === 401) {
-                        logout(router, appContext);
-                    }
-                }
+                checkResponseStatus(error);
 
                 setShowAlert(false);
             }
@@ -443,21 +436,21 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="row">
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className={`form-control ${isModelValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-model" placeholder={t("Permits.AddEditSnowmobileDialog.Model")} maxLength={50} value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} onBlur={(e: any) => setModel(e?.target?.value?.trim() ?? "")} />
+                                    <input type="text" className={`form-control ${isModelValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-model" placeholder={t("Permits.AddEditSnowmobileDialog.Model")} maxLength={50} value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} />
                                     <label className="required" htmlFor="add-edit-snowmobile-model">{t("Permits.AddEditSnowmobileDialog.Model")}</label>
                                 </div>
                             </div>
 
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className={`form-control ${isVinValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-vin" placeholder={t("Permits.AddEditSnowmobileDialog.Vin")} maxLength={17} value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} onBlur={(e: any) => setVin(e?.target?.value?.trim() ?? "")} />
+                                    <input type="text" className={`form-control ${isVinValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-vin" placeholder={t("Permits.AddEditSnowmobileDialog.Vin")} maxLength={17} value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} />
                                     <label className="required" htmlFor="add-edit-snowmobile-vin">{t("Permits.AddEditSnowmobileDialog.Vin")}</label>
                                 </div>
                             </div>
 
                             <div className="col-12 col-sm-12 col-md-4">
                                 <div className="form-floating mb-2">
-                                    <input type="text" className={`form-control ${isLicensePlateValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-license-plate" placeholder={t("Permits.AddEditSnowmobileDialog.LicensePlate")} maxLength={10} value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} onBlur={(e: any) => setLicensePlate(e?.target?.value?.trim() ?? "")} />
+                                    <input type="text" className={`form-control ${isLicensePlateValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-license-plate" placeholder={t("Permits.AddEditSnowmobileDialog.LicensePlate")} maxLength={10} value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} />
                                     <label className="required" htmlFor="add-edit-snowmobile-license-plate">{t("Permits.AddEditSnowmobileDialog.LicensePlate")}</label>
                                 </div>
                             </div>
@@ -578,9 +571,9 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 const apiAddVehicleForUserRequest: IApiAddVehicleForUserRequest = {
                     oVehicleId: editedSnowmobileId,
                     makeId: Number(make?.key),
-                    model: model?.substring(0, 50),
-                    vin: vin?.substring(0, 17),
-                    licensePlate: licensePlate?.substring(0, 10),
+                    model: model?.trim()?.substring(0, 50),
+                    vin: vin?.trim()?.substring(0, 17),
+                    licensePlate: licensePlate?.trim()?.substring(0, 10),
                     vehicleYear: vehicleYear
                 };
 
@@ -674,6 +667,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                     },
                     error: (error: any) => {
                         console.log(error);
+                        checkResponseStatus(error);
 
                         setShowAlert(false);
                     }
@@ -682,9 +676,9 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 const apiUpdateVehicleRequest: IApiUpdateVehicleRequest = {
                     oVehicleId: editedSnowmobileId,
                     makeId: Number(make?.key),
-                    model: model,
-                    vin: vin,
-                    licensePlate: licensePlate,
+                    model: model?.trim()?.substring(0, 50),
+                    vin: vin?.trim()?.substring(0, 17),
+                    licensePlate: licensePlate?.trim()?.substring(0, 10),
                     vehicleYear: vehicleYear
                 };
 
@@ -716,6 +710,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                     },
                     error: (error: any) => {
                         console.log(error);
+                        checkResponseStatus(error);
 
                         setShowAlert(false);
                     }
@@ -751,21 +746,21 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
             setIsMakeValid(true);
         }
 
-        if (model === "") {
+        if (model.trim() === "") {
             setIsModelValid(false);
             result = false;
         } else {
             setIsModelValid(true);
         }
 
-        if (vin === "" || !isVinNumberValid(vin)) {
+        if (vin.trim() === "" || !isVinNumberValid(vin.trim())) {
             setIsVinValid(false);
             result = false;
         } else {
             setIsVinValid(true);
         }
 
-        if (licensePlate === "") {
+        if (licensePlate.trim() === "") {
             setIsLicensePlateValid(false);
             result = false;
         } else {
@@ -839,6 +834,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
             },
             error: (error: any) => {
                 console.log(error);
+                checkResponseStatus(error);
 
                 setShowAlert(false);
             }
@@ -909,6 +905,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         },
                         error: (error: any) => {
                             console.log(error);
+                            checkResponseStatus(error);
 
                             //setShowAlert(false);
                         }
@@ -994,6 +991,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             },
                             error: (error: any) => {
                                 console.log(error);
+                                checkResponseStatus(error);
 
                                 //setShowAlert(false);
                             }

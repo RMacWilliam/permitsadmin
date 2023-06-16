@@ -5,14 +5,14 @@ import { GlobalAppContext } from '../../constants';
 const email: string = "sarveny@hotmail.com";
 const password: string = "SnowTravel59!";
 
-function getToken(): Promise<string> {
+function getToken(): Promise<{ token: string, isAuthenticated: boolean, language: string }> {
     return new Promise((resolve) => {
         apiLogin({ email: email, password: password }).subscribe({
             next: (result: IApiLoginResult) => {
-                resolve(result?.token ?? "");
+                resolve({ token: result?.token ?? "", isAuthenticated: true, language: "en" });
             },
             error: (error: any) => {
-                resolve("");
+                resolve({ token: "", isAuthenticated: false, language: "en" });
             }
         });
     });
@@ -52,7 +52,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetUserDetails()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetUserDetails().subscribe({
             next: (result: IApiGetUserDetailsResult) => {
@@ -84,7 +84,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetUserPreferences()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetUserPreferences().subscribe({
             next: (result: IApiGetUserPreferencesResult) => {
@@ -117,7 +117,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetProvinces()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetProvinces().subscribe({
             next: (result: IApiGetProvincesResult[]) => {
@@ -137,7 +137,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetCountries()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetCountries().subscribe({
             next: (result: IApiGetCountriesResult[]) => {
@@ -156,7 +156,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetClubs()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetClubs().subscribe({
             next: (result: IApiGetClubsResult[]) => {
@@ -175,7 +175,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetVehiclesAndPermitsForUser()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetVehiclesAndPermitsForUser().subscribe({
             next: (result: IApiGetVehiclesAndPermitsForUserResult[]) => {
@@ -271,7 +271,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetVehicleMakes()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetVehicleMakes().subscribe({
             next: (result: IApiGetVehicleMakesResult[]) => {
@@ -306,7 +306,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetGiftcardsForCurrentSeasonForUser()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetGiftcardsForCurrentSeasonForUser().subscribe({
             next: (result: IApiGetGiftcardsForCurrentSeasonForUserResult[]) => {
@@ -314,6 +314,7 @@ describe("Tested api response objects", () => {
                 expect(result.length).toBeGreaterThan(0);
 
                 result.forEach(x => {
+                    expect(x).toHaveProperty("giftcardProductId");
                     expect(x).toHaveProperty("oVoucherId");
                     expect(x).toHaveProperty("orderId");
                     expect(x).toHaveProperty("transactionDate");
@@ -321,13 +322,18 @@ describe("Tested api response objects", () => {
                     expect(x).toHaveProperty("recipientPostal");
                     expect(x).toHaveProperty("redemptionCode");
                     expect(x).toHaveProperty("purchaserEmail");
-                    expect(x).toHaveProperty("productId");
                     expect(x).toHaveProperty("isRedeemed");
                     expect(x).toHaveProperty("isPurchased");
                     expect(x).toHaveProperty("useShippingAddress");
                     expect(x).toHaveProperty("shippingOption");
                     expect(x).toHaveProperty("clubId");
                     expect(x).toHaveProperty("permitId");
+                    expect(x).toHaveProperty("isClassic");
+                    expect(x).toHaveProperty("isTrackedShipping");
+                    expect(x).toHaveProperty("trackedShippingAmount");
+                    expect(x).toHaveProperty("amount");
+                    expect(x).toHaveProperty("displayName");
+                    expect(x).toHaveProperty("frenchDisplayName");
                 });
             },
             error: (error: any) => {
@@ -337,7 +343,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetAvailableGiftCards()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetAvailableGiftCards().subscribe({
             next: (result: IApiGetAvailableGiftCardsResult[]) => {
@@ -345,7 +351,6 @@ describe("Tested api response objects", () => {
                 expect(result.length).toBeGreaterThan(0);
 
                 result.forEach(x => {
-                    expect(x).toHaveProperty("giftcardId");
                     expect(x).toHaveProperty("productId");
                     expect(x).toHaveProperty("name");
                     expect(x).toHaveProperty("displayName");
@@ -353,6 +358,7 @@ describe("Tested api response objects", () => {
                     expect(x).toHaveProperty("amount");
                     expect(x).toHaveProperty("testAmount");
                     expect(x).toHaveProperty("classic");
+                    expect(x).toHaveProperty("giftcardProductId");
                     expect(x).toHaveProperty("isTrackedShipping");
                     expect(x).toHaveProperty("trackedShippingAmount");
                 });
@@ -364,7 +370,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetRedeemableGiftCardsForUser()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetRedeemableGiftCardsForUser().subscribe({
             next: (result: IApiGetRedeemableGiftCardsForUserResult) => {
@@ -384,7 +390,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetProcessingFee()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetProcessingFee().subscribe({
             next: (result: IApiGetProcessingFeeResult) => {
@@ -400,7 +406,7 @@ describe("Tested api response objects", () => {
     });
 
     test("Test apiGetShippingFees()", async () => {
-        GlobalAppContext.token = await getToken();
+        GlobalAppContext.data = await getToken();
 
         apiGetShippingFees().subscribe({
             next: (result: IApiGetShippingFeesResult[]) => {
@@ -410,8 +416,10 @@ describe("Tested api response objects", () => {
                 result.forEach(x => {
                     expect(x).toHaveProperty("id");
                     expect(x).toHaveProperty("name");
+                    expect(x).toHaveProperty("nameFr");
                     expect(x).toHaveProperty("price");
                     expect(x).toHaveProperty("showConfirmation");
+                    expect(x).toHaveProperty("isTracked");
                 });
             },
             error: (error: any) => {

@@ -1,7 +1,7 @@
 import UnauthenticatedPageLayout from '@/components/layouts/unauthenticated-page'
 import { IApiLoginRequest, IApiLoginResult, apiLogin } from '@/custom/api';
 import { AppContext } from '@/custom/app-context';
-import { login } from '@/custom/authentication';
+import { loginAndInitializeAppContext } from '@/custom/authentication';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
@@ -145,11 +145,11 @@ function Index() {
 
                             <div className="mt-4">
                                 <div className="form-floating mb-2">
-                                    <input type="email" className={`form-control ${isEmailValid ? "" : "is-invalid"}`} id="login-email" placeholder={t("Index.EmailAddressLabel")} disabled={loginInProgress} value={email} onChange={(e: any) => setEmail(e.target.value)} onBlur={(e: any) => setEmail(e?.target?.value?.trim() ?? "")} />
+                                    <input type="email" className={`form-control ${isEmailValid ? "" : "is-invalid"}`} id="login-email" placeholder={t("Index.EmailAddressLabel")} disabled={loginInProgress} value={email} maxLength={200} onChange={(e: any) => setEmail(e.target.value)} />
                                     <label htmlFor="login-email">{t("Index.EmailAddressLabel")}</label>
                                 </div>
                                 <div className="form-floating">
-                                    <input type="password" className={`form-control ${isPasswordValid ? "" : "is-invalid"}`} id="login-password" placeholder={t("Index.PasswordLabel")} disabled={loginInProgress} value={password} onChange={(e: any) => setPassword(e.target.value)} onBlur={(e: any) => setPassword(e?.target?.value?.trim() ?? "")} />
+                                    <input type="password" className={`form-control ${isPasswordValid ? "" : "is-invalid"}`} id="login-password" placeholder={t("Index.PasswordLabel")} disabled={loginInProgress} value={password} maxLength={200} onChange={(e: any) => setPassword(e.target.value)} />
                                     <label htmlFor="login-password">{t("Index.PasswordLabel")}</label>
                                 </div>
                             </div>
@@ -186,14 +186,14 @@ function Index() {
 
     function doLogin(): void {
         if (validateLoginForm()) {
-            let e: string = email; // TODO: Clean up this code!
-            let p: string = password; // TODO: Clean up this code!
+            let e: string = email.trim().substring(0, 200); // TODO: Clean up this code!
+            let p: string = password.trim().substring(0, 200); // TODO: Clean up this code!
 
-            if (email === "s") e = "sarveny@hotmail.com"; // TODO: Clean up this code!
-            if (email === "b") e = "robert.macwilliam@gmail.com"; // TODO: Clean up this code!
+            if (email.trim() === "s") e = "sarveny@hotmail.com"; // TODO: Clean up this code!
+            if (email.trim() === "b") e = "robert.macwilliam@gmail.com"; // TODO: Clean up this code!
 
-            if (password === "s") p = "SnowTravel59!"; // TODO: Clean up this code!
-            if (password === "b") p = "CrappyPassword1!"; // TODO: Clean up this code!
+            if (password.trim() === "s") p = "SnowTravel59!"; // TODO: Clean up this code!
+            if (password.trim() === "b") p = "CrappyPassword1!"; // TODO: Clean up this code!
 
             const apiLoginRequest: IApiLoginRequest = {
                 email: e ?? email,
@@ -205,10 +205,7 @@ function Index() {
             apiLogin(apiLoginRequest).subscribe({
                 next: (apiLoginResult: IApiLoginResult) => {
                     if (apiLoginResult.isValid) {
-                        // Set WebApi token.
-                        GlobalAppContext.token = apiLoginResult.token;
-
-                        login(router, appContext, apiLoginResult);
+                        loginAndInitializeAppContext(apiLoginResult);
                     } else {
                         setShowInvalidLogin(true);
                         setLoginInProgress(false);
@@ -234,14 +231,14 @@ function Index() {
     function validateLoginForm(): boolean {
         let result: boolean = true;
 
-        if (email === "") {
+        if (email.trim() === "") {
             setIsEmailValid(false);
             result = false;
         } else {
             setIsEmailValid(true);
         }
 
-        if (password === "") {
+        if (password.trim() === "") {
             setIsPasswordValid(false);
             result = false;
         } else {

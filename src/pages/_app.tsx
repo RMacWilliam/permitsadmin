@@ -9,7 +9,7 @@ import '@/styles/globals.scss';
 import type { AppProps } from 'next/app'
 
 import { Updater, useImmer } from 'use-immer'
-import { IAppContextValues, AppContext, initialAppContextValues, IAppContextData } from '../custom/app-context'
+import { IAppContextValues, AppContext, IAppContextData } from '../custom/app-context'
 import '@/localization/i18n';
 
 import Script from 'next/script'
@@ -17,11 +17,13 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { GlobalAppContext } from '../../constants';
 import RouteGuard from '@/custom/authentication';
+import { useRouter } from 'next/router';
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [immerAppContextValues, updateImmerAppContextValues] = useImmer(initialAppContextValues.data);
+  const [immerAppContextValues, updateImmerAppContextValues] = useImmer({ isAuthenticated: false, language: "en" } as IAppContextData); // initialAppContextValues.data);
   const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState(false);
   const [t, i18n] = useTranslation();
+  const router = useRouter();
 
   // Restore app context from local storage.
   useEffect(() => {
@@ -38,8 +40,10 @@ export default function App({ Component, pageProps }: AppProps) {
           i18n.changeLanguage(localStorageDataObj?.language ?? "en");
 
           // Set GlobalAppContext.
-          GlobalAppContext.token = localStorageDataObj.token;
-          GlobalAppContext.translation = { t, i18n };
+          // GlobalAppContext.data = undefined;
+          // GlobalAppContext.updater = undefined;
+          // GlobalAppContext.translation = { t, i18n };
+          // GlobalAppContext.router = router;
 
           // Set language for html tag.
           document.getElementsByTagName("html")[0].lang = localStorageDataObj?.language ?? "en";
@@ -55,8 +59,13 @@ export default function App({ Component, pageProps }: AppProps) {
   // Save app context to local storage whenever app context is updated.
   useEffect(() => {
     // Set GlobalAppContext.
-    GlobalAppContext.token = immerAppContextValues.token;
+    GlobalAppContext.data = immerAppContextValues as IAppContextData;
+    GlobalAppContext.updater = updateImmerAppContextValues as Updater<IAppContextData>;
     GlobalAppContext.translation = { t, i18n };
+    GlobalAppContext.router = router;
+
+    // TODO: For testing. Remove
+    //immerAppContextValues.cart.
 
     // Set language for html tag.
     document.getElementsByTagName("html")[0].lang = immerAppContextValues?.language ?? "en";

@@ -4,7 +4,7 @@ import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { getApiErrorMessage, getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from '@/custom/utilities';
+import { checkResponseStatus, getApiErrorMessage, getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from '@/custom/utilities';
 import { NextRouter, useRouter } from 'next/router';
 import CartItemsAlert from '@/components/cart-items-alert';
 import { Observable, Subscription, forkJoin } from 'rxjs';
@@ -189,6 +189,7 @@ function Contact({ appContext, router, setShowAlert }
             },
             error: (error: any) => {
                 console.log(error);
+                checkResponseStatus(error);
 
                 setShowAlert(false);
             }
@@ -303,7 +304,7 @@ function Contact({ appContext, router, setShowAlert }
             {!appContext.data?.isContactInfoVerified && (
                 <div className="card">
                     <div className="card-body text-center">
-                        <button type="button" className="btn btn-outline-dark" onClick={() => confirmContactInfoClick()}>{t("ContactInfo.ConfirmButton")}</button>
+                        <button type="button" className="btn btn-primary" onClick={() => confirmContactInfoClick()}>{t("ContactInfo.ConfirmButton")}</button>
                     </div>
                 </div>
             )}
@@ -602,14 +603,14 @@ function Contact({ appContext, router, setShowAlert }
     function contactInfoDialogSave(): void {
         if (validateContactInfoDialog()) {
             const apiSaveUserDetailsRequest: IApiSaveUserDetailsRequest = {
-                addressLine1: addressLine1?.substring(0, 30),
-                addressLine2: addressLine2?.substring(0, 30),
-                city: city?.substring(0, 30),
+                addressLine1: addressLine1?.trim()?.substring(0, 30),
+                addressLine2: addressLine2?.trim()?.substring(0, 30),
+                city: city?.trim()?.substring(0, 30),
                 countryId: country?.key,
-                email: email?.substring(0, 200),
-                postalCode: postalCode?.substring(0, 7),
+                email: email?.trim()?.substring(0, 200),
+                postalCode: postalCode?.trim()?.substring(0, 7),
                 provinceId: province?.key,
-                telephone: telephone?.substring(0, 10),
+                telephone: telephone?.trim()?.substring(0, 10),
             };
 
             setShowAlert(true);
@@ -645,6 +646,7 @@ function Contact({ appContext, router, setShowAlert }
                 },
                 error: (error: any) => {
                     console.log(error);
+                    checkResponseStatus(error);
 
                     setShowAlert(false);
                 }
@@ -655,28 +657,28 @@ function Contact({ appContext, router, setShowAlert }
     function validateContactInfoDialog(): boolean {
         let result: boolean = true;
 
-        if (firstName === "") {
+        if (firstName.trim() === "") {
             setIsFirstNameValid(false);
             result = false;
         } else {
             setIsFirstNameValid(true);
         }
 
-        if (lastName === "") {
+        if (lastName.trim() === "") {
             setIsLastNameValid(false);
             result = false;
         } else {
             setIsLastNameValid(true);
         }
 
-        if (addressLine1 === "") {
+        if (addressLine1.trim() === "") {
             setIsAddressLine1Valid(false);
             result = false;
         } else {
             setIsAddressLine1Valid(true);
         }
 
-        if (city === "") {
+        if (city.trim() === "") {
             setIsCityValid(false);
             result = false;
         } else {
@@ -697,21 +699,21 @@ function Contact({ appContext, router, setShowAlert }
             setIsCountryValid(true);
         }
 
-        if (postalCode === "") {
+        if (postalCode.trim() === "") {
             setIsPostalCodeValid(false);
             result = false;
         } else {
             setIsPostalCodeValid(true);
         }
 
-        if (telephone === "") {
+        if (telephone.trim() === "") {
             setIsTelephoneValid(false);
             result = false;
         } else {
             setIsTelephoneValid(true);
         }
 
-        if (email === "") {
+        if (email.trim() === "") {
             setIsEmailValid(false);
             result = false;
         } else {
@@ -771,6 +773,7 @@ function Contact({ appContext, router, setShowAlert }
                 },
                 error: (error: any) => {
                     console.log(error);
+                    checkResponseStatus(error);
 
                     setShowAlert(false);
                 }

@@ -28,13 +28,9 @@ export default i18n
     });
 
 export function getLocalizedValue(obj: IKeyValue | IParentKeyValue | undefined): string {
-    let result: string = "";
+    return (GlobalAppContext?.translation?.i18n?.language === "fr" ? obj?.valueFr : obj?.value) ?? "";
+}
 
-    if (obj != undefined) {
-        if (GlobalAppContext != undefined && GlobalAppContext?.translation != undefined && GlobalAppContext.translation?.i18n != undefined) {
-            result = (GlobalAppContext.translation.i18n.language === "fr" ? obj?.valueFr : obj?.value) ?? "";
-        }
-    }
-
-    return result;
+export function getLocalizedValue2(value: string | undefined, valueFr: string | undefined): string {
+    return (GlobalAppContext?.translation?.i18n?.language === "fr" ? valueFr : value) ?? "";
 }
