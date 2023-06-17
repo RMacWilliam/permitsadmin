@@ -102,6 +102,8 @@ export interface ISnowmobile {
     permits?: IPermit[];
     permitOptions?: IPermitOption[];
     permitSelections?: IPermitSelections;
+    dateStart?: Date;
+    dateEnd?: Date;
 }
 
 export interface IGiftCardType {

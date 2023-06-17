@@ -117,13 +117,11 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                     setGiftCardTypesData(giftCardTypes);
                 }
-
-                setShowAlert(false);
             },
             error: (error: any) => {
-                console.log(error);
                 checkResponseStatus(error);
-
+            },
+            complete: () => {
                 setShowAlert(false);
             }
         });
@@ -179,7 +177,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             {getGiftCards() != undefined && getGiftCards().length > 0 && getGiftCards().map(giftCard => (
                 <div className="card mb-3" key={giftCard.oVoucherId}>
-                    <h5 className="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 className="card-header card-header-success d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div className="d-flex flex-fill">
                             {giftCard.isPurchased && appContext.translation.i18n.language === "en" && (
                                 <span>{getGiftCardName(giftCard?.oVoucherId)}</span>
@@ -195,11 +193,15 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                         <div className="d-flex flex-fill justify-content-end">
                             {giftCard?.isPurchased && !giftCard?.isRedeemed && (
-                                <button className="btn btn-outline-dark btn-sm" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>{t("Common.Edit")}</button>
+                                <button className="btn btn-outline-dark btn-sm" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>
+                                    {t("Common.Edit")}
+                                </button>
                             )}
 
                             {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                <button className="btn btn-outline-dark btn-sm ms-1" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>{t("Common.Delete")}</button>
+                                <button className="btn btn-outline-dark btn-sm ms-1" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
+                                    {t("Common.Delete")}
+                                </button>
                             )}
                         </div>
                     </h5>
@@ -215,7 +217,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                                     <div className="d-flex flex-fill justify-content-end">
                                         <button className="btn btn-outline-dark btn-sm" onClick={() => resendEmailClick(giftCard?.oVoucherId)}>
-                                            {t("GiftCards.ResendEmail")}
+                                            <i className="fa-solid fa-envelope"></i> {t("GiftCards.ResendEmail")}
                                         </button>
                                     </div>
                                 </div>
@@ -277,19 +279,27 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         || (giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode)) && (
                             <div className="card-footer">
                                 {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)} disabled={!isAddToCartEnabled(giftCard?.oVoucherId)}>{t("GiftCards.AddGiftCardToCart")}</button>
+                                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)} disabled={!isAddToCartEnabled(giftCard?.oVoucherId)}>
+                                        <i className="fa-solid fa-plus"></i> {t("GiftCards.AddGiftCardToCart")}
+                                    </button>
                                 )}
 
                                 {!giftCard?.isPurchased && !giftCard?.isRedeemed && isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                    <button className="btn btn-outline-dark btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>{t("GiftCards.RemoveGiftCardFromCart")}</button>
+                                    <button className="btn btn-outline-dark btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>
+                                        <i className="fa-solid fa-xmark"></i> {t("GiftCards.RemoveGiftCardFromCart")}
+                                    </button>
                                 )}
 
                                 {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode && (
-                                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>{t("GiftCards.SaveChanges")}</button>
+                                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>
+                                        <i className="fa-solid fa-floppy-disk"></i> {t("GiftCards.SaveChanges")}
+                                    </button>
                                 )}
 
                                 {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode && (
-                                    <button className="btn btn-outline-dark btn-sm" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>{t("GiftCards.CancelChanges")}</button>
+                                    <button className="btn btn-outline-dark btn-sm" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>
+                                        <i className="fa-solid fa-xmark"></i> {t("GiftCards.CancelChanges")}
+                                    </button>
                                 )}
                             </div>
                         )}
@@ -478,15 +488,13 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         draft.giftCards = draft.giftCards == undefined ? [newGiftCard] : [...draft.giftCards, newGiftCard];
                     });
                 } else {
-
+                    //
                 }
-
-                setShowAlert(false);
             },
             error: (error: any) => {
-                console.log(error);
                 checkResponseStatus(error);
-
+            },
+            complete: () => {
                 setShowAlert(false);
             }
         });
@@ -661,14 +669,12 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                     } else {
                         //
                     }
-
-                    //setShowAlert(false);
                 },
                 error: (error: any) => {
-                    console.log(error);
                     checkResponseStatus(error);
-
-                    //setShowAlert(false);
+                },
+                complete: () => {
+                    //
                 }
             });
         }
@@ -791,13 +797,11 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 } else {
                     setDeleteGiftCardDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                 }
-
-                setShowAlert(false);
             },
             error: (error: any) => {
-                console.log(error);
                 checkResponseStatus(error);
-
+            },
+            complete: () => {
                 setShowAlert(false);
             }
         });
@@ -858,8 +862,6 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                 apiSendGiftCardPdf(apiSendGiftCardPdfRequest).subscribe({
                     next: (result: IApiSendGiftCardPdfResult) => {
-                        setShowAlert(false);
-
                         if (result?.isSuccessful) {
                             setResendGiftCardEmailMessage(t("GiftCards.ResendGiftCardEmailDialog.Successful"));
                         } else {
@@ -869,9 +871,9 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         setShowResendGiftCardEmailDialog(true);
                     },
                     error: (error: any) => {
-                        console.log(error);
                         checkResponseStatus(error);
-
+                    },
+                    complete: () => {
                         setShowAlert(false);
                     }
                 });

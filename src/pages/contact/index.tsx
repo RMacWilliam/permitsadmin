@@ -10,6 +10,7 @@ import CartItemsAlert from '@/components/cart-items-alert';
 import { Observable, Subscription, forkJoin } from 'rxjs';
 import { IApiGetCorrespondenceLanguagesResult, IApiGetCountriesResult, IApiGetProvincesResult, IApiGetUserDetailsResult, IApiGetUserPreferencesResult, IApiSaveUserDetailsRequest, IApiSaveUserDetailsResult, IApiSaveUserPreferencesRequest, IApiSaveUserPreferencesResult, IApiUpdateVehicleResult, apiGetCorrespondenceLanguages, apiGetCountries, apiGetProvinces, apiGetUserDetails, apiGetUserPreferences, apiSaveUserDetails, apiSaveUserPreferences } from '@/custom/api';
 import { getLocalizedValue } from '@/localization/i18n';
+import Loading from '@/components/loading';
 
 export default function ContactPage() {
     const appContext = useContext(AppContext);
@@ -37,6 +38,8 @@ function Contact({ appContext, router, setShowAlert }
         router: NextRouter,
         setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
     }) {
+
+    const [pageLoaded, setPageLoaded] = useState(false);
 
     const [showContactInfoDialog, setShowContactInfoDialog] = useState(false);
     const [contactInfoDialogErrorMessage, setContactInfoDialogErrorMessage] = useState("");
@@ -184,14 +187,13 @@ function Contact({ appContext, router, setShowAlert }
 
                     setCorrespondenceLanguagesData(correspondenceLanguages);
                 }
-
-                setShowAlert(false);
             },
             error: (error: any) => {
-                console.log(error);
                 checkResponseStatus(error);
-
+            },
+            complete: () => {
                 setShowAlert(false);
+                setPageLoaded(true);
             }
         });
 
@@ -213,7 +215,7 @@ function Contact({ appContext, router, setShowAlert }
             <CartItemsAlert></CartItemsAlert>
 
             <div className="card mb-3 w-100">
-                <h5 className="card-header d-flex justify-content-between align-items-center">
+                <h5 className="card-header card-header-success d-flex justify-content-between align-items-center">
                     <div>
                         {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName}`}
                     </div>
@@ -223,29 +225,31 @@ function Contact({ appContext, router, setShowAlert }
                 </h5>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item">
-                        <div>
-                            <span>{appContext.data?.contactInfo?.addressLine1}</span>
+                        <Loading showLoading={!pageLoaded}>
+                            <div>
+                                <span>{appContext.data?.contactInfo?.addressLine1}</span>
 
-                            {appContext.data?.contactInfo?.addressLine2 != undefined && appContext.data?.contactInfo?.addressLine2 !== "" && (
-                                <span>, {appContext.data?.contactInfo?.addressLine2}</span>
-                            )}
+                                {appContext.data?.contactInfo?.addressLine2 != undefined && appContext.data?.contactInfo?.addressLine2 !== "" && (
+                                    <span>, {appContext.data?.contactInfo?.addressLine2}</span>
+                                )}
 
-                            <span>, {appContext.data?.contactInfo?.city}</span>
-                            <span>, {appContext.data?.contactInfo?.province?.key}</span>
-                            <span>, {appContext.data?.contactInfo?.country?.key}</span>
-                            <span>, {appContext.data?.contactInfo?.postalCode}</span>
-                        </div>
+                                <span>, {appContext.data?.contactInfo?.city}</span>
+                                <span>, {appContext.data?.contactInfo?.province?.key}</span>
+                                <span>, {appContext.data?.contactInfo?.country?.key}</span>
+                                <span>, {appContext.data?.contactInfo?.postalCode}</span>
+                            </div>
 
-                        <div>
-                            <div>{appContext.data?.contactInfo?.telephone}</div>
-                            <div>{appContext.data?.contactInfo?.email}</div>
-                        </div>
+                            <div>
+                                <div>{appContext.data?.contactInfo?.telephone}</div>
+                                <div>{appContext.data?.contactInfo?.email}</div>
+                            </div>
+                        </Loading>
                     </li>
                 </ul>
             </div>
 
             <div className="card mb-3 w-100">
-                <h5 className="card-header d-flex justify-content-between align-items-center">
+                <h5 className="card-header card-header-success d-flex justify-content-between align-items-center">
                     <div>
                         {t("ContactInfo.Preferences")}
                     </div>
@@ -255,48 +259,50 @@ function Contact({ appContext, router, setShowAlert }
                 </h5>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item">
-                        <div className="row mb-2 mb-md-0">
-                            <div className="col-12 col-md-6 text-start text-md-end">{t("ContactInfo.OfscConsent")}:</div>
-                            <div className="col-12 col-md-6">
-                                {appContext.data?.accountPreferences?.ofscContactPermission === 0 && (
-                                    <span className="fw-semibold">{t("Common.No")}</span>
-                                )}
+                        <Loading showLoading={!pageLoaded}>
+                            <div className="row mb-2 mb-md-0">
+                                <div className="col-12 col-md-6 text-start text-md-end">{t("ContactInfo.OfscConsent")}:</div>
+                                <div className="col-12 col-md-6">
+                                    {appContext.data?.accountPreferences?.ofscContactPermission === 0 && (
+                                        <span className="fw-semibold">{t("Common.No")}</span>
+                                    )}
 
-                                {appContext.data?.accountPreferences?.ofscContactPermission === 1 && (
-                                    <span className="fw-semibold">{t("Common.Yes")}</span>
-                                )}
+                                    {appContext.data?.accountPreferences?.ofscContactPermission === 1 && (
+                                        <span className="fw-semibold">{t("Common.Yes")}</span>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                        <div className="row mb-2 mb-md-0">
-                            <div className="col-12 col-md-6 text-start text-md-end">{t("ContactInfo.RiderAdvantage")}:</div>
-                            <div className="col-12 col-md-6">
-                                {appContext.data?.accountPreferences?.riderAdvantage === 0 && (
-                                    <span className="fw-semibold">{t("Common.No")}</span>
-                                )}
+                            <div className="row mb-2 mb-md-0">
+                                <div className="col-12 col-md-6 text-start text-md-end">{t("ContactInfo.RiderAdvantage")}:</div>
+                                <div className="col-12 col-md-6">
+                                    {appContext.data?.accountPreferences?.riderAdvantage === 0 && (
+                                        <span className="fw-semibold">{t("Common.No")}</span>
+                                    )}
 
-                                {appContext.data?.accountPreferences?.riderAdvantage === 1 && (
-                                    <span className="fw-semibold">{t("Common.Yes")}</span>
-                                )}
+                                    {appContext.data?.accountPreferences?.riderAdvantage === 1 && (
+                                        <span className="fw-semibold">{t("Common.Yes")}</span>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                        <div className="row mb-2 mb-md-0">
-                            <div className="col-12 col-md-6 text-start text-md-end">{t("ContactInfo.Volunteering")}:</div>
-                            <div className="col-12 col-md-6">
-                                {appContext.data?.accountPreferences?.volunteering === 0 && (
-                                    <span className="fw-semibold">{t("Common.No")}</span>
-                                )}
+                            <div className="row mb-2 mb-md-0">
+                                <div className="col-12 col-md-6 text-start text-md-end">{t("ContactInfo.Volunteering")}:</div>
+                                <div className="col-12 col-md-6">
+                                    {appContext.data?.accountPreferences?.volunteering === 0 && (
+                                        <span className="fw-semibold">{t("Common.No")}</span>
+                                    )}
 
-                                {(appContext.data?.accountPreferences?.volunteering === 1 || appContext.data?.accountPreferences?.volunteering === 2) && (
-                                    <span className="fw-semibold">{t("Common.Yes")}</span>
-                                )}
+                                    {(appContext.data?.accountPreferences?.volunteering === 1 || appContext.data?.accountPreferences?.volunteering === 2) && (
+                                        <span className="fw-semibold">{t("Common.Yes")}</span>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-12 col-md-6 text-start text-md-end">{t("ContactInfo.CorrespondenceLanguage")}:</div>
-                            <div className="col-12 col-md-6">
-                                <span className="fw-semibold">{getLocalizedValue(getCorrespondenceLanguage(appContext.data?.accountPreferences?.correspondenceLanguage))}</span>
+                            <div className="row">
+                                <div className="col-12 col-md-6 text-start text-md-end">{t("ContactInfo.CorrespondenceLanguage")}:</div>
+                                <div className="col-12 col-md-6">
+                                    <span className="fw-semibold">{getLocalizedValue(getCorrespondenceLanguage(appContext.data?.accountPreferences?.correspondenceLanguage))}</span>
+                                </div>
                             </div>
-                        </div>
+                        </Loading>
                     </li>
                 </ul>
             </div>
@@ -641,13 +647,11 @@ function Contact({ appContext, router, setShowAlert }
                     } else {
                         setContactInfoDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                     }
-
-                    setShowAlert(false);
                 },
                 error: (error: any) => {
-                    console.log(error);
                     checkResponseStatus(error);
-
+                },
+                complete: () => {
                     setShowAlert(false);
                 }
             });
@@ -768,13 +772,11 @@ function Contact({ appContext, router, setShowAlert }
                     } else {
                         setAccountPreferencesDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                     }
-
-                    setShowAlert(false);
                 },
                 error: (error: any) => {
-                    console.log(error);
                     checkResponseStatus(error);
-
+                },
+                complete: () => {
                     setShowAlert(false);
                 }
             });

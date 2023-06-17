@@ -108,6 +108,8 @@ export function getApiErrorMessage(key: string | undefined): string | undefined 
 export function checkResponseStatus(error: any, redirectToLoginIf300OrGreater: boolean = true): string {
     let result: string = "";
 
+    console.log(error);
+
     if (error != undefined && error instanceof Response) {
         const response: Response = error as Response;
 

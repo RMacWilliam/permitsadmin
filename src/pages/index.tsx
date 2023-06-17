@@ -1,5 +1,5 @@
 import UnauthenticatedPageLayout from '@/components/layouts/unauthenticated-page'
-import { IApiLoginRequest, IApiLoginResult, apiLogin } from '@/custom/api';
+import { IApiValidateUserRequest, IApiValidateUserResult, apiValidateUser } from '@/custom/api';
 import { AppContext } from '@/custom/app-context';
 import { loginAndInitializeAppContext } from '@/custom/authentication';
 import Head from 'next/head';
@@ -195,25 +195,25 @@ function Index() {
             if (password.trim() === "s") p = "SnowTravel59!"; // TODO: Clean up this code!
             if (password.trim() === "b") p = "CrappyPassword1!"; // TODO: Clean up this code!
 
-            const apiLoginRequest: IApiLoginRequest = {
+            setLoginInProgress(true);
+
+            const apiLoginRequest: IApiValidateUserRequest = {
                 email: e ?? email,
                 password: p ?? password
             };
 
-            setLoginInProgress(true);
-
-            apiLogin(apiLoginRequest).subscribe({
-                next: (apiLoginResult: IApiLoginResult) => {
-                    if (apiLoginResult.isValid) {
+            apiValidateUser(apiLoginRequest).subscribe({
+                next: (apiLoginResult: IApiValidateUserResult) => {
+                    if (apiLoginResult?.isValid) {
                         loginAndInitializeAppContext(apiLoginResult);
                     } else {
                         setShowInvalidLogin(true);
-                        setLoginInProgress(false);
                     }
                 },
                 error: (error: any) => {
                     console.log(error);
-
+                },
+                complete: () => {
                     setLoginInProgress(false);
                 }
             });

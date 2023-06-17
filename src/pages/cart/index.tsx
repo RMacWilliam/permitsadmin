@@ -1,7 +1,7 @@
 import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from "@/components/confirmation-dialog";
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
 import { IApiGetClubsResult, IApiGetCountriesResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetShippingFeesResult, apiGetClubs, apiGetCountries, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, IApiSavePermitSelectionForVehicleRequest, apiSavePermitSelectionForVehicle, IApiSavePermitSelectionForVehicleResult, apiGetGoogleMapKey, IApiGetGoogleMapKeyResult, apiGetIsValidRedemptionCodeForVehicle, IApiGetIsValidRedemptionCodeForVehicleResult, IApiGetIsValidRedemptionCodeForVehicleRequest } from "@/custom/api";
-import { AppContext, IAppContextValues, ICartItem, IKeyValue, IParentKeyValue, IRedeemableGiftCards, IShippingFee, ISnowmobile, IPermitSelections } from "@/custom/app-context";
+import { AppContext, IAppContextValues, ICartItem, IKeyValue, IParentKeyValue, IRedeemableGiftCards, IShippingFee, ISnowmobile, IPermitSelections, IPermitOption } from "@/custom/app-context";
 import { checkResponseStatus, formatCurrency, getApiErrorMessage, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from "@/custom/utilities";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
@@ -42,6 +42,8 @@ function Cart({ appContext, router, setShowAlert }:
         router: NextRouter,
         setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
     }) {
+
+    const [pageLoaded, setPageLoaded] = useState(false);
 
     const [showClubInfoDialog, setShowClubInfoDialog] = useState(false);
 
@@ -179,14 +181,13 @@ function Cart({ appContext, router, setShowAlert }:
                 if (appContext.data?.cart?.shipTo == undefined) {
                     shipToAddressChange(ShipTo.Registered);
                 }
-
-                setShowAlert(false);
             },
             error: (error: any) => {
-                console.log(error);
                 checkResponseStatus(error);
-
+            },
+            complete: () => {
                 setShowAlert(false);
+                setPageLoaded(true);
             }
         });
 
@@ -245,7 +246,7 @@ function Cart({ appContext, router, setShowAlert }:
                                                 <>
                                                     {isRedeemGiftCardVisible(cartItem?.itemId) && (
                                                         <div className="card mt-2">
-                                                            <div className="card-body footer-color">
+                                                            <div className="card-body bg-warning-subtle">
                                                                 {cartItem?.redemptionCode != undefined && (
                                                                     <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                                         <div className="fw-semibold flex-fill">
@@ -283,7 +284,7 @@ function Cart({ appContext, router, setShowAlert }:
                                                     )}
 
                                                     <div className="card mt-2">
-                                                        <div className="card-body footer-color">
+                                                        <div className="card-body bg-warning-subtle">
                                                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                                 <div className="d-flex flex-fill align-items-center">
                                                                     <div className="fw-semibold required">{t("Cart.SelectClub")}</div>
@@ -327,7 +328,7 @@ function Cart({ appContext, router, setShowAlert }:
 
                                     {isTransactionAndAdministrationFeeDiscountVisible() && (
                                         <div className="card mt-2">
-                                            <div className="card-body footer-color">
+                                            <div className="card-body bg-warning-subtle">
                                                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                     <div className="fw-semibold flex-fill">
                                                         {t("Cart.TransactionAndAdminFeeDiscount")}
@@ -373,7 +374,7 @@ function Cart({ appContext, router, setShowAlert }:
 
                                 {isTrackedShippingDiscountVisible() && (
                                     <div className="card mt-2">
-                                        <div className="card-body footer-color">
+                                        <div className="card-body bg-warning-subtle">
                                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                 <div className="fw-semibold flex-fill">
                                                     {t("Cart.TrackedShippingDiscount")}
@@ -832,18 +833,26 @@ function Cart({ appContext, router, setShowAlert }:
     function isRedeemGiftCardVisible(snowmobileId?: string): boolean {
         let result: boolean = false;
 
+        // If there are redeemable gift cards, then proceed.
         if (redeemableGiftCards != undefined && ((redeemableGiftCards?.seasonalGiftCards ?? 0) > 0 || (redeemableGiftCards?.classicGiftCards ?? 0) > 0)
             && snowmobileId != undefined) {
 
             const snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
             if (snowmobile != undefined) {
-                result = snowmobile?.isClassic && (redeemableGiftCards?.classicGiftCards ?? 0) > 0
-                    || !snowmobile?.isClassic && (redeemableGiftCards?.seasonalGiftCards ?? 0) > 0;
+                const permitOption: IPermitOption | undefined = snowmobile?.permitOptions?.filter(x => x?.productId === snowmobile?.permitSelections?.permitOptionId)[0];
+
+                if (permitOption != undefined) {
+                    // Show redeem gift card section if the selected permit is not a multi-day permit
+                    result = !permitOption?.isMultiDay
+                        // and user has a redeemable gift card that can be used for the type of permit they want to purchase.
+                        && (snowmobile?.isClassic && (redeemableGiftCards?.classicGiftCards ?? 0) > 0
+                            || !snowmobile?.isClassic && (redeemableGiftCards?.seasonalGiftCards ?? 0) > 0);
+                }
             }
         }
 
-        return (redeemableGiftCards != undefined && ((redeemableGiftCards?.seasonalGiftCards ?? 0) > 0 || (redeemableGiftCards?.classicGiftCards ?? 0) > 0)) ?? false;
+        return result;
     }
 
     function removeGiftCardClick(cartItemId?: string): void {
@@ -889,12 +898,12 @@ function Cart({ appContext, router, setShowAlert }:
             if (cartItem != undefined && cartItem.uiRedemptionCode.trim() !== "") {
                 setShowAlert(true);
 
-                const params: IApiGetIsValidRedemptionCodeForVehicleRequest = {
+                const apiGetIsValidRedemptionCodeForVehicleRequest: IApiGetIsValidRedemptionCodeForVehicleRequest = {
                     oVehicleId: cartItem.itemId, // oVehicleId for permit items in cart
                     redemptionCode: cartItem.uiRedemptionCode.trim()
                 };
 
-                apiGetIsValidRedemptionCodeForVehicle(params).subscribe({
+                apiGetIsValidRedemptionCodeForVehicle(apiGetIsValidRedemptionCodeForVehicleRequest).subscribe({
                     next: (result: IApiGetIsValidRedemptionCodeForVehicleResult) => {
                         if (result?.isSuccessful) {
                             if (result?.data?.isValid) {
@@ -933,13 +942,11 @@ function Cart({ appContext, router, setShowAlert }:
                         } else {
                             // TODO: What do we do if the call was unsuccessful?
                         }
-
-                        setShowAlert(false);
                     },
                     error: (error: any) => {
-                        console.log(error);
                         checkResponseStatus(error);
-
+                    },
+                    complete: () => {
                         setShowAlert(false);
                     }
                 });
@@ -1056,16 +1063,14 @@ function Cart({ appContext, router, setShowAlert }:
                                     }
                                 });
                             } else {
-
+                                //
                             }
-
-                            //setShowAlert(false);
                         },
                         error: (error: any) => {
-                            console.log(error);
                             checkResponseStatus(error);
-
-                            //setShowAlert(false);
+                        },
+                        complete: () => {
+                            //
                         }
                     });
                 }

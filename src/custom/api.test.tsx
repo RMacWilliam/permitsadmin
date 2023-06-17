@@ -1,4 +1,4 @@
-import { IApiGetAvailableGiftCardsResult, IApiGetClubsResult, IApiGetCountriesResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetRedeemableGiftCardsForUserResult, IApiGetShippingFeesResult, IApiGetUserDetailsResult, IApiGetUserPreferencesResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserResult, IApiLoginRequest, IApiLoginResult, apiGetAvailableGiftCards, apiGetClubs, apiGetCountries, apiGetGiftcardsForCurrentSeasonForUser, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, apiGetUserDetails, apiGetUserPreferences, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiLogin } from './api';
+import { IApiGetAvailableGiftCardsResult, IApiGetClubsResult, IApiGetCountriesResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetRedeemableGiftCardsForUserResult, IApiGetShippingFeesResult, IApiGetUserDetailsResult, IApiGetUserPreferencesResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserResult, IApiValidateUserRequest, IApiValidateUserResult, apiGetAvailableGiftCards, apiGetClubs, apiGetCountries, apiGetGiftcardsForCurrentSeasonForUser, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, apiGetUserDetails, apiGetUserPreferences, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiValidateUser } from './api';
 import { error } from "console";
 import { GlobalAppContext } from '../../constants';
 
@@ -7,12 +7,15 @@ const password: string = "SnowTravel59!";
 
 function getToken(): Promise<{ token: string, isAuthenticated: boolean, language: string }> {
     return new Promise((resolve) => {
-        apiLogin({ email: email, password: password }).subscribe({
-            next: (result: IApiLoginResult) => {
+        apiValidateUser({ email: email, password: password }).subscribe({
+            next: (result: IApiValidateUserResult) => {
                 resolve({ token: result?.token ?? "", isAuthenticated: true, language: "en" });
             },
             error: (error: any) => {
                 resolve({ token: "", isAuthenticated: false, language: "en" });
+            },
+            complete: () => {
+                //
             }
         });
     });
@@ -20,10 +23,10 @@ function getToken(): Promise<{ token: string, isAuthenticated: boolean, language
 
 describe("Tested api response objects", () => {
     test("Test apiLogin()", async () => {
-        const body: IApiLoginRequest = { email: email, password: password };
+        const body: IApiValidateUserRequest = { email: email, password: password };
 
-        apiLogin(body).subscribe({
-            next: (result: IApiLoginResult) => {
+        apiValidateUser(body).subscribe({
+            next: (result: IApiValidateUserResult) => {
                 expect(result).toBeTruthy();
 
                 expect(result).toHaveProperty("email");
@@ -42,6 +45,9 @@ describe("Tested api response objects", () => {
                 expect(result?.token?.length).toBeGreaterThan(0);
             },
             error: (error: any) => {
+                //
+            },
+            complete: () => {
                 //
             }
         });
@@ -74,6 +80,9 @@ describe("Tested api response objects", () => {
                 expect(result).toHaveProperty("verified");
             },
             error: (error: any) => {
+                //
+            },
+            complete: () => {
                 //
             }
         });
@@ -108,6 +117,9 @@ describe("Tested api response objects", () => {
             },
             error: (error: any) => {
                 //
+            },
+            complete: () => {
+                //
             }
         });
     });
@@ -132,6 +144,9 @@ describe("Tested api response objects", () => {
             },
             error: (error: any) => {
                 //
+            },
+            complete: () => {
+                //
             }
         });
     });
@@ -151,6 +166,9 @@ describe("Tested api response objects", () => {
             },
             error: (error: any) => {
                 //
+            },
+            complete: () => {
+                //
             }
         });
     });
@@ -169,6 +187,9 @@ describe("Tested api response objects", () => {
                 });
             },
             error: (error: any) => {
+                //
+            },
+            complete: () => {
                 //
             }
         });
@@ -262,9 +283,15 @@ describe("Tested api response objects", () => {
                     expect(x?.permitSelections).toHaveProperty("dateStart");
                     expect(x?.permitSelections).toHaveProperty("dateEnd");
                     expect(x?.permitSelections).toHaveProperty("clubId");
+
+                    //expect(x).toHaveProperty("dateStart");
+                    //expect(x).toHaveProperty("dateEnd");
                 });
             },
             error: (error: any) => {
+                //
+            },
+            complete: () => {
                 //
             }
         });
@@ -284,6 +311,9 @@ describe("Tested api response objects", () => {
                 });
             },
             error: (error: any) => {
+                //
+            },
+            complete: () => {
                 //
             }
         });
@@ -338,6 +368,9 @@ describe("Tested api response objects", () => {
             },
             error: (error: any) => {
                 //
+            },
+            complete: () => {
+                //
             }
         });
     });
@@ -365,6 +398,9 @@ describe("Tested api response objects", () => {
             },
             error: (error: any) => {
                 //
+            },
+            complete: () => {
+                //
             }
         });
     });
@@ -385,6 +421,9 @@ describe("Tested api response objects", () => {
             },
             error: (error: any) => {
                 //
+            },
+            complete: () => {
+                //
             }
         });
     });
@@ -400,6 +439,9 @@ describe("Tested api response objects", () => {
                 expect(result?.fee).toBeGreaterThanOrEqual(0);
             },
             error: (error: any) => {
+                //
+            },
+            complete: () => {
                 //
             }
         });
@@ -424,9 +466,10 @@ describe("Tested api response objects", () => {
             },
             error: (error: any) => {
                 //
+            },
+            complete: () => {
+                //
             }
         });
     });
-
-
 });

@@ -5,7 +5,7 @@ export default function LanguageToggler({ isTextShort, className }: { isTextShor
     const appContext = useContext(AppContext);
 
     return (
-        <span className="fw-semibold {className}" style={{ cursor: "pointer" }} onClick={() => toggleLanguage()}>
+        <span className={`fw-semibold ${className}`} style={{ cursor: "pointer" }} onClick={() => toggleLanguage()}>
             {isTextShort && getLanguageTextShort()}
             {!isTextShort && getLanguageTextLong()}
         </span>

@@ -1,7 +1,8 @@
-import { Observable } from "rxjs";
+import { Observable, map } from "rxjs";
 import { fromFetch } from "rxjs/fetch";
 import { IKeyValue, IParentKeyValue } from "./app-context";
 import { GlobalAppContext, WebApi } from "../../constants";
+import $ from 'jquery';
 
 const WebApiGlobalQueryParams: any = {
     asOfDate: "2023-01-01"
@@ -50,6 +51,16 @@ function httpFetch<T>(method: "GET" | "POST" | "DELETE", url: string, params?: a
         url += "?" + queryParams.join("&");
     }
 
+    // $.ajax({
+    //     url: url,
+    //     method: method,
+    //     headers: headers,
+    //     data: method === 'GET' ? undefined : JSON.stringify(body)
+    // })
+    //     .done(function (data, textStatus, xhr ) {
+    //         console.log(xhr.getAllResponseHeaders());
+    //     });
+
     return fromFetch<T>(url, init);
 }
 
@@ -69,20 +80,20 @@ function httpDelete<T>(url: string, params?: any, body?: any, isAuthenticated: b
 // apiLogin
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export interface IApiLoginRequest {
+export interface IApiValidateUserRequest {
     email: string;
     password: string;
 }
 
-export interface IApiLoginResult {
+export interface IApiValidateUserResult {
     isValid?: boolean;
     isFirstLoginOfSeason?: boolean;
     token?: string;
     email?: string;
 }
 
-export function apiLogin(body?: any, params: any = undefined): Observable<IApiLoginResult> {
-    return httpPost<IApiLoginResult>(WebApi.LoginUrl, params, body, false);
+export function apiValidateUser(body?: any, params: any = undefined): Observable<IApiValidateUserResult> {
+    return httpPost<IApiValidateUserResult>(WebApi.ValidateUser, params, body, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,11 +105,13 @@ export interface IApiLogoutRequest {
 }
 
 export interface IApiLogoutResult {
-
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: any;
 }
 
 export function apiLogout(body?: any, params: any = undefined): Observable<IApiLogoutResult> {
-    return httpPost<IApiLogoutResult>(WebApi.LogoutUrl, params, body);
+    return httpPost<IApiLogoutResult>(WebApi.Logout, params, body, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -308,6 +321,8 @@ export interface IApiVehiclePermit {
     encryptedReference?: string;
     isMostRecent?: boolean;
     isExpired?: boolean;
+    dateStart?: Date;
+    dateEnd?: Date;
 }
 
 export interface IApiVehiclePermitSelections {
@@ -795,7 +810,7 @@ export function apiSavePrePurchaseData(body?: any, params?: any): Observable<IAp
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// sendGiftCardPdf
+// apiSendGiftCardPdf
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface IApiSendGiftCardPdfRequest {
@@ -810,4 +825,26 @@ export interface IApiSendGiftCardPdfResult {
 
 export function apiSendGiftCardPdf(body?: any, params?: any): Observable<IApiSendGiftCardPdfResult> {
     return httpPost<IApiSendGiftCardPdfResult>(WebApi.SendGiftCardPdf, params, body);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiMonerisComplete
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiMonerisCompleteRequest {
+    ticket?: string;
+    orderId?: string;
+    environment?: string;
+    amount?: number;
+    message?: string;
+}
+
+export interface IApiMonerisCompleteResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: any;
+}
+
+export function apiMonerisComplete(body?: any, params?: any): Observable<IApiMonerisCompleteResult> {
+    return httpPost<IApiMonerisCompleteResult>(WebApi.MonerisComplete, params, body);
 }

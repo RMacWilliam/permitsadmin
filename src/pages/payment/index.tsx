@@ -5,7 +5,7 @@ import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { Subscription } from "rxjs";
 import $ from 'jquery';
-import { IApiSavePrePurchaseDataRequest, IApiSavePrePurchaseDataResult, IApiSavePrePurchaseDataResultData, apiSavePrePurchaseData } from "@/custom/api";
+import { IApiMonerisCompleteRequest, IApiMonerisCompleteResult, IApiSavePrePurchaseDataRequest, IApiSavePrePurchaseDataResult, IApiSavePrePurchaseDataResultData, apiMonerisComplete, apiSavePrePurchaseData } from "@/custom/api";
 import { checkResponseStatus } from "@/custom/utilities";
 
 declare var monerisCheckout: any;
@@ -14,9 +14,6 @@ export default function PaymentPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
-    // Display loading indicator.
-    const [showAlert, setShowAlert] = useState(false);
-
     useEffect(() => {
         appContext.updater(draft => { draft.navbarPage = "payment" });
 
@@ -24,17 +21,14 @@ export default function PaymentPage() {
     }, []);
 
     return (
-        // <AuthenticatedPageLayout showAlert={showAlert}>
-        <Payment appContext={appContext} router={router} setShowAlert={setShowAlert}></Payment>
-        //</AuthenticatedPageLayout>
+        <Payment appContext={appContext} router={router}></Payment>
     )
 }
 
-function Payment({ appContext, router, setShowAlert }:
+function Payment({ appContext, router }:
     {
         appContext: IAppContextValues,
-        router: NextRouter,
-        setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
+        router: NextRouter
     }) {
 
     const [monerisPrePurchase, setMonerisPrePurchase] = useState({} as IApiSavePrePurchaseDataResultData);
@@ -119,16 +113,14 @@ function Payment({ appContext, router, setShowAlert }:
                         });
                     }
                 } else {
-
+                    //
                 }
-
-                setShowAlert(false);
             },
             error: (error: any) => {
-                console.log(error);
                 checkResponseStatus(error);
-
-                setShowAlert(false);
+            },
+            complete: () => {
+                //
             }
         });
 
@@ -145,16 +137,7 @@ function Payment({ appContext, router, setShowAlert }:
                 <title>{t("Payment.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            {/* <h4 className="mb-3">{t("Payment.Title")}</h4> */}
-
-            {/* <div className="card mb-3">
-                <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
-                    <div>{monerisPrePurchase?.environment}</div>
-                    <div></div>
-                </div>
-            </div> */}
-
-            <div className="" id="moneris-checkout" style={{ top: "86px !important" }}></div>
+            <div id="moneris-checkout"></div>
         </>
     )
 
@@ -190,6 +173,30 @@ function Payment({ appContext, router, setShowAlert }:
 
         myCheckout.closeCheckout();
 
+        const apiMonerisCompleteRequest: IApiMonerisCompleteRequest = {
+            ticket: monerisPrePurchase?.ticket,
+            orderId: monerisPrePurchase?.orderId,
+            environment: monerisPrePurchase?.environment,
+            amount: monerisPrePurchase?.amount,
+            message: jsonMessage
+        };
+
+        apiMonerisComplete(apiMonerisCompleteRequest).subscribe({
+            next: (result: IApiMonerisCompleteResult) => {
+                if (result?.isSuccessful) {
+                    router.push("/payment/approved"); // TODO: api will indicate if the transaction was successful?
+                } else {
+                    router.push("/payment/declined"); // TODO: api will indicate if the transaction was successful?
+                }
+            },
+            error: (error: any) => {
+                checkResponseStatus(error);
+            },
+            complete: () => {
+                //
+            }
+        });
+
         // $.ajax({
         //     type: 'POST',
         //     url: "../MonerisApproved/MonerisCheckoutComplete",
@@ -214,7 +221,7 @@ function Payment({ appContext, router, setShowAlert }:
     function cancelTransaction(jsonMessage: any): void {
         myCheckout.closeCheckout();
 
-        router.push("/home");
+        router.push("/cart");
 
         //     const message = JSON.parse(jsonMessage);
 

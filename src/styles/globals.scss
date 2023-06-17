@@ -103,7 +103,11 @@ body {
 }
 
 .bg-warning-subtle {
-  background-color: rgb(255, 243, 205);
+  // .bg-success
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-warning-rgb), var(--bs-bg-opacity)) !important;
+
+  --bs-bg-opacity: 0.20;
 }
 
 .z-10000 {
@@ -163,4 +167,21 @@ body {
 
 .floating-info-text {
   line-height: 1.25;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.card-header-success {
+  // .bg-success
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-success-rgb), var(--bs-bg-opacity)) !important;
+
+  // .text-dark
+  --bs-text-opacity: 1;
+  color: rgba(var(--bs-dark-rgb), var(--bs-text-opacity)) !important;
+
+  // .bg-opacity-25
+  --bs-bg-opacity: 0.20;
 }

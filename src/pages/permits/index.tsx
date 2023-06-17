@@ -11,7 +11,6 @@ import DatePicker from 'react-datepicker';
 import CartItemsAlert from '@/components/cart-items-alert';
 import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle, IApiDeleteVehicleRequest, IApiDeleteVehicleResult, apiDeleteVehicle, IApiVehiclePermit, IApiVehiclePermitOption } from '@/custom/api';
 import { Observable, Subscription, forkJoin } from 'rxjs';
-import { logoutAndCleanupAppContext } from '@/custom/authentication';
 import { getLocalizedValue } from '@/localization/i18n';
 
 export default function PermitsPage() {
@@ -49,6 +48,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
         setShowAlert: Dispatch<SetStateAction<boolean>>,
         setShowHoverButton: Dispatch<SetStateAction<IShowHoverButton>>
     }) {
+
+    const [pageLoaded, setPageLoaded] = useState(false);
 
     const [showAddEditSnowmobileDialog, setShowAddEditSnowmobileDialog] = useState(false);
     const [addEditSnowmobileDialogMode, setAddEditSnowmobileDialogMode] = useState(DialogMode.Add);
@@ -160,8 +161,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 isMostRecent: p?.isMostRecent,
                                 isExpired: p?.isExpired,
                                 permitOptionId: undefined,
-                                dateStart: undefined,
-                                dateEnd: undefined
+                                dateStart: parseDate(p?.dateStart),
+                                dateEnd: parseDate(p?.dateEnd)
                             }));
                         }
 
@@ -213,13 +214,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 }
 
                 setYearsData(years);
-
-                setShowAlert(false);
             },
             error: (error: any) => {
-                console.log(error);
                 checkResponseStatus(error);
-
+            },
+            complete: () => {
                 setShowAlert(false);
             }
         });
@@ -247,7 +246,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
             {getSnowmobiles() != undefined && getSnowmobiles().length > 0 && getSnowmobiles().map(snowmobile => (
                 <div className="card w-100 mb-3" key={snowmobile.oVehicleId}>
-                    <div className="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div className="card-header card-header-success d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div className="d-flex flex-fill g-3">
                             <div className="d-none d-md-flex my-2">
                                 <div className="me-3">
@@ -358,11 +357,15 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                     {snowmobile?.isEditable && snowmobile?.permitOptions != undefined && snowmobile.permitOptions.length > 0 && (
                         <div className="card-footer">
                             {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
-                                <button className="btn btn-outline-dark btn-sm" onClick={() => addPermitToCartClick(snowmobile?.oVehicleId)} disabled={!isAddToCartEnabled(snowmobile?.oVehicleId)}>{t("Permits.Vehicle.AddPermitToCart")}</button>
+                                <button className="btn btn-outline-dark btn-sm" onClick={() => addPermitToCartClick(snowmobile?.oVehicleId)} disabled={!isAddToCartEnabled(snowmobile?.oVehicleId)}>
+                                    <i className="fa-solid fa-plus"></i> {t("Permits.Vehicle.AddPermitToCart")}
+                                </button>
                             )}
 
                             {snowmobile?.isEditable && isPermitAddedToCart(snowmobile?.oVehicleId) && (
-                                <button className="btn btn-outline-dark btn-sm" onClick={() => removePermitFromCartClick(snowmobile?.oVehicleId)}>{t("Permits.Vehicle.RemovePermitFromCart")}</button>
+                                <button className="btn btn-outline-dark btn-sm" onClick={() => removePermitFromCartClick(snowmobile?.oVehicleId)}>
+                                    <i className="fa-solid fa-xmark"></i> {t("Permits.Vehicle.RemovePermitFromCart")}
+                                </button>
                             )}
                         </div>
                     )}
@@ -626,8 +629,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                     isMostRecent: p?.isMostRecent,
                                     isExpired: p?.isExpired,
                                     permitOptionId: undefined,
-                                    dateStart: undefined,
-                                    dateEnd: undefined
+                                    dateStart: parseDate(p?.dateStart),
+                                    dateEnd: parseDate(p?.dateEnd)
                                 }));
                             }
 
@@ -662,13 +665,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         } else {
                             setAddEditSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                         }
-
-                        setShowAlert(false);
                     },
                     error: (error: any) => {
-                        console.log(error);
                         checkResponseStatus(error);
-
+                    },
+                    complete: () => {
                         setShowAlert(false);
                     }
                 });
@@ -705,13 +706,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         } else {
                             setAddEditSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                         }
-
-                        setShowAlert(false);
                     },
                     error: (error: any) => {
-                        console.log(error);
                         checkResponseStatus(error);
-
+                    },
+                    complete: () => {
                         setShowAlert(false);
                     }
                 });
@@ -829,13 +828,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 } else {
                     setDeleteSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
                 }
-
-                setShowAlert(false);
             },
             error: (error: any) => {
-                console.log(error);
                 checkResponseStatus(error);
-
+            },
+            complete: () => {
                 setShowAlert(false);
             }
         });
@@ -898,16 +895,14 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                     }
                                 });
                             } else {
-
+                                //
                             }
-
-                            //setShowAlert(false);
                         },
                         error: (error: any) => {
-                            console.log(error);
                             checkResponseStatus(error);
-
-                            //setShowAlert(false);
+                        },
+                        complete: () => {
+                            //
                         }
                     });
                 }
@@ -987,13 +982,12 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                                 }
 
-                                //setShowAlert(false);
                             },
                             error: (error: any) => {
-                                console.log(error);
                                 checkResponseStatus(error);
-
-                                //setShowAlert(false);
+                            },
+                            complete: () => {
+                                //
                             }
                         });
                     }

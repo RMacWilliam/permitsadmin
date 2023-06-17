@@ -120,10 +120,10 @@ export const resources_en = {
         "TrackingNumber": "Tracking #",
         "AddPermitToCart": "Add Permit to Cart",
         "RemovePermitFromCart": "Remove Permit from Cart",
-        "AddSnowmobile": "Add Snowmobile"
+        "AddSnowmobile": "Add New Snowmobile"
       },
       "HoverButtons": {
-        "AddSnowmobile": "Add Snowmobile"
+        "AddSnowmobile": "Add New Snowmobile"
       },
       "AddEditSnowmobileDialog": {
         "AddTitle": "Add Snowmobile",
@@ -164,9 +164,9 @@ export const resources_en = {
       "RemoveGiftCardFromCart": "Remove Gift Card from Cart",
       "SaveChanges": "Save Changes",
       "CancelChanges": "Cancel Changes",
-      "AddGiftCard": "Add Gift Card",
+      "AddGiftCard": "Add New Gift Card",
       "HoverButtons": {
-        "AddGiftCard": "Add Gift Card",
+        "AddGiftCard": "Add New Gift Card",
       },
       "DeleteGiftCardDialog": {
         "Title": "Delete Gift Card",
@@ -226,6 +226,12 @@ export const resources_en = {
     },
     "Payment": {
       "Title": "Payment"
+    },
+    "PaymentApproved": {
+      "Title": "Payment Approved"
+    },
+    "PaymentDeclined": {
+      "Title": "Payment Declined"
     },
     "API": {
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "VIN assigned to another vehicle on account.",

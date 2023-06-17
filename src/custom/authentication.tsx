@@ -1,10 +1,11 @@
 import { NextRouter, useRouter } from "next/router";
 import { AppContext, IAppContextValues } from "./app-context";
-import { IApiLoginResult } from "./api";
+import { IApiLogoutResult, IApiValidateUserResult, apiLogout } from "./api";
 import { ReactNode, useContext, useRef } from "react";
 import { GlobalAppContext, WebApi } from "../../constants";
+import { checkResponseStatus } from "./utilities";
 
-export default function RouteGuard({ children }: { children: ReactNode }) {
+export default function RouteGuard({ children }: { children: ReactNode }): any {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
@@ -60,6 +61,10 @@ export default function RouteGuard({ children }: { children: ReactNode }) {
                     isAuthorized.current = true;
                 } else if (path === "/payment") {
                     isAuthorized.current = true;
+                } else if (path === "/payment/approved") {
+                    isAuthorized.current = true;
+                } else if (path === "/payment/declined") {
+                    isAuthorized.current = true;
                 }
                 // Everything else (like admin pages that a regular user should not see).
                 else {
@@ -101,7 +106,7 @@ export default function RouteGuard({ children }: { children: ReactNode }) {
     }
 }
 
-export function loginAndInitializeAppContext(apiLoginResult: IApiLoginResult): void {
+export function loginAndInitializeAppContext(apiLoginResult: IApiValidateUserResult): void {
     if (GlobalAppContext != undefined && GlobalAppContext?.updater != undefined && GlobalAppContext?.router != undefined) {
         GlobalAppContext.updater(draft => {
             draft.isAuthenticated = true;
@@ -161,6 +166,22 @@ export function logoutAndCleanupAppContext(): void {
             window.localStorage.removeItem("data");
         }
 
-        GlobalAppContext.router.push("/");
+        //GlobalAppContext.router.push("/");
+
+        apiLogout().subscribe({
+            next: (apiLogoutResult: IApiLogoutResult) => {
+                if (apiLogoutResult?.isSuccessful) {
+
+                } else {
+
+                }
+            },
+            error: (error: any) => {
+                console.log(error);
+            },
+            complete: () => {
+                //
+            }
+        });
     }
 }

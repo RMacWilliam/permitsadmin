@@ -15,8 +15,8 @@ export class WebApi {
     static MonerisBaseUrl: string = "https://localhost:7270/api/";
 
     // User
-    static LoginUrl: string = WebApi.BaseUrl + "user/validateuser";
-    static LogoutUrl: string = WebApi.BaseUrl + "............................";
+    static ValidateUser: string = WebApi.BaseUrl + "user/validateuser";
+    static Logout: string = WebApi.BaseUrl + "user/logout";
     static GetUserDetails: string = WebApi.BaseUrl + "user/getuserdetails";
     static SaveUserDetails: string = WebApi.BaseUrl + "user/saveuserdetails";
     static GetUserPreferences: string = WebApi.BaseUrl + "user/getuserpreferences";
@@ -53,6 +53,9 @@ export class WebApi {
 
     // Documents
     static SendGiftCardPdf: string = WebApi.BaseUrl + "documents/sendgiftcardpdf";
+
+    // Payment
+    static MonerisComplete: string = WebApi.BaseUrl + "payment/moneriscomplete";
 }
 
 export class Constants {
