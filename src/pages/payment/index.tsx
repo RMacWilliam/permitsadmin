@@ -1,4 +1,3 @@
-import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
 import { AppContext, IAppContextValues, IGiftCard, ISnowmobile } from "@/custom/app-context";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
@@ -8,6 +7,7 @@ import $ from 'jquery';
 import { IApiMonerisCompleteRequest, IApiMonerisCompleteResult, IApiSavePrePurchaseDataRequest, IApiSavePrePurchaseDataResult, IApiSavePrePurchaseDataResultData, apiMonerisComplete, apiSavePrePurchaseData } from "@/custom/api";
 import { checkResponseStatus } from "@/custom/utilities";
 import { ShipTo } from "../cart";
+import { WebApi } from "../../../constants";
 
 declare var monerisCheckout: any;
 
@@ -91,7 +91,12 @@ function Payment({ appContext, router }:
         const subscription: Subscription = apiSavePrePurchaseData(apiSavePrePurchaseDataRequest).subscribe({
             next: (result: IApiSavePrePurchaseDataResult) => {
                 if (result?.isSuccessful && result?.data != undefined) {
-                    setMonerisPrePurchase(result.data);
+                    setMonerisPrePurchase({
+                        ticket: result?.data?.ticket,
+                        orderId: result?.data?.orderId,
+                        environment: result?.data?.environment,
+                        amount: result?.data?.amount
+                    });
 
                     let monerisScript: string = "";
 
@@ -109,9 +114,10 @@ function Payment({ appContext, router }:
                             myCheckout.setMode(result.data?.environment);
                             myCheckout.setCheckoutDiv("moneris-checkout");
                             myCheckout.setCallback("page_loaded", pageLoaded);
-                            myCheckout.setCallback("payment_complete", paymentComplete);
                             myCheckout.setCallback("cancel_transaction", cancelTransaction);
                             myCheckout.setCallback("error_event", errorEvent);
+                            myCheckout.setCallback("payment_receipt", paymentReceipt);
+                            myCheckout.setCallback("payment_complete", paymentComplete);
                             myCheckout.startCheckout(result.data?.ticket);
                         });
                     }
@@ -146,7 +152,7 @@ function Payment({ appContext, router }:
 
     function pageLoaded(jsonMessage: any): void {
         const message = JSON.parse(jsonMessage);
-        console.log(message);
+        console.log("pageLoaded(): ", message);
 
         // $.ajax({
         //     type: 'POST',
@@ -169,22 +175,75 @@ function Payment({ appContext, router }:
         // });
     }
 
+    function cancelTransaction(jsonMessage: any): void {
+        const message = JSON.parse(jsonMessage);
+        console.log("cancelTransaction(): ", message);
+
+        myCheckout.closeCheckout();
+
+        router.push("/cart");
+
+        //     const message = JSON.parse(jsonMessage);
+
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: "../MonerisApproved/MonerisPageCancel",
+        //         data: {
+        //             orderId: viewModel.OrderId,
+        //             message: message,
+        //             ticket: viewModel.Ticket
+        //         },
+        //         //dataType: "text",
+        //         success: function (resultData) {
+
+        //         }
+        //     });
+    }
+
+    function errorEvent(jsonMessage: any): void {
+        const message = JSON.parse(jsonMessage);
+        console.log("errorEvent(): ", message);
+
+        // $.ajax({
+        //     type: 'POST',
+        //     url: "../MonerisApproved/MonerisPageError",
+        //     data: {
+        //         orderId: viewModel.OrderId,
+        //         message: message,
+        //         ticket: viewModel.Ticket
+        //     },
+        //     //dataType: "text",
+        //     success: function (resultData) {
+
+        //         alert('Error - Logout required.');
+        //         window.location.href = "../Home/Index";
+        //     }
+        // });
+    }
+
+    function paymentReceipt(jsonMessage: any): void {
+        const message = JSON.parse(jsonMessage);
+        console.log("paymentReceipt(): ", message);
+    }
+
     // monerisbaseurl
     function paymentComplete(jsonMessage: any): void {
         const message = JSON.parse(jsonMessage);
-        console.log(message);
+        console.log("paymentComplete(): ", message);
 
         myCheckout.closeCheckout();
 
         const apiMonerisCompleteRequest: IApiMonerisCompleteRequest = {
-            ticket: monerisPrePurchase?.ticket,
-            orderId: monerisPrePurchase?.orderId,
-            environment: monerisPrePurchase?.environment,
-            amount: monerisPrePurchase?.amount,
             message: jsonMessage
         };
 
-        apiMonerisComplete(apiMonerisCompleteRequest).subscribe({
+        console.log(apiMonerisCompleteRequest)
+
+        let url: string = appContext.data?.monerisBaseUrl?.trim() ?? WebApi.MonerisComplete;
+
+        console.log(url);
+
+        apiMonerisComplete(apiMonerisCompleteRequest, undefined, url).subscribe({
             next: (result: IApiMonerisCompleteResult) => {
                 if (result?.isSuccessful) {
                     router.push("/payment/approved"); // TODO: api will indicate if the transaction was successful?
@@ -221,46 +280,7 @@ function Payment({ appContext, router }:
         // });
     }
 
-    function cancelTransaction(jsonMessage: any): void {
-        myCheckout.closeCheckout();
 
-        router.push("/cart");
 
-        //     const message = JSON.parse(jsonMessage);
 
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: "../MonerisApproved/MonerisPageCancel",
-        //         data: {
-        //             orderId: viewModel.OrderId,
-        //             message: message,
-        //             ticket: viewModel.Ticket
-        //         },
-        //         //dataType: "text",
-        //         success: function (resultData) {
-
-        //         }
-        //     });
-    }
-
-    function errorEvent(jsonMessage: any): void {
-        const message = JSON.parse(jsonMessage);
-        console.log(message);
-
-        // $.ajax({
-        //     type: 'POST',
-        //     url: "../MonerisApproved/MonerisPageError",
-        //     data: {
-        //         orderId: viewModel.OrderId,
-        //         message: message,
-        //         ticket: viewModel.Ticket
-        //     },
-        //     //dataType: "text",
-        //     success: function (resultData) {
-
-        //         alert('Error - Logout required.');
-        //         window.location.href = "../Home/Index";
-        //     }
-        // });
-    }
 }

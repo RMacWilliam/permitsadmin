@@ -178,7 +178,7 @@ function Home({ appContext, router, setShowAlert }:
                         <input type="email" className="form-control" id="floatingInput" value={appContext.data?.monerisBaseUrl} onChange={(e: any) => monerisBaseUrlChange(e)} />
                         <label htmlFor="floatingInput">Moneris Base Url</label>
                     </div>
-                    <div>Original: https://permitsapi.azurewebsites.net/api/</div>
+                    <div>Original: https://permitsapi.azurewebsites.net/api/payment/moneriscomplete</div>
                     <div>Localhost: https://localhost:7270/api/</div>
                 </div>
             </div>

@@ -27,6 +27,19 @@ function httpFetch<T>(method: "GET" | "POST" | "DELETE", url: string, params?: a
         headers: headers,
         body: method === 'GET' ? undefined : JSON.stringify(body),
         selector: (response: Response) => {
+            // Update application token with token received from response header.
+            if (GlobalAppContext.updater != undefined) {
+                const newToken: string | undefined = response.headers.get("NewToken") ?? undefined;
+
+                // if (newToken != undefined) {
+                //     console.log("Token (old, new, same?): ", GlobalAppContext?.data?.token, newToken, GlobalAppContext?.data?.token === newToken)
+                // }
+
+                GlobalAppContext.updater(draft => {
+                    draft.token = newToken;
+                });
+            }
+
             if (response.ok) {
                 return response.json();
             } else {
@@ -111,7 +124,7 @@ export interface IApiLogoutResult {
 }
 
 export function apiLogout(body?: any, params: any = undefined): Observable<IApiLogoutResult> {
-    return httpPost<IApiLogoutResult>(WebApi.Logout, params, body, false);
+    return httpPost<IApiLogoutResult>(WebApi.Logout, params, body);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -832,10 +845,6 @@ export function apiSendGiftCardPdf(body?: any, params?: any): Observable<IApiSen
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface IApiMonerisCompleteRequest {
-    ticket?: string;
-    orderId?: string;
-    environment?: string;
-    amount?: number;
     message?: string;
 }
 
@@ -845,6 +854,6 @@ export interface IApiMonerisCompleteResult {
     data?: any;
 }
 
-export function apiMonerisComplete(body?: any, params?: any): Observable<IApiMonerisCompleteResult> {
-    return httpPost<IApiMonerisCompleteResult>(WebApi.MonerisComplete, params, body);
+export function apiMonerisComplete(body?: any, params?: any, url: string = ""): Observable<IApiMonerisCompleteResult> {
+    return httpPost<IApiMonerisCompleteResult>(url /*WebApi.MonerisComplete*/, params, body);
 }

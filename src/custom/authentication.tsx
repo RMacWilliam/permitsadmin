@@ -2,7 +2,7 @@ import { NextRouter, useRouter } from "next/router";
 import { AppContext, IAppContextValues } from "./app-context";
 import { IApiLogoutResult, IApiValidateUserResult, apiLogout } from "./api";
 import { ReactNode, useContext, useRef } from "react";
-import { GlobalAppContext, WebApi } from "../../constants";
+import { Constants, GlobalAppContext, WebApi } from "../../constants";
 import { checkResponseStatus } from "./utilities";
 
 export default function RouteGuard({ children }: { children: ReactNode }): any {
@@ -130,7 +130,7 @@ export function loginAndInitializeAppContext(apiLoginResult: IApiValidateUserRes
 
             draft.giftCards = undefined;
 
-            draft.monerisBaseUrl = WebApi.BaseUrl;
+            draft.monerisBaseUrl = WebApi.MonerisComplete;
         });
 
         GlobalAppContext.router.push("/contact");
