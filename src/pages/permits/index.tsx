@@ -346,7 +346,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                                 <DatePicker dateFormat="yyyy-MM-dd" locale={appContext.translation.i18n.language} selected={getPermitDateRangeFromDate(snowmobile?.oVehicleId)} minDate={getDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile?.oVehicleId)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
                                             </div>
 
-                                            <div className="col-12 col-sm-12 col-md-6">
+                                            <div className="col-12 col-sm-12 col-md-6 mt-2">
                                                 <div className="form-floating">
                                                     <input type="text" className="form-control" id={`permit-to-${snowmobile?.oVehicleId}`} placeholder={t("Permits.Vehicle.PermitValidUntil")} value={getPermitDateRangeToDate(snowmobile?.oVehicleId)} onChange={() => null} disabled={true} />
                                                     <label className="" htmlFor={`permit-to-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.PermitValidUntil")}</label>

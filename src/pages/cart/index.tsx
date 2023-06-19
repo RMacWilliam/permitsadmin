@@ -226,13 +226,13 @@ function Cart({ appContext, router, setShowAlert }:
                                             )}
 
                                             {appContext.translation.i18n.language === "fr" && (
-                                                <span>{cartItem.descriptionFr}</span>
+                                                <span className="me-2">{cartItem.descriptionFr}</span>
                                             )}
                                             {appContext.translation.i18n.language === "en" && (
-                                                <span>{cartItem.description}</span>
+                                                <span className="me-2">{cartItem.description}</span>
                                             )}
 
-                                            <button className="btn btn-link text-danger align-baseline ms-2 p-0" type="button" onClick={() => removeCartItemClick(cartItem.id)}>
+                                            <button className="btn btn-link text-danger align-baseline p-0" type="button" onClick={() => removeCartItemClick(cartItem.id)}>
                                                 {t("Common.Delete")}
                                             </button>
                                         </div>
