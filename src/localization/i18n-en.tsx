@@ -159,7 +159,7 @@ export const resources_en = {
       "SelectGiftCard": "Select Gift Card",
       "RecipientsLastNameOnly": "Recipient's LAST Name ONLY",
       "RecipientsPostalCode": "Recipient's Postal Code",
-      "MandatoryFieldMustMatch": "Mandatory field and must match the recipient's OFSC account information",
+      "MandatoryFieldMustMatch": "mandatory field and must match the recipient's OFSC account information",
       "AddGiftCardToCart": "Add Gift Card to Cart",
       "RemoveGiftCardFromCart": "Remove Gift Card from Cart",
       "SaveChanges": "Save Changes",

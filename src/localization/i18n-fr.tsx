@@ -223,7 +223,7 @@ export const resources_fr = {
       "ClickToAgree": "Cliquez pour accepter"
     },
     "Payment": {
-      "Title": "(fr)Payment"
+      "Title": "Paiement"
     },
     "API": {
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "(fr)VIN assigned to another vehicle on account.",

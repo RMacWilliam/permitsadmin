@@ -8,6 +8,7 @@ import { checkResponseStatus, formatCurrency, getApiErrorMessage, getGuid, parse
 import { Observable, Subscription, forkJoin } from 'rxjs';
 import { IApiAddGiftCardForUserRequest, IApiAddGiftCardForUserResult, IApiDeleteGiftCardRequest, IApiDeleteGiftCardResult, IApiGetAvailableGiftCardsResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiSaveGiftCardSelectionsForUserRequest, IApiSaveGiftCardSelectionsForUserResult, IApiSendGiftCardPdfRequest, IApiSendGiftCardPdfResult, apiAddGiftCardForUser, apiDeleteGiftCard, apiGetAvailableGiftCards, apiGetGiftcardsForCurrentSeasonForUser, apiSaveGiftCardSelectionsForUser, apiSendGiftCardPdf } from '@/custom/api';
 import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from '@/components/confirmation-dialog';
+import { GlobalAppContext } from '../../../constants';
 
 export default function GiftCardsPage() {
     const appContext = useContext(AppContext);
@@ -177,7 +178,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             {getGiftCards() != undefined && getGiftCards().length > 0 && getGiftCards().map(giftCard => (
                 <div className="card mb-3" key={giftCard.oVoucherId}>
-                    <h5 className="card-header card-header-success d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 className="card-header d-flex justify-content-between align-items-center flex-wrap bg-success-subtle gap-2">
                         <div className="d-flex flex-fill">
                             {giftCard.isPurchased && appContext.translation.i18n.language === "en" && (
                                 <span>{getGiftCardName(giftCard?.oVoucherId)}</span>
@@ -210,9 +211,15 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         {giftCard?.isPurchased && (
                             <li className="list-group-item">
                                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                    <div className="d-flex flex-fill flex-column">
-                                        <label htmlFor={`redemption-code-${giftCard?.oVoucherId}`} className="form-label fw-semibold mb-0">{t("GiftCards.RedemptionCode")}</label>
-                                        <input id={`redemption-code-${giftCard?.oVoucherId}`} type="text" readOnly={true} className="form-control-plaintext font-monospace mb-0" value={giftCard?.redemptionCode} />
+                                    <div className="d-flex flex-filll flex-column">
+                                        {/* <label htmlFor={`redemption-code-${giftCard?.oVoucherId}`} className="form-label fw-semibold mb-0">{t("GiftCards.RedemptionCode")}</label> */}
+                                        {/* <input id={`redemption-code-${giftCard?.oVoucherId}`} type="text" readOnly={true} className="form-control-plaintext font-monospace mb-0 pb-0" value={giftCard?.redemptionCode} /> */}
+
+                                        <div className="d-flex justify-content-around align-items-center flex-wrap flex-sm-nowrap position-relative mt-2 mb-1 p-2" style={{ border: "black dashed 2px" }}>
+                                            <i className="fa-solid fa-scissors position-absolute" style={{ top: "-9px", right: "11px", backgroundColor: "white" }}></i>
+                                            <div className="fw-semibold mx-3 my-1">{t("GiftCards.RedemptionCode")}:</div>
+                                            <div className="mx-3 my-1">{giftCard?.redemptionCode}</div>
+                                        </div>
                                     </div>
 
                                     <div className="d-flex flex-fill justify-content-end">
@@ -224,9 +231,9 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                             </li>
                         )}
 
-                        {!giftCard?.isPurchased && !giftCard?.isRedeemed && (
-                            <li className="list-group-item">
-                                <div className="form-floating">
+                        <li className="list-group-item">
+                            {!giftCard?.isPurchased && !giftCard?.isRedeemed && (
+                                <div className="form-floating mb-2">
                                     <select className="form-select" id={`gift-cards-permit-options-${giftCard?.oVoucherId}`} aria-label="Select gift card to purchase" value={getSelectedGiftCardOption(giftCard?.oVoucherId)} onChange={(e: any) => giftCardOptionChange(e, giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
                                         <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
@@ -239,7 +246,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                                 displayText = getGiftCardTypeName(giftCardType?.giftcardProductId);
                                             }
 
-                                            displayText += " — $" + formatCurrency(getGiftCardTypeAmount(giftCardType?.giftcardProductId));
+                                            displayText += " — " + formatCurrency(getGiftCardTypeAmount(giftCardType?.giftcardProductId));
 
                                             return (
                                                 <option value={giftCardType?.giftcardProductId} key={giftCardType?.giftcardProductId}>{displayText}</option>
@@ -248,20 +255,18 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                     </select>
                                     <label className="required" htmlFor={`gift-cards-permit-options-${giftCard?.oVoucherId}`}>{t("GiftCards.SelectGiftCard")}</label>
                                 </div>
-                            </li>
-                        )}
+                            )}
 
-                        <li className="list-group-item">
-                            <div className="row">
-                                <div className="col-12 col-sm-12 col-md-6">
-                                    <div className="form-floating mb-2">
+                            <div className="row mb-2">
+                                <div className="col-12 col-sm-12 col-md-6 mb-2 mb-md-0">
+                                    <div className="form-floating">
                                         <input type="text" className="form-control" id={`gift-card-last-name-${giftCard?.oVoucherId}`} placeholder="Recipient's LAST Name ONLY" value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
                                         <label className="required" htmlFor={`gift-card-last-name-${giftCard?.oVoucherId}`}>{t("GiftCards.RecipientsLastNameOnly")}</label>
                                     </div>
                                 </div>
 
                                 <div className="col-12 col-sm-12 col-md-6">
-                                    <div className="form-floating mb-2">
+                                    <div className="form-floating">
                                         <input type="text" className="form-control" id={`gift-card-postal-code-${giftCard?.oVoucherId}`} placeholder="Recipient's Postal Code" value={getGiftCardRecipientPostalCode(giftCard?.oVoucherId)} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardPostalCodeEnabled(giftCard?.oVoucherId)} />
                                         <label className="required" htmlFor={`gift-card-postal-code-${giftCard?.oVoucherId}`}>{t("GiftCards.RecipientsPostalCode")}</label>
                                     </div>
@@ -415,21 +420,21 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             const giftCardType: IGiftCardType | undefined = getGiftCardType(giftcardProductId);
 
             if (giftCardType != undefined) {
-                if (language === "fr") {
-                    result = giftCardType?.frenchDisplayName + " (fr) Gift Card";
+                if (language === "fr") { // Carte-cadeau classique sans suivi
+                    result = appContext.translation.i18n.getResource("fr", "translation", "GiftCards.GiftCard") + " " + giftCardType?.frenchDisplayName?.toLowerCase();
 
                     if (giftCardType?.isTrackedShipping) {
-                        result += " (fr) with Tracking";
+                        result += " " + appContext.translation.i18n.getResource("fr", "translation", "GiftCards.WithTracking");
                     } else {
-                        result += " (fr) without Tracking";
+                        result += " " + appContext.translation.i18n.getResource("fr", "translation", "GiftCards.WithoutTracking");
                     }
-                } else {
-                    result = giftCardType?.displayName + " Gift Card";
+                } else { // Classic gift card without tracking
+                    result = giftCardType?.displayName + " " + appContext.translation.i18n.getResource("en", "translation", "GiftCards.GiftCard");
 
                     if (giftCardType?.isTrackedShipping) {
-                        result += " with Tracking";
+                        result += " " + appContext.translation.i18n.getResource("en", "translation", "GiftCards.WithTracking");
                     } else {
-                        result += " without Tracking";
+                        result += " " + appContext.translation.i18n.getResource("en", "translation", "GiftCards.WithoutTracking");
                     }
                 }
             }
@@ -685,6 +690,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
+                console.log(getGiftCardTypeName(giftCard?.giftcardProductId), getGiftCardTypeName(giftCard?.giftcardProductId, "fr"))
                 const cartItem: ICartItem = {
                     id: getGuid(),
                     description: getGiftCardTypeName(giftCard?.giftcardProductId) + ` — ${giftCard?.recipientLastName} — ${giftCard?.recipientPostal}`,

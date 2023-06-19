@@ -7,6 +7,7 @@ import { Subscription } from "rxjs";
 import $ from 'jquery';
 import { IApiMonerisCompleteRequest, IApiMonerisCompleteResult, IApiSavePrePurchaseDataRequest, IApiSavePrePurchaseDataResult, IApiSavePrePurchaseDataResultData, apiMonerisComplete, apiSavePrePurchaseData } from "@/custom/api";
 import { checkResponseStatus } from "@/custom/utilities";
+import { ShipTo } from "../cart";
 
 declare var monerisCheckout: any;
 
@@ -61,7 +62,7 @@ function Payment({ appContext, router }:
             const giftCard: IGiftCard | undefined = appContext.data?.giftCards?.filter(giftCard => giftCard?.oVoucherId === x.itemId)[0];
 
             if (giftCard != undefined) {
-                permits.push({
+                giftCards.push({
                     oVoucherId: x?.itemId,
                     giftcardProductId: giftCard?.giftcardProductId,
                     recipientLastName: giftCard?.recipientLastName,
@@ -75,14 +76,16 @@ function Payment({ appContext, router }:
             giftCards: giftCards == undefined || giftCards.length === 0 ? undefined : giftCards,
             trackedShipping: appContext.data?.cart?.isTrackedShipping,
             shippingTo: appContext.data?.cart?.shipTo,
-            alternateAddress: appContext.data?.cart?.alternateAddress == undefined ? undefined : {
-                addressLine1: appContext.data?.cart?.alternateAddress?.addressLine1,
-                addressLine2: appContext.data?.cart?.alternateAddress?.addressLine2,
-                city: appContext.data?.cart?.alternateAddress?.city,
-                postalCode: appContext.data?.cart?.alternateAddress?.postalCode,
-                province: appContext.data?.cart?.alternateAddress?.province?.key,
-                country: appContext.data?.cart?.alternateAddress?.country?.key
-            }
+            alternateAddress: appContext.data?.cart?.shipTo === ShipTo.Registered
+                ? undefined
+                : {
+                    addressLine1: appContext.data?.cart?.alternateAddress?.addressLine1,
+                    addressLine2: appContext.data?.cart?.alternateAddress?.addressLine2,
+                    city: appContext.data?.cart?.alternateAddress?.city,
+                    postalCode: appContext.data?.cart?.alternateAddress?.postalCode,
+                    province: appContext.data?.cart?.alternateAddress?.province?.key,
+                    country: appContext.data?.cart?.alternateAddress?.country?.key
+                }
         };
 
         const subscription: Subscription = apiSavePrePurchaseData(apiSavePrePurchaseDataRequest).subscribe({
@@ -105,11 +108,11 @@ function Payment({ appContext, router }:
                             myCheckout = new monerisCheckout();
                             myCheckout.setMode(result.data?.environment);
                             myCheckout.setCheckoutDiv("moneris-checkout");
-                            myCheckout.startCheckout(result.data?.ticket);
                             myCheckout.setCallback("page_loaded", pageLoaded);
                             myCheckout.setCallback("payment_complete", paymentComplete);
                             myCheckout.setCallback("cancel_transaction", cancelTransaction);
                             myCheckout.setCallback("error_event", errorEvent);
+                            myCheckout.startCheckout(result.data?.ticket);
                         });
                     }
                 } else {

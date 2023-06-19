@@ -31,7 +31,7 @@ export default function CartPage() {
     )
 }
 
-enum ShipTo {
+export enum ShipTo {
     Registered = 0,
     Alternate = 1
 }
@@ -237,7 +237,7 @@ function Cart({ appContext, router, setShowAlert }:
                                             </button>
                                         </div>
                                         <div className="fw-bold text-end ms-3">
-                                            ${formatCurrency(cartItem.price)}
+                                            {formatCurrency(cartItem.price)}
                                         </div>
                                     </div>
                                     <div className="d-flex">
@@ -246,7 +246,7 @@ function Cart({ appContext, router, setShowAlert }:
                                                 <>
                                                     {isRedeemGiftCardVisible(cartItem?.itemId) && (
                                                         <div className="card mt-2">
-                                                            <div className="card-body bg-warning-subtle">
+                                                            <div className="card-body bg-success-subtle">
                                                                 {cartItem?.redemptionCode != undefined && (
                                                                     <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                                         <div className="fw-semibold flex-fill">
@@ -257,7 +257,7 @@ function Cart({ appContext, router, setShowAlert }:
                                                                             </button>
                                                                         </div>
 
-                                                                        <div className="fw-bold text-danger text-end ms-auto">${formatCurrency(cartItem?.price)}</div>
+                                                                        <div className="fw-bold text-danger text-end ms-auto">{formatCurrency(cartItem?.price)}</div>
                                                                     </div>
                                                                 )}
 
@@ -284,7 +284,7 @@ function Cart({ appContext, router, setShowAlert }:
                                                     )}
 
                                                     <div className="card mt-2">
-                                                        <div className="card-body bg-warning-subtle">
+                                                        <div className="card-body bg-success-subtle">
                                                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                                 <div className="d-flex flex-fill align-items-center">
                                                                     <div className="fw-semibold required">{t("Cart.SelectClub")}</div>
@@ -322,19 +322,19 @@ function Cart({ appContext, router, setShowAlert }:
                                             {t("Cart.TransactionAndAdminFee")}
                                         </div>
                                         <div className="fw-bold text-end ms-3">
-                                            ${formatCurrency(processingFee)}
+                                            {formatCurrency(processingFee)}
                                         </div>
                                     </div>
 
                                     {isTransactionAndAdministrationFeeDiscountVisible() && (
                                         <div className="card mt-2">
-                                            <div className="card-body bg-warning-subtle">
+                                            <div className="card-body bg-success-subtle">
                                                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                     <div className="fw-semibold flex-fill">
                                                         {t("Cart.TransactionAndAdminFeeDiscount")}
                                                     </div>
 
-                                                    <div className="fw-bold text-danger text-end ms-auto">$-{formatCurrency(processingFee)}</div>
+                                                    <div className="fw-bold text-danger text-end ms-auto">{formatCurrency(-processingFee)}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -359,7 +359,7 @@ function Cart({ appContext, router, setShowAlert }:
                                     </div>
 
                                     <div className="fw-bold text-end ms-3">
-                                        ${formatCurrency(getShippingFee())}
+                                        {formatCurrency(getShippingFee())}
                                     </div>
                                 </div>
 
@@ -374,13 +374,13 @@ function Cart({ appContext, router, setShowAlert }:
 
                                 {isTrackedShippingDiscountVisible() && (
                                     <div className="card mt-2">
-                                        <div className="card-body bg-warning-subtle">
+                                        <div className="card-body bg-success-subtle">
                                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                 <div className="fw-semibold flex-fill">
                                                     {t("Cart.TrackedShippingDiscount")}
                                                 </div>
 
-                                                <div className="fw-bold text-danger text-end ms-auto">${formatCurrency(getTrackedShippingDiscount())}</div>
+                                                <div className="fw-bold text-danger text-end ms-auto">{formatCurrency(getTrackedShippingDiscount())}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -394,7 +394,7 @@ function Cart({ appContext, router, setShowAlert }:
                                     {t("Cart.TotalAmount")}
                                 </div>
                                 <div className="fw-bold text-end ms-3">
-                                    ${formatCurrency(calculateTotal())}
+                                    {formatCurrency(calculateTotal())}
                                 </div>
                             </div>
                         </div>

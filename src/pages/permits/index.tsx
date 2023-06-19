@@ -2,12 +2,14 @@ import { Dispatch, SetStateAction, forwardRef, useContext, useEffect, useState }
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IPermit, IPermitOption, IPermitSelections, ISnowmobile } from '@/custom/app-context';
 import AuthenticatedPageLayout, { IShowHoverButton } from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
-import { checkResponseStatus, formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
+import { checkResponseStatus, formatCurrency, formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from '@/components/confirmation-dialog';
 import { NextRouter, useRouter } from 'next/router';
-import DatePicker from 'react-datepicker';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import en from "date-fns/locale/en-CA";
+import fr from "date-fns/locale/fr-CA";
 import CartItemsAlert from '@/components/cart-items-alert';
 import { IApiAddVehicleForUserRequest, IApiAddVehicleForUserResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserResult, IApiSavePermitSelectionForVehicleRequest, IApiSavePermitSelectionForVehicleResult, IApiUpdateVehicleRequest, IApiUpdateVehicleResult, apiAddVehicleForUser, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiSavePermitSelectionForVehicle, apiUpdateVehicle, IApiDeleteVehicleRequest, IApiDeleteVehicleResult, apiDeleteVehicle, IApiVehiclePermit, IApiVehiclePermitOption } from '@/custom/api';
 import { Observable, Subscription, forkJoin } from 'rxjs';
@@ -90,12 +92,15 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
     const [vehicleMakesData, setVehicleMakesData] = useState([] as IKeyValue[]);
 
     const DateRangeInput = forwardRef(({ value, snowmobile, onClick }: { value?: Date, snowmobile: ISnowmobile, onClick?: (e: any) => void }, ref: any) => (
-        <div className="form-floating mb-2">
+        <div className="form-floating">
             <input type="text" className="form-control" id={`permit-from-${snowmobile.oVehicleId}`} placeholder={t("Permits.Vehicle.PermitStartDate")} value={formatShortDate(value)} onClick={onClick} onChange={() => null} disabled={isPermitAddedToCart(snowmobile.oVehicleId)} readOnly={true} ref={ref} />
             <label className="required" htmlFor={`permit-from-${snowmobile.oVehicleId}`}>{t("Permits.Vehicle.PermitStartDate")}</label>
         </div>
     ));
     DateRangeInput.displayName = "DateRangeInput";
+
+    registerLocale("en", en);
+    registerLocale("fr", fr);
 
     const t: Function = appContext.translation.t;
 
@@ -246,7 +251,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
             {getSnowmobiles() != undefined && getSnowmobiles().length > 0 && getSnowmobiles().map(snowmobile => (
                 <div className="card w-100 mb-3" key={snowmobile.oVehicleId}>
-                    <div className="card-header card-header-success d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div className="card-header d-flex justify-content-between align-items-center flex-wrap bg-success-subtle gap-2">
                         <div className="d-flex flex-fill g-3">
                             <div className="d-none d-md-flex my-2">
                                 <div className="me-3">
@@ -323,11 +328,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                             {snowmobile.permitOptions.map(permitOption => {
                                                 if (appContext.translation.i18n.language === "fr") {
                                                     return (
-                                                        <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.frenchDisplayName} — ${permitOption?.amount}</option>
+                                                        <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.frenchDisplayName} — {formatCurrency(permitOption?.amount)}</option>
                                                     );
                                                 } else {
                                                     return (
-                                                        <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.displayName} — ${permitOption?.amount}</option>
+                                                        <option value={permitOption?.productId} key={permitOption?.productId}>{permitOption?.displayName} — {formatCurrency(permitOption?.amount)}</option>
                                                     );
                                                 }
                                             })}
@@ -338,11 +343,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                     {showDateRangeForSelectedPermit(snowmobile?.oVehicleId) && (
                                         <div className="row mt-2">
                                             <div className="col-12 col-sm-12 col-md-6">
-                                                <DatePicker dateFormat="yyyy-MM-dd" selected={getPermitDateRangeFromDate(snowmobile?.oVehicleId)} minDate={getDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile?.oVehicleId)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
+                                                <DatePicker dateFormat="yyyy-MM-dd" locale={appContext.translation.i18n.language} selected={getPermitDateRangeFromDate(snowmobile?.oVehicleId)} minDate={getDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile?.oVehicleId)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
                                             </div>
 
                                             <div className="col-12 col-sm-12 col-md-6">
-                                                <div className="form-floating mb-2">
+                                                <div className="form-floating">
                                                     <input type="text" className="form-control" id={`permit-to-${snowmobile?.oVehicleId}`} placeholder={t("Permits.Vehicle.PermitValidUntil")} value={getPermitDateRangeToDate(snowmobile?.oVehicleId)} onChange={() => null} disabled={true} />
                                                     <label className="" htmlFor={`permit-to-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.PermitValidUntil")}</label>
                                                 </div>

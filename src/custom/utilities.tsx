@@ -80,7 +80,11 @@ export function formatCurrency(value: string | number | undefined = 0): string {
     let result: string = "";
 
     if (value != undefined && value !== "") {
-        result = Number(value).toFixed(2);
+        if (GlobalAppContext?.translation?.i18n?.language === "fr") {
+            result = Number(value).toFixed(2).replace(".", ",") + "$";
+        } else {
+            result = "$" + Number(value).toFixed(2);
+        }
     }
 
     return result;

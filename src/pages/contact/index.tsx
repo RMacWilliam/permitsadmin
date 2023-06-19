@@ -215,7 +215,7 @@ function Contact({ appContext, router, setShowAlert }
             <CartItemsAlert></CartItemsAlert>
 
             <div className="card mb-3 w-100">
-                <h5 className="card-header card-header-success d-flex justify-content-between align-items-center">
+                <h5 className="card-header d-flex justify-content-between align-items-center bg-success-subtle">
                     <div>
                         {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName}`}
                     </div>
@@ -249,7 +249,7 @@ function Contact({ appContext, router, setShowAlert }
             </div>
 
             <div className="card mb-3 w-100">
-                <h5 className="card-header card-header-success d-flex justify-content-between align-items-center">
+                <h5 className="card-header d-flex justify-content-between align-items-center bg-success-subtle">
                     <div>
                         {t("ContactInfo.Preferences")}
                     </div>
