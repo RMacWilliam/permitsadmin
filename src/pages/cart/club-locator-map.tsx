@@ -40,25 +40,18 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
     const t: Function = appContext.translation.t;
 
-    if (window.google == undefined) {
-        $.getScript(`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=${googleMapKey}`, function () {
-            image = {
-                url: './blue-marker.png',
-                size: new google.maps.Size(16, 16),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(8, 8)
-            };
+    console.log("google: ", typeof google)
 
-            initializeMap();
-        });
+    if (typeof google === "undefined") {
+        $.ajax({
+            dataType: "script",
+            cache: false,
+            url: `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=${googleMapKey}`
+        })
+            .done(function (script, textStatus) {
+                initializeMap();
+            });
     } else {
-        image = {
-            url: './blue-marker.png',
-            size: new google.maps.Size(16, 16),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(8, 8)
-        };
-
         initializeMap();
     }
 
@@ -148,8 +141,13 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                                 &nbsp;
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="outline-dark" onClick={() => selectClick()}>{t("Common.Select")}</Button>
-                                <Button variant="outline-dark" onClick={() => cancelClick()}>{t("Common.Cancel")}</Button>
+                                <Button className="me-2" variant="outline-dark" onClick={() => selectClick()}>
+                                    {t("Common.Select")}
+                                </Button>
+
+                                <Button variant="outline-dark" onClick={() => cancelClick()}>
+                                    {t("Common.Cancel")}
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -172,6 +170,13 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
     }
 
     function initializeMap(): void {
+        image = {
+            url: './blue-marker.png',
+            size: new google.maps.Size(16, 16),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(8, 8)
+        };
+
         parseKML();
         initializeIt();
     }
@@ -263,6 +268,14 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                     title: 'Your search returned this location',
                     icon: image,
                     draggable: false
+                });
+
+                google.maps.event.addListener(map, "click", function () {
+                    closeInfoWindows();
+
+                    selectedClub.current = undefined;
+                    $("#selected-club").empty();
+                    $("#selected-club").append(t("Cart.ClubLocatorMapDialog.PleaseSelectClub"));
                 });
 
                 // google.maps.event.addListener(hereMarker, 'dragend', function (event: any) {
@@ -487,14 +500,6 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
         clubPolys[index].infoWindow = new google.maps.InfoWindow({
             content: '<p class="m-0" style="min-width:300px;white-space:nowrap">' + mapData.clubs[index].name + '</p>'
-        });
-
-        google.maps.event.addListener(map, "click", function () {
-            closeInfoWindows();
-
-            selectedClub.current = undefined;
-            $("#selected-club").empty();
-            $("#selected-club").append(t("Cart.ClubLocatorMapDialog.PleaseSelectClub"));
         });
 
         google.maps.event.addListener(clubPolys[index], "click", function () {

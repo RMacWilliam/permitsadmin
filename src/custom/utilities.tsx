@@ -1,7 +1,7 @@
 import moment from "moment";
 import { IKeyValue, IParentKeyValue } from "./app-context";
 import { v4 as uuidv4 } from "uuid";
-import _ from "lodash";
+import sortBy from "lodash/sortBy";
 import { Constants, GlobalAppContext } from "../../constants";
 import { logoutAndCleanupAppContext } from "./authentication";
 
@@ -90,8 +90,8 @@ export function formatCurrency(value: string | number | undefined = 0): string {
     return result;
 }
 
-export function sortArray(array: any[], sortBy: string[]): any[] {
-    return _.sortBy(array, sortBy);
+export function sortArray(array: any[], sortByFields: string[]): any[] {
+    return sortBy(array, sortByFields);
 }
 
 export function getApiErrorMessage(key: string | undefined): string | undefined {

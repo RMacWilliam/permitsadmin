@@ -17,7 +17,9 @@ export default function CartItemsAlert() {
                         {getMessage()}
                     </div>
                     <div>
-                        <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => goToCartClick()}>{t("CartItemsAlert.GoToCartButton")}</button>
+                        <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => goToCartClick()}>
+                            {t("CartItemsAlert.GoToCartButton")}
+                        </button>
                     </div>
                 </div>
             </div >

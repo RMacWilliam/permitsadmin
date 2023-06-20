@@ -171,11 +171,15 @@ function Index() {
                             </div>
 
                             <div className="text-center mt-4">
-                                <button className="btn btn-link text-decoration-none" disabled={loginInProgress} onClick={() => doForgotPassword()}>{t("Index.ForgotPasswordButton")}</button>
+                                <button className="btn btn-link text-decoration-none" disabled={loginInProgress} onClick={() => doForgotPassword()}>
+                                    {t("Index.ForgotPasswordButton")}
+                                </button>
                             </div>
 
                             <div className="mt-4 mb-2">
-                                <button className="btn btn-outline-dark w-100" disabled={loginInProgress} onClick={() => doCreateAccount()}>{t("Index.CreateAnAccountButton")}</button>
+                                <button className="btn btn-outline-dark w-100" disabled={loginInProgress} onClick={() => doCreateAccount()}>
+                                    {t("Index.CreateAnAccountButton")}
+                                </button>
                             </div>
                         </div>
                     </div>

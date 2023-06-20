@@ -46,8 +46,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
 
                     <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="hover-button-label">
                         <li>
-                            <button type="button" className="dropdown-item d-flex align-items-center" aria-pressed="false"
-                                onClick={() => hoverButtonItemClick()}>
+                            <button type="button" className="dropdown-item d-flex align-items-center" aria-pressed="false" onClick={() => hoverButtonItemClick()}>
                                 {showHoverButton.getButtonText()}
                             </button>
                         </li>

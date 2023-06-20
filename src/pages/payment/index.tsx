@@ -4,7 +4,7 @@ import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { Subscription } from "rxjs";
 import $ from 'jquery';
-import { IApiMonerisCompleteRequest, IApiMonerisCompleteResult, IApiSavePrePurchaseDataRequest, IApiSavePrePurchaseDataResult, IApiSavePrePurchaseDataResultData, apiMonerisComplete, apiSavePrePurchaseData } from "@/custom/api";
+import { IApiMonerisCompleteRequest, IApiMonerisCompleteResult, IApiSavePrePurchaseDataRequest, IApiSavePrePurchaseDataResult, apiMonerisComplete, apiSavePrePurchaseData } from "@/custom/api";
 import { checkResponseStatus } from "@/custom/utilities";
 import { ShipTo } from "../cart";
 import { WebApi } from "../../../constants";
@@ -31,8 +31,6 @@ function Payment({ appContext, router }:
         appContext: IAppContextValues,
         router: NextRouter
     }) {
-
-    const [monerisPrePurchase, setMonerisPrePurchase] = useState({} as IApiSavePrePurchaseDataResultData);
 
     let myCheckout: any;
 
@@ -91,35 +89,26 @@ function Payment({ appContext, router }:
         const subscription: Subscription = apiSavePrePurchaseData(apiSavePrePurchaseDataRequest).subscribe({
             next: (result: IApiSavePrePurchaseDataResult) => {
                 if (result?.isSuccessful && result?.data != undefined) {
-                    setMonerisPrePurchase({
-                        ticket: result?.data?.ticket,
-                        orderId: result?.data?.orderId,
-                        environment: result?.data?.environment,
-                        amount: result?.data?.amount
-                    });
+                    // Load moneris script only if it hasn't been loaded yet.
+                    if (typeof monerisCheckout === "undefined") {
+                        let monerisScript: string = "";
 
-                    let monerisScript: string = "";
+                        if (result.data?.environment === "qa") {
+                            monerisScript = "https://gatewayt.moneris.com/chkt/js/chkt_v1.00.js";
+                        } else {
+                            monerisScript = "https://gateway.moneris.com/chkt/js/chkt_v1.00.js";
+                        }
 
-                    if (result.data?.environment === "qa") {
-                        monerisScript = "https://gatewayt.moneris.com/chkt/js/chkt_v1.00.js";
+                        $.ajax({
+                            dataType: "script",
+                            cache: false,
+                            url: monerisScript
+                        })
+                            .done(function (script, textStatus) {
+                                initializeMoneris(result.data?.environment, result.data?.ticket);
+                            });
                     } else {
-                        monerisScript = "https://gateway.moneris.com/chkt/js/chkt_v1.00.js";
-                    }
-
-                    console.log(result.data);
-
-                    if (monerisScript !== "") {
-                        $.getScript(monerisScript, function () {
-                            myCheckout = new monerisCheckout();
-                            myCheckout.setMode(result.data?.environment);
-                            myCheckout.setCheckoutDiv("moneris-checkout");
-                            myCheckout.setCallback("page_loaded", pageLoaded);
-                            myCheckout.setCallback("cancel_transaction", cancelTransaction);
-                            myCheckout.setCallback("error_event", errorEvent);
-                            myCheckout.setCallback("payment_receipt", paymentReceipt);
-                            myCheckout.setCallback("payment_complete", paymentComplete);
-                            myCheckout.startCheckout(result.data?.ticket);
-                        });
+                        initializeMoneris(result.data?.environment, result.data?.ticket);
                     }
                 } else {
                     //
@@ -149,6 +138,18 @@ function Payment({ appContext, router }:
             <div id="moneris-checkout"></div>
         </>
     )
+
+    function initializeMoneris(environment?: string, ticket?: string): void {
+        myCheckout = new monerisCheckout();
+        myCheckout.setMode(environment);
+        myCheckout.setCheckoutDiv("moneris-checkout");
+        myCheckout.setCallback("page_loaded", pageLoaded);
+        myCheckout.setCallback("cancel_transaction", cancelTransaction);
+        myCheckout.setCallback("error_event", errorEvent);
+        myCheckout.setCallback("payment_receipt", paymentReceipt);
+        myCheckout.setCallback("payment_complete", paymentComplete);
+        myCheckout.startCheckout(ticket);
+    }
 
     function pageLoaded(jsonMessage: any): void {
         const message = JSON.parse(jsonMessage);

@@ -60,7 +60,36 @@ export const resources_en = {
       "ResetPasswordButton": "Reset Password"
     },
     "CreateAccount": {
-      "Title": "Create Account"
+      "Title": "Create Account",
+      "PleaseCompleteInformationBelow": "Please complete the information below to create your account.",
+      "ContactInfo": {
+        "Title": "Account Profile",
+        "FirstName": "First Name",
+        "MiddleInitial": "Middle Initial",
+        "LastName": "Last Name",
+        "AddressLine1": "Address Line 1",
+        "AddressLine2": "Address Line 2",
+        "CityTownOrVillage": "City, Town, or Village",
+        "ProvinceState": "Province/State",
+        "Country": "Country",
+        "PostalZipCode": "Postal/Zip Code",
+        "Telephone": "Telephone",
+        "EmailAddress": "E-mail Address",
+        "Password": "Password",
+        "ConfirmPassword": "Confirm Password",
+        "MandatoryField": "mandatory field"
+      },
+      "Preferences": {
+        "Title": "Preferences",
+        "OfscConsent": "Do you consent to the OFSC contacting you with information regarding permits, Rider Advantage, and other information related to snowmobiling?",
+        "OfscConsentMore": "I understand that the OFSC values my privacy and the protection of personal information, by authorizing the release of my name and address information, I consent to the OFSC's use of this information for the purposes related to the mandate of the OFSC (www.ofsc.on.ca). I further understand that any information provided to the OFSC is out of custody and control of the Ministry of Transportation and that the OFSC will have sole responsibility of the information.",
+        "RiderAdvantage": "Do you want to participate in eligible Rider Advantage programs as offered and/or available?",
+        "NoIAmNotInterestedInVolunteering": "No, I am not interested in volunteering",
+        "YesIAlreadyVolunteer": "Yes, I already volunteer",
+        "YesIdLikeToVolunteer": "Yes, I want to volunteer",
+        "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or email?",
+        "CorrespondenceLanguage": "What is your prefered correspondence language with OFSC?"
+      }
     },
     "Home": {
       "MenuTitle": "Home",
@@ -88,6 +117,8 @@ export const resources_en = {
         "PostalZipCode": "Postal/Zip Code",
         "Telephone": "Telephone",
         "EmailAddress": "E-mail Address",
+        "Password": "Password",
+        "ConfirmPassword": "Confirm Password",
         "MandatoryField": "mandatory field"
       },
       "PreferencesEditDialog": {

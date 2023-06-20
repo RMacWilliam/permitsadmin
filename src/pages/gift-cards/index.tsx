@@ -313,7 +313,9 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             <div className="card">
                 <div className="card-body text-center">
-                    <button className="btn btn-primary" onClick={() => addGiftCardClick()}>{t("GiftCards.AddGiftCard")}</button>
+                    <button className="btn btn-primary" onClick={() => addGiftCardClick()}>
+                        {t("GiftCards.AddGiftCard")}
+                    </button>
                 </div>
             </div>
 

@@ -4,8 +4,14 @@ import LanguageToggler from '../language-toggler';
 import { getImagePath } from '@/custom/utilities';
 import { Images } from '../../../constants';
 import { AppContext } from '@/custom/app-context';
+import ModalProcessingAlert, { IShowAlert } from '../modal-processing-alert';
 
-export default function UnauthenticatedPageLayout({ children }: { children?: ReactNode }) {
+export default function UnauthenticatedPageLayout({ children, showAlert }
+    : {
+        children?: ReactNode,
+        showAlert?: boolean | IShowAlert
+    }) {
+
     const appContext = useContext(AppContext);
 
     const t: Function = appContext.translation.t;
@@ -80,6 +86,8 @@ export default function UnauthenticatedPageLayout({ children }: { children?: Rea
                     </div>
                 </div>
             </footer>
+
+            <ModalProcessingAlert showAlert={showAlert}></ModalProcessingAlert>
         </>
     )
 }

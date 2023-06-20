@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { AppContext, IAppContextValues, IKeyValue, IParentKeyValue } from '@/custom/app-context';
+import { AppContext, IAppContextValues, IContactInfo, IKeyValue, IParentKeyValue } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
 import Modal from 'react-bootstrap/Modal';
@@ -217,31 +217,34 @@ function Contact({ appContext, router, setShowAlert }
             <div className="card mb-3 w-100">
                 <h5 className="card-header d-flex justify-content-between align-items-center bg-success-subtle">
                     <div>
-                        {`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName}`}
+                        {`${appContext.data?.contactInfo?.firstName ?? ""} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName ?? ""}`}
                     </div>
+
                     <div>
-                        <button className="btn btn-outline-dark btn-sm" onClick={contactInfoDialogShow}>{t("Common.Edit")}</button>
+                        <button className="btn btn-outline-dark btn-sm" onClick={contactInfoDialogShow}>
+                            {t("Common.Edit")}
+                        </button>
                     </div>
                 </h5>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item">
                         <Loading showLoading={!pageLoaded}>
                             <div>
-                                <span>{appContext.data?.contactInfo?.addressLine1}</span>
+                                <span>{appContext.data?.contactInfo?.addressLine1 ?? ""}</span>
 
                                 {appContext.data?.contactInfo?.addressLine2 != undefined && appContext.data?.contactInfo?.addressLine2 !== "" && (
-                                    <span>, {appContext.data?.contactInfo?.addressLine2}</span>
+                                    <span>, {appContext.data?.contactInfo?.addressLine2 ?? ""}</span>
                                 )}
 
-                                <span>, {appContext.data?.contactInfo?.city}</span>
-                                <span>, {appContext.data?.contactInfo?.province?.key}</span>
-                                <span>, {appContext.data?.contactInfo?.country?.key}</span>
-                                <span>, {appContext.data?.contactInfo?.postalCode}</span>
+                                <span>, {appContext.data?.contactInfo?.city ?? ""}</span>
+                                <span>, {appContext.data?.contactInfo?.province?.key ?? ""}</span>
+                                <span>, {appContext.data?.contactInfo?.country?.key ?? ""}</span>
+                                <span>, {appContext.data?.contactInfo?.postalCode ?? ""}</span>
                             </div>
 
                             <div>
-                                <div>{appContext.data?.contactInfo?.telephone}</div>
-                                <div>{appContext.data?.contactInfo?.email}</div>
+                                <div>{appContext.data?.contactInfo?.telephone ?? ""}</div>
+                                <div>{appContext.data?.contactInfo?.email ?? ""}</div>
                             </div>
                         </Loading>
                     </li>
@@ -253,8 +256,11 @@ function Contact({ appContext, router, setShowAlert }
                     <div>
                         {t("ContactInfo.Preferences")}
                     </div>
+
                     <div>
-                        <button className="btn btn-outline-dark btn-sm" onClick={accountPreferencesDialogShow}>{t("Common.Edit")}</button>
+                        <button className="btn btn-outline-dark btn-sm" onClick={accountPreferencesDialogShow}>
+                            {t("Common.Edit")}
+                        </button>
                     </div>
                 </h5>
                 <ul className="list-group list-group-flush">
@@ -299,7 +305,9 @@ function Contact({ appContext, router, setShowAlert }
                             <div className="row">
                                 <div className="col-12 col-md-6 text-start text-md-end">{t("ContactInfo.CorrespondenceLanguage")}:</div>
                                 <div className="col-12 col-md-6">
-                                    <span className="fw-semibold">{getLocalizedValue(getCorrespondenceLanguage(appContext.data?.accountPreferences?.correspondenceLanguage))}</span>
+                                    <span className="fw-semibold">
+                                        {getLocalizedValue(getCorrespondenceLanguage(appContext.data?.accountPreferences?.correspondenceLanguage))}
+                                    </span>
                                 </div>
                             </div>
                         </Loading>
@@ -310,7 +318,9 @@ function Contact({ appContext, router, setShowAlert }
             {!appContext.data?.isContactInfoVerified && (
                 <div className="card">
                     <div className="card-body text-center">
-                        <button type="button" className="btn btn-primary" onClick={() => confirmContactInfoClick()}>{t("ContactInfo.ConfirmButton")}</button>
+                        <button type="button" className="btn btn-primary" onClick={() => confirmContactInfoClick()}>
+                            {t("ContactInfo.ConfirmButton")}
+                        </button>
                     </div>
                 </div>
             )}
@@ -434,13 +444,18 @@ function Contact({ appContext, router, setShowAlert }
                                 </div>
                             </div>
                             <div className="col d-flex justify-content-center justify-content-sm-end align-items-center">
-                                <Button className="me-2" variant="outline-dark" onClick={() => contactInfoDialogSave()}>{t("Common.Save")}</Button>
-                                <Button variant="outline-dark" onClick={() => contactInfoDialogHide()}>{t("Common.Cancel")}</Button>
+                                <Button className="me-2" variant="outline-dark" onClick={() => contactInfoDialogSave()}>
+                                    {t("Common.Save")}
+                                </Button>
+
+                                <Button variant="outline-dark" onClick={() => contactInfoDialogHide()}>
+                                    {t("Common.Cancel")}
+                                </Button>
                             </div>
                         </div>
                     </div>
                 </Modal.Footer>
-            </Modal>
+            </Modal >
 
             <Modal show={showAccountPreferencesDialog} onHide={accountPreferencesDialogHide} backdrop="static" keyboard={false} dialogClassName="modal-width-75-percent">
                 <Modal.Header closeButton>
@@ -515,8 +530,13 @@ function Contact({ appContext, router, setShowAlert }
                                 </div>
                             </div>
                             <div className="col d-flex justify-content-center justify-content-sm-end align-items-center">
-                                <Button className="me-2" variant="outline-dark" onClick={() => accountPreferencesDialogSave()}>{t("Common.Save")}</Button>
-                                <Button variant="outline-dark" onClick={() => accountPreferencesDialogHide()}>{t("Common.Cancel")}</Button>
+                                <Button className="me-2" variant="outline-dark" onClick={() => accountPreferencesDialogSave()}>
+                                    {t("Common.Save")}
+                                </Button>
+
+                                <Button variant="outline-dark" onClick={() => accountPreferencesDialogHide()}>
+                                    {t("Common.Cancel")}
+                                </Button>
                             </div>
                         </div>
                     </div>

@@ -60,7 +60,36 @@ export const resources_fr = {
       "ResetPasswordButton": "Réinitialiser le mot de passe"
     },
     "CreateAccount": {
-      "Title": "(fr)Create Account"
+      "Title": "Inscrire un compte",
+      "PleaseCompleteInformationBelow": "Veuillez fournir les informations ci-dessous pour créer votre compte.",
+      "ContactInfo": {
+        "Title": "Profil du compte",
+        "FirstName": "prénom",
+        "MiddleInitial": "initiale du deuxième prénom",
+        "LastName": "nom de famille",
+        "AddressLine1": "addresse - N˚ et rue",
+        "AddressLine2": "deuxième ligne d'addresse",
+        "CityTownOrVillage": "ville, village",
+        "ProvinceState": "province/état",
+        "Country": "pays",
+        "PostalZipCode": "code postal/code zip",
+        "Telephone": "N˚ de téléphone",
+        "EmailAddress": "adresse courriel",
+        "MandatoryField": "champ obligatoire",
+        "Password": "mot de passe",
+        "ConfirmPassword": "confirmez le mot de passe",
+      },
+      "Preferences": {
+        "Title": "Préférences du compte",
+        "OfscConsent": "Consentez-vous à ce que la FCMO communique avec vous pour vous fournir des renseignements sur les permis, les avantages pour les motoneigistes, et d'autres renseignements relatifs à la motoneige?",
+        "OfscConsentMore": "Je comprends que ma vie privée et la protection de mes renseignements personnels sont importantes pour la FCMO, mais en autorisant la divulgation de mes nom et adresse, je consens à ce que la FCMO utilise ces renseignements à des fins liées au mandat de la FCMO (www.ofsc.on.ca). Je réitère en outre que toute information fournie à la FCMO échappe à la garde et au contrôle du ministère des Transports et que la FCMO sera seule responsable de cette information.",
+        "RiderAdvantage": "(fr)Do you want to participate in eligible Rider Advantage programs as offered and/or available?",
+        "NoIAmNotInterestedInVolunteering": "Non, je ne suis pas intéressé par le bénévolat",
+        "YesIAlreadyVolunteer": "Oui, je suis déjà bénévole",
+        "YesIdLikeToVolunteer": "Oui, je veux faire du bénévolat",
+        "Volunteering": "Voulez-vous faire du bénévolat pour soutenir votre club de motoneige local et consentez-vous à ce que le club vous contacte par téléphone et/ou par courriel?",
+        "CorrespondenceLanguage": "Quelle est votre langue de correspondance préférée avec la FCMO?"
+      }
     },
     "Home": {
       "MenuTitle": "(fr)Home",
@@ -88,10 +117,12 @@ export const resources_fr = {
         "PostalZipCode": "code postal/code zip",
         "Telephone": "N˚ de téléphone",
         "EmailAddress": "adresse courriel",
-        "MandatoryField": "champ obligatoire"
+        "MandatoryField": "champ obligatoire",
+        "Password": "(fr)Password",
+        "ConfirmPassword": "(fr)Confirm Password",
       },
       "PreferencesEditDialog": {
-        "Title": "Edit Account Preferences",
+        "Title": "(fr)Edit Account Preferences",
         "OfscConsent": "Consentez-vous à ce que la FCMO communique avec vous pour vous fournir des renseignements sur les permis, les avantages pour les motoneigistes, et d'autres renseignements relatifs à la motoneige?",
         "OfscConsentMore": "Je comprends que ma vie privée et la protection de mes renseignements personnels sont importantes pour la FCMO, mais en autorisant la divulgation de mes nom et adresse, je consens à ce que la FCMO utilise ces renseignements à des fins liées au mandat de la FCMO (www.ofsc.on.ca). Je réitère en outre que toute information fournie à la FCMO échappe à la garde et au contrôle du ministère des Transports et que la FCMO sera seule responsable de cette information.",
         "RiderAdvantage": "(fr)Do you want to participate in eligible Rider Advantage programs as offered and/or available?",

@@ -287,13 +287,20 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="d-flex flex-fill justify-content-end">
                             {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
                                 <>
-                                    <button className="btn btn-outline-dark btn-sm" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>{t("Common.Edit")}</button>
-                                    <button className="btn btn-outline-dark btn-sm ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>{t("Common.Delete")}</button>
+                                    <button className="btn btn-outline-dark btn-sm" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
+                                        {t("Common.Edit")}
+                                    </button>
+
+                                    <button className="btn btn-outline-dark btn-sm ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
+                                        {t("Common.Delete")}
+                                    </button>
                                 </>
                             )}
 
                             {!snowmobile?.isEditable && (
-                                <button type="button" className="btn btn-link" onClick={() => setShowSnowmobileInfoDialog(true)}><i className="fa-solid fa-circle-info fa-lg"></i></button>
+                                <button type="button" className="btn btn-link" onClick={() => setShowSnowmobileInfoDialog(true)}>
+                                    <i className="fa-solid fa-circle-info fa-lg"></i>
+                                </button>
                             )}
                         </div>
                     </div>
@@ -342,11 +349,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                                     {showDateRangeForSelectedPermit(snowmobile?.oVehicleId) && (
                                         <div className="row mt-2">
-                                            <div className="col-12 col-sm-12 col-md-6">
+                                            <div className="col-12 col-sm-12 col-md-6 mb-2 mb-md-0">
                                                 <DatePicker dateFormat="yyyy-MM-dd" locale={appContext.translation.i18n.language} selected={getPermitDateRangeFromDate(snowmobile?.oVehicleId)} minDate={getDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile?.oVehicleId)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
                                             </div>
 
-                                            <div className="col-12 col-sm-12 col-md-6 mt-2">
+                                            <div className="col-12 col-sm-12 col-md-6">
                                                 <div className="form-floating">
                                                     <input type="text" className="form-control" id={`permit-to-${snowmobile?.oVehicleId}`} placeholder={t("Permits.Vehicle.PermitValidUntil")} value={getPermitDateRangeToDate(snowmobile?.oVehicleId)} onChange={() => null} disabled={true} />
                                                     <label className="" htmlFor={`permit-to-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.PermitValidUntil")}</label>
@@ -379,7 +386,9 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
             <div className="card">
                 <div className="card-body text-center">
-                    <button className="btn btn-primary" onClick={() => addEditSnowmobileDialogShow()}>{t("Permits.Vehicle.AddSnowmobile")}</button>
+                    <button className="btn btn-primary" onClick={() => addEditSnowmobileDialogShow()}>
+                        {t("Permits.Vehicle.AddSnowmobile")}
+                    </button>
                 </div>
             </div>
 
@@ -492,8 +501,13 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             </div>
                             <div className="col d-flex justify-content-center justify-content-sm-end align-items-center">
-                                <Button className="me-2" variant="outline-dark" onClick={() => addEditSnowmobileDialogSave()}>{t("Common.Save")}</Button>
-                                <Button variant="outline-dark" onClick={() => addEditSnowmobileDialogHide()}>{t("Common.Cancel")}</Button>
+                                <Button className="me-2" variant="outline-dark" onClick={() => addEditSnowmobileDialogSave()}>
+                                    {t("Common.Save")}
+                                </Button>
+
+                                <Button variant="outline-dark" onClick={() => addEditSnowmobileDialogHide()}>
+                                    {t("Common.Cancel")}
+                                </Button>
                             </div>
                         </div>
                     </div>

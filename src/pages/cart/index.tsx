@@ -268,10 +268,15 @@ function Cart({ appContext, router, setShowAlert }:
                                                                         <div className="d-flex flex-column gap-2">
                                                                             <div className="input-group">
                                                                                 <input type="text" className="form-control" id={`cart-redemption-code-${cartItem?.itemId}`} placeholder={t("Cart.EnterGiftCardRedemptionCode")} value={cartItem?.uiRedemptionCode} onKeyUp={(e: any) => redemptionCodeKeyUp(e, cartItem?.id)} onChange={(e: any) => redemptionCodeChange(e, cartItem?.id)} />
-                                                                                <button className="btn btn-outline-dark d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>{t("Cart.Validate")}</button>
+
+                                                                                <button className="btn btn-outline-dark d-none d-sm-block" type="button" onClick={() => validateGiftCard(cartItem?.id)}>
+                                                                                    {t("Cart.Validate")}
+                                                                                </button>
                                                                             </div>
 
-                                                                            <button className="btn btn-outline-dark btn-sm d-sm-none" type="button" onClick={() => validateGiftCard(cartItem?.id)}>{t("Cart.Validate")}</button>
+                                                                            <button className="btn btn-outline-dark btn-sm d-sm-none" type="button" onClick={() => validateGiftCard(cartItem?.id)}>
+                                                                                {t("Cart.Validate")}
+                                                                            </button>
 
                                                                             {cartItem?.uiShowRedemptionCodeNotFound && (
                                                                                 <div className="text-danger">{cartItem?.uiRedemptionCodeErrorMessage}</div>
@@ -288,6 +293,7 @@ function Cart({ appContext, router, setShowAlert }:
                                                             <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                                 <div className="d-flex flex-fill align-items-center">
                                                                     <div className="fw-semibold required">{t("Cart.SelectClub")}</div>
+
                                                                     <button type="button" className="btn btn-link p-0 ms-2" onClick={() => setShowClubInfoDialog(true)}>
                                                                         <i className="fa-solid fa-circle-info fa-lg"></i>
                                                                     </button>
@@ -302,6 +308,7 @@ function Cart({ appContext, router, setShowAlert }:
 
                                                             <div className="mt-2">
                                                                 <Select id={`cart-club-${cartItem?.itemId}`} className="react-select" aria-label="Club" classNames={getClubReactSelectClasses(cartItem?.id)} isClearable={true} placeholder={t("Common.PleaseSelect")} options={getClubsData()} value={getSelectedClub(cartItem?.itemId)} onChange={(e: any) => permitClubChange(e, cartItem?.itemId)} />
+
                                                                 <button type="button" className="btn btn-link text-black text-start d-sm-none p-0 mt-2" onClick={() => clubLocatorMapDialogShow(cartItem?.itemId)}>
                                                                     <i className="fa-solid fa-map fa-lg me-2"></i>{t("Cart.UseClubLocatorMap")}
                                                                 </button>
@@ -495,8 +502,13 @@ function Cart({ appContext, router, setShowAlert }:
 
                     <div className="card mb-3">
                         <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
-                            <button className="btn btn-primary" onClick={() => checkoutClick()}>{t("Cart.ProceedToCheckout")}</button>
-                            <button className="btn btn-primary" onClick={() => continueShoppingClick()}>{t("Cart.ContinueShopping")}</button>
+                            <button className="btn btn-primary" onClick={() => checkoutClick()}>
+                                {t("Cart.ProceedToCheckout")}
+                            </button>
+
+                            <button className="btn btn-primary" onClick={() => continueShoppingClick()}>
+                                {t("Cart.ContinueShopping")}
+                            </button>
                         </div>
                     </div>
 
