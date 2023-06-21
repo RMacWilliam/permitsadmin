@@ -41,10 +41,10 @@ export default function UnauthenticatedPageLayout({ children, showAlert }
 
                             <div>
                                 <span className="d-none d-md-block">
-                                    <LanguageToggler isTextShort={false} className="ms-3"></LanguageToggler>
+                                    <LanguageToggler isTextShort={false} className="fw-semibold ms-3"></LanguageToggler>
                                 </span>
                                 <span className="d-md-none">
-                                    <LanguageToggler isTextShort={true} className="ms-3"></LanguageToggler>
+                                    <LanguageToggler isTextShort={true} className="fw-semibold ms-3"></LanguageToggler>
                                 </span>
                             </div>
                         </div>

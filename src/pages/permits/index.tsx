@@ -250,58 +250,61 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
             )}
 
             {getSnowmobiles() != undefined && getSnowmobiles().length > 0 && getSnowmobiles().map(snowmobile => (
-                <div className="card w-100 mb-3" key={snowmobile.oVehicleId}>
-                    <div className="card-header d-flex justify-content-between align-items-center flex-wrap bg-success-subtle gap-2">
-                        <div className="d-flex flex-fill g-3">
-                            <div className="d-none d-md-flex my-2">
-                                <div className="me-3">
-                                    <div className="floating-info-label">{t("Permits.Vehicle.Year")}</div>
-                                    <div className="floating-info-text fw-semibold">{snowmobile?.vehicleYear}</div>
+                <div className="card mb-3" key={snowmobile?.oVehicleId}>
+                    <div className="card-header bg-success-subtle">
+                        <div className="row gap-3">
+                            <div className="col d-flex justify-content-center justify-content-md-start align-items-center">
+                                <div className="d-none d-md-flex align-items-center my-1">
+                                    <div className="me-3">
+                                        <div className="floating-info-label">{t("Permits.Vehicle.Year")}</div>
+                                        <div className="floating-info-text fw-semibold">{snowmobile?.vehicleYear}</div>
+                                    </div>
+
+                                    <div className="me-3">
+                                        <div className="floating-info-label">{t("Permits.Vehicle.Make")}</div>
+                                        <div className="floating-info-text fw-semibold">{snowmobile?.vehicleMake?.value}</div>
+                                    </div>
+
+                                    <div className="me-3">
+                                        <div className="floating-info-label">{t("Permits.Vehicle.Model")}</div>
+                                        <div className="floating-info-text fw-semibold">{snowmobile?.model}</div>
+                                    </div>
+
+                                    <div className="me-3">
+                                        <div className="floating-info-label">{t("Permits.Vehicle.Vin")}</div>
+                                        <div className="floating-info-text fw-semibold">{snowmobile?.vin}</div>
+                                    </div>
+
+                                    <div className="">
+                                        <div className="floating-info-label">{t("Permits.Vehicle.LicensePlate")}</div>
+                                        <div className="floating-info-text fw-semibold">{snowmobile?.licensePlate}</div>
+                                    </div>
                                 </div>
 
-                                <div className="me-3">
-                                    <div className="floating-info-label">{t("Permits.Vehicle.Make")}</div>
-                                    <div className="floating-info-text fw-semibold">{snowmobile?.vehicleMake?.value}</div>
-                                </div>
-
-                                <div className="me-3">
-                                    <div className="floating-info-label">{t("Permits.Vehicle.Model")}</div>
-                                    <div className="floating-info-text fw-semibold">{snowmobile?.model}</div>
-                                </div>
-
-                                <div className="me-3">
-                                    <div className="floating-info-label">{t("Permits.Vehicle.Vin")}</div>
-                                    <div className="floating-info-text fw-semibold">{snowmobile?.vin}</div>
-                                </div>
-
-                                <div className="">
-                                    <div className="floating-info-label">{t("Permits.Vehicle.LicensePlate")}</div>
-                                    <div className="floating-info-text fw-semibold">{snowmobile?.licensePlate}</div>
+                                <div className="d-flex d-md-none text-center fw-semibold">
+                                    {`${snowmobile?.vehicleYear} ${snowmobile?.vehicleMake?.value} ${snowmobile?.model} ${snowmobile?.vin} ${snowmobile?.licensePlate}`}
                                 </div>
                             </div>
-                            <div className="d-md-none">
-                                {`${snowmobile?.vehicleYear} ${snowmobile?.vehicleMake?.value} ${snowmobile?.model} ${snowmobile?.vin} ${snowmobile?.licensePlate}`}
+
+                            <div className="col-12 col-md-auto d-flex align-items-center">
+                                {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
+                                    <>
+                                        <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
+                                            {t("Common.Edit")}
+                                        </button>
+
+                                        <button className="btn btn-outline-dark btn-sm ms-1 w-sm-100" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
+                                            {t("Common.Delete")}
+                                        </button>
+                                    </>
+                                )}
+
+                                {!snowmobile?.isEditable && (
+                                    <button type="button" className="btn btn-link" onClick={() => setShowSnowmobileInfoDialog(true)}>
+                                        <i className="fa-solid fa-circle-info fa-lg"></i>
+                                    </button>
+                                )}
                             </div>
-                        </div>
-
-                        <div className="d-flex flex-fill justify-content-end">
-                            {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
-                                <>
-                                    <button className="btn btn-outline-dark btn-sm" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
-                                        {t("Common.Edit")}
-                                    </button>
-
-                                    <button className="btn btn-outline-dark btn-sm ms-1" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
-                                        {t("Common.Delete")}
-                                    </button>
-                                </>
-                            )}
-
-                            {!snowmobile?.isEditable && (
-                                <button type="button" className="btn btn-link" onClick={() => setShowSnowmobileInfoDialog(true)}>
-                                    <i className="fa-solid fa-circle-info fa-lg"></i>
-                                </button>
-                            )}
                         </div>
                     </div>
 

@@ -51,6 +51,7 @@ export const resources_fr = {
       "LoginButton": "Se connecter",
       "ForgotPasswordButton": "J'ai oublié mon mot de passe",
       "CreateAnAccountButton": "Je veux inscrire un compte",
+      "ChangeMyEmailAddress": "Changer mon adresse courriel",
       "InvalidEmailAndOrPassword": "Courriel non trouvé et/ou mot de passe erroné"
     },
     "ForgotPassword": {
@@ -89,7 +90,11 @@ export const resources_fr = {
         "YesIdLikeToVolunteer": "Oui, je veux faire du bénévolat",
         "Volunteering": "Voulez-vous faire du bénévolat pour soutenir votre club de motoneige local et consentez-vous à ce que le club vous contacte par téléphone et/ou par courriel?",
         "CorrespondenceLanguage": "Quelle est votre langue de correspondance préférée avec la FCMO?"
-      }
+      },
+      "CreateAccount": "Create Account"
+    },
+    "ChangeEmail": {
+      "Title": "Changer mon adresse courriel"
     },
     "Home": {
       "MenuTitle": "(fr)Home",

@@ -177,41 +177,43 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             )}
 
             {getGiftCards() != undefined && getGiftCards().length > 0 && getGiftCards().map(giftCard => (
-                <div className="card mb-3" key={giftCard.oVoucherId}>
-                    <h5 className="card-header d-flex justify-content-between align-items-center flex-wrap bg-success-subtle gap-2">
-                        <div className="d-flex flex-fill">
-                            {giftCard.isPurchased && appContext.translation.i18n.language === "en" && (
-                                <span>{getGiftCardName(giftCard?.oVoucherId)}</span>
-                            )}
-                            {giftCard.isPurchased && appContext.translation.i18n.language === "fr" && (
-                                <span>{getGiftCardName(giftCard?.oVoucherId, "fr")}</span>
-                            )}
+                <div className="card mb-3" key={giftCard?.oVoucherId}>
+                    <div className="card-header bg-success-subtle">
+                        <div className="row gap-3">
+                            <div className="col d-flex justify-content-center justify-content-md-start align-items-center text-center fw-semibold">
+                                {giftCard.isPurchased && appContext.translation.i18n.language === "en" && (
+                                    <div>{getGiftCardName(giftCard?.oVoucherId)}</div>
+                                )}
+                                {giftCard.isPurchased && appContext.translation.i18n.language === "fr" && (
+                                    <span>{getGiftCardName(giftCard?.oVoucherId, "fr")}</span>
+                                )}
 
-                            {!giftCard.isPurchased && (
-                                <span>{t("GiftCards.BuyNewGiftCard")}</span>
-                            )}
+                                {!giftCard.isPurchased && (
+                                    <span>{t("GiftCards.BuyNewGiftCard")}</span>
+                                )}
+                            </div>
+
+                            <div className="col-12 col-md-auto d-flex align-items-center">
+                                {giftCard?.isPurchased && !giftCard?.isRedeemed && (
+                                    <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>
+                                        {t("Common.Edit")}
+                                    </button>
+                                )}
+
+                                {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
+                                    <button className="btn btn-outline-dark btn-sm ms-1 w-sm-100" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
+                                        {t("Common.Delete")}
+                                    </button>
+                                )}
+                            </div>
                         </div>
-
-                        <div className="d-flex flex-fill justify-content-end">
-                            {giftCard?.isPurchased && !giftCard?.isRedeemed && (
-                                <button className="btn btn-outline-dark btn-sm" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>
-                                    {t("Common.Edit")}
-                                </button>
-                            )}
-
-                            {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                <button className="btn btn-outline-dark btn-sm ms-1" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
-                                    {t("Common.Delete")}
-                                </button>
-                            )}
-                        </div>
-                    </h5>
+                    </div>
 
                     <ul className="list-group list-group-flush">
                         {giftCard?.isPurchased && (
                             <li className="list-group-item">
-                                <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                    <div className="d-flex flex-filll flex-column">
+                                <div className="row gap-3">
+                                    <div className="col d-flex justify-content-center justify-content-md-start align-items-center">
                                         {/* <label htmlFor={`redemption-code-${giftCard?.oVoucherId}`} className="form-label fw-semibold mb-0">{t("GiftCards.RedemptionCode")}</label> */}
                                         {/* <input id={`redemption-code-${giftCard?.oVoucherId}`} type="text" readOnly={true} className="form-control-plaintext font-monospace mb-0 pb-0" value={giftCard?.redemptionCode} /> */}
 
@@ -222,12 +224,22 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                         </div>
                                     </div>
 
-                                    <div className="d-flex flex-fill justify-content-end">
-                                        <button className="btn btn-outline-dark btn-sm" onClick={() => resendEmailClick(giftCard?.oVoucherId)}>
+                                    <div className="col-12 col-md-auto d-flex align-items-center">
+                                        <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => resendEmailClick(giftCard?.oVoucherId)}>
                                             <i className="fa-solid fa-envelope"></i> {t("GiftCards.ResendEmail")}
                                         </button>
                                     </div>
                                 </div>
+
+                                {/* <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div className="d-flex flex-filll flex-column">
+                                        
+                                    </div>
+
+                                    <div className="d-flex flex-fill justify-content-end">
+                                        
+                                    </div>
+                                </div> */}
                             </li>
                         )}
 

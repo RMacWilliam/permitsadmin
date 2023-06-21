@@ -68,14 +68,14 @@ $form-select-border-color: $gray-500;
   border-color: $gray-500;
 }
 
-// @media (max-width: 449.98px) {
-//   .w-xs-100 {
-//     width: 100% !important;
-//   }
-// }
+@media (max-width: 449.98px) {
+  .w-xs-100 {
+    width: 100% !important;
+  }
+}
 
-// @media (max-width: 767.98px) {
-//   .w-sm-100 {
-//     width: 100% !important;
-//   }
-// }
+@media (max-width: 767.98px) {
+  .w-sm-100 {
+    width: 100% !important;
+  }
+}

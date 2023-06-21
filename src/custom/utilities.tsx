@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import sortBy from "lodash/sortBy";
 import { Constants, GlobalAppContext } from "../../constants";
 import { logoutAndCleanupAppContext } from "./authentication";
+import { NextRouter } from "next/router";
 
 export function getParentKeyValueFromSelect(e: any): IParentKeyValue | undefined {
     let result: IParentKeyValue | undefined = undefined;
@@ -176,3 +177,14 @@ export function getImagePath(filename: string): string {
 
 //     return result;
 // }
+
+export function getQueryParam(param: string, router: NextRouter): string | undefined {
+    let result: string | undefined = undefined;
+
+    if (param != undefined && param.trim() !== "" && router != undefined) {
+        const paramValue: string | undefined = router.query[param]?.toString()?.trim();
+        result = paramValue == undefined || paramValue === "" ? undefined : paramValue;
+    }
+
+    return result;
+}

@@ -51,6 +51,7 @@ export const resources_en = {
       "LoginButton": "Login",
       "ForgotPasswordButton": "Forgot your password?",
       "CreateAnAccountButton": "Create an account",
+      "ChangeMyEmailAddress": "Change my e-mail address",
       "InvalidEmailAndOrPassword": "Invalid e-mail and/or password"
     },
     "ForgotPassword": {
@@ -89,7 +90,11 @@ export const resources_en = {
         "YesIdLikeToVolunteer": "Yes, I want to volunteer",
         "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or email?",
         "CorrespondenceLanguage": "What is your prefered correspondence language with OFSC?"
-      }
+      },
+      "CreateAccount": "Create Account"
+    },
+    "ChangeEmail": {
+      "Title": "Change My Email Address"
     },
     "Home": {
       "MenuTitle": "Home",

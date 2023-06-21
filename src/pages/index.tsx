@@ -155,7 +155,7 @@ function Index() {
                             </div>
 
                             <div className="mt-2">
-                                <button className="btn btn-primary w-100" disabled={loginInProgress} onClick={() => doLogin()}>
+                                <button className="btn btn-primary w-100" disabled={loginInProgress} onClick={() => loginClick()}>
                                     {t("Index.LoginButton")}
 
                                     {loginInProgress && (
@@ -171,14 +171,20 @@ function Index() {
                             </div>
 
                             <div className="text-center mt-4">
-                                <button className="btn btn-link text-decoration-none" disabled={loginInProgress} onClick={() => doForgotPassword()}>
+                                <button className="btn btn-link text-decoration-none" disabled={loginInProgress} onClick={() => router.push("/forgot-password")}>
                                     {t("Index.ForgotPasswordButton")}
                                 </button>
                             </div>
 
                             <div className="mt-4 mb-2">
-                                <button className="btn btn-outline-dark w-100" disabled={loginInProgress} onClick={() => doCreateAccount()}>
+                                <button className="btn btn-outline-primary w-100" disabled={loginInProgress} onClick={() => router.push("/create-account")}>
                                     {t("Index.CreateAnAccountButton")}
+                                </button>
+                            </div>
+
+                            <div className="mb-2">
+                                <button className="btn btn-outline-primary w-100" disabled={loginInProgress} onClick={() => router.push("/change-email")}>
+                                    {t("Index.ChangeMyEmailAddress")}
                                 </button>
                             </div>
                         </div>
@@ -188,7 +194,7 @@ function Index() {
         </>
     )
 
-    function doLogin(): void {
+    function loginClick(): void {
         if (validateLoginForm()) {
             let e: string = email.trim().substring(0, 200); // TODO: Clean up this code!
             let p: string = password.trim().substring(0, 200); // TODO: Clean up this code!
@@ -222,14 +228,6 @@ function Index() {
                 }
             });
         }
-    }
-
-    function doForgotPassword(): void {
-        router.push("/forgot-password");
-    }
-
-    function doCreateAccount(): void {
-        router.push("/create-account");
     }
 
     function validateLoginForm(): boolean {

@@ -215,7 +215,7 @@ function Contact({ appContext, router, setShowAlert }
             <CartItemsAlert></CartItemsAlert>
 
             <div className="card mb-3 w-100">
-                <h5 className="card-header d-flex justify-content-between align-items-center bg-success-subtle">
+                <div className="card-header d-flex justify-content-between align-items-center bg-success-subtle fs-5 fw-semibold">
                     <div>
                         {`${appContext.data?.contactInfo?.firstName ?? ""} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName ?? ""}`}
                     </div>
@@ -225,7 +225,7 @@ function Contact({ appContext, router, setShowAlert }
                             {t("Common.Edit")}
                         </button>
                     </div>
-                </h5>
+                </div>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item">
                         <Loading showLoading={!pageLoaded}>
@@ -252,7 +252,7 @@ function Contact({ appContext, router, setShowAlert }
             </div>
 
             <div className="card mb-3 w-100">
-                <h5 className="card-header d-flex justify-content-between align-items-center bg-success-subtle">
+                <div className="card-header d-flex justify-content-between align-items-center bg-success-subtle fs-5 fw-semibold">
                     <div>
                         {t("ContactInfo.Preferences")}
                     </div>
@@ -262,7 +262,7 @@ function Contact({ appContext, router, setShowAlert }
                             {t("Common.Edit")}
                         </button>
                     </div>
-                </h5>
+                </div>
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item">
                         <Loading showLoading={!pageLoaded}>

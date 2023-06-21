@@ -1,8 +1,7 @@
-import { Observable, map } from "rxjs";
+import { Observable } from "rxjs";
 import { fromFetch } from "rxjs/fetch";
 import { IKeyValue, IParentKeyValue } from "./app-context";
 import { GlobalAppContext, WebApi } from "../../constants";
-import $ from 'jquery';
 
 const WebApiGlobalQueryParams: any = {
     asOfDate: "2023-01-01"
@@ -31,13 +30,11 @@ function httpFetch<T>(method: "GET" | "POST" | "DELETE", url: string, params?: a
             if (GlobalAppContext.updater != undefined) {
                 const newToken: string | undefined = response.headers.get("NewToken") ?? undefined;
 
-                // if (newToken != undefined) {
-                //     console.log("Token (old, new, same?): ", GlobalAppContext?.data?.token, newToken, GlobalAppContext?.data?.token === newToken)
-                // }
-
-                GlobalAppContext.updater(draft => {
-                    draft.token = newToken;
-                });
+                if (newToken != undefined) {
+                    GlobalAppContext.updater(draft => {
+                        draft.token = newToken;
+                    });
+                }
             }
 
             if (response.ok) {
@@ -64,21 +61,11 @@ function httpFetch<T>(method: "GET" | "POST" | "DELETE", url: string, params?: a
         url += "?" + queryParams.join("&");
     }
 
-    // $.ajax({
-    //     url: url,
-    //     method: method,
-    //     headers: headers,
-    //     data: method === 'GET' ? undefined : JSON.stringify(body)
-    // })
-    //     .done(function (data, textStatus, xhr ) {
-    //         console.log(xhr.getAllResponseHeaders());
-    //     });
-
     return fromFetch<T>(url, init);
 }
 
 function httpGet<T>(url: string, params?: any, isAuthenticated: boolean = true): Observable<T> {
-    return httpFetch<T>("GET", url, params, isAuthenticated);
+    return httpFetch<T>("GET", url, params, undefined, isAuthenticated);
 }
 
 function httpPost<T>(url: string, params?: any, body?: any, isAuthenticated: boolean = true): Observable<T> {
@@ -258,7 +245,7 @@ export interface IApiGetProvincesResult extends IParentKeyValue {
 }
 
 export function apiGetProvinces(params?: any): Observable<IApiGetProvincesResult[]> {
-    return httpGet<IApiGetProvincesResult[]>(WebApi.GetProvinces, params);
+    return httpGet<IApiGetProvincesResult[]>(WebApi.GetProvinces, params, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -274,7 +261,7 @@ export interface IApiGetCountriesResult extends IKeyValue {
 }
 
 export function apiGetCountries(params?: any): Observable<IApiGetCountriesResult[]> {
-    return httpGet<IApiGetCountriesResult[]>(WebApi.GetCountries, params);
+    return httpGet<IApiGetCountriesResult[]>(WebApi.GetCountries, params, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,7 +277,7 @@ export interface IApiGetCorrespondenceLanguagesResult extends IKeyValue {
 }
 
 export function apiGetCorrespondenceLanguages(params?: any): Observable<IApiGetCorrespondenceLanguagesResult[]> {
-    return httpGet<IApiGetCorrespondenceLanguagesResult[]>(WebApi.GetCorrespondenceLanguages, params);
+    return httpGet<IApiGetCorrespondenceLanguagesResult[]>(WebApi.GetCorrespondenceLanguages, params, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -856,4 +843,43 @@ export interface IApiMonerisCompleteResult {
 
 export function apiMonerisComplete(body?: any, params?: any, url: string = ""): Observable<IApiMonerisCompleteResult> {
     return httpPost<IApiMonerisCompleteResult>(url /*WebApi.MonerisComplete*/, params, body);
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// api
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiCreateAccountRequest {
+    userDetails: {
+        email?: string;
+        password?: string;
+        firstName?: string;
+        initial?: string;
+        lastName?: string;
+        addressLine1?: string;
+        addressLine2?: string;
+        city?: string;
+        province?: string;
+        country?: string;
+        postalCode?: string;
+        telephone?: string;
+    },
+    userPreferences: {
+        ofscContactPermission?: number;
+        riderAdvantage?: number;
+        volunteering?: number;
+        correspondenceLanguage?: string;
+    }
+}
+
+export interface IApiCreateAccountResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: any;
+}
+
+export function apiCreateAccount(body?: any, params?: any): Observable<IApiCreateAccountResult> {
+    return httpPost<IApiCreateAccountResult>(WebApi.CreateAccount, params, body);
 }

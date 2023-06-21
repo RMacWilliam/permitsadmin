@@ -1,14 +1,9 @@
 import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
-import { AppContext, IAppContextValues, IGiftCard, ISnowmobile } from "@/custom/app-context";
+import { AppContext, IAppContextValues } from "@/custom/app-context";
+import { getQueryParam } from "@/custom/utilities";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { Subscription } from "rxjs";
-import $ from 'jquery';
-import { IApiMonerisCompleteRequest, IApiMonerisCompleteResult, IApiSavePrePurchaseDataRequest, IApiSavePrePurchaseDataResult, IApiSavePrePurchaseDataResultData, apiMonerisComplete, apiSavePrePurchaseData } from "@/custom/api";
-import { checkResponseStatus } from "@/custom/utilities";
-
-declare var monerisCheckout: any;
 
 export default function PaymentPage() {
     const appContext = useContext(AppContext);
@@ -18,7 +13,7 @@ export default function PaymentPage() {
     const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
-        appContext.updater(draft => { draft.navbarPage = "payment" });
+        appContext.updater(draft => { draft.navbarPage = "declined" });
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -37,7 +32,13 @@ function PaymentDeclined({ appContext, router, setShowAlert }:
         setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
     }) {
 
+    const [orderId, setOrderId] = useState(undefined as string | undefined);
+
     const t: Function = appContext.translation.t;
+
+    useEffect(() => {
+        setOrderId(getQueryParam("orderId", router));
+    }, [router.query]);
 
     return (
         <>

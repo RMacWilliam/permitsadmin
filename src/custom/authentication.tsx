@@ -1,9 +1,8 @@
-import { NextRouter, useRouter } from "next/router";
-import { AppContext, IAppContextValues } from "./app-context";
+import { useRouter } from "next/router";
+import { AppContext } from "./app-context";
 import { IApiLogoutResult, IApiValidateUserResult, apiLogout } from "./api";
 import { ReactNode, useContext, useRef } from "react";
-import { Constants, GlobalAppContext, WebApi } from "../../constants";
-import { checkResponseStatus } from "./utilities";
+import { GlobalAppContext, WebApi } from "../../constants";
 
 export default function RouteGuard({ children }: { children: ReactNode }): any {
     const appContext = useContext(AppContext);
@@ -26,7 +25,7 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
     }
 
     // Get user authorization.
-    const path: string = router.asPath;
+    const path: string = router.asPath?.split("?")[0];
 
     // Admin users have full access.
     if (appContext.data?.contactInfo?.adminUser) {
@@ -41,6 +40,8 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
         } else if (path === "/forgot-password") {
             isAuthorized.current = true;
         } else if (path === "/create-account") {
+            isAuthorized.current = true;
+        } else if (path === "/change-email") {
             isAuthorized.current = true;
         }
 

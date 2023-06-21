@@ -1,11 +1,11 @@
 import { AppContext } from "@/custom/app-context";
 import { useContext } from "react";
 
-export default function LanguageToggler({ isTextShort, className }: { isTextShort: boolean, className: string }) {
+export default function LanguageToggler({ isTextShort, className }: { isTextShort?: boolean, className?: string }) {
     const appContext = useContext(AppContext);
 
     return (
-        <span className={`fw-semibold ${className}`} style={{ cursor: "pointer" }} onClick={() => toggleLanguage()}>
+        <span className={className} style={{ cursor: "pointer" }} onClick={() => toggleLanguage()}>
             {isTextShort && getLanguageTextShort()}
             {!isTextShort && getLanguageTextLong()}
         </span>

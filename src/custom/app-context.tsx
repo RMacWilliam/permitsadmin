@@ -210,7 +210,7 @@ export interface IAppContextData {
     cartItems?: ICartItem[];
 
     // Navbar selection
-    navbarPage?: "index" | "home" | "contact" | "permits" | "gift-cards" | "cart" | "checkout" | "payment" | "admin-home";
+    navbarPage?: "index" | "home" | "contact" | "permits" | "gift-cards" | "cart" | "checkout" | "payment" | "approved" | "declined" | "admin-home";
 
     // Contact Information
     contactInfo?: IContactInfo;

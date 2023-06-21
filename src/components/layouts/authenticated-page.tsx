@@ -71,7 +71,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                     <div className="d-none d-md-block">
                                         {t("Header.LoggedInAs")} {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName}.
 
-                                        <span className="text-decoration-underline ms-2" style={{ cursor: "pointer" }} onClick={() => doLogout()}>
+                                        <span className="text-decoration-underline ms-2" style={{ cursor: "pointer" }} onClick={() => logoutClick()}>
                                             {t("Common.Logout")}
                                         </span>
                                     </div>
@@ -79,7 +79,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                             </div>
 
                             <div className="d-flex justify-content-end align-items-center">
-                                <LanguageToggler isTextShort={false} className="ms-3 d-none d-sm-none d-md-block"></LanguageToggler>
+                                <LanguageToggler isTextShort={false} className="fw-semibold ms-3 d-none d-sm-none d-md-block"></LanguageToggler>
 
                                 {appContext.data?.isContactInfoVerified && (
                                     <div className="ms-3 me-2">
@@ -118,14 +118,14 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                         <ul className="navbar-nav me-auto mb-2 mb-md-0 d-block d-sm-block d-md-none">
                             {appContext.data?.isContactInfoVerified && (
                                 <li className="nav-item">
-                                    <Link className="nav-link" aria-current="page" aria-label={t("Home.MenuTitle")} href="" onClick={() => { router.push("/home"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                    <Link className="nav-link text-white" aria-current="page" aria-label={t("Home.MenuTitle")} href="" onClick={() => { router.push("/home"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                         <i className="fa-solid fa-house fa-fw me-2"></i>
                                         {t("Home.MenuTitle")}
                                     </Link>
                                 </li>
                             )}
                             <li className="nav-item">
-                                <Link className="nav-link" aria-current="page" aria-label={t("ContactInfo.MenuTitle")} href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                <Link className="nav-link text-white" aria-current="page" aria-label={t("ContactInfo.MenuTitle")} href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                     <i className="fa-solid fa-address-card fa-fw me-2"></i>
                                     {t("ContactInfo.MenuTitle")}
                                 </Link>
@@ -133,13 +133,13 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                             {appContext.data?.isContactInfoVerified && (
                                 <>
                                     <li className="nav-item">
-                                        <Link className="nav-link" aria-current="page" aria-label={t("Permits.MenuTitle")} href="" onClick={() => { router.push("/permits"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                        <Link className="nav-link text-white" aria-current="page" aria-label={t("Permits.MenuTitle")} href="" onClick={() => { router.push("/permits"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                             <i className="fa-solid fa-snowflake fa-fw me-2"></i>
                                             {t("Permits.MenuTitle")}
                                         </Link>
                                     </li>
                                     <li className="nav-item">
-                                        <Link className="nav-link" aria-current="page" aria-label={t("GiftCards.MenuTitle")} href="" onClick={() => { router.push("/gift-cards"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                        <Link className="nav-link text-white" aria-current="page" aria-label={t("GiftCards.MenuTitle")} href="" onClick={() => { router.push("/gift-cards"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                             <i className="fa-solid fa-gift fa-fw me-2"></i>
                                             {t("GiftCards.MenuTitle")}
                                         </Link>
@@ -150,8 +150,10 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                 <hr className="dropdown-divider my-2" style={{ backgroundColor: "white", height: 1 }} />
                             </li>
                             <li className="nav-item">
-                                <i className="fa-solid fa-globe fa-fw me-2"></i>
-                                <LanguageToggler isTextShort={false} className=""></LanguageToggler>
+                                <Link className="nav-link text-white" aria-current="page" aria-label="" href="" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                    <i className="fa-solid fa-globe fa-fw me-2"></i>
+                                    <LanguageToggler isTextShort={false}></LanguageToggler>
+                                </Link>
                             </li>
                             <li>
                                 <hr className="dropdown-divider my-2" style={{ backgroundColor: "white", height: 1 }} />
@@ -160,7 +162,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                 <i className="fa-solid fa-user fa-fw me-2"></i>
                                 {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName}
                                 <span className="ms-2">
-                                    <Link className="text-decoration-underline text-white" href="" onClick={() => doLogout()}>Logout</Link>
+                                    <Link className="text-decoration-underline text-white" href="" onClick={() => logoutClick()}>Logout</Link>
                                 </span>
                             </li>
                         </ul>
@@ -234,7 +236,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
         </>
     )
 
-    function doLogout() {
+    function logoutClick() {
         logoutAndCleanupAppContext();
     }
 
