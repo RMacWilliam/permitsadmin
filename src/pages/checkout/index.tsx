@@ -3,7 +3,7 @@ import { AppContext, IAppContextValues } from "@/custom/app-context";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { Constants, Images } from "../../../constants";
+import { Constants, Images } from "../../../global";
 import { getImagePath } from "@/custom/utilities";
 
 export default function CheckoutPage() {

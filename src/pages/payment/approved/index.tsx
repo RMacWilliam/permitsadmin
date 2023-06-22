@@ -5,7 +5,7 @@ import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 
-export default function PaymentPage() {
+export default function PaymentApprovedPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
@@ -63,6 +63,14 @@ function PaymentApproved({ appContext, router, setShowAlert }:
                     <p>Vérifiez votre courriel pour la confirmation d'achat, l'avis de non-responsabilité et tout permis temporaire ou de plusieurs jours.</p>
                 </>
             )}
+
+            <div className="card">
+                <div className="card-body text-center">
+                    <button className="btn btn-primary" onClick={() => router.push("/home")}>
+                        {t("PaymentApproved.ReturnHome")}
+                    </button>
+                </div>
+            </div>
         </>
     )
 }

@@ -2,7 +2,7 @@ import moment from "moment";
 import { IKeyValue, IParentKeyValue } from "./app-context";
 import { v4 as uuidv4 } from "uuid";
 import sortBy from "lodash/sortBy";
-import { Constants, GlobalAppContext } from "../../constants";
+import { Constants, GlobalAppContext } from "../../global";
 import { logoutAndCleanupAppContext } from "./authentication";
 import { NextRouter } from "next/router";
 

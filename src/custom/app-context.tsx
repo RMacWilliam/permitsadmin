@@ -104,6 +104,10 @@ export interface ISnowmobile {
     permitSelections?: IPermitSelections;
     dateStart?: Date;
     dateEnd?: Date;
+
+    uiPermitOptionIdLoading?: boolean;
+    uiDateStartLoading?: boolean;
+    uiClubIdLoading?: boolean;
 }
 
 export interface IGiftCardType {
@@ -141,9 +145,12 @@ export interface IGiftCard {
     displayName?: string;
     frenchDisplayName?: string;
 
-    uiIsInEditMode?: boolean;
+    uiIsEditMode?: boolean;
+    uiRecipientInfoLastChangeDate?: Date;
     uiRecipientLastName?: string;
     uiRecipientPostal?: string;
+
+    uiGiftcardProductIdLoading?: boolean;
 }
 
 export interface IRedeemableGiftCards {
@@ -210,7 +217,8 @@ export interface IAppContextData {
     cartItems?: ICartItem[];
 
     // Navbar selection
-    navbarPage?: "index" | "home" | "contact" | "permits" | "gift-cards" | "cart" | "checkout" | "payment" | "approved" | "declined" | "admin-home";
+    navbarPage?: "index" | "first-login-of-season" | "home" | "contact" | "permits" | "gift-cards"
+    | "cart" | "checkout" | "payment" | "approved" | "declined" | "admin-home";
 
     // Contact Information
     contactInfo?: IContactInfo;

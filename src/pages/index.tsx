@@ -6,7 +6,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { GlobalAppContext } from '../../constants';
+import { GlobalAppContext } from '../../global';
 
 export default function IndexPage() {
     return (

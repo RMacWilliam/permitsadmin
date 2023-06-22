@@ -7,7 +7,7 @@ import LanguageToggler from '../language-toggler';
 import ModalProcessingAlert, { IShowAlert } from '../modal-processing-alert';
 import { logoutAndCleanupAppContext } from '@/custom/authentication';
 import $ from 'jquery';
-import { Images } from '../../../constants';
+import { Images } from '../../../global';
 
 export interface IShowHoverButton {
     showHoverButton?: boolean;
@@ -177,16 +177,28 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                 {t("Home.MenuTitle")}
                             </Link>
                         )}
-                        <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact" aria-label={t("ContactInfo.MenuTitle")}>
-                            <i className="fa-solid fa-address-card me-2"></i>
-                            {t("ContactInfo.MenuTitle")}
-                        </Link>
+
+                        {appContext.data?.isFirstLoginOfSeason && (
+                            <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "first-login-of-season" ? "active" : ""}`} href="/first-login-of-season" aria-label={t("FirstLoginOfSeason.MenuTitle")}>
+                                <i className="fa-solid fa-video me-2"></i>
+                                {t("FirstLoginOfSeason.MenuTitle")}
+                            </Link>
+                        )}
+
+                        {!appContext.data?.isFirstLoginOfSeason && (
+                            <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact" aria-label={t("ContactInfo.MenuTitle")}>
+                                <i className="fa-solid fa-address-card me-2"></i>
+                                {t("ContactInfo.MenuTitle")}
+                            </Link>
+                        )}
+
                         {appContext.data?.isContactInfoVerified && (
                             <>
                                 <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "permits" ? "active" : ""}`} href="/permits" aria-label={t("Permits.MenuTitle")}>
                                     <i className="fa-solid fa-snowflake me-2"></i>
                                     {t("Permits.MenuTitle")}
                                 </Link>
+
                                 <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "gift-cards" ? "active" : ""}`} href="/gift-cards" aria-label={t("GiftCards.MenuTitle")}>
                                     <i className="fa-solid fa-gift me-2"></i>
                                     {t("GiftCards.MenuTitle")}

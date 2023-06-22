@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { AppContext } from "./app-context";
 import { IApiLogoutResult, IApiValidateUserResult, apiLogout } from "./api";
 import { ReactNode, useContext, useRef } from "react";
-import { GlobalAppContext, WebApi } from "../../constants";
+import { GlobalAppContext, WebApi } from "../../global";
 
 export default function RouteGuard({ children }: { children: ReactNode }): any {
     const appContext = useContext(AppContext);
@@ -73,11 +73,20 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
                     redirectRoute.current = "/home";
                 }
             } else {
-                if (path === "/contact") {
-                    isAuthorized.current = true;
+                if (appContext.data?.isFirstLoginOfSeason) {
+                    if (path === "/first-login-of-season") {
+                        isAuthorized.current = true;
+                    } else {
+                        isAuthorized.current = false;
+                        redirectRoute.current = "/first-login-of-season";
+                    }
                 } else {
-                    isAuthorized.current = false;
-                    redirectRoute.current = "/contact";
+                    if (path === "/contact") {
+                        isAuthorized.current = true;
+                    } else {
+                        isAuthorized.current = false;
+                        redirectRoute.current = "/contact";
+                    }
                 }
             }
         }
@@ -116,7 +125,7 @@ export function loginAndInitializeAppContext(apiLoginResult: IApiValidateUserRes
 
             draft.language = draft.language ?? "en";
 
-            draft.isFirstLoginOfSeason = apiLoginResult.isFirstLoginOfSeason;
+            draft.isFirstLoginOfSeason = true; // apiLoginResult?.isFirstLoginOfSeason ?? false;
             draft.isContactInfoVerified = false;
 
             draft.cart = undefined;
@@ -134,7 +143,11 @@ export function loginAndInitializeAppContext(apiLoginResult: IApiValidateUserRes
             draft.monerisBaseUrl = WebApi.MonerisComplete;
         });
 
-        GlobalAppContext.router.push("/contact");
+        if (apiLoginResult?.isFirstLoginOfSeason) {
+            GlobalAppContext.router.push("/first-login-of-season");
+        } else {
+            GlobalAppContext.router.push("/contact");
+        }
     }
 }
 

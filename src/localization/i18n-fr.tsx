@@ -76,9 +76,9 @@ export const resources_fr = {
         "PostalZipCode": "code postal/code zip",
         "Telephone": "N˚ de téléphone",
         "EmailAddress": "adresse courriel",
-        "MandatoryField": "champ obligatoire",
         "Password": "mot de passe",
         "ConfirmPassword": "confirmez le mot de passe",
+        "MandatoryField": "champ obligatoire"
       },
       "Preferences": {
         "Title": "Préférences du compte",
@@ -95,6 +95,11 @@ export const resources_fr = {
     },
     "ChangeEmail": {
       "Title": "Changer mon adresse courriel"
+    },
+    "FirstLoginOfSeason": {
+      "MenuTitle": "(fr)First Login of Season",
+      "Title": "(fr)First Login of Season",
+      "Message": "(fr)Please take a moment to watch this important video message."
     },
     "Home": {
       "MenuTitle": "(fr)Home",
@@ -122,9 +127,9 @@ export const resources_fr = {
         "PostalZipCode": "code postal/code zip",
         "Telephone": "N˚ de téléphone",
         "EmailAddress": "adresse courriel",
-        "MandatoryField": "champ obligatoire",
         "Password": "(fr)Password",
         "ConfirmPassword": "(fr)Confirm Password",
+        "MandatoryField": "champ obligatoire"
       },
       "PreferencesEditDialog": {
         "Title": "(fr)Edit Account Preferences",
@@ -156,7 +161,8 @@ export const resources_fr = {
         "TrackingNumber": "N˚ de suivi",
         "AddPermitToCart": "Ajouter le permis au panier",
         "RemovePermitFromCart": "Supprimer le permis du panier",
-        "AddSnowmobile": "Ajouter une motoneige"
+        "AddSnowmobile": "Ajouter une motoneige",
+        "ProceedWithPurchase": "(fr)Proceed With Purchase"
       },
       "HoverButtons": {
         "AddSnowmobile": "Ajouter une motoneige"
@@ -201,6 +207,7 @@ export const resources_fr = {
       "SaveChanges": "Sauvegarder les modifications",
       "CancelChanges": "Annuler les modifications",
       "AddGiftCard": "Ajouter une carte cadeau",
+      "ProceedWithPurchase": "(fr)Proceed With Purchase",
       "HoverButtons": {
         "AddGiftCard": "Ajouter une carte cadeau",
       },
@@ -223,10 +230,10 @@ export const resources_fr = {
       "SelectClub": "Sélectionner un club",
       "UseClubLocatorMap": "Utiliser la carte de localisation des clubs",
       "TransactionAndAdminFee": "Frais de transaction et d'administration",
-      "TransactionAndAdminFeeDiscount": "Rabais sur les frais de transaction et d'administration",
+      "TransactionAndAdminFeeCredit": "Crédit pour les frais de transaction et d'administration",
       "Shipping": "Expédition",
       "StandardShippingAcceptTerms": "(fr)By selecting standard delivery for my permit, I assume all responsibility should my permit get lost or stolen in the mail, or for any other reason that it is not received in the mail, and therefore agree to adhere to all Ministry of Transportation rules for the issuance of a replacement permit.",
-      "TrackedShippingDiscount": "Rabais sur l'expédition",
+      "TrackedShippingCredit": "Crédit d'expédition suivi",
       "TotalAmount": "Montant total",
       "ShippingAddress": "Adresse d'expédition",
       "RegisteredOwnerAddress": "Adresse du propriétaire enregistré",
@@ -247,7 +254,9 @@ export const resources_fr = {
         "SearchButtonTitle": "Rechercher",
         "ResetButtonTitle": "Réinitialiser",
         "SelectedClub": "Club sélectionné",
-        "PleaseSelectClub": "Veuillez sélectionner un club sur la carte ci-dessus"
+        "PleaseSelectClub": "Veuillez sélectionner un club sur la carte ci-dessus",
+        "SorryCouldNotFindLocation": "(fr)Sorry, we couldn't find the location you entered.",
+        "SorryThereWasAProblem": "(fr)Sorry, there was a problem searching for your location."
       },
       "ProceedToCheckout": "Passer à la caisse",
       "ContinueShopping": "Continuer vos achats",
@@ -260,6 +269,14 @@ export const resources_fr = {
     },
     "Payment": {
       "Title": "Paiement"
+    },
+    "PaymentApproved": {
+      "Title": "(fr)Payment Approved",
+      "ReturnHome": "(fr)Return to Home Page"
+    },
+    "PaymentDeclined": {
+      "Title": "(fr)Payment Declined",
+      "TryAgain": "(fr)Try Payment Again"
     },
     "API": {
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "(fr)VIN assigned to another vehicle on account.",

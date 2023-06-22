@@ -5,7 +5,7 @@ import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 
-export default function PaymentPage() {
+export default function PaymentDeclinedPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
@@ -51,15 +51,23 @@ function PaymentDeclined({ appContext, router, setShowAlert }:
 
             {appContext.translation.i18n.language === "en" && (
                 <>
-                    <p>Your credit card was declined. Please be advised that after 3 unsuccessful attempts, you will not be able to access your account. If this occurs, please contact permits@ofsc.on.ca.</p>
+                    <p>Your credit card was declined. Please try again.</p>
                 </>
             )}
 
             {appContext.translation.i18n.language === "fr" && (
                 <>
-                    <p>(fr)Votre carte de crédit a été refusée. Please be advised that after 3 unsuccessful attempts, you will not be able to access your account. If this occurs, please contact permits@ofsc.on.ca.</p>
+                    <p>(fr)Votre carte de crédit a été refusée. Please try again.</p>
                 </>
             )}
+
+            <div className="card">
+                <div className="card-body text-center">
+                    <button className="btn btn-primary" onClick={() => router.push("/payment")}>
+                        {t("PaymentDeclined.TryAgain")}
+                    </button>
+                </div>
+            </div>
         </>
     )
 }

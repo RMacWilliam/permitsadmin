@@ -73,11 +73,13 @@ function Cart({ appContext, router, setShowAlert }:
     const t: Function = appContext.translation.t;
 
     useEffect(() => {
-        if (appContext.data?.cart == undefined) {
-            appContext.updater(draft => {
+        appContext.updater(draft => {
+            if (draft?.cart == undefined) {
                 draft.cart = { alternateAddress: {} };
-            });
-        }
+            } else {
+                //draft.cart.shipping = undefined;
+            }
+        });
     }, []);
 
     useEffect(() => {
@@ -257,7 +259,7 @@ function Cart({ appContext, router, setShowAlert }:
                                                                             </button>
                                                                         </div>
 
-                                                                        <div className="fw-bold text-danger text-end ms-auto">{formatCurrency(cartItem?.price)}</div>
+                                                                        <div className="fw-bold text-danger text-end ms-auto">{formatCurrency(-cartItem?.price)}</div>
                                                                     </div>
                                                                 )}
 
@@ -333,12 +335,12 @@ function Cart({ appContext, router, setShowAlert }:
                                         </div>
                                     </div>
 
-                                    {isTransactionAndAdministrationFeeDiscountVisible() && (
+                                    {isTransactionAndAdministrationFeeCreditVisible() && (
                                         <div className="card mt-2">
                                             <div className="card-body bg-success-subtle">
                                                 <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                     <div className="fw-semibold flex-fill">
-                                                        {t("Cart.TransactionAndAdminFeeDiscount")}
+                                                        {t("Cart.TransactionAndAdminFeeCredit")}
                                                     </div>
 
                                                     <div className="fw-bold text-danger text-end ms-auto">{formatCurrency(-processingFee)}</div>
@@ -349,50 +351,52 @@ function Cart({ appContext, router, setShowAlert }:
                                 </li>
                             )}
 
-                            <li className="list-group-item">
-                                <div className="fw-semibold mb-2 required">{t("Cart.Shipping")}</div>
+                            {getPermitCount() > 0 && (
+                                <li className="list-group-item">
+                                    <div className="fw-semibold mb-2 required">{t("Cart.Shipping")}</div>
 
-                                <div className="d-flex">
-                                    <div className="flex-column me-auto w-100">
-                                        <select id="cart-shipping" className={`form-select ${isShippingValid ? "" : "is-invalid"}`} aria-label="Shipping" value={getShipping()} onChange={(e: any) => shippingChange(e)}>
-                                            <option value="">{t("Common.PleaseSelect")}</option>
+                                    <div className="d-flex">
+                                        <div className="flex-column me-auto w-100">
+                                            <select id="cart-shipping" className={`form-select ${isShippingValid ? "" : "is-invalid"}`} aria-label="Shipping" value={getShipping()} onChange={(e: any) => shippingChange(e)}>
+                                                <option value="">{t("Common.PleaseSelect")}</option>
 
-                                            {shippingFeesData != undefined && shippingFeesData.length > 0 && getShippingFeesData().map(shippingMethod => (
-                                                <option value={shippingMethod?.id} key={shippingMethod?.id}>
-                                                    {getLocalizedValue2(shippingMethod?.name, shippingMethod?.nameFr)}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                                {shippingFeesData != undefined && shippingFeesData.length > 0 && getShippingFeesData().map(shippingMethod => (
+                                                    <option value={shippingMethod?.id} key={shippingMethod?.id}>
+                                                        {getLocalizedValue2(shippingMethod?.name, shippingMethod?.nameFr)}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
 
-                                    <div className="fw-bold text-end ms-3">
-                                        {formatCurrency(getShippingFee())}
-                                    </div>
-                                </div>
-
-                                {isStandardShippingWarningVisible() && (
-                                    <div className="form-check mt-2">
-                                        <input className={`form-check-input ${isStandardShippingWarningValid ? "" : "is-invalid"}`} type="checkbox" value="" id="cart-standard-shipping-verification" defaultChecked={standardShippingWarning} onChange={(e: any) => { setStandardShippingWarning(e.target.checked) }} />
-                                        <label className="form-check-label required" htmlFor="cart-standard-shipping-verification">
-                                            {t("Cart.StandardShippingAcceptTerms")}
-                                        </label>
-                                    </div>
-                                )}
-
-                                {isTrackedShippingDiscountVisible() && (
-                                    <div className="card mt-2">
-                                        <div className="card-body bg-success-subtle">
-                                            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                                <div className="fw-semibold flex-fill">
-                                                    {t("Cart.TrackedShippingDiscount")}
-                                                </div>
-
-                                                <div className="fw-bold text-danger text-end ms-auto">{formatCurrency(getTrackedShippingDiscount())}</div>
-                                            </div>
+                                        <div className="fw-bold text-end ms-3">
+                                            {formatCurrency(getShippingFee())}
                                         </div>
                                     </div>
-                                )}
-                            </li>
+
+                                    {isStandardShippingWarningVisible() && (
+                                        <div className="form-check mt-2">
+                                            <input className={`form-check-input ${isStandardShippingWarningValid ? "" : "is-invalid"}`} type="checkbox" value="" id="cart-standard-shipping-verification" defaultChecked={standardShippingWarning} onChange={(e: any) => { setStandardShippingWarning(e.target.checked) }} />
+                                            <label className="form-check-label required" htmlFor="cart-standard-shipping-verification">
+                                                {t("Cart.StandardShippingAcceptTerms")}
+                                            </label>
+                                        </div>
+                                    )}
+
+                                    {isTrackedShippingCreditVisible() && (
+                                        <div className="card mt-2">
+                                            <div className="card-body bg-success-subtle">
+                                                <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                                    <div className="fw-semibold flex-fill">
+                                                        {t("Cart.TrackedShippingCredit")}
+                                                    </div>
+
+                                                    <div className="fw-bold text-danger text-end ms-auto">{formatCurrency(getTrackedShippingCredit())}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </li>
+                            )}
                         </ul>
 
                         <div className="card-footer">
@@ -534,7 +538,9 @@ function Cart({ appContext, router, setShowAlert }:
     function getCartItems(): ICartItem[] {
         let result: ICartItem[] = [];
 
-        result = appContext.data?.cartItems ?? [];
+        if (appContext.data?.cartItems != undefined && appContext.data.cartItems.length > 0) {
+            result = appContext.data.cartItems;
+        }
 
         return result;
     }
@@ -615,7 +621,7 @@ function Cart({ appContext, router, setShowAlert }:
     function getProcessingFee(): number {
         let result: number = 0;
 
-        // If any gift cards were added to the cart, then the processing fee should be discounted.
+        // If any gift cards were added to the cart, then the processing fee should be credited.
         if (getCartItems()?.some(x => x?.isPermit && x?.redemptionCode != undefined)) {
             result = 0;
         } else {
@@ -656,11 +662,13 @@ function Cart({ appContext, router, setShowAlert }:
             result += getProcessingFee();
         }
 
-        // Add shipping fee.
-        result += getShippingFee();
+        // Add shipping fee if there's at least one permit in the cart.
+        if (getPermitCount() > 0) {
+            result += getShippingFee();
+        }
 
-        // Add negative tracked shipping discount if tracked shipping is selected and a gift card with tracked shipping is redeemed.
-        result += getTrackedShippingDiscount();
+        // Add negative tracked shipping credit if tracked shipping is selected and a gift card with tracked shipping is redeemed.
+        result += getTrackedShippingCredit();
 
         // Adjust total to zero if less than 0.
         if (result < 0) {
@@ -670,7 +678,7 @@ function Cart({ appContext, router, setShowAlert }:
         return result;
     }
 
-    function isTransactionAndAdministrationFeeDiscountVisible(): boolean {
+    function isTransactionAndAdministrationFeeCreditVisible(): boolean {
         let result: boolean = false;
 
         result = getCartItems()?.some(x => x?.isPermit && x?.redemptionCode != undefined);
@@ -692,10 +700,10 @@ function Cart({ appContext, router, setShowAlert }:
         return result;
     }
 
-    function isTrackedShippingDiscountVisible(): boolean {
+    function isTrackedShippingCreditVisible(): boolean {
         let result: boolean = false;
 
-        // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then display tracked shipping discount.
+        // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then display tracked shipping credit.
         if (appContext.data.cart?.shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
             const shippingFee: IShippingFee | undefined = shippingFeesData.filter(x => x.id === appContext.data.cart?.shipping && x?.isTracked)[0];
 
@@ -707,10 +715,10 @@ function Cart({ appContext, router, setShowAlert }:
         return result;
     }
 
-    function getTrackedShippingDiscount(): number {
+    function getTrackedShippingCredit(): number {
         let result: number = 0;
 
-        // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then return tracked shipping discount.
+        // If Tracked shipping is selected and a gift card with tracked shipping is redeemed, then return tracked shipping credit.
         if (appContext.data.cart?.shipping != undefined && shippingFeesData != undefined && shippingFeesData.length > 0) {
             const shippingFee: IShippingFee | undefined = shippingFeesData.filter(x => x?.id === appContext.data.cart?.shipping && x?.isTracked)[0];
 

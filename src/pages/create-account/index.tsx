@@ -1,12 +1,12 @@
 import UnauthenticatedPageLayout from "@/components/layouts/unauthenticated-page"
-import { IApiCreateAccountRequest, IApiCreateAccountResult, IApiGetCorrespondenceLanguagesResult, IApiGetCountriesResult, IApiGetProvincesResult, apiCreateAccount, apiGetCorrespondenceLanguages, apiGetCountries, apiGetProvinces } from "@/custom/api";
+import { IApiCreateUserRequest, IApiCreateUserResult, IApiGetCorrespondenceLanguagesResult, IApiGetCountriesResult, IApiGetProvincesResult, apiCreateUser, apiGetCorrespondenceLanguages, apiGetCountries, apiGetProvinces } from "@/custom/api";
 import { AppContext, IAppContextValues, IKeyValue, IParentKeyValue } from "@/custom/app-context";
 import { checkResponseStatus, getKeyValueFromSelect, getParentKeyValueFromSelect, sortArray } from "@/custom/utilities";
 import { getLocalizedValue } from "@/localization/i18n";
 import Head from "next/head"
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { Observable, Subscription, first, forkJoin } from "rxjs";
+import { Observable, Subscription, forkJoin } from "rxjs";
 
 export default function CreateAccountPage() {
     const appContext = useContext(AppContext);
@@ -417,7 +417,7 @@ function CreateAccount({ appContext, router, setShowAlert }
         const validateAccountPreferences: boolean = validateAccountPreferencesDialog();
 
         if (validateContactInfo && validateAccountPreferences) {
-            const apiCreateAccountRequest: IApiCreateAccountRequest = {
+            const apiCreateAccountRequest: IApiCreateUserRequest = {
                 userDetails: {
                     email: email?.trim()?.substring(0, 200),
                     password: password?.trim()?.substring(0, 200),
@@ -442,23 +442,23 @@ function CreateAccount({ appContext, router, setShowAlert }
 
             console.log(apiCreateAccountRequest);
 
-            // setShowAlert(true);
+            setShowAlert(true);
 
-            // apiCreateAccount(apiCreateAccountRequest).subscribe({
-            //     next: (result: IApiCreateAccountResult) => {
-            //         if (result?.isSuccessful && result?.data != undefined) {
+            apiCreateUser(apiCreateAccountRequest).subscribe({
+                next: (result: IApiCreateUserResult) => {
+                    if (result?.isSuccessful && result?.data != undefined) {
 
-            //         } else {
+                    } else {
 
-            //         }
-            //     },
-            //     error: (error: any) => {
-            //         checkResponseStatus(error);
-            //     },
-            //     complete: () => {
-            //         setShowAlert(false);
-            //     }
-            // });
+                    }
+                },
+                error: (error: any) => {
+                    checkResponseStatus(error);
+                },
+                complete: () => {
+                    setShowAlert(false);
+                }
+            });
         }
     }
 

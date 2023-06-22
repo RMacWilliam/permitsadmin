@@ -96,6 +96,11 @@ export const resources_en = {
     "ChangeEmail": {
       "Title": "Change My Email Address"
     },
+    "FirstLoginOfSeason": {
+      "MenuTitle": "First Login of Season",
+      "Title": "First Login of Season",
+      "Message": "Please take a moment to watch this important video message."
+    },
     "Home": {
       "MenuTitle": "Home",
       "Title": "Welcome to Ontario Federation of Snowmobile Clubs"
@@ -156,7 +161,8 @@ export const resources_en = {
         "TrackingNumber": "Tracking #",
         "AddPermitToCart": "Add Permit to Cart",
         "RemovePermitFromCart": "Remove Permit from Cart",
-        "AddSnowmobile": "Add New Snowmobile"
+        "AddSnowmobile": "Add New Snowmobile",
+        "ProceedWithPurchase": "Proceed With Purchase"
       },
       "HoverButtons": {
         "AddSnowmobile": "Add New Snowmobile"
@@ -201,6 +207,7 @@ export const resources_en = {
       "SaveChanges": "Save Changes",
       "CancelChanges": "Cancel Changes",
       "AddGiftCard": "Add New Gift Card",
+      "ProceedWithPurchase": "Proceed With Purchase",
       "HoverButtons": {
         "AddGiftCard": "Add New Gift Card",
       },
@@ -223,10 +230,10 @@ export const resources_en = {
       "SelectClub": "Select Club",
       "UseClubLocatorMap": "Use club locator map",
       "TransactionAndAdminFee": "Transaction and Administration Fee",
-      "TransactionAndAdminFeeDiscount": "Transaction and Administration Fee Discount",
+      "TransactionAndAdminFeeCredit": "Transaction and Administration Fee Credit",
       "Shipping": "Shipping Method",
       "StandardShippingAcceptTerms": "By selecting standard delivery for my permit, I assume all responsibility should my permit get lost or stolen in the mail, or for any other reason that it is not received in the mail, and therefore agree to adhere to all Ministry of Transportation rules for the issuance of a replacement permit.",
-      "TrackedShippingDiscount": "Tracked Shipping Discount",
+      "TrackedShippingCredit": "Tracked Shipping Credit",
       "TotalAmount": "Total Amount",
       "ShippingAddress": "Shipping Address",
       "RegisteredOwnerAddress": "Registered Owner Address",
@@ -245,7 +252,7 @@ export const resources_en = {
         "LoadingMapPleaseWait": "Loading map. Please wait.",
         "SearchBoxPlaceholder": "Enter city, town, postal code, or address",
         "SearchButtonTitle": "Search",
-        "ResetButtonTitle": "Réinitialiser",
+        "ResetButtonTitle": "Reset",
         "SelectedClub": "Selected Club",
         "PleaseSelectClub": "Please select a club from the map above",
         "SorryCouldNotFindLocation": "Sorry, we couldn't find the location you entered.",
@@ -264,10 +271,12 @@ export const resources_en = {
       "Title": "Payment"
     },
     "PaymentApproved": {
-      "Title": "Payment Approved"
+      "Title": "Payment Approved",
+      "ReturnHome": "Return to Home Page"
     },
     "PaymentDeclined": {
-      "Title": "Payment Declined"
+      "Title": "Payment Declined",
+      "TryAgain": "Try Payment Again"
     },
     "API": {
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "VIN assigned to another vehicle on account.",

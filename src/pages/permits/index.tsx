@@ -93,8 +93,14 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
     const DateRangeInput = forwardRef(({ value, snowmobile, onClick }: { value?: Date, snowmobile: ISnowmobile, onClick?: (e: any) => void }, ref: any) => (
         <div className="form-floating">
-            <input type="text" className="form-control" id={`permit-from-${snowmobile.oVehicleId}`} placeholder={t("Permits.Vehicle.PermitStartDate")} value={formatShortDate(value)} onClick={onClick} onChange={() => null} disabled={isPermitAddedToCart(snowmobile.oVehicleId)} readOnly={true} ref={ref} />
+            <input type="text" className="form-control" id={`permit-from-${snowmobile.oVehicleId}`} placeholder={t("Permits.Vehicle.PermitStartDate")} value={formatShortDate(value)} onClick={onClick} onChange={() => null} disabled={snowmobile?.uiDateStartLoading || isPermitAddedToCart(snowmobile.oVehicleId)} readOnly={true} ref={ref} />
             <label className="required" htmlFor={`permit-from-${snowmobile.oVehicleId}`}>{t("Permits.Vehicle.PermitStartDate")}</label>
+
+            {snowmobile?.uiDateStartLoading && (
+                <span className="position-absolute" style={{ left: "50%", top: "30%" }}>
+                    <i className="fa-solid fa-spinner fa-spin fa-xl"></i>
+                </span>
+            )}
         </div>
     ));
     DateRangeInput.displayName = "DateRangeInput";
@@ -140,7 +146,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 dateEnd: x?.permitSelections?.dateEnd,
                                 clubId: x?.permitSelections?.clubId
                             },
-                            permitOptions: undefined
+                            permitOptions: undefined,
+
+                            uiPermitOptionIdLoading: false,
+                            uiDateStartLoading: false,
+                            uiClubIdLoading: false
                         };
 
                         if (x.permits != undefined && x.permits.length > 0) {
@@ -332,7 +342,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             <>
                                 <li className="list-group-item">
                                     <div className="form-floating">
-                                        <select className="form-select" id={`permits-permit-options-${snowmobile?.oVehicleId}`} aria-label={t("Permits.Vehicle.Permit")} value={getSelectedPermitOption(snowmobile?.oVehicleId)} onChange={(e: any) => permitOptionChange(e, snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
+                                        <select className="form-select" id={`permits-permit-options-${snowmobile?.oVehicleId}`} aria-label={t("Permits.Vehicle.Permit")} value={getSelectedPermitOption(snowmobile?.oVehicleId)} onChange={(e: any) => permitOptionChange(e, snowmobile?.oVehicleId)} disabled={snowmobile?.uiPermitOptionIdLoading || isPermitAddedToCart(snowmobile?.oVehicleId)}>
                                             <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                             {snowmobile.permitOptions.map(permitOption => {
@@ -348,6 +358,12 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                             })}
                                         </select>
                                         <label className="required" htmlFor={`permits-permit-options-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.Permit")}</label>
+
+                                        {snowmobile?.uiPermitOptionIdLoading && (
+                                            <span className="position-absolute" style={{ left: "50%", top: "30%" }}>
+                                                <i className="fa-solid fa-spinner fa-spin fa-xl"></i>
+                                            </span>
+                                        )}
                                     </div>
 
                                     {showDateRangeForSelectedPermit(snowmobile?.oVehicleId) && (
@@ -391,6 +407,10 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 <div className="card-body text-center">
                     <button className="btn btn-primary" onClick={() => addEditSnowmobileDialogShow()}>
                         {t("Permits.Vehicle.AddSnowmobile")}
+                    </button>
+
+                    <button className="btn btn-primary ms-1" onClick={() => router.push("/cart")}>
+                        {t("GiftCards.ProceedWithPurchase")}
                     </button>
                 </div>
             </div>
@@ -522,7 +542,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
     function getSnowmobiles(): ISnowmobile[] {
         let result: ISnowmobile[] = [];
 
-        if (appContext.data?.snowmobiles != undefined) {
+        if (appContext.data?.snowmobiles != undefined && appContext.data.snowmobiles.length > 0) {
             result = appContext.data.snowmobiles;
         }
 
@@ -895,10 +915,18 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         oVehicleId: snowmobileId,
                         oPermitId: permitSelections?.oPermitId ?? getGuid(),
                         permitOptionId: Number(e?.target?.value), // New value
-                        dateStart: undefined,
-                        dateEnd: undefined,
+                        dateStart: undefined, // Clear because permit option was changed
+                        dateEnd: undefined, // Clear because permit option was changed
                         clubId: permitSelections?.clubId
                     };
+
+                    appContext.updater(draft => {
+                        const draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+        
+                        if (draftSnowmobile != undefined) {
+                            draftSnowmobile.uiPermitOptionIdLoading = true;
+                        }
+                    });
 
                     apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
                         next: (result: IApiSavePermitSelectionForVehicleResult) => {
@@ -907,6 +935,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                     const draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
 
                                     if (draftSnowmobile != undefined) {
+                                        draftSnowmobile.uiPermitOptionIdLoading = false;
+
                                         draftSnowmobile.permitSelections = {
                                             oPermitId: result?.data?.oPermitId ?? getGuid(),
                                             permitOptionId: result?.data?.permitOptionId,
@@ -924,7 +954,13 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             checkResponseStatus(error);
                         },
                         complete: () => {
-                            //
+                            appContext.updater(draft => {
+                                const draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+
+                                if (draftSnowmobile != undefined) {
+                                    draftSnowmobile.uiPermitOptionIdLoading = false;
+                                }
+                            });
                         }
                     });
                 }
@@ -973,6 +1009,14 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                     if (permitSelections != undefined) {
                         const daysToAdd: number = (permitOption?.permitDays ?? 0) - 1;
 
+                        appContext.updater(draft => {
+                            const draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+
+                            if (draftSnowmobile != undefined) {
+                                draftSnowmobile.uiDateStartLoading = true;
+                            }
+                        });
+
                         const apiSavePermitSelectionForVehicleRequest: IApiSavePermitSelectionForVehicleRequest | undefined = {
                             oVehicleId: snowmobileId,
                             oPermitId: permitSelections?.oPermitId ?? getGuid(),
@@ -981,8 +1025,6 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             dateEnd: daysToAdd >= 0 ? getMoment(date).add(daysToAdd, 'days').toDate() : date, // New value
                             clubId: permitSelections?.clubId
                         };
-
-                        //setShowAlert(true);
 
                         apiSavePermitSelectionForVehicle(apiSavePermitSelectionForVehicleRequest).subscribe({
                             next: (result: IApiSavePermitSelectionForVehicleResult) => {
@@ -1001,15 +1043,20 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                         }
                                     });
                                 } else {
-
+                                    //
                                 }
-
                             },
                             error: (error: any) => {
                                 checkResponseStatus(error);
                             },
                             complete: () => {
-                                //
+                                appContext.updater(draft => {
+                                    const draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
+
+                                    if (draftSnowmobile != undefined) {
+                                        draftSnowmobile.uiDateStartLoading = false;
+                                    }
+                                });
                             }
                         });
                     }

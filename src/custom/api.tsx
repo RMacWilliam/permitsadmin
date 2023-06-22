@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import { fromFetch } from "rxjs/fetch";
 import { IKeyValue, IParentKeyValue } from "./app-context";
-import { GlobalAppContext, WebApi } from "../../constants";
+import { GlobalAppContext, WebApi } from "../../global";
 
 const WebApiGlobalQueryParams: any = {
     asOfDate: "2023-01-01"
@@ -278,6 +278,43 @@ export interface IApiGetCorrespondenceLanguagesResult extends IKeyValue {
 
 export function apiGetCorrespondenceLanguages(params?: any): Observable<IApiGetCorrespondenceLanguagesResult[]> {
     return httpGet<IApiGetCorrespondenceLanguagesResult[]>(WebApi.GetCorrespondenceLanguages, params, false);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiCreateUser
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiCreateUserRequest {
+    userDetails: {
+        email?: string;
+        password?: string;
+        firstName?: string;
+        initial?: string;
+        lastName?: string;
+        addressLine1?: string;
+        addressLine2?: string;
+        city?: string;
+        province?: string;
+        country?: string;
+        postalCode?: string;
+        telephone?: string;
+    },
+    userPreferences: {
+        ofscContactPermission?: number;
+        riderAdvantage?: number;
+        volunteering?: number;
+        correspondenceLanguage?: string;
+    }
+}
+
+export interface IApiCreateUserResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: any;
+}
+
+export function apiCreateUser(body?: any, params?: any): Observable<IApiCreateUserResult> {
+    return httpPost<IApiCreateUserResult>(WebApi.CreateUser, params, body);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -621,6 +658,7 @@ export interface IApiSaveGiftCardSelectionsForUserRequest {
     asOfDate?: string;
 
     oVoucherId?: string;
+    isPurchased?: boolean;
     giftcardProductId?: number;
     recipientLastName?: string;
     recipientPostal?: string;
@@ -766,6 +804,7 @@ export function apiGetGoogleMapKey(params?: any): Observable<IApiGetGoogleMapKey
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface IApiSavePrePurchaseDataRequest {
+    language?: string,
     permits?: {
         oVehicleId?: string,
         redemptionCode?: string,
@@ -843,43 +882,4 @@ export interface IApiMonerisCompleteResult {
 
 export function apiMonerisComplete(body?: any, params?: any, url: string = ""): Observable<IApiMonerisCompleteResult> {
     return httpPost<IApiMonerisCompleteResult>(url /*WebApi.MonerisComplete*/, params, body);
-}
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// api
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export interface IApiCreateAccountRequest {
-    userDetails: {
-        email?: string;
-        password?: string;
-        firstName?: string;
-        initial?: string;
-        lastName?: string;
-        addressLine1?: string;
-        addressLine2?: string;
-        city?: string;
-        province?: string;
-        country?: string;
-        postalCode?: string;
-        telephone?: string;
-    },
-    userPreferences: {
-        ofscContactPermission?: number;
-        riderAdvantage?: number;
-        volunteering?: number;
-        correspondenceLanguage?: string;
-    }
-}
-
-export interface IApiCreateAccountResult {
-    isSuccessful?: boolean;
-    errorMessage?: string;
-    data?: any;
-}
-
-export function apiCreateAccount(body?: any, params?: any): Observable<IApiCreateAccountResult> {
-    return httpPost<IApiCreateAccountResult>(WebApi.CreateAccount, params, body);
 }

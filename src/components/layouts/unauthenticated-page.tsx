@@ -2,7 +2,7 @@ import { ReactNode, useContext } from 'react';
 import Head from 'next/head';
 import LanguageToggler from '../language-toggler';
 import { getImagePath } from '@/custom/utilities';
-import { Images } from '../../../constants';
+import { Images } from '../../../global';
 import { AppContext } from '@/custom/app-context';
 import ModalProcessingAlert, { IShowAlert } from '../modal-processing-alert';
 
@@ -53,7 +53,7 @@ export default function UnauthenticatedPageLayout({ children, showAlert }
             </header>
 
             <main className="flex-shrink-0 py-3">
-                <div className="container-fluid container-lg">
+                <div className="container-fluid container-lg h-100">
                     {children}
                 </div>
             </main>

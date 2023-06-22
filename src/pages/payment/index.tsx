@@ -7,7 +7,7 @@ import $ from 'jquery';
 import { IApiMonerisCompleteRequest, IApiMonerisCompleteResult, IApiSavePrePurchaseDataRequest, IApiSavePrePurchaseDataResult, apiMonerisComplete, apiSavePrePurchaseData } from "@/custom/api";
 import { checkResponseStatus } from "@/custom/utilities";
 import { ShipTo } from "../cart";
-import { WebApi } from "../../../constants";
+import { WebApi } from "../../../global";
 
 declare var monerisCheckout: any;
 
@@ -45,7 +45,7 @@ function Payment({ appContext, router }:
             if (snowmobile != undefined) {
                 permits.push({
                     oVehicleId: x?.itemId,
-                    redemptionCode: x?.redemptionCode ?? "",
+                    redemptionCode: x?.redemptionCode,
                     productId: snowmobile?.permitSelections?.permitOptionId,
                     dateStart: snowmobile?.permitSelections?.dateStart,
                     dateEnd: snowmobile?.permitSelections?.dateEnd,
@@ -70,6 +70,7 @@ function Payment({ appContext, router }:
         });
 
         const apiSavePrePurchaseDataRequest: IApiSavePrePurchaseDataRequest = {
+            language: appContext.data?.language,
             permits: permits == undefined || permits.length === 0 ? undefined : permits,
             giftCards: giftCards == undefined || giftCards.length === 0 ? undefined : giftCards,
             trackedShipping: appContext.data?.cart?.isTrackedShipping,
@@ -238,15 +239,17 @@ function Payment({ appContext, router }:
             message: jsonMessage
         };
 
-        console.log(apiMonerisCompleteRequest)
-
         let url: string = appContext.data?.monerisBaseUrl?.trim() ?? WebApi.MonerisComplete;
-
-        console.log(url);
 
         apiMonerisComplete(apiMonerisCompleteRequest, undefined, url).subscribe({
             next: (result: IApiMonerisCompleteResult) => {
                 if (result?.isSuccessful) {
+                    // Clear shopping cart.
+                    appContext.updater(draft => {
+                        draft.cart = undefined;
+                        draft.cartItems = undefined;
+                    });
+                    
                     router.push("/payment/approved"); // TODO: api will indicate if the transaction was successful?
                 } else {
                     router.push("/payment/declined"); // TODO: api will indicate if the transaction was successful?

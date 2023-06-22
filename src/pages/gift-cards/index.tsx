@@ -4,11 +4,10 @@ import AuthenticatedPageLayout, { IShowHoverButton } from '@/components/layouts/
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import CartItemsAlert from '@/components/cart-items-alert';
-import { checkResponseStatus, formatCurrency, getApiErrorMessage, getGuid, parseDate } from '@/custom/utilities';
+import { checkResponseStatus, formatCurrency, getApiErrorMessage, getDate, getGuid, getMoment, parseDate } from '@/custom/utilities';
 import { Observable, Subscription, forkJoin } from 'rxjs';
 import { IApiAddGiftCardForUserRequest, IApiAddGiftCardForUserResult, IApiDeleteGiftCardRequest, IApiDeleteGiftCardResult, IApiGetAvailableGiftCardsResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiSaveGiftCardSelectionsForUserRequest, IApiSaveGiftCardSelectionsForUserResult, IApiSendGiftCardPdfRequest, IApiSendGiftCardPdfResult, apiAddGiftCardForUser, apiDeleteGiftCard, apiGetAvailableGiftCards, apiGetGiftcardsForCurrentSeasonForUser, apiSaveGiftCardSelectionsForUser, apiSendGiftCardPdf } from '@/custom/api';
 import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from '@/components/confirmation-dialog';
-import { GlobalAppContext } from '../../../constants';
 
 export default function GiftCardsPage() {
     const appContext = useContext(AppContext);
@@ -53,6 +52,29 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     const t: Function = appContext.translation.t;
 
     useEffect(() => {
+        const intervalRef: NodeJS.Timer = setInterval(() => {
+            appContext.updater(draft => {
+                const giftCardsToUpdate: IGiftCard[] | undefined = draft?.giftCards?.filter(x => x?.uiRecipientInfoLastChangeDate != undefined);
+
+                if (giftCardsToUpdate != undefined && giftCardsToUpdate.length > 0) {
+                    giftCardsToUpdate.forEach(giftCard => {
+                        // Call api to save changes if change was made >= 2 seconds ago.
+                        // This will prevent repetative api calls when user is modifying textbox content.
+                        if (getMoment().diff(getMoment(giftCard?.uiRecipientInfoLastChangeDate), "seconds") >= 2) {
+                            giftCard.uiRecipientInfoLastChangeDate = undefined;
+                            saveGiftCardSelections(giftCard?.oVoucherId, giftCard?.isPurchased, giftCard?.giftcardProductId, giftCard?.recipientLastName, giftCard?.recipientPostal);
+                        }
+                    });
+                }
+            });
+        }, 1000);
+
+        return () => {
+            clearInterval(intervalRef);
+        }
+    }, []);
+
+    useEffect(() => {
         setHoverButtonVisibility(true);
 
         // Get data from api.
@@ -89,7 +111,8 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         displayName: x?.displayName,
                         frenchDisplayName: x?.frenchDisplayName,
 
-                        uiIsInEditMode: false,
+                        uiIsEditMode: false,
+                        uiRecipientInfoLastChangeDate: undefined,
                         uiRecipientLastName: undefined,
                         uiRecipientPostal: undefined
                     }));
@@ -195,7 +218,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                             <div className="col-12 col-md-auto d-flex align-items-center">
                                 {giftCard?.isPurchased && !giftCard?.isRedeemed && (
-                                    <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsInEditMode}>
+                                    <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsEditMode}>
                                         {t("Common.Edit")}
                                     </button>
                                 )}
@@ -230,23 +253,13 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                         </button>
                                     </div>
                                 </div>
-
-                                {/* <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                    <div className="d-flex flex-filll flex-column">
-                                        
-                                    </div>
-
-                                    <div className="d-flex flex-fill justify-content-end">
-                                        
-                                    </div>
-                                </div> */}
                             </li>
                         )}
 
                         <li className="list-group-item">
                             {!giftCard?.isPurchased && !giftCard?.isRedeemed && (
                                 <div className="form-floating mb-2">
-                                    <select className="form-select" id={`gift-cards-permit-options-${giftCard?.oVoucherId}`} aria-label="Select gift card to purchase" value={getSelectedGiftCardOption(giftCard?.oVoucherId)} onChange={(e: any) => giftCardOptionChange(e, giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
+                                    <select className="form-select" id={`gift-cards-permit-options-${giftCard?.oVoucherId}`} aria-label="Select gift card to purchase" value={getSelectedGiftCardOption(giftCard?.oVoucherId)} onChange={(e: any) => giftCardOptionChange(e, giftCard?.oVoucherId)} disabled={giftCard?.uiGiftcardProductIdLoading || isGiftCardAddedToCart(giftCard?.oVoucherId)}>
                                         <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
                                         {giftCardTypesData != undefined && giftCardTypesData.length > 0 && getGiftCardTypesData().map(giftCardType => {
@@ -266,20 +279,26 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                         })}
                                     </select>
                                     <label className="required" htmlFor={`gift-cards-permit-options-${giftCard?.oVoucherId}`}>{t("GiftCards.SelectGiftCard")}</label>
+
+                                    {giftCard?.uiGiftcardProductIdLoading && (
+                                        <span className="position-absolute" style={{ left: "50%", top: "30%" }}>
+                                            <i className="fa-solid fa-spinner fa-spin fa-xl"></i>
+                                        </span>
+                                    )}
                                 </div>
                             )}
 
                             <div className="row mb-2">
                                 <div className="col-12 col-sm-12 col-md-6 mb-2 mb-md-0">
                                     <div className="form-floating">
-                                        <input type="text" className="form-control" id={`gift-card-last-name-${giftCard?.oVoucherId}`} placeholder="Recipient's LAST Name ONLY" value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
+                                        <input type="text" className="form-control" id={`gift-card-last-name-${giftCard?.oVoucherId}`} placeholder="Recipient's LAST Name ONLY" maxLength={150} value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
                                         <label className="required" htmlFor={`gift-card-last-name-${giftCard?.oVoucherId}`}>{t("GiftCards.RecipientsLastNameOnly")}</label>
                                     </div>
                                 </div>
 
                                 <div className="col-12 col-sm-12 col-md-6">
                                     <div className="form-floating">
-                                        <input type="text" className="form-control" id={`gift-card-postal-code-${giftCard?.oVoucherId}`} placeholder="Recipient's Postal Code" value={getGiftCardRecipientPostalCode(giftCard?.oVoucherId)} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardPostalCodeEnabled(giftCard?.oVoucherId)} />
+                                        <input type="text" className="form-control" id={`gift-card-postal-code-${giftCard?.oVoucherId}`} placeholder="Recipient's Postal Code" maxLength={7} value={getGiftCardRecipientPostalCode(giftCard?.oVoucherId)} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardPostalCodeEnabled(giftCard?.oVoucherId)} />
                                         <label className="required" htmlFor={`gift-card-postal-code-${giftCard?.oVoucherId}`}>{t("GiftCards.RecipientsPostalCode")}</label>
                                     </div>
                                 </div>
@@ -293,7 +312,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                     {((!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId))
                         || (!giftCard?.isPurchased && !giftCard?.isRedeemed && isGiftCardAddedToCart(giftCard?.oVoucherId))
-                        || (giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode)) && (
+                        || (giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode)) && (
                             <div className="card-footer">
                                 {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
                                     <button className="btn btn-outline-dark btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)} disabled={!isAddToCartEnabled(giftCard?.oVoucherId)}>
@@ -307,13 +326,13 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                     </button>
                                 )}
 
-                                {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode && (
+                                {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode && (
                                     <button className="btn btn-outline-dark btn-sm me-2" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>
                                         <i className="fa-solid fa-floppy-disk"></i> {t("GiftCards.SaveChanges")}
                                     </button>
                                 )}
 
-                                {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsInEditMode && (
+                                {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode && (
                                     <button className="btn btn-outline-dark btn-sm" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>
                                         <i className="fa-solid fa-xmark"></i> {t("GiftCards.CancelChanges")}
                                     </button>
@@ -327,6 +346,10 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 <div className="card-body text-center">
                     <button className="btn btn-primary" onClick={() => addGiftCardClick()}>
                         {t("GiftCards.AddGiftCard")}
+                    </button>
+
+                    <button className="btn btn-primary ms-1" onClick={() => router.push("/cart")}>
+                        {t("GiftCards.ProceedWithPurchase")}
                     </button>
                 </div>
             </div>
@@ -346,7 +369,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     function getGiftCards(): IGiftCard[] {
         let result: IGiftCard[] = [];
 
-        if (appContext.data?.giftCards != undefined) {
+        if (appContext.data?.giftCards != undefined && appContext.data.giftCards.length > 0) {
             result = appContext.data.giftCards;
         }
 
@@ -527,7 +550,8 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 if (draftGiftCard != undefined) {
                     draftGiftCard.uiRecipientLastName = draftGiftCard?.recipientLastName;
                     draftGiftCard.uiRecipientPostal = draftGiftCard?.recipientPostal;
-                    draftGiftCard.uiIsInEditMode = true;
+                    draftGiftCard.uiRecipientInfoLastChangeDate = undefined;
+                    draftGiftCard.uiIsEditMode = true;
                 }
             });
         }
@@ -540,7 +564,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
-                if (giftCard?.uiIsInEditMode) {
+                if (giftCard?.uiIsEditMode) {
                     result = giftCard?.uiRecipientLastName ?? "";
                 } else {
                     result = giftCard?.recipientLastName ?? "";
@@ -565,7 +589,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                     } else {
                         // This is an unpurchased gift card. Gift card is open for modification.
                         draftGiftCard.recipientLastName = lastName;
-                        saveGiftCardSelections(oVoucherId, draftGiftCard?.giftcardProductId, lastName, draftGiftCard?.recipientPostal);
+                        draftGiftCard.uiRecipientInfoLastChangeDate = getDate();
                     }
                 }
             });
@@ -580,7 +604,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             if (giftCard != undefined) {
                 result = (!isGiftCardAddedToCart(oVoucherId)
-                    && (!giftCard?.isPurchased || (giftCard?.isPurchased && giftCard?.uiIsInEditMode))
+                    && (!giftCard?.isPurchased || (giftCard?.isPurchased && giftCard?.uiIsEditMode))
                     && !giftCard?.isRedeemed
                 ) ?? false;
             }
@@ -596,7 +620,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
 
             if (giftCard != undefined) {
-                if (giftCard?.uiIsInEditMode) {
+                if (giftCard?.uiIsEditMode) {
                     result = giftCard?.uiRecipientPostal ?? "";
                 } else {
                     result = giftCard?.recipientPostal ?? "";
@@ -621,7 +645,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                     } else {
                         // This is an unpurchased gift card. Gift card is open for modification.
                         draftGiftCard.recipientPostal = postalCode;
-                        saveGiftCardSelections(oVoucherId, draftGiftCard?.giftcardProductId, draftGiftCard?.recipientLastName, postalCode);
+                        draftGiftCard.uiRecipientInfoLastChangeDate = getDate();
                     }
                 }
             });
@@ -636,7 +660,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
             if (giftCard != undefined) {
                 result = (!isGiftCardAddedToCart(oVoucherId)
-                    && (!giftCard?.isPurchased || (giftCard?.isPurchased && giftCard?.uiIsInEditMode))
+                    && (!giftCard?.isPurchased || (giftCard?.isPurchased && giftCard?.uiIsEditMode))
                     && !giftCard?.isRedeemed
                 ) ?? false;
             }
@@ -645,16 +669,15 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         return result;
     }
 
-    function saveGiftCardSelections(oVoucherId?: string, giftcardProductId?: number, recipientLastName?: string, recipientPostal?: string): void {
+    function saveGiftCardSelections(oVoucherId?: string, isPurchased?: boolean, giftcardProductId?: number, recipientLastName?: string, recipientPostal?: string): void {
         if (oVoucherId != undefined) {
             const apiSaveGiftCardSelectionsForUserRequest: IApiSaveGiftCardSelectionsForUserRequest | undefined = {
                 oVoucherId: oVoucherId,
+                isPurchased: isPurchased,
                 giftcardProductId: giftcardProductId,
-                recipientLastName: recipientLastName,
-                recipientPostal: recipientPostal
+                recipientLastName: recipientLastName?.trim()?.substring(0, 150),
+                recipientPostal: recipientPostal?.trim()?.substring(0, 7)
             };
-
-            //setShowAlert(true);
 
             apiSaveGiftCardSelectionsForUser(apiSaveGiftCardSelectionsForUserRequest).subscribe({
                 next: (result: IApiSaveGiftCardSelectionsForUserResult) => {
@@ -667,8 +690,6 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                 draftGiftCard.oVoucherId = result?.data?.oVoucherId;
                                 draftGiftCard.orderId = result?.data?.orderId;
                                 draftGiftCard.transactionDate = result?.data?.transactionDate;
-                                draftGiftCard.recipientLastName = result?.data?.recipientLastName;
-                                draftGiftCard.recipientPostal = result?.data?.recipientPostal;
                                 draftGiftCard.redemptionCode = result?.data?.redemptionCode;
                                 draftGiftCard.purchaserEmail = result?.data?.purchaserEmail;
                                 draftGiftCard.isRedeemed = result?.data?.isRedeemed;
@@ -683,6 +704,9 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                 draftGiftCard.amount = result?.data?.amount;
                                 draftGiftCard.displayName = result?.data?.displayName;
                                 draftGiftCard.frenchDisplayName = result?.data?.frenchDisplayName;
+
+                                //draftGiftCard.recipientLastName = result?.data?.recipientLastName;
+                                //draftGiftCard.recipientPostal = result?.data?.recipientPostal;
                             }
                         });
                     } else {
@@ -693,7 +717,13 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                     checkResponseStatus(error);
                 },
                 complete: () => {
-                    //
+                    appContext.updater(draft => {
+                        const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
+
+                        if (draftGiftCard != undefined) {
+                            draftGiftCard.uiGiftcardProductIdLoading = false;
+                        }
+                    });
                 }
             });
         }
@@ -740,7 +770,11 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 if (draftGiftCard != undefined) {
                     draftGiftCard.recipientLastName = draftGiftCard?.uiRecipientLastName;
                     draftGiftCard.recipientPostal = draftGiftCard?.uiRecipientPostal;
-                    draftGiftCard.uiIsInEditMode = false;
+                    draftGiftCard.uiRecipientInfoLastChangeDate = undefined;
+                    draftGiftCard.uiIsEditMode = false;
+
+                    // Force api save instead of using interval.
+                    saveGiftCardSelections(oVoucherId, draftGiftCard?.isPurchased, draftGiftCard?.giftcardProductId, draftGiftCard?.recipientLastName, draftGiftCard?.recipientPostal);
                 }
             });
         }
@@ -752,7 +786,10 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
 
                 if (draftGiftCard != undefined) {
-                    draftGiftCard.uiIsInEditMode = false;
+                    draftGiftCard.uiRecipientLastName = undefined;
+                    draftGiftCard.uiRecipientPostal = undefined;
+                    draftGiftCard.uiRecipientInfoLastChangeDate = undefined;
+                    draftGiftCard.uiIsEditMode = false;
                 }
             });
         }
@@ -856,7 +893,15 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             if (giftCard != undefined) {
                 const giftcardProductId: number = Number(e?.target?.value);
 
-                saveGiftCardSelections(oVoucherId, giftcardProductId, giftCard?.recipientLastName, giftCard?.recipientPostal);
+                appContext.updater(draft => {
+                    const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
+
+                    if (draftGiftCard != undefined) {
+                        draftGiftCard.uiGiftcardProductIdLoading = true;
+                    }
+                });
+
+                saveGiftCardSelections(oVoucherId, giftCard?.isPurchased, giftcardProductId, giftCard?.recipientLastName, giftCard?.recipientPostal);
             }
         }
     }

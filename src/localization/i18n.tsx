@@ -3,7 +3,7 @@ import { initReactI18next } from "react-i18next";
 import { resources_en } from './i18n-en';
 import { resources_fr } from './i18n-fr';
 import { IKeyValue, IParentKeyValue } from "@/custom/app-context";
-import { GlobalAppContext } from "../../constants";
+import { GlobalAppContext } from "../../global";
 
 export default i18n
     .use(initReactI18next)

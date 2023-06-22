@@ -1,6 +1,6 @@
 import { IApiGetAvailableGiftCardsResult, IApiGetClubsResult, IApiGetCountriesResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiGetProcessingFeeResult, IApiGetProvincesResult, IApiGetRedeemableGiftCardsForUserResult, IApiGetShippingFeesResult, IApiGetUserDetailsResult, IApiGetUserPreferencesResult, IApiGetVehicleMakesResult, IApiGetVehiclesAndPermitsForUserResult, IApiValidateUserRequest, IApiValidateUserResult, apiGetAvailableGiftCards, apiGetClubs, apiGetCountries, apiGetGiftcardsForCurrentSeasonForUser, apiGetProcessingFee, apiGetProvinces, apiGetRedeemableGiftCardsForUser, apiGetShippingFees, apiGetUserDetails, apiGetUserPreferences, apiGetVehicleMakes, apiGetVehiclesAndPermitsForUser, apiValidateUser } from './api';
 import { error } from "console";
-import { GlobalAppContext } from '../../constants';
+import { GlobalAppContext } from '../../global';
 
 const email: string = "sarveny@hotmail.com";
 const password: string = "SnowTravel59!";

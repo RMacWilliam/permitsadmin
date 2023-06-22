@@ -15,7 +15,7 @@ import '@/localization/i18n';
 import Script from 'next/script'
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { GlobalAppContext } from '../../constants';
+import { GlobalAppContext } from '../../global';
 import RouteGuard from '@/custom/authentication';
 import { useRouter } from 'next/router';
 
