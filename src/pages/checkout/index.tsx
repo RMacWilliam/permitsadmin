@@ -33,7 +33,7 @@ function Checkout({ appContext, router, setShowAlert }
         setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
     }) {
 
-    const [checkoutStep, setCheckoutStep] = useState(0);
+    const [step, setStep] = useState(0);
 
     const [step1AcceptTerms, setStep1AcceptTerms] = useState(false);
     const [isStep1AcceptTermsValid, setIsStep1AcceptTermsValid] = useState(true);
@@ -49,7 +49,7 @@ function Checkout({ appContext, router, setShowAlert }
 
     const t: Function = appContext.translation.t;
 
-    if (checkoutStep === 0) {
+    if (step === 0) {
         return (
             <>
                 <Head>
@@ -110,7 +110,7 @@ function Checkout({ appContext, router, setShowAlert }
                 <div className="card">
                     <div className="card-body d-flex justify-content-center flex-wrap gap-2">
                         <button className="btn btn-outline-dark" onClick={() => step1ContinueCheckoutClick()}>
-                            {t("Common.Next")}
+                            {t("Common.Buttons.Next")}
                             <i className="fa-solid fa-chevron-right fa-sm ms-2"></i>
                         </button>
 
@@ -121,7 +121,7 @@ function Checkout({ appContext, router, setShowAlert }
                 </div>
             </>
         )
-    } else if (checkoutStep === 1) {
+    } else if (step === 1) {
         return (
             <>
                 <Head>
@@ -400,11 +400,11 @@ function Checkout({ appContext, router, setShowAlert }
                     <div className="card-body d-flex justify-content-center flex-wrap gap-2">
                         <button className="btn btn-outline-dark" onClick={() => step2GoBackClick()}>
                             <i className="fa-solid fa-chevron-left fa-sm me-2"></i>
-                            {t("Common.Back")}
+                            {t("Common.Buttons.Back")}
                         </button>
 
                         <button className="btn btn-outline-dark" onClick={() => step2ContinueCheckoutClick()}>
-                            {t("Common.Next")}
+                            {t("Common.Buttons.Next")}
                             <i className="fa-solid fa-chevron-right fa-sm ms-2"></i>
                         </button>
                         
@@ -417,7 +417,7 @@ function Checkout({ appContext, router, setShowAlert }
 
     function step1ContinueCheckoutClick(): void {
         if (validateCheckoutStep1()) {
-            setCheckoutStep(1);
+            setStep(1);
         }
     }
 
@@ -451,7 +451,7 @@ function Checkout({ appContext, router, setShowAlert }
         setStep2AcceptTerms3(false);
         setIsStep2AcceptTerms3Valid(true);
 
-        setCheckoutStep(0);
+        setStep(0);
     }
 
     function step2ContinueCheckoutClick(): void {

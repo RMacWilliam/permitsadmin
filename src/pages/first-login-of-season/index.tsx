@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import $ from 'jquery';
 
 declare var YT: any;
+declare var YTConfig: any;
 
 export default function FirstLoginOfSeasonPage() {
     const appContext = useContext(AppContext);
@@ -64,17 +65,22 @@ function FirstLoginOfSeason({ appContext, router, setShowAlert }:
             <p>{t("FirstLoginOfSeason.Message")}</p>
 
             <div className="d-flex justify-content-center h-100">
-                <div id="video-placeholder"></div>
+                <div id="youtube-video"></div>
             </div>
         </>
     )
 
     function initializeYouTubeVideo() {
         YT.ready(function () {
-            player = new YT.Player('video-placeholder', {
-                videoId: 'eu7K1YTi1Pw',
+            player = new YT.Player("youtube-video", {
+                videoId: "eu7K1YTi1Pw",
+                host: "https://www.youtube-nocookie.com",
                 playerVars: {
-                    //controls: 0
+                    //controls: 0,
+                    enablejsapi: 1,
+                    modestbranding: 1,
+                    rel: 0,
+                    origin: "https://rmacwilliam.github.io/"
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -90,10 +96,6 @@ function FirstLoginOfSeason({ appContext, router, setShowAlert }:
 
     function onPlayerStateChange(e: any) {
         if (e.data === 0) {
-            appContext.updater(draft => {
-                draft.isFirstLoginOfSeason = false;
-            });
-
             router.push("/contact");
         }
     }

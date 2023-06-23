@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, forwardRef, useContext, useEffect, useState }
 import { AppContext, IAppContextValues, ICartItem, IKeyValue, IPermit, IPermitOption, IPermitSelections, ISnowmobile } from '@/custom/app-context';
 import AuthenticatedPageLayout, { IShowHoverButton } from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
-import { checkResponseStatus, formatCurrency, formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, parseDate, sortArray } from '@/custom/utilities';
+import { checkResponseStatus, formatCurrency, formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, iv, parseDate, sortArray } from '@/custom/utilities';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from '@/components/confirmation-dialog';
@@ -59,25 +59,26 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
     const [editedSnowmobileId, setEditedSnowmobileId] = useState("");
 
     const [vehicleYear, setVehicleYear] = useState("");
-    const [isVehicleYearValid, setIsVehicleYearValid] = useState(true);
+    const [isVehicleYearValid, setIsVehicleYearValid] = useState(undefined as boolean | undefined);
 
     const [make, setMake] = useState({ key: "", value: "" });
-    const [isMakeValid, setIsMakeValid] = useState(true);
+    const [isMakeValid, setIsMakeValid] = useState(undefined as boolean | undefined);
 
     const [model, setModel] = useState("");
-    const [isModelValid, setIsModelValid] = useState(true);
+    const [isModelValid, setIsModelValid] = useState(undefined as boolean | undefined);
 
     const [vin, setVin] = useState("");
-    const [isVinValid, setIsVinValid] = useState(true);
+    const [isVinValid, setIsVinValid] = useState(undefined as boolean | undefined);
+    const [isVinFormatValid, setIsVinFormatValid] = useState(undefined as boolean | undefined);
 
     const [licensePlate, setLicensePlate] = useState("");
-    const [isLicensePlateValid, setIsLicensePlateValid] = useState(true);
+    const [isLicensePlateValid, setIsLicensePlateValid] = useState(undefined as boolean | undefined);
 
     const [permitForThisSnowmobileOnly, setPermitForThisSnowmobileOnly] = useState(false);
-    const [isPermitForThisSnowmobileOnlyValid, setIsPermitForThisSnowmobileOnlyValid] = useState(true);
+    const [isPermitForThisSnowmobileOnlyValid, setIsPermitForThisSnowmobileOnlyValid] = useState(undefined as boolean | undefined);
 
     const [registeredOwner, setRegisteredOwner] = useState(false);
-    const [isRegisteredOwnerValid, setIsRegisteredOwnerValid] = useState(true);
+    const [isRegisteredOwnerValid, setIsRegisteredOwnerValid] = useState(undefined as boolean | undefined);
 
     const [showDeleteSnowmobileDialog, setShowDeleteSnowmobileDialog] = useState(false);
     const [deleteSnowmobileDialogErrorMessage, setDeleteSnowmobileDialogErrorMessage] = useState("");
@@ -300,11 +301,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
                                     <>
                                         <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
-                                            {t("Common.Edit")}
+                                            {t("Common.Buttons.Edit")}
                                         </button>
 
                                         <button className="btn btn-outline-dark btn-sm ms-1 w-sm-100" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
-                                            {t("Common.Delete")}
+                                            {t("Common.Buttons.Delete")}
                                         </button>
                                     </>
                                 )}
@@ -446,52 +447,78 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             </div>
                         )}
                         <div className="row">
-                            <div className="col-12 col-sm-12 col-md-6">
-                                <div className="form-floating mb-2">
-                                    <select className={`form-select ${isVehicleYearValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-year" aria-label={t("Permits.AddEditSnowmobileDialog.Year")} value={vehicleYear} onChange={(e: any) => setVehicleYear(e?.target?.value ?? "")}>
-                                        <option value="" disabled>{t("Common.PleaseSelect")}</option>
+                            <div className="col-12 col-sm-12 col-md-6 mb-2">
+                                <div className="input-group has-validation">
+                                    <div className={`form-floating ${iv(isVehicleYearValid)}`}>
+                                        <select className={`form-select ${iv(isVehicleYearValid)}`} id="add-edit-snowmobile-year" aria-label={t("Permits.AddEditSnowmobileDialog.Year")} aria-describedby="add-edit-snowmobile-year-validation" value={vehicleYear} onChange={(e: any) => setVehicleYear(e?.target?.value ?? "")}>
+                                            <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
-                                        {yearsData != undefined && yearsData.length > 0 && yearsData.map(x => (
-                                            <option value={x} key={x}>{x}</option>
-                                        ))}
-                                    </select>
-                                    <label className="required" htmlFor="add-edit-snowmobile-year">{t("Permits.AddEditSnowmobileDialog.Year")}</label>
+                                            {yearsData != undefined && yearsData.length > 0 && yearsData.map(x => (
+                                                <option value={x} key={x}>{x}</option>
+                                            ))}
+                                        </select>
+                                        <label className="required" htmlFor="add-edit-snowmobile-year">{t("Permits.AddEditSnowmobileDialog.Year")}</label>
+                                    </div>
+                                    <div id="add-edit-snowmobile-year-validation" className="invalid-feedback">{t("Permits.AddEditSnowmobileDialog.Year")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                 </div>
                             </div>
 
-                            <div className="col-12 col-sm-12 col-md-6">
-                                <div className="form-floating mb-2">
-                                    <select className={`form-select ${isMakeValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-make" aria-label={t("Permits.AddEditSnowmobileDialog.Make")} value={make?.key} onChange={(e: any) => setMake(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
-                                        <option value="" disabled>{t("Common.PleaseSelect")}</option>
+                            <div className="col-12 col-sm-12 col-md-6 mb-2">
+                                <div className="input-group has-validation">
+                                    <div className={`form-floating ${iv(isMakeValid)}`}>
+                                        <select className={`form-select ${iv(isMakeValid)}`} id="add-edit-snowmobile-make" aria-label={t("Permits.AddEditSnowmobileDialog.Make")} aria-describedby="add-edit-snowmobile-make-validation" value={make?.key} onChange={(e: any) => setMake(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
+                                            <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
-                                        {vehicleMakesData != undefined && vehicleMakesData.length > 0 && getVehicleMakesData().map(x => (
-                                            <option value={x.key} key={x.key}>{getLocalizedValue(x)}</option>
-                                        ))}
-                                    </select>
-                                    <label className="required" htmlFor="add-edit-snowmobile-make">{t("Permits.AddEditSnowmobileDialog.Make")}</label>
+                                            {vehicleMakesData != undefined && vehicleMakesData.length > 0 && getVehicleMakesData().map(x => (
+                                                <option value={x.key} key={x.key}>{getLocalizedValue(x)}</option>
+                                            ))}
+                                        </select>
+                                        <label className="required" htmlFor="add-edit-snowmobile-make">{t("Permits.AddEditSnowmobileDialog.Make")}</label>
+                                    </div>
+                                    <div id="add-edit-snowmobile-make-validation" className="invalid-feedback">{t("Permits.AddEditSnowmobileDialog.Make")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="row">
-                            <div className="col-12 col-sm-12 col-md-4">
-                                <div className="form-floating mb-2">
-                                    <input type="text" className={`form-control ${isModelValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-model" placeholder={t("Permits.AddEditSnowmobileDialog.Model")} maxLength={50} value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} />
-                                    <label className="required" htmlFor="add-edit-snowmobile-model">{t("Permits.AddEditSnowmobileDialog.Model")}</label>
+                            <div className="col-12 col-sm-12 col-md-4 mb-2">
+                                <div className="input-group has-validation">
+                                    <div className={`form-floating ${iv(isModelValid)}`}>
+                                        <input type="text" className={`form-control ${iv(isModelValid)}`} id="add-edit-snowmobile-model" placeholder={t("Permits.AddEditSnowmobileDialog.Model")} maxLength={50} aria-describedby="add-edit-snowmobile-model-validation" value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} />
+                                        <label className="required" htmlFor="add-edit-snowmobile-model">{t("Permits.AddEditSnowmobileDialog.Model")}</label>
+                                    </div>
+                                    <div id="add-edit-snowmobile-model-validation" className="invalid-feedback">{t("Permits.AddEditSnowmobileDialog.Model")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                 </div>
                             </div>
 
-                            <div className="col-12 col-sm-12 col-md-4">
-                                <div className="form-floating mb-2">
-                                    <input type="text" className={`form-control ${isVinValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-vin" placeholder={t("Permits.AddEditSnowmobileDialog.Vin")} maxLength={17} value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} />
-                                    <label className="required" htmlFor="add-edit-snowmobile-vin">{t("Permits.AddEditSnowmobileDialog.Vin")}</label>
+                            <div className="col-12 col-sm-12 col-md-4 mb-2">
+                                <div className="input-group has-validation">
+                                    <div className={`form-floating ${iv(isVinValid && isVinFormatValid)}`}>
+                                        <input type="text" className={`form-control ${iv(isVinValid && isVinFormatValid)}`} id="add-edit-snowmobile-vin" placeholder={t("Permits.AddEditSnowmobileDialog.Vin")} maxLength={17} aria-describedby="add-edit-snowmobile-vin-validation" value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} />
+                                        <label className="required" htmlFor="add-edit-snowmobile-vin">{t("Permits.AddEditSnowmobileDialog.Vin")}</label>
+                                    </div>
+                                    <div id="add-edit-snowmobile-vin-validation" className="invalid-feedback">
+                                        {!isVinValid && (
+                                            <>
+                                                {t("Permits.AddEditSnowmobileDialog.Vin")} {t("Common.Validation.IsRequiredSuffix")}
+                                            </>
+                                        )}
+                                        {isVinValid && !isVinFormatValid && (
+                                            <>
+                                                {t("Permits.AddEditSnowmobileDialog.InvalidVin")}
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="col-12 col-sm-12 col-md-4">
-                                <div className="form-floating mb-2">
-                                    <input type="text" className={`form-control ${isLicensePlateValid ? "" : "is-invalid"}`} id="add-edit-snowmobile-license-plate" placeholder={t("Permits.AddEditSnowmobileDialog.LicensePlate")} maxLength={10} value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} />
-                                    <label className="required" htmlFor="add-edit-snowmobile-license-plate">{t("Permits.AddEditSnowmobileDialog.LicensePlate")}</label>
+                            <div className="col-12 col-sm-12 col-md-4 mb-2">
+                                <div className="input-group has-validation">
+                                    <div className={`form-floating ${iv(isLicensePlateValid)}`}>
+                                        <input type="text" className={`form-control ${iv(isLicensePlateValid)}`} id="add-edit-snowmobile-license-plate" placeholder={t("Permits.AddEditSnowmobileDialog.LicensePlate")} maxLength={10} aria-describedby="add-edit-snowmobile-license-plate-validation" value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} />
+                                        <label className="required" htmlFor="add-edit-snowmobile-license-plate">{t("Permits.AddEditSnowmobileDialog.LicensePlate")}</label>
+                                    </div>
+                                    <div id="add-edit-snowmobile-license-plate-validation" className="invalid-feedback">{t("Permits.AddEditSnowmobileDialog.LicensePlate")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                 </div>
                             </div>
                         </div>
@@ -499,7 +526,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="row">
                             <div className="col-12">
                                 <div className="form-check mb-2">
-                                    <input className={`form-check-input ${isPermitForThisSnowmobileOnlyValid ? "" : "is-invalid"}`} type="checkbox" value="" id="add-edit-snowmobile-permit-for-this-snowmobile-only" defaultChecked={permitForThisSnowmobileOnly} onChange={(e: any) => { setPermitForThisSnowmobileOnly(e.target.checked) }} />
+                                    <input className={`form-check-input ${iv(isPermitForThisSnowmobileOnlyValid)}`} type="checkbox" value="" id="add-edit-snowmobile-permit-for-this-snowmobile-only" defaultChecked={permitForThisSnowmobileOnly} onChange={(e: any) => { setPermitForThisSnowmobileOnly(e.target.checked) }} />
                                     <label className="form-check-label required" htmlFor="add-edit-snowmobile-permit-for-this-snowmobile-only">{t("Permits.AddEditSnowmobileDialog.PermitForThisSnowmobileOnly")}</label>
                                 </div>
                             </div>
@@ -508,7 +535,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="row">
                             <div className="col-12">
                                 <div className="form-check">
-                                    <input className={`form-check-input ${isRegisteredOwnerValid ? "" : "is-invalid"}`} type="checkbox" value="" id="add-edit-snowmobile-registered-owner" defaultChecked={registeredOwner} onChange={(e: any) => setRegisteredOwner(e.target.checked)} />
+                                    <input className={`form-check-input ${iv(isRegisteredOwnerValid)}`} type="checkbox" value="" id="add-edit-snowmobile-registered-owner" defaultChecked={registeredOwner} onChange={(e: any) => setRegisteredOwner(e.target.checked)} />
                                     <label className="form-check-label required" htmlFor="add-edit-snowmobile-registered-owner">{t("Permits.AddEditSnowmobileDialog.RegisteredOwner")}</label>
                                 </div>
                             </div>
@@ -525,11 +552,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             </div>
                             <div className="col d-flex justify-content-center justify-content-sm-end align-items-center">
                                 <Button className="me-2" variant="outline-dark" onClick={() => addEditSnowmobileDialogSave()}>
-                                    {t("Common.Save")}
+                                    {t("Common.Buttons.Save")}
                                 </Button>
 
                                 <Button variant="outline-dark" onClick={() => addEditSnowmobileDialogHide()}>
-                                    {t("Common.Cancel")}
+                                    {t("Common.Buttons.Cancel")}
                                 </Button>
                             </div>
                         </div>
@@ -586,13 +613,13 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
             setRegisteredOwner(false);
         }
 
-        setIsVehicleYearValid(true);
-        setIsMakeValid(true);
-        setIsModelValid(true);
-        setIsVinValid(true);
-        setIsLicensePlateValid(true);
-        setIsPermitForThisSnowmobileOnlyValid(true);
-        setIsRegisteredOwnerValid(true);
+        setIsVehicleYearValid(undefined);
+        setIsMakeValid(undefined);
+        setIsModelValid(undefined);
+        setIsVinValid(undefined);
+        setIsLicensePlateValid(undefined);
+        setIsPermitForThisSnowmobileOnlyValid(undefined);
+        setIsRegisteredOwnerValid(undefined);
 
         setAddEditSnowmobileDialogErrorMessage("");
         setShowAddEditSnowmobileDialog(true);
@@ -760,7 +787,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
         }
     }
 
-    function isVinNumberValid(vinNumber?: string): boolean {
+    function validateVinNumber(vinNumber?: string): boolean {
         let result: boolean = false;
 
         if (vinNumber != undefined) {
@@ -794,11 +821,18 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
             setIsModelValid(true);
         }
 
-        if (vin.trim() === "" || !isVinNumberValid(vin.trim())) {
+        if (vin.trim() === "") {
             setIsVinValid(false);
             result = false;
         } else {
             setIsVinValid(true);
+        }
+
+        if (!validateVinNumber(vin.trim())) {
+            setIsVinFormatValid(false);
+            result = false;
+        } else {
+            setIsVinFormatValid(true);
         }
 
         if (licensePlate.trim() === "") {
@@ -922,7 +956,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                     appContext.updater(draft => {
                         const draftSnowmobile: ISnowmobile | undefined = draft?.snowmobiles?.filter(x => x?.oVehicleId === snowmobileId)[0];
-        
+
                         if (draftSnowmobile != undefined) {
                             draftSnowmobile.uiPermitOptionIdLoading = true;
                         }

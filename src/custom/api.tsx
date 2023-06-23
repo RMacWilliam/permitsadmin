@@ -285,26 +285,22 @@ export function apiGetCorrespondenceLanguages(params?: any): Observable<IApiGetC
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface IApiCreateUserRequest {
-    userDetails: {
-        email?: string;
-        password?: string;
-        firstName?: string;
-        initial?: string;
-        lastName?: string;
-        addressLine1?: string;
-        addressLine2?: string;
-        city?: string;
-        province?: string;
-        country?: string;
-        postalCode?: string;
-        telephone?: string;
-    },
-    userPreferences: {
-        ofscContactPermission?: number;
-        riderAdvantage?: number;
-        volunteering?: number;
-        correspondenceLanguage?: string;
-    }
+    email?: string;
+    password?: string;
+    firstName?: string;
+    initial?: string;
+    lastName?: string;
+    addressLine1?: string;
+    addressLine2?: string;
+    city?: string;
+    provinceId?: string;
+    countryId?: string;
+    postalCode?: string;
+    telephone?: string;
+    ofscContactPermission?: number;
+    riderAdvantage?: number;
+    volunteering?: number;
+    correspondenceLanguage?: string;
 }
 
 export interface IApiCreateUserResult {
@@ -314,7 +310,7 @@ export interface IApiCreateUserResult {
 }
 
 export function apiCreateUser(body?: any, params?: any): Observable<IApiCreateUserResult> {
-    return httpPost<IApiCreateUserResult>(WebApi.CreateUser, params, body);
+    return httpPost<IApiCreateUserResult>(WebApi.CreateUser, params, body, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

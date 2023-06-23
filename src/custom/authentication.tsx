@@ -47,7 +47,23 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
 
         // Authenticated paths.
         else if (isAuthenticated.current) {
-            if (appContext.data?.isContactInfoVerified) {
+            if (appContext.data?.isFirstLoginOfSeason) {
+                if (path === "/first-login-of-season") {
+                    isAuthorized.current = true;
+                } else if (path === "/contact") {
+                    isAuthorized.current = true;
+                } else {
+                    isAuthorized.current = false;
+                    redirectRoute.current = "/first-login-of-season";
+                }
+            } else if (!appContext.data?.isContactInfoVerified) {
+                if (path === "/contact") {
+                    isAuthorized.current = true;
+                } else {
+                    isAuthorized.current = false;
+                    redirectRoute.current = "/contact";
+                }
+            } else if (appContext.data?.isContactInfoVerified) {
                 if (path === "/home") {
                     isAuthorized.current = true;
                 } else if (path === "/contact") {
@@ -66,28 +82,13 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
                     isAuthorized.current = true;
                 } else if (path === "/payment/declined") {
                     isAuthorized.current = true;
-                }
-                // Everything else (like admin pages that a regular user should not see).
-                else {
+                } else {
                     isAuthorized.current = false;
                     redirectRoute.current = "/home";
                 }
             } else {
-                if (appContext.data?.isFirstLoginOfSeason) {
-                    if (path === "/first-login-of-season") {
-                        isAuthorized.current = true;
-                    } else {
-                        isAuthorized.current = false;
-                        redirectRoute.current = "/first-login-of-season";
-                    }
-                } else {
-                    if (path === "/contact") {
-                        isAuthorized.current = true;
-                    } else {
-                        isAuthorized.current = false;
-                        redirectRoute.current = "/contact";
-                    }
-                }
+                isAuthorized.current = false;
+                redirectRoute.current = "/home";
             }
         }
 
@@ -118,6 +119,10 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
 
 export function loginAndInitializeAppContext(apiLoginResult: IApiValidateUserResult): void {
     if (GlobalAppContext != undefined && GlobalAppContext?.updater != undefined && GlobalAppContext?.router != undefined) {
+        // TODO: Remove
+        apiLoginResult.isFirstLoginOfSeason = true;
+        //////////////////////////////////////////////////////////////////////
+
         GlobalAppContext.updater(draft => {
             draft.isAuthenticated = true;
             draft.email = apiLoginResult.email;
@@ -125,7 +130,7 @@ export function loginAndInitializeAppContext(apiLoginResult: IApiValidateUserRes
 
             draft.language = draft.language ?? "en";
 
-            draft.isFirstLoginOfSeason = true; // apiLoginResult?.isFirstLoginOfSeason ?? false;
+            draft.isFirstLoginOfSeason = apiLoginResult?.isFirstLoginOfSeason;
             draft.isContactInfoVerified = false;
 
             draft.cart = undefined;

@@ -219,13 +219,13 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                             <div className="col-12 col-md-auto d-flex align-items-center">
                                 {giftCard?.isPurchased && !giftCard?.isRedeemed && (
                                     <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsEditMode}>
-                                        {t("Common.Edit")}
+                                        {t("Common.Buttons.Edit")}
                                     </button>
                                 )}
 
                                 {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
                                     <button className="btn btn-outline-dark btn-sm ms-1 w-sm-100" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
-                                        {t("Common.Delete")}
+                                        {t("Common.Buttons.Delete")}
                                     </button>
                                 )}
                             </div>

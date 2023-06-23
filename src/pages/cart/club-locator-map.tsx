@@ -142,11 +142,11 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                             </div>
                             <div className="col d-flex justify-content-end">
                                 <Button className="me-2" variant="outline-dark" onClick={() => selectClick()}>
-                                    {t("Common.Select")}
+                                    {t("Common.Buttons.Select")}
                                 </Button>
 
                                 <Button variant="outline-dark" onClick={() => cancelClick()}>
-                                    {t("Common.Cancel")}
+                                    {t("Common.Buttons.Cancel")}
                                 </Button>
                             </div>
                         </div>

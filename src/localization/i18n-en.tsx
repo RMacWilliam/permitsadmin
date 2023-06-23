@@ -2,18 +2,24 @@ export const resources_en = {
   translation: {
     "Common": {
       "Ofsc": "Ontario Federation of Snowmobile Clubs",
-      "Add": "Add",
-      "Edit": "Edit",
-      "Delete": "Delete",
-      "Ok": "Ok",
-      "Save": "Save",
-      "Cancel": "Cancel",
-      "Yes": "Yes",
-      "No": "No",
-      "Close": "Close",
-      "Back": "Back",
-      "Next": "Next",
-      "Select": "Select",
+      "Buttons": {
+        "Add": "Add",
+        "Edit": "Edit",
+        "Delete": "Delete",
+        "Ok": "Ok",
+        "Save": "Save",
+        "Cancel": "Cancel",
+        "Yes": "Yes",
+        "No": "No",
+        "Close": "Close",
+        "Back": "Back",
+        "Next": "Next",
+        "Select": "Select",
+      },
+      "Validation": {
+        "SelectionIsRequired": "A selection is required.",
+        "IsRequiredSuffix": "is required."
+      },
       "PleaseSelect": "Please select",
       "Logout": "Logout",
       "HoverButton": "Show Context Menu"
@@ -78,7 +84,10 @@ export const resources_en = {
         "EmailAddress": "E-mail Address",
         "Password": "Password",
         "ConfirmPassword": "Confirm Password",
-        "MandatoryField": "mandatory field"
+        "MandatoryField": "mandatory field",
+        "InvalidPassword": "Password must have one or more uppercase and lowercase letters, one or more numbers, and be at least 6 characters long.",
+        "InvalidPasswordMatch": "Confirm Password does not match Password.",
+        "InvalidPostalCodeFormat": "Postal/Zip Code format is not valid."
       },
       "Preferences": {
         "Title": "Preferences",
@@ -91,7 +100,10 @@ export const resources_en = {
         "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or email?",
         "CorrespondenceLanguage": "What is your prefered correspondence language with OFSC?"
       },
-      "CreateAccount": "Create Account"
+      "CreateAccount": "Create Account",
+      "ThankYouForCreatingYourAccount": "Thank you for creating your account.",
+      "VerificationEmailHasBeenSent": "A verification email has been sent to you. Please click on the link in the email to complete your account set-up. If you are experiencing difficulties, please contact Customer Service at 705-739-7669 or permits@ofsc.on.ca.",
+      "ReturnLogin": "Return to Login Page"
     },
     "ChangeEmail": {
       "Title": "Change My Email Address"
@@ -108,11 +120,41 @@ export const resources_en = {
     "ContactInfo": {
       "MenuTitle": "Contact Information",
       "Title": "Contact Information",
-      "Preferences": "Preferences",
-      "OfscConsent": "Consent for OFSC to contact me",
-      "RiderAdvantage": "Rider Advantage",
-      "Volunteering": "Interested in volunteering",
-      "CorrespondenceLanguage": "Correspondence language",
+      "ContactInfo": {
+        "Title": "Account Profile",
+        "FirstName": "First Name",
+        "MiddleInitial": "Middle Initial",
+        "LastName": "Last Name",
+        "AddressLine1": "Address Line 1",
+        "AddressLine2": "Address Line 2",
+        "CityTownOrVillage": "City, Town, or Village",
+        "ProvinceState": "Province/State",
+        "Country": "Country",
+        "PostalZipCode": "Postal/Zip Code",
+        "Telephone": "Telephone",
+        "EmailAddress": "E-mail Address",
+        "Password": "Password",
+        "ConfirmPassword": "Confirm Password",
+        "MandatoryField": "mandatory field",
+        "InvalidPassword": "Password must have one or more uppercase and lowercase letters, one or more numbers, and be at least 6 characters long.",
+        "InvalidPasswordMatch": "Confirm Password does not match Password.",
+        "InvalidPostalCodeFormat": "Postal/Zip Code format is not valid."
+      },
+      "Preferences": {
+        "Title": "Preferences",
+        "OfscConsentLabel": "Consent for OFSC to contact me",
+        "RiderAdvantageLabel": "Rider Advantage",
+        "VolunteeringLabel": "Interested in volunteering",
+        "CorrespondenceLanguageLabel": "Correspondence language",
+        "OfscConsent": "Do you consent to the OFSC contacting you with information regarding permits, Rider Advantage, and other information related to snowmobiling?",
+        "OfscConsentMore": "I understand that the OFSC values my privacy and the protection of personal information, by authorizing the release of my name and address information, I consent to the OFSC's use of this information for the purposes related to the mandate of the OFSC (www.ofsc.on.ca). I further understand that any information provided to the OFSC is out of custody and control of the Ministry of Transportation and that the OFSC will have sole responsibility of the information.",
+        "RiderAdvantage": "Do you want to participate in eligible Rider Advantage programs as offered and/or available?",
+        "NoIAmNotInterestedInVolunteering": "No, I am not interested in volunteering",
+        "YesIAlreadyVolunteer": "Yes, I already volunteer",
+        "YesIdLikeToVolunteer": "Yes, I want to volunteer",
+        "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or email?",
+        "CorrespondenceLanguage": "What is your prefered correspondence language with OFSC?"
+      },
       "ConfirmButton": "I Confirm",
       "ContactInfoEditDialog": {
         "Title": "Edit Contact Information",
@@ -129,7 +171,8 @@ export const resources_en = {
         "EmailAddress": "E-mail Address",
         "Password": "Password",
         "ConfirmPassword": "Confirm Password",
-        "MandatoryField": "mandatory field"
+        "MandatoryField": "mandatory field",
+        "InvalidPostalCodeFormat": "Postal/Zip Code format is not valid."
       },
       "PreferencesEditDialog": {
         "Title": "Edit Account Preferences",
@@ -177,7 +220,8 @@ export const resources_en = {
         "LicensePlate": "License Plate",
         "PermitForThisSnowmobileOnly": "I understand that the trail permit for which I am applying is valid only for the motorized snow vehicle identified in this application and is valid only where the sticker (permit) issued under this application is permanently affixed in the required position on that motorized snow vehicle. I certify that the information contained in this application is true and acknowledge and accept the responsibilities imposed by law.",
         "RegisteredOwner": "I confirm I am the registered owner of this vehicle.",
-        "MandatoryField": "mandatory field"
+        "MandatoryField": "mandatory field",
+        "InvalidVin": "Invalid VIN number."
       },
       "DeleteSnowmobileDialog": {
         "Title": "Delete Snowmobile",
@@ -244,7 +288,8 @@ export const resources_en = {
         "CityTownOrVillage": "City, Town, or Village",
         "ProvinceState": "Province/State",
         "Country": "Country",
-        "PostalZipCode": "Postal/Zip Code"
+        "PostalZipCode": "Postal/Zip Code",
+        "InvalidPostalCodeFormat": "Postal/Zip Code format is not valid."
       },
       "ClubLocatorMapDialog": {
         "Title": "Club Locator Map",
@@ -286,7 +331,9 @@ export const resources_en = {
       "API_REDEMPTION_CODE_REDEEMED": "Redemption code has already been redeemed.",
       "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "Last name associated with the redemption code did not correspond to your account information.",
       "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "Postal code associated with the redemption code did not correspond to your account information.",
-      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "Vehicle type of the redemption code did not correspond to this snowmobile."
+      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "Vehicle type of the redemption code did not correspond to this snowmobile.",
+      "API_CREATE_ACCOUNT_EMAIL_EXISTS": "",
+      "API_CREATE_ACCOUNT_EMAIL_MISSING": ""
     }
   }
 };

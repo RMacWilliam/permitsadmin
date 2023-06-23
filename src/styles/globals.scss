@@ -139,7 +139,21 @@ body {
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-.react-select .react-select-control.is-invalid {
+.react-select .react-select-control.is-valid  {
+  padding-right: 25px;
+  border-color: $form-feedback-valid-color;
+}
+
+.react-select .react-select-control.is-valid:hover {
+  border-color: $form-feedback-valid-color;
+}
+
+.react-select .react-select-control.is-valid:focus-within {
+  border-color: $form-feedback-valid-color;
+  box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+.react-select .react-select-control.is-invalid  {
   padding-right: 25px;
   border-color: $form-feedback-invalid-color;
 }

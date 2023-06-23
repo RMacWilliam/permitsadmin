@@ -2,18 +2,24 @@ export const resources_fr = {
   translation: {
     "Common": {
       "Ofsc": "Fédération des clubs de motoneigistes de l'Ontario",
-      "Add": "Ajouter",
-      "Edit": "Modifier",
-      "Delete": "Supprimer",
-      "Ok": "Valider",
-      "Save": "Sauvegarder",
-      "Cancel": "Annuler",
-      "Yes": "Oui",
-      "No": "Non",
-      "Close": "Fermer",
-      "Back": "Précédent",
-      "Next": "Suivant",
-      "Select": "Sélectionner",
+      "Buttons": {
+        "Add": "Ajouter",
+        "Edit": "Modifier",
+        "Delete": "Supprimer",
+        "Ok": "Valider",
+        "Save": "Sauvegarder",
+        "Cancel": "Annuler",
+        "Yes": "Oui",
+        "No": "Non",
+        "Close": "Fermer",
+        "Back": "Précédent",
+        "Next": "Suivant",
+        "Select": "Sélectionner",
+      },
+      "Validation": {
+        "SelectionIsRequired": "Une sélection s'impose.",
+        "IsRequiredSuffix": "est requis."
+      },
       "PleaseSelect": "Veuillez sélectionner",
       "Logout": "Se déconnecter",
       "HoverButton": "(fr)Show Context Menu"
@@ -78,7 +84,10 @@ export const resources_fr = {
         "EmailAddress": "adresse courriel",
         "Password": "mot de passe",
         "ConfirmPassword": "confirmez le mot de passe",
-        "MandatoryField": "champ obligatoire"
+        "MandatoryField": "champ obligatoire",
+        "InvalidPassword": "Le mot de passe doit comporter une ou plusieurs lettres majuscules et minuscules, un ou plusieurs chiffres et être constitué d'au moins 6 caractères.",
+        "InvalidPasswordMatch": "(fr)Confirm Password does not match Password.",
+        "InvalidPostalCodeFormat": "(fr)Postal/Zip Code format is not valid."
       },
       "Preferences": {
         "Title": "Préférences du compte",
@@ -91,7 +100,10 @@ export const resources_fr = {
         "Volunteering": "Voulez-vous faire du bénévolat pour soutenir votre club de motoneige local et consentez-vous à ce que le club vous contacte par téléphone et/ou par courriel?",
         "CorrespondenceLanguage": "Quelle est votre langue de correspondance préférée avec la FCMO?"
       },
-      "CreateAccount": "Create Account"
+      "CreateAccount": "Create Account",
+      "ThankYouForCreatingYourAccount": "Merci d'avoir créé votre compte.",
+      "VerificationEmailHasBeenSent": "Un courriel de vérification vous a été envoyé. Veuillez cliquer sur le lien qui se trouve dans ce courriel pour terminer la configuration de votre compte. Si vous rencontrez des difficultés, veuillez contacter le service clientèle au 705-739-7669 ou à l'adresse permits@ofsc.on.ca.",
+      "ReturnLogin": "(fr)Return to Login Page"
     },
     "ChangeEmail": {
       "Title": "Changer mon adresse courriel"
@@ -108,11 +120,41 @@ export const resources_fr = {
     "ContactInfo": {
       "MenuTitle": "Propriétaire enregistré",
       "Title": "Propriétaire enregistré",
-      "Preferences": "Préférences",
-      "OfscConsent": "Consentement à ce que la FCMO me contacte",
-      "RiderAdvantage": "(fr)Rider Advantage",
-      "Volunteering": "Intéressé(e) par le bénévolat",
-      "CorrespondenceLanguage": "Langue de correspondance préférée",
+      "ContactInfo": {
+        "Title": "Profil du compte",
+        "FirstName": "prénom",
+        "MiddleInitial": "initiale du deuxième prénom",
+        "LastName": "nom de famille",
+        "AddressLine1": "addresse - N˚ et rue",
+        "AddressLine2": "deuxième ligne d'addresse",
+        "CityTownOrVillage": "ville, village",
+        "ProvinceState": "province/état",
+        "Country": "pays",
+        "PostalZipCode": "code postal/code zip",
+        "Telephone": "N˚ de téléphone",
+        "EmailAddress": "adresse courriel",
+        "Password": "mot de passe",
+        "ConfirmPassword": "confirmez le mot de passe",
+        "MandatoryField": "champ obligatoire",
+        "InvalidPassword": "Le mot de passe doit comporter une ou plusieurs lettres majuscules et minuscules, un ou plusieurs chiffres et être constitué d'au moins 6 caractères.",
+        "InvalidPasswordMatch": "(fr)Confirm Password does not match Password.",
+        "InvalidPostalCodeFormat": "(fr)Postal/Zip Code format is not valid."
+      },
+      "Preferences": {
+        "Title": "Préférences",
+        "OfscConsentLabel": "Consentement à ce que la FCMO me contacte",
+        "RiderAdvantageLabel": "(fr)Rider Advantage",
+        "VolunteeringLabel": "Intéressé(e) par le bénévolat",
+        "CorrespondenceLanguageLabel": "Langue de correspondance préférée",
+        "OfscConsent": "Consentez-vous à ce que la FCMO communique avec vous pour vous fournir des renseignements sur les permis, les avantages pour les motoneigistes, et d'autres renseignements relatifs à la motoneige?",
+        "OfscConsentMore": "Je comprends que ma vie privée et la protection de mes renseignements personnels sont importantes pour la FCMO, mais en autorisant la divulgation de mes nom et adresse, je consens à ce que la FCMO utilise ces renseignements à des fins liées au mandat de la FCMO (www.ofsc.on.ca). Je réitère en outre que toute information fournie à la FCMO échappe à la garde et au contrôle du ministère des Transports et que la FCMO sera seule responsable de cette information.",
+        "RiderAdvantage": "(fr)Do you want to participate in eligible Rider Advantage programs as offered and/or available?",
+        "NoIAmNotInterestedInVolunteering": "Non, je ne suis pas intéressé par le bénévolat",
+        "YesIAlreadyVolunteer": "Oui, je suis déjà bénévole",
+        "YesIdLikeToVolunteer": "Oui, je veux faire du bénévolat",
+        "Volunteering": "Voulez-vous faire du bénévolat pour soutenir votre club de motoneige local et consentez-vous à ce que le club vous contacte par téléphone et/ou par courriel?",
+        "CorrespondenceLanguage": "Quelle est votre langue de correspondance préférée avec la FCMO?"
+      },
       "ConfirmButton": "Je confirme",
       "ContactInfoEditDialog": {
         "Title": "(fr)Edit Contact Information",
@@ -129,7 +171,8 @@ export const resources_fr = {
         "EmailAddress": "adresse courriel",
         "Password": "(fr)Password",
         "ConfirmPassword": "(fr)Confirm Password",
-        "MandatoryField": "champ obligatoire"
+        "MandatoryField": "champ obligatoire",
+        "InvalidPostalCodeFormat": "(fr)Postal/Zip Code format is not valid."
       },
       "PreferencesEditDialog": {
         "Title": "(fr)Edit Account Preferences",
@@ -177,7 +220,8 @@ export const resources_fr = {
         "LicensePlate": "Plaque d'immatriculation",
         "PermitForThisSnowmobileOnly": "Je comprends que le permis de sentier pour lequel je fais une demande ne s'applique qu'à la motoneige indiquée dans la présente demande et n'est valide que lorsque l'autocollant (permis) émis conformément à la présente demande est appliqué de façon permanente à l'endroit requis sur cette motoneige. J'atteste que les renseignements contenus dans la présente demande sont exacts et je reconnais et j'accepte les responsabilités imposées par la loi.",
         "RegisteredOwner": "Je confirme que je suis le propriétaire enregistré de ce véhicule.",
-        "MandatoryField": "champ obligatoire"
+        "MandatoryField": "champ obligatoire",
+        "InvalidVin": "(fr)Invalid VIN number."
       },
       "DeleteSnowmobileDialog": {
         "Title": "Supprimer la motoneige",
@@ -244,7 +288,8 @@ export const resources_fr = {
         "CityTownOrVillage": "ville, village",
         "ProvinceState": "province/état",
         "Country": "pays",
-        "PostalZipCode": "code postal/code zip"
+        "PostalZipCode": "code postal/code zip",
+        "InvalidPostalCodeFormat": "(fr)Postal/Zip Code format is not valid."
       },
       "ClubLocatorMapDialog": {
         "Title": "Carte de localisation des clubs",
@@ -286,7 +331,9 @@ export const resources_fr = {
       "API_REDEMPTION_CODE_REDEEMED": "(fr)Redemption code has already been redeemed.",
       "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "(fr)Last name associated with the redemption code did not correspond to your account information.",
       "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "(fr)Postal code associated with the redemption code did not correspond to your account information.",
-      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "(fr)Vehicle type of the redemption code did not correspond to this snowmobile."
+      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "(fr)Vehicle type of the redemption code did not correspond to this snowmobile.",
+      "API_CREATE_ACCOUNT_EMAIL_EXISTS": "",
+      "API_CREATE_ACCOUNT_EMAIL_MISSING": ""
     }
   }
 };

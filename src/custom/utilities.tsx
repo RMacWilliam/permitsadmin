@@ -188,3 +188,41 @@ export function getQueryParam(param: string, router: NextRouter): string | undef
 
     return result;
 }
+
+export function iif(expression: boolean, trueResult: string, falseResult: string = ""): string {
+    return expression ? trueResult : falseResult;
+}
+
+export function iv(expression?: boolean, trueResult: string = "is-valid", falseResult: string = "is-invalid"): string {
+    return expression == undefined ? "" : (expression ? trueResult : falseResult);
+}
+
+export function validatePostalCode(postalCode?: string): boolean {
+    let result: boolean = false;
+
+    if (postalCode != undefined) {
+        result = /^[A-Za-z][0-9][A-Za-z][ ]?[0-9][A-Za-z][0-9]$/.test(postalCode);
+    }
+
+    return result;
+}
+
+export function validateZipCode(zipCode?: string): boolean {
+    let result: boolean = false;
+
+    if (zipCode != undefined) {
+        result = /^[0-9]{5}$/.test(zipCode);
+    }
+
+    return result;
+}
+
+export function validatePassword(password?: string): boolean {
+    let result: boolean = false;
+
+    if (password != undefined) {
+        result = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(password);
+    }
+
+    return result;
+}

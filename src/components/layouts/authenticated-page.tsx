@@ -124,6 +124,14 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                     </Link>
                                 </li>
                             )}
+                            {appContext.data?.isFirstLoginOfSeason && (
+                                <li className="nav-item">
+                                    <Link className="nav-link text-white" aria-current="page" aria-label={t("FirstLoginOfSeason.MenuTitle")} href="" onClick={() => { router.push("/first-login-of-season"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                        <i className="fa-solid fa-video fa-fw me-2"></i>
+                                        {t("FirstLoginOfSeason.MenuTitle")}
+                                    </Link>
+                                </li>
+                            )}
                             <li className="nav-item">
                                 <Link className="nav-link text-white" aria-current="page" aria-label={t("ContactInfo.MenuTitle")} href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                     <i className="fa-solid fa-address-card fa-fw me-2"></i>
@@ -185,12 +193,10 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                             </Link>
                         )}
 
-                        {!appContext.data?.isFirstLoginOfSeason && (
-                            <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact" aria-label={t("ContactInfo.MenuTitle")}>
-                                <i className="fa-solid fa-address-card me-2"></i>
-                                {t("ContactInfo.MenuTitle")}
-                            </Link>
-                        )}
+                        <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact" aria-label={t("ContactInfo.MenuTitle")}>
+                            <i className="fa-solid fa-address-card me-2"></i>
+                            {t("ContactInfo.MenuTitle")}
+                        </Link>
 
                         {appContext.data?.isContactInfoVerified && (
                             <>
