@@ -132,7 +132,7 @@ function Contact({ appContext, router, setShowAlert }
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [appContext.data?.contactInfo, appContext.data?.accountPreferences]);
+    }, [appContext.data?.isFirstLoginOfSeason, appContext.data?.contactInfo, appContext.data?.accountPreferences]);
 
     useEffect(() => {
         // Get data from api.

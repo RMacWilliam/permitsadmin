@@ -167,301 +167,249 @@ function CreateAccount({ appContext, router, setShowAlert }
 
                 <p>{t("CreateAccount.PleaseCompleteInformationBelow")}</p>
 
-                {/* <div className="card mb-3"> */}
-                    {/* <div className="card-header bg-success-subtlee fs-6 fw-semibold mb-2">
-                        {t("CreateAccount.ContactInfo.Title")}
-                    </div> */}
-
-                    <div className="card-body">
-                        <div className="row">
-                            <div className="col-12 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isEmailValid)}`}>
-                                        <input type="email" className={`form-control ${iv(isEmailValid)}`} id="create-account-contact-info-email" placeholder={t("CreateAccount.ContactInfo.EmailAddress")} maxLength={200} aria-describedby="create-account-contact-info-email-validation" value={email} onChange={(e: any) => setEmail(e.target.value)} />
-                                        <label className="required" htmlFor="create-account-contact-info-email">{t("CreateAccount.ContactInfo.EmailAddress")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-email-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.EmailAddress")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12 col-md-6 mb-2 mb-md-0">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isPasswordValid && isPasswordFormatValid)}`}>
-                                        <input type="text" className={`form-control ${iv(isPasswordValid && isPasswordFormatValid)}`} id="create-account-contact-info-password" placeholder={t("CreateAccount.ContactInfo.Password")} maxLength={200} aria-describedby="create-account-contact-info-password-validation" value={password} onChange={(e: any) => setPassword(e.target.value)} />
-                                        <label className="required" htmlFor="create-account-contact-info-password">{t("CreateAccount.ContactInfo.Password")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-password-validation" className="invalid-feedback">
-                                        {!isPasswordValid && (
-                                            <>
-                                                {t("CreateAccount.ContactInfo.Password")} {t("Common.Validation.IsRequiredSuffix")}
-                                            </>
-                                        )}
-
-                                        {isPasswordValid && !isPasswordFormatValid && (
-                                            <>
-                                                {t("CreateAccount.ContactInfo.InvalidPassword")}
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="col-12 col-md-6 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isConfirmPasswordValid && isConfirmPasswordMatchValid)}`}>
-                                        <input type="text" className={`form-control ${iv(isConfirmPasswordValid && isConfirmPasswordMatchValid)}`} id="create-account-contact-info-confirm-password" placeholder={t("CreateAccount.ContactInfo.ConfirmPassword")} maxLength={200} aria-describedby="create-account-contact-info-confirm-password-validation" value={confirmPassword} onChange={(e: any) => setConfirmPassword(e.target.value)} />
-                                        <label className="required" htmlFor="create-account-contact-info-confirm-password">{t("CreateAccount.ContactInfo.ConfirmPassword")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-confirm-password-validation" className="invalid-feedback">
-                                        {!isConfirmPasswordValid && (
-                                            <>
-                                                {t("CreateAccount.ContactInfo.ConfirmPassword")} {t("Common.Validation.IsRequiredSuffix")}
-                                            </>
-                                        )}
-                                        {isConfirmPasswordValid && !isConfirmPasswordMatchValid && (
-                                            <>
-                                                {t("CreateAccount.ContactInfo.InvalidPasswordMatch")}
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* <div className="row">
-                            <div className="col-12">
-                                <hr />
-                            </div>
-                        </div> */}
-
-                        <div className="row">
-                            <div className="col-12 col-md-4 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isFirstNameValid)}`}>
-                                        <input type="text" className={`form-control ${iv(isFirstNameValid)}`} id="create-account-contact-info-first-name" placeholder={t("CreateAccount.ContactInfo.FirstName")} maxLength={150} aria-describedby="create-account-contact-info-first-name-validation" value={firstName} onChange={(e: any) => setFirstName(e.target.value)} />
-                                        <label className="required" htmlFor="create-account-contact-info-first-name">{t("CreateAccount.ContactInfo.FirstName")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-first-name-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.FirstName")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                </div>
-                            </div>
-                            <div className="col-12 col-md-4 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isMiddleInitialValid)}`}>
-                                        <input type="text" className={`form-control ${iv(isMiddleInitialValid)}`} id="create-account-contact-info-middle-initial" placeholder={t("CreateAccount.ContactInfo.MiddleInitial")} maxLength={1} aria-describedby="create-account-contact-info-middle-initial-validation" value={middleInitial} onChange={(e: any) => setMiddleInitial(e.target.value)} />
-                                        <label htmlFor="create-account-contact-info-middle-initial">{t("CreateAccount.ContactInfo.MiddleInitial")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-middle-initial-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.MiddleInitial")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                </div>
-                            </div>
-                            <div className="col-12 col-md-4 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isLastNameValid)}`}>
-                                        <input type="text" className={`form-control ${iv(isLastNameValid)}`} id="create-account-contact-info-last-name" placeholder={t("CreateAccount.ContactInfo.LastName")} maxLength={150} aria-describedby="create-account-contact-info-last-name-validation" value={lastName} onChange={(e: any) => setLastName(e.target.value)} />
-                                        <label className="required" htmlFor="create-account-contact-info-last-name">{t("CreateAccount.ContactInfo.LastName")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-last-name-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.LastName")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12 col-md-6 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isAddressLine1Valid)}`}>
-                                        <input type="text" className={`form-control ${iv(isAddressLine1Valid)}`} id="create-account-contact-info-address-line-1" placeholder={t("CreateAccount.ContactInfo.AddressLine1")} maxLength={30} aria-describedby="create-account-contact-info-address-line-1-validation" value={addressLine1} onChange={(e: any) => setAddressLine1(e.target.value)} />
-                                        <label className="required" htmlFor="create-account-contact-info-address-line-1">{t("CreateAccount.ContactInfo.AddressLine1")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-address-line-1-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.AddressLine1")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                </div>
-                            </div>
-                            <div className="col-12 col-md-6 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isAddressLine2Valid)}`}>
-                                        <input type="text" className={`form-control ${iv(isAddressLine2Valid)}`} id="create-account-contact-info-address-line-2" placeholder={t("CreateAccount.ContactInfo.AddressLine2")} maxLength={30} aria-describedby="create-account-contact-info-address-line-2-validation" value={addressLine2} onChange={(e: any) => setAddressLine2(e.target.value)} />
-                                        <label htmlFor="create-account-contact-info-address-line-2">{t("CreateAccount.ContactInfo.AddressLine2")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-address-line-2-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.AddressLine2")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12 col-md-4 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isCityValid)}`}>
-                                        <input type="text" className={`form-control ${iv(isCityValid)}`} id="create-account-contact-info-city" placeholder={t("CreateAccount.ContactInfo.CityTownOrVillage")} maxLength={30} aria-describedby="create-account-contact-info-city-validation" value={city} onChange={(e: any) => setCity(e.target.value)} />
-                                        <label className="required" htmlFor="create-account-contact-info-city">{t("CreateAccount.ContactInfo.CityTownOrVillage")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-city-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.CityTownOrVillage")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                </div>
-                            </div>
-                            <div className="col-12 col-md-4 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isCountryValid)}`}>
-                                        <select className={`form-select ${iv(isCountryValid)}`} id="create-account-contact-info-country" aria-label={t("CreateAccount.ContactInfo.Country")} aria-describedby="create-account-contact-info-country-validation" value={country.key} onChange={(e: any) => countryChange(e)}>
-                                            <option value="" disabled>{t("Common.PleaseSelect")}</option>
-
-                                            {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
-                                                <option value={countryData.key} key={countryData.key}>{getLocalizedValue(countryData)}</option>
-                                            ))}
-                                        </select>
-                                        <label className="required" htmlFor="create-account-contact-info-country">{t("CreateAccount.ContactInfo.Country")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-country-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.Country")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                </div>
-                            </div>
-                            <div className="col-12 col-md-4 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isProvinceValid)}`}>
-                                        <select className={`form-select ${iv(isProvinceValid)}`} id="create-account-contact-info-province" aria-label={t("CreateAccount.ContactInfo.ProvinceState")} aria-describedby="create-account-contact-info-province-validation" value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
-                                            <option value="" disabled>{t("Common.PleaseSelect")}</option>
-
-                                            {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
-                                                <option value={`${country.key}|${provinceData.key}`} key={`${country.key}|${provinceData.key}`}>{getLocalizedValue(provinceData)}</option>
-                                            ))}
-                                        </select>
-                                        <label className="required" htmlFor="create-account-contact-info-province">{t("CreateAccount.ContactInfo.ProvinceState")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-province-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.ProvinceState")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12 col-md-6 mb-2 mb-md-0">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`}>
-                                        <input type="text" className={`form-control ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`} id="create-account-contact-info-postal-code" placeholder={t("CreateAccount.ContactInfo.PostalZipCode")} maxLength={7} aria-describedby="create-account-contact-info-postal-code-validation" value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
-                                        <label className="required" htmlFor="create-account-contact-info-postal-code">{t("CreateAccount.ContactInfo.PostalZipCode")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-postal-code-validation" className="invalid-feedback">
-                                        {!isPostalCodeValid && (
-                                            <>
-                                                {t("CreateAccount.ContactInfo.PostalZipCode")} {t("Common.Validation.IsRequiredSuffix")}
-                                            </>
-                                        )}
-                                        {isPostalCodeValid && !isPostalCodeFormatValid && (
-                                            <>
-                                                {t("CreateAccount.ContactInfo.InvalidPostalCodeFormat")}
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="col-12 col-md-6 mb-2">
-                                <div className="input-group has-validation">
-                                    <div className={`form-floating ${iv(isTelephoneValid)}`}>
-                                        <input type="text" className={`form-control ${iv(isTelephoneValid)}`} id="create-account-contact-info-telephone" placeholder={t("CreateAccount.ContactInfo.Telephone")} maxLength={10} aria-describedby="create-account-contact-info-telephone-validation" value={telephone} onChange={(e: any) => setTelephone(e.target.value)} />
-                                        <label className="required" htmlFor="create-account-contact-info-telephone">{t("CreateAccount.ContactInfo.Telephone")}</label>
-                                    </div>
-                                    <div id="create-account-contact-info-telephone-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.Telephone")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {/* </div> */}
-
                 <div className="row">
-                            <div className="col-12">
-                                <hr />
+                    <div className="col-12 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isEmailValid)}`}>
+                                <input type="email" className={`form-control ${iv(isEmailValid)}`} id="create-account-contact-info-email" placeholder={t("CreateAccount.ContactInfo.EmailAddress")} maxLength={200} aria-describedby="create-account-contact-info-email-validation" value={email} onChange={(e: any) => setEmail(e.target.value)} />
+                                <label className="required" htmlFor="create-account-contact-info-email">{t("CreateAccount.ContactInfo.EmailAddress")}</label>
                             </div>
+                            <div id="create-account-contact-info-email-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.EmailAddress")} {t("Common.Validation.IsRequiredSuffix")}</div>
                         </div>
-
-                {/* <div className="card mb-3"> */}
-                    {/* <div className="card-headerr bg-success-subtlee fs-6 fw-semibold mb-2">
-                        {t("CreateAccount.Preferences.Title")}
-                    </div> */}
-
-                    <div className="card-body">
-                        <div className="row">
-                            <div className="col-12">
-                                <label htmlFor="create-account-account-preferences-ofsc-contact-permission" className="form-label required">{t("CreateAccount.Preferences.OfscConsent")}</label>
-                                <label htmlFor="create-account-account-preferences-ofsc-contact-permission" className="form-label">{t("CreateAccount.Preferences.OfscConsentMore")}</label>
-                                <select className={`form-select ${iv(isOfscContactPermissionValid)}`} id="create-account-account-preferences-ofsc-contact-permission" aria-label={t("CreateAccount.Preferences.OfscConsent")} aria-describedby="create-account-account-preferences-ofsc-contact-permission-validation" value={ofscContactPermission.toString()} onChange={(e: any) => setOfscContactPermission(Number(e.target.value))}>
-                                    <option value="-1" disabled>{t("Common.PleaseSelect")}</option>
-                                    <option value="1">{t("Common.Buttons.Yes")}</option>
-                                    <option value="0">{t("Common.Buttons.No")}</option>
-                                </select>
-                                <div id="create-account-account-preferences-ofsc-contact-permission-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12">
-                                <hr />
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12">
-                                <label htmlFor="create-account-account-preferences-rider-advantage" className="form-label required">{t("CreateAccount.Preferences.RiderAdvantage")}</label>
-                                <select className={`form-select ${iv(isRiderAdvantageValid)}`} id="create-account-account-preferences-rider-advantage" aria-label={t("CreateAccount.Preferences.RiderAdvantage")} aria-describedby="create-account-account-preferences-rider-advantage-validation" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
-                                    <option value="-1" disabled>{t("Common.PleaseSelect")}</option>
-                                    <option value="1">{t("Common.Buttons.Yes")}</option>
-                                    <option value="0">{t("Common.Buttons.No")}</option>
-                                </select>
-                                <div id="create-account-account-preferences-rider-advantage-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12">
-                                <hr />
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12">
-                                <label htmlFor="create-account-account-preferences-volunteering" className="form-label required">{t("CreateAccount.Preferences.Volunteering")}</label>
-                                <select className={`form-select ${iv(isVolunteeringValid)}`} id="create-account-account-preferences-volunteering" aria-label={t("CreateAccount.Preferences.Volunteering")} aria-describedby="create-account-account-preferences-volunteering-validation" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
-                                    <option value="-1" disabled>{t("Common.PleaseSelect")}</option>
-                                    <option value="0">{t("CreateAccount.Preferences.NoIAmNotInterestedInVolunteering")}</option>
-                                    <option value="1">{t("CreateAccount.Preferences.YesIAlreadyVolunteer")}</option>
-                                    <option value="2">{t("CreateAccount.Preferences.YesIdLikeToVolunteer")}</option>
-                                </select>
-                                <div id="create-account-account-preferences-volunteering-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12">
-                                <hr />
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-12 mb-2">
-                                <label htmlFor="create-account-account-preferences-correspondence-language" className="form-label required">{t("CreateAccount.Preferences.CorrespondenceLanguage")}</label>
-                                <select className={`form-select ${iv(isCorrespondenceLanguageValid)}`} id="create-account-account-preferences-correspondence-language" aria-label={t("CreateAccount.Preferences.CorrespondenceLanguage")} aria-describedby="create-account-account-preferences-correspondence-language-validation" value={correspondenceLanguage} onChange={(e: any) => setCorrespondenceLanguage(e.target.value)}>
-                                    <option value="" disabled>{t("Common.PleaseSelect")}</option>
-
-                                    {correspondenceLanguagesData != undefined && correspondenceLanguagesData.length > 0 && getCorrespondenceLanguagesData().map(correspondenceLanguageData => (
-                                        <option value={correspondenceLanguageData.key} key={correspondenceLanguageData.key}>{getLocalizedValue(correspondenceLanguageData)}</option>
-                                    ))}
-                                </select>
-                                <div id="create-account-account-preferences-correspondence-language-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
-                            </div>
-                        </div>
-                    </div>
-                {/* </div> */}
-
-                <div className="card mb-3">
-                    <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
-                        <button className="btn btn-primary" onClick={() => createAccountClick()}>
-                            {t("CreateAccount.CreateAccount")}
-                        </button>
-
-                        <button className="btn btn-primary" onClick={() => router.push("/")}>
-                            {t("Common.Buttons.Cancel")}
-                        </button>
                     </div>
                 </div>
 
-                <div className="d-flex justify-content-center">
-                    <span className="text-danger me-1">*</span>= {t("CreateAccount.ContactInfo.MandatoryField")}
+                <div className="row">
+                    <div className="col-12 col-md-6 mb-2 mb-md-0">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isPasswordValid && isPasswordFormatValid)}`}>
+                                <input type="text" className={`form-control ${iv(isPasswordValid && isPasswordFormatValid)}`} id="create-account-contact-info-password" placeholder={t("CreateAccount.ContactInfo.Password")} maxLength={200} aria-describedby="create-account-contact-info-password-validation" value={password} onChange={(e: any) => setPassword(e.target.value)} />
+                                <label className="required" htmlFor="create-account-contact-info-password">{t("CreateAccount.ContactInfo.Password")}</label>
+                            </div>
+                            <div id="create-account-contact-info-password-validation" className="invalid-feedback">
+                                {!isPasswordValid && (
+                                    <>
+                                        {t("CreateAccount.ContactInfo.Password")} {t("Common.Validation.IsRequiredSuffix")}
+                                    </>
+                                )}
+
+                                {isPasswordValid && !isPasswordFormatValid && (
+                                    <>
+                                        {t("CreateAccount.ContactInfo.InvalidPassword")}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-12 col-md-6 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isConfirmPasswordValid && isConfirmPasswordMatchValid)}`}>
+                                <input type="text" className={`form-control ${iv(isConfirmPasswordValid && isConfirmPasswordMatchValid)}`} id="create-account-contact-info-confirm-password" placeholder={t("CreateAccount.ContactInfo.ConfirmPassword")} maxLength={200} aria-describedby="create-account-contact-info-confirm-password-validation" value={confirmPassword} onChange={(e: any) => setConfirmPassword(e.target.value)} />
+                                <label className="required" htmlFor="create-account-contact-info-confirm-password">{t("CreateAccount.ContactInfo.ConfirmPassword")}</label>
+                            </div>
+                            <div id="create-account-contact-info-confirm-password-validation" className="invalid-feedback">
+                                {!isConfirmPasswordValid && (
+                                    <>
+                                        {t("CreateAccount.ContactInfo.ConfirmPassword")} {t("Common.Validation.IsRequiredSuffix")}
+                                    </>
+                                )}
+                                {isConfirmPasswordValid && !isConfirmPasswordMatchValid && (
+                                    <>
+                                        {t("CreateAccount.ContactInfo.InvalidPasswordMatch")}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="row mt-3">
+                    <div className="col-12 col-md-4 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isFirstNameValid)}`}>
+                                <input type="text" className={`form-control ${iv(isFirstNameValid)}`} id="create-account-contact-info-first-name" placeholder={t("CreateAccount.ContactInfo.FirstName")} maxLength={150} aria-describedby="create-account-contact-info-first-name-validation" value={firstName} onChange={(e: any) => setFirstName(e.target.value)} />
+                                <label className="required" htmlFor="create-account-contact-info-first-name">{t("CreateAccount.ContactInfo.FirstName")}</label>
+                            </div>
+                            <div id="create-account-contact-info-first-name-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.FirstName")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-4 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isMiddleInitialValid)}`}>
+                                <input type="text" className={`form-control ${iv(isMiddleInitialValid)}`} id="create-account-contact-info-middle-initial" placeholder={t("CreateAccount.ContactInfo.MiddleInitial")} maxLength={1} aria-describedby="create-account-contact-info-middle-initial-validation" value={middleInitial} onChange={(e: any) => setMiddleInitial(e.target.value)} />
+                                <label htmlFor="create-account-contact-info-middle-initial">{t("CreateAccount.ContactInfo.MiddleInitial")}</label>
+                            </div>
+                            <div id="create-account-contact-info-middle-initial-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.MiddleInitial")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-4 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isLastNameValid)}`}>
+                                <input type="text" className={`form-control ${iv(isLastNameValid)}`} id="create-account-contact-info-last-name" placeholder={t("CreateAccount.ContactInfo.LastName")} maxLength={150} aria-describedby="create-account-contact-info-last-name-validation" value={lastName} onChange={(e: any) => setLastName(e.target.value)} />
+                                <label className="required" htmlFor="create-account-contact-info-last-name">{t("CreateAccount.ContactInfo.LastName")}</label>
+                            </div>
+                            <div id="create-account-contact-info-last-name-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.LastName")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-12 col-md-6 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isAddressLine1Valid)}`}>
+                                <input type="text" className={`form-control ${iv(isAddressLine1Valid)}`} id="create-account-contact-info-address-line-1" placeholder={t("CreateAccount.ContactInfo.AddressLine1")} maxLength={30} aria-describedby="create-account-contact-info-address-line-1-validation" value={addressLine1} onChange={(e: any) => setAddressLine1(e.target.value)} />
+                                <label className="required" htmlFor="create-account-contact-info-address-line-1">{t("CreateAccount.ContactInfo.AddressLine1")}</label>
+                            </div>
+                            <div id="create-account-contact-info-address-line-1-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.AddressLine1")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-6 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isAddressLine2Valid)}`}>
+                                <input type="text" className={`form-control ${iv(isAddressLine2Valid)}`} id="create-account-contact-info-address-line-2" placeholder={t("CreateAccount.ContactInfo.AddressLine2")} maxLength={30} aria-describedby="create-account-contact-info-address-line-2-validation" value={addressLine2} onChange={(e: any) => setAddressLine2(e.target.value)} />
+                                <label htmlFor="create-account-contact-info-address-line-2">{t("CreateAccount.ContactInfo.AddressLine2")}</label>
+                            </div>
+                            <div id="create-account-contact-info-address-line-2-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.AddressLine2")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-12 col-md-4 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isCityValid)}`}>
+                                <input type="text" className={`form-control ${iv(isCityValid)}`} id="create-account-contact-info-city" placeholder={t("CreateAccount.ContactInfo.CityTownOrVillage")} maxLength={30} aria-describedby="create-account-contact-info-city-validation" value={city} onChange={(e: any) => setCity(e.target.value)} />
+                                <label className="required" htmlFor="create-account-contact-info-city">{t("CreateAccount.ContactInfo.CityTownOrVillage")}</label>
+                            </div>
+                            <div id="create-account-contact-info-city-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.CityTownOrVillage")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-4 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isCountryValid)}`}>
+                                <select className={`form-select ${iv(isCountryValid)}`} id="create-account-contact-info-country" aria-label={t("CreateAccount.ContactInfo.Country")} aria-describedby="create-account-contact-info-country-validation" value={country.key} onChange={(e: any) => countryChange(e)}>
+                                    <option value="" disabled>{t("Common.PleaseSelect")}</option>
+
+                                    {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
+                                        <option value={countryData.key} key={countryData.key}>{getLocalizedValue(countryData)}</option>
+                                    ))}
+                                </select>
+                                <label className="required" htmlFor="create-account-contact-info-country">{t("CreateAccount.ContactInfo.Country")}</label>
+                            </div>
+                            <div id="create-account-contact-info-country-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.Country")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-4 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isProvinceValid)}`}>
+                                <select className={`form-select ${iv(isProvinceValid)}`} id="create-account-contact-info-province" aria-label={t("CreateAccount.ContactInfo.ProvinceState")} aria-describedby="create-account-contact-info-province-validation" value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
+                                    <option value="" disabled>{t("Common.PleaseSelect")}</option>
+
+                                    {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
+                                        <option value={`${country.key}|${provinceData.key}`} key={`${country.key}|${provinceData.key}`}>{getLocalizedValue(provinceData)}</option>
+                                    ))}
+                                </select>
+                                <label className="required" htmlFor="create-account-contact-info-province">{t("CreateAccount.ContactInfo.ProvinceState")}</label>
+                            </div>
+                            <div id="create-account-contact-info-province-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.ProvinceState")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-12 col-md-6 mb-2 mb-md-0">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`}>
+                                <input type="text" className={`form-control ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`} id="create-account-contact-info-postal-code" placeholder={t("CreateAccount.ContactInfo.PostalZipCode")} maxLength={7} aria-describedby="create-account-contact-info-postal-code-validation" value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
+                                <label className="required" htmlFor="create-account-contact-info-postal-code">{t("CreateAccount.ContactInfo.PostalZipCode")}</label>
+                            </div>
+                            <div id="create-account-contact-info-postal-code-validation" className="invalid-feedback">
+                                {!isPostalCodeValid && (
+                                    <>
+                                        {t("CreateAccount.ContactInfo.PostalZipCode")} {t("Common.Validation.IsRequiredSuffix")}
+                                    </>
+                                )}
+                                {isPostalCodeValid && !isPostalCodeFormatValid && (
+                                    <>
+                                        {t("CreateAccount.ContactInfo.InvalidPostalCodeFormat")}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-12 col-md-6 mb-2">
+                        <div className="input-group has-validation">
+                            <div className={`form-floating ${iv(isTelephoneValid)}`}>
+                                <input type="text" className={`form-control ${iv(isTelephoneValid)}`} id="create-account-contact-info-telephone" placeholder={t("CreateAccount.ContactInfo.Telephone")} maxLength={10} aria-describedby="create-account-contact-info-telephone-validation" value={telephone} onChange={(e: any) => setTelephone(e.target.value)} />
+                                <label className="required" htmlFor="create-account-contact-info-telephone">{t("CreateAccount.ContactInfo.Telephone")}</label>
+                            </div>
+                            <div id="create-account-contact-info-telephone-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.Telephone")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="row mt-3">
+                    <div className="col-12">
+                        <label htmlFor="create-account-account-preferences-ofsc-contact-permission" className="form-label required">{t("CreateAccount.Preferences.OfscConsent")}</label>
+                        <label htmlFor="create-account-account-preferences-ofsc-contact-permission" className="form-label">{t("CreateAccount.Preferences.OfscConsentMore")}</label>
+                        <select className={`form-select ${iv(isOfscContactPermissionValid)}`} id="create-account-account-preferences-ofsc-contact-permission" aria-label={t("CreateAccount.Preferences.OfscConsent")} aria-describedby="create-account-account-preferences-ofsc-contact-permission-validation" value={ofscContactPermission.toString()} onChange={(e: any) => setOfscContactPermission(Number(e.target.value))}>
+                            <option value="-1" disabled>{t("Common.PleaseSelect")}</option>
+                            <option value="1">{t("Common.Buttons.Yes")}</option>
+                            <option value="0">{t("Common.Buttons.No")}</option>
+                        </select>
+                        <div id="create-account-account-preferences-ofsc-contact-permission-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
+                    </div>
+                </div>
+
+                <div className="row mt-3">
+                    <div className="col-12">
+                        <label htmlFor="create-account-account-preferences-rider-advantage" className="form-label required">{t("CreateAccount.Preferences.RiderAdvantage")}</label>
+                        <select className={`form-select ${iv(isRiderAdvantageValid)}`} id="create-account-account-preferences-rider-advantage" aria-label={t("CreateAccount.Preferences.RiderAdvantage")} aria-describedby="create-account-account-preferences-rider-advantage-validation" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
+                            <option value="-1" disabled>{t("Common.PleaseSelect")}</option>
+                            <option value="1">{t("Common.Buttons.Yes")}</option>
+                            <option value="0">{t("Common.Buttons.No")}</option>
+                        </select>
+                        <div id="create-account-account-preferences-rider-advantage-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
+                    </div>
+                </div>
+
+                <div className="row mt-3">
+                    <div className="col-12">
+                        <label htmlFor="create-account-account-preferences-volunteering" className="form-label required">{t("CreateAccount.Preferences.Volunteering")}</label>
+                        <select className={`form-select ${iv(isVolunteeringValid)}`} id="create-account-account-preferences-volunteering" aria-label={t("CreateAccount.Preferences.Volunteering")} aria-describedby="create-account-account-preferences-volunteering-validation" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
+                            <option value="-1" disabled>{t("Common.PleaseSelect")}</option>
+                            <option value="0">{t("CreateAccount.Preferences.NoIAmNotInterestedInVolunteering")}</option>
+                            <option value="1">{t("CreateAccount.Preferences.YesIAlreadyVolunteer")}</option>
+                            <option value="2">{t("CreateAccount.Preferences.YesIdLikeToVolunteer")}</option>
+                        </select>
+                        <div id="create-account-account-preferences-volunteering-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
+                    </div>
+                </div>
+
+                <div className="row mt-3">
+                    <div className="col-12 mb-2">
+                        <label htmlFor="create-account-account-preferences-correspondence-language" className="form-label required">{t("CreateAccount.Preferences.CorrespondenceLanguage")}</label>
+                        <select className={`form-select ${iv(isCorrespondenceLanguageValid)}`} id="create-account-account-preferences-correspondence-language" aria-label={t("CreateAccount.Preferences.CorrespondenceLanguage")} aria-describedby="create-account-account-preferences-correspondence-language-validation" value={correspondenceLanguage} onChange={(e: any) => setCorrespondenceLanguage(e.target.value)}>
+                            <option value="" disabled>{t("Common.PleaseSelect")}</option>
+
+                            {correspondenceLanguagesData != undefined && correspondenceLanguagesData.length > 0 && getCorrespondenceLanguagesData().map(correspondenceLanguageData => (
+                                <option value={correspondenceLanguageData.key} key={correspondenceLanguageData.key}>{getLocalizedValue(correspondenceLanguageData)}</option>
+                            ))}
+                        </select>
+                        <div id="create-account-account-preferences-correspondence-language-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
+                    </div>
+                </div>
+
+                <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-3">
+                    <button className="btn btn-primary" onClick={() => createAccountClick()}>
+                        {t("CreateAccount.CreateAccount")}
+                    </button>
+
+                    <button className="btn btn-primary" onClick={() => router.push("/")}>
+                        {t("Common.Buttons.Cancel")}
+                    </button>
                 </div>
             </>
         )

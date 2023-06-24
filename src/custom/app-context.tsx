@@ -214,6 +214,7 @@ export interface IAppContextData {
     language: string;
 
     isFirstLoginOfSeason?: boolean;
+    videoWatched?: boolean;
     isContactInfoVerified?: boolean;
 
     // Shopping Cart

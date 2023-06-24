@@ -62,7 +62,8 @@ export const resources_fr = {
     },
     "ForgotPassword": {
       "Title": "J'ai oublié mon mot de passe",
-      "Section1": "Si vous êtes incapable d'accéder à votre compte, veuillez essayer de réinitialiser votre mot de passe. Un courriel vous sera envoyé pour que vous puissiez changer votre mot de passe. Pour tout autre problème, veuillez contacter le service à la clientèle de la délivrance des permis au 705-739-7669 ou écrivez à permits@ofsc.on.ca.",
+      "Section1": "Si vous êtes incapable d'accéder à votre compte, veuillez essayer de réinitialiser votre mot de passe. Un courriel vous sera envoyé pour que vous puissiez changer votre mot de passe.",
+      "Section2": "Pour tout autre problème, veuillez contacter le service à la clientèle de la délivrance des permis au 705-739-7669 ou écrivez à permits@ofsc.on.ca.",
       "EmailAddressLabel": "(fr)Enter your email address",
       "ResetPasswordButton": "Réinitialiser le mot de passe"
     },

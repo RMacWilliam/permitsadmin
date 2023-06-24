@@ -28,11 +28,11 @@ $form-select-border-color: $gray-500;
 $form-floating-height: add(2.875rem, $input-height-border); // add(3.5rem, $input-height-border);
 $form-floating-line-height: 1.25; // 1.25;
 $form-floating-padding-x: $input-padding-x;
-$form-floating-padding-y: 0.75rem; // 1rem;
-$form-floating-input-padding-t: 1.2rem; // 1.625rem;
+$form-floating-padding-y: 0.8rem; // 1rem;
+$form-floating-input-padding-t: 1.1rem; // 1.625rem;
 $form-floating-input-padding-b: .4rem; // .625rem;
 $form-floating-label-opacity: .65; // .65;
-$form-floating-label-transform: scale(.75) translateY(-.5rem) translateX(.15rem); // scale(.85) translateY(-.5rem) translateX(.15rem);
+$form-floating-label-transform: scale(.75) translateY(-.4rem) translateX(.15rem); // scale(.85) translateY(-.5rem) translateX(.15rem);
 $form-floating-transition: opacity .1s ease-in-out, transform .1s ease-in-out; // opacity .1s ease-in-out, transform .1s ease-in-out;
 
 // Layout & components

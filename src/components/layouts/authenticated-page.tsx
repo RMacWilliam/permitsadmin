@@ -124,7 +124,8 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                     </Link>
                                 </li>
                             )}
-                            {appContext.data?.isFirstLoginOfSeason && (
+
+                            {appContext.data?.isFirstLoginOfSeason && !appContext.data?.videoWatched && (
                                 <li className="nav-item">
                                     <Link className="nav-link text-white" aria-current="page" aria-label={t("FirstLoginOfSeason.MenuTitle")} href="" onClick={() => { router.push("/first-login-of-season"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                         <i className="fa-solid fa-video fa-fw me-2"></i>
@@ -132,12 +133,16 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                     </Link>
                                 </li>
                             )}
-                            <li className="nav-item">
-                                <Link className="nav-link text-white" aria-current="page" aria-label={t("ContactInfo.MenuTitle")} href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                                    <i className="fa-solid fa-address-card fa-fw me-2"></i>
-                                    {t("ContactInfo.MenuTitle")}
-                                </Link>
-                            </li>
+
+                            {((appContext.data?.isFirstLoginOfSeason && appContext.data?.videoWatched) || (!appContext.data?.isFirstLoginOfSeason)) && (
+                                <li className="nav-item">
+                                    <Link className="nav-link text-white" aria-current="page" aria-label={t("ContactInfo.MenuTitle")} href="" onClick={() => { router.push("/contact"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                        <i className="fa-solid fa-address-card fa-fw me-2"></i>
+                                        {t("ContactInfo.MenuTitle")}
+                                    </Link>
+                                </li>
+                            )}
+
                             {appContext.data?.isContactInfoVerified && (
                                 <>
                                     <li className="nav-item">
@@ -146,6 +151,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                             {t("Permits.MenuTitle")}
                                         </Link>
                                     </li>
+
                                     <li className="nav-item">
                                         <Link className="nav-link text-white" aria-current="page" aria-label={t("GiftCards.MenuTitle")} href="" onClick={() => { router.push("/gift-cards"); }} data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                             <i className="fa-solid fa-gift fa-fw me-2"></i>
@@ -154,18 +160,22 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                     </li>
                                 </>
                             )}
+
                             <li>
                                 <hr className="dropdown-divider my-2" style={{ backgroundColor: "white", height: 1 }} />
                             </li>
+
                             <li className="nav-item">
                                 <Link className="nav-link text-white" aria-current="page" aria-label="" href="" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                     <i className="fa-solid fa-globe fa-fw me-2"></i>
                                     <LanguageToggler isTextShort={false}></LanguageToggler>
                                 </Link>
                             </li>
+
                             <li>
                                 <hr className="dropdown-divider my-2" style={{ backgroundColor: "white", height: 1 }} />
                             </li>
+
                             <li className="nav-item">
                                 <i className="fa-solid fa-user fa-fw me-2"></i>
                                 {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName}
@@ -186,17 +196,19 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                             </Link>
                         )}
 
-                        {appContext.data?.isFirstLoginOfSeason && (
+                        {appContext.data?.isFirstLoginOfSeason && !appContext.data?.videoWatched && (
                             <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "first-login-of-season" ? "active" : ""}`} href="/first-login-of-season" aria-label={t("FirstLoginOfSeason.MenuTitle")}>
                                 <i className="fa-solid fa-video me-2"></i>
                                 {t("FirstLoginOfSeason.MenuTitle")}
                             </Link>
                         )}
 
-                        <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact" aria-label={t("ContactInfo.MenuTitle")}>
-                            <i className="fa-solid fa-address-card me-2"></i>
-                            {t("ContactInfo.MenuTitle")}
-                        </Link>
+                        {((appContext.data?.isFirstLoginOfSeason && appContext.data?.videoWatched) || (!appContext.data?.isFirstLoginOfSeason)) && (
+                            <Link className={`nav-link fs-6 ${appContext.data.navbarPage === "contact" ? "active" : ""}`} href="/contact" aria-label={t("ContactInfo.MenuTitle")}>
+                                <i className="fa-solid fa-address-card me-2"></i>
+                                {t("ContactInfo.MenuTitle")}
+                            </Link>
+                        )}
 
                         {appContext.data?.isContactInfoVerified && (
                             <>

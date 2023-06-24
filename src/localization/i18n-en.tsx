@@ -62,7 +62,8 @@ export const resources_en = {
     },
     "ForgotPassword": {
       "Title": "Forgot Password",
-      "Section1": "If you are unable to login to your account, please try resetting your password and an email will be sent to you to change your password. For all other issues, please contact Permit customer service at 705-739-7669 or send an email to permits@ofsc.on.ca.",
+      "Section1": "If you are unable to login to your account, please try resetting your password and an email will be sent to you to change your password.",
+      "Section2": "For all other issues, please contact Permit customer service at 705-739-7669 or send an email to permits@ofsc.on.ca.",
       "EmailAddressLabel": "Enter your email address",
       "ResetPasswordButton": "Reset Password"
     },

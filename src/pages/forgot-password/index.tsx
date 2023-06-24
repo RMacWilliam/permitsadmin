@@ -36,14 +36,22 @@ function ForgotPassword({ appContext, router }
 
             <p>{t("ForgotPassword.Section1")}</p>
 
+            <p>{t("ForgotPassword.Section2")}</p>
+
             <div className="form-floating mb-2">
                 <input type="email" className={`form-control ${isEmailValid ? "" : "is-invalid"}`} id="forgot-password-email" placeholder={t("ForgotPassword.EmailAddressLabel")} value={email} onChange={(e: any) => setEmail(e.target.value)} />
                 <label className="required" htmlFor="forgot-password-email">{t("ForgotPassword.EmailAddressLabel")}</label>
             </div>
 
-            <button className="btn btn-outline-dark" onClick={() => resetPasswordClick()} disabled={email.trim().length === 0}>
-                {t("ForgotPassword.ResetPasswordButton")}
-            </button>
+            <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-3">
+                <button className="btn btn-primary" onClick={() => resetPasswordClick()}>
+                    {t("ForgotPassword.ResetPasswordButton")}
+                </button>
+
+                <button className="btn btn-primary" onClick={() => router.push("/")}>
+                    {t("Common.Buttons.Cancel")}
+                </button>
+            </div>
         </>
     )
 

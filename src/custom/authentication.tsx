@@ -48,13 +48,20 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
         // Authenticated paths.
         else if (isAuthenticated.current) {
             if (appContext.data?.isFirstLoginOfSeason) {
-                if (path === "/first-login-of-season") {
-                    isAuthorized.current = true;
-                } else if (path === "/contact") {
-                    isAuthorized.current = true;
+                if (!appContext.data?.videoWatched) {
+                    if (path === "/first-login-of-season") {
+                        isAuthorized.current = true;
+                    } else {
+                        isAuthorized.current = false;
+                        redirectRoute.current = "/first-login-of-season";
+                    }
                 } else {
-                    isAuthorized.current = false;
-                    redirectRoute.current = "/first-login-of-season";
+                    if (path === "/contact") {
+                        isAuthorized.current = true;
+                    } else {
+                        isAuthorized.current = false;
+                        redirectRoute.current = "/contact";
+                    }
                 }
             } else if (!appContext.data?.isContactInfoVerified) {
                 if (path === "/contact") {
@@ -99,7 +106,7 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
         }
     }
 
-    //console.log("isAuthenticated: ", isAuthenticated.current, "isAuthorized: ", isAuthorized.current, "path: ", path, "redirectRoute: ", redirectRoute.current);
+    console.log("isAuthenticated: ", isAuthenticated.current, "isAuthorized: ", isAuthorized.current, "path: ", path, "redirectRoute: ", redirectRoute.current);
 
     if (redirectRoute.current === "") {
         return (
@@ -131,6 +138,7 @@ export function loginAndInitializeAppContext(apiLoginResult: IApiValidateUserRes
             draft.language = draft.language ?? "en";
 
             draft.isFirstLoginOfSeason = apiLoginResult?.isFirstLoginOfSeason;
+            draft.videoWatched = false;
             draft.isContactInfoVerified = false;
 
             draft.cart = undefined;
@@ -164,6 +172,7 @@ export function logoutAndCleanupAppContext(): void {
             draft.token = undefined;
 
             draft.isFirstLoginOfSeason = undefined;
+            draft.videoWatched = undefined;
             draft.isContactInfoVerified = undefined;
 
             draft.cart = undefined;

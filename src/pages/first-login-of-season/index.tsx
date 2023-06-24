@@ -98,6 +98,10 @@ function FirstLoginOfSeason({ appContext, router, setShowAlert }:
 
     function onPlayerStateChange(e: any) {
         if (e.data === 0) {
+            appContext.updater(draft => {
+                draft.videoWatched = true;
+            });
+
             router.push("/contact");
         }
     }
