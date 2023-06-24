@@ -167,10 +167,10 @@ function CreateAccount({ appContext, router, setShowAlert }
 
                 <p>{t("CreateAccount.PleaseCompleteInformationBelow")}</p>
 
-                <div className="card mb-3">
-                    <div className="card-header bg-success-subtle fs-5 fw-semibold">
+                {/* <div className="card mb-3"> */}
+                    {/* <div className="card-header bg-success-subtlee fs-6 fw-semibold mb-2">
                         {t("CreateAccount.ContactInfo.Title")}
-                    </div>
+                    </div> */}
 
                     <div className="card-body">
                         <div className="row">
@@ -208,7 +208,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6">
+                            <div className="col-12 col-md-6 mb-2">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isConfirmPasswordValid && isConfirmPasswordMatchValid)}`}>
                                         <input type="text" className={`form-control ${iv(isConfirmPasswordValid && isConfirmPasswordMatchValid)}`} id="create-account-contact-info-confirm-password" placeholder={t("CreateAccount.ContactInfo.ConfirmPassword")} maxLength={200} aria-describedby="create-account-contact-info-confirm-password-validation" value={confirmPassword} onChange={(e: any) => setConfirmPassword(e.target.value)} />
@@ -230,11 +230,11 @@ function CreateAccount({ appContext, router, setShowAlert }
                             </div>
                         </div>
 
-                        <div className="row">
+                        {/* <div className="row">
                             <div className="col-12">
                                 <hr />
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="row">
                             <div className="col-12 col-md-4 mb-2">
@@ -351,7 +351,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6">
+                            <div className="col-12 col-md-6 mb-2">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isTelephoneValid)}`}>
                                         <input type="text" className={`form-control ${iv(isTelephoneValid)}`} id="create-account-contact-info-telephone" placeholder={t("CreateAccount.ContactInfo.Telephone")} maxLength={10} aria-describedby="create-account-contact-info-telephone-validation" value={telephone} onChange={(e: any) => setTelephone(e.target.value)} />
@@ -362,12 +362,18 @@ function CreateAccount({ appContext, router, setShowAlert }
                             </div>
                         </div>
                     </div>
-                </div>
+                {/* </div> */}
 
-                <div className="card mb-3">
-                    <div className="card-header bg-success-subtle fs-5 fw-semibold">
+                <div className="row">
+                            <div className="col-12">
+                                <hr />
+                            </div>
+                        </div>
+
+                {/* <div className="card mb-3"> */}
+                    {/* <div className="card-headerr bg-success-subtlee fs-6 fw-semibold mb-2">
                         {t("CreateAccount.Preferences.Title")}
-                    </div>
+                    </div> */}
 
                     <div className="card-body">
                         <div className="row">
@@ -409,7 +415,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                         </div>
 
                         <div className="row">
-                            <div className="col-12">
+                            <div className="col-12 mb-2">
                                 <label htmlFor="create-account-account-preferences-correspondence-language" className="form-label required">{t("CreateAccount.Preferences.CorrespondenceLanguage")}</label>
                                 <select className={`form-select ${iv(isCorrespondenceLanguageValid)}`} id="create-account-account-preferences-correspondence-language" aria-label={t("CreateAccount.Preferences.CorrespondenceLanguage")} aria-describedby="create-account-account-preferences-correspondence-language-validation" value={correspondenceLanguage} onChange={(e: any) => setCorrespondenceLanguage(e.target.value)}>
                                     <option value="" disabled>{t("Common.PleaseSelect")}</option>
@@ -422,7 +428,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                             </div>
                         </div>
                     </div>
-                </div>
+                {/* </div> */}
 
                 <div className="card mb-3">
                     <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
