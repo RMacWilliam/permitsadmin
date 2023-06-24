@@ -377,7 +377,7 @@ function CreateAccount({ appContext, router, setShowAlert }
 
                     <div className="card-body">
                         <div className="row">
-                            <div className="col-12 mb-2">
+                            <div className="col-12">
                                 <label htmlFor="create-account-account-preferences-ofsc-contact-permission" className="form-label required">{t("CreateAccount.Preferences.OfscConsent")}</label>
                                 <label htmlFor="create-account-account-preferences-ofsc-contact-permission" className="form-label">{t("CreateAccount.Preferences.OfscConsentMore")}</label>
                                 <select className={`form-select ${iv(isOfscContactPermissionValid)}`} id="create-account-account-preferences-ofsc-contact-permission" aria-label={t("CreateAccount.Preferences.OfscConsent")} aria-describedby="create-account-account-preferences-ofsc-contact-permission-validation" value={ofscContactPermission.toString()} onChange={(e: any) => setOfscContactPermission(Number(e.target.value))}>
@@ -390,7 +390,13 @@ function CreateAccount({ appContext, router, setShowAlert }
                         </div>
 
                         <div className="row">
-                            <div className="col-12 mb-2">
+                            <div className="col-12">
+                                <hr />
+                            </div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col-12">
                                 <label htmlFor="create-account-account-preferences-rider-advantage" className="form-label required">{t("CreateAccount.Preferences.RiderAdvantage")}</label>
                                 <select className={`form-select ${iv(isRiderAdvantageValid)}`} id="create-account-account-preferences-rider-advantage" aria-label={t("CreateAccount.Preferences.RiderAdvantage")} aria-describedby="create-account-account-preferences-rider-advantage-validation" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
                                     <option value="-1" disabled>{t("Common.PleaseSelect")}</option>
@@ -402,7 +408,13 @@ function CreateAccount({ appContext, router, setShowAlert }
                         </div>
 
                         <div className="row">
-                            <div className="col-12 mb-2">
+                            <div className="col-12">
+                                <hr />
+                            </div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col-12">
                                 <label htmlFor="create-account-account-preferences-volunteering" className="form-label required">{t("CreateAccount.Preferences.Volunteering")}</label>
                                 <select className={`form-select ${iv(isVolunteeringValid)}`} id="create-account-account-preferences-volunteering" aria-label={t("CreateAccount.Preferences.Volunteering")} aria-describedby="create-account-account-preferences-volunteering-validation" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
                                     <option value="-1" disabled>{t("Common.PleaseSelect")}</option>
@@ -411,6 +423,12 @@ function CreateAccount({ appContext, router, setShowAlert }
                                     <option value="2">{t("CreateAccount.Preferences.YesIdLikeToVolunteer")}</option>
                                 </select>
                                 <div id="create-account-account-preferences-volunteering-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
+                            </div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col-12">
+                                <hr />
                             </div>
                         </div>
 
