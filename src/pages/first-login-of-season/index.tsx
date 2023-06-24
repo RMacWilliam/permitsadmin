@@ -52,6 +52,8 @@ function FirstLoginOfSeason({ appContext, router, setShowAlert }:
         } else {
             initializeYouTubeVideo();
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

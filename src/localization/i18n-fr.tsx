@@ -245,6 +245,7 @@ export const resources_fr = {
       "SelectGiftCard": "sélectionner la carte cadeau",
       "RecipientsLastNameOnly": "Nom de famille du bénéficiaire UNIQUEMENT",
       "RecipientsPostalCode": "Code postal du bénéficiaire",
+      "InvalidPostalCodeFormat": "(fr)Postal/Zip Code format is not valid.",
       "MandatoryFieldMustMatch": "champ obligatoire et doit correspondre au compte du bénéficiaire à la FCMO",
       "AddGiftCardToCart": "Ajouter la carte cadeau au panier",
       "RemoveGiftCardFromCart": "Supprimer la carte cadeau du panier",

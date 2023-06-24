@@ -82,6 +82,8 @@ function Cart({ appContext, router, setShowAlert }:
                 //draft.cart.shipping = undefined;
             }
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -1069,10 +1071,10 @@ function Cart({ appContext, router, setShowAlert }:
             const cartItem: ICartItem | undefined = getCartItem(cartItemId);
 
             if (cartItem != undefined) {
-                const isClubValid: boolean = (cartItem?.uiIsClubValid == undefined || cartItem?.uiIsClubValid) ? true : false;
+                const validationClass: string = cartItem?.uiIsClubValid == undefined ? "" : (cartItem.uiIsClubValid ? "is-valid" : "is-invalid");
 
                 result = {
-                    control: () => `react-select-control form-control ${isClubValid ? "is-valid" : "is-invalid"}`,
+                    control: () => `react-select-control form-control ${validationClass}`,
                     input: () => "react-select-input",
                     placeholder: () => "react-select-placeholder",
                     menu: () => "react-select-menu",

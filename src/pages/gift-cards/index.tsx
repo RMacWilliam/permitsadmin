@@ -4,7 +4,7 @@ import AuthenticatedPageLayout, { IShowHoverButton } from '@/components/layouts/
 import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import CartItemsAlert from '@/components/cart-items-alert';
-import { checkResponseStatus, formatCurrency, getApiErrorMessage, getDate, getGuid, getMoment, parseDate } from '@/custom/utilities';
+import { checkResponseStatus, formatCurrency, getApiErrorMessage, getDate, getGuid, getMoment, iv, parseDate, validatePostalCode } from '@/custom/utilities';
 import { Observable, Subscription, forkJoin } from 'rxjs';
 import { IApiAddGiftCardForUserRequest, IApiAddGiftCardForUserResult, IApiDeleteGiftCardRequest, IApiDeleteGiftCardResult, IApiGetAvailableGiftCardsResult, IApiGetGiftcardsForCurrentSeasonForUserResult, IApiSaveGiftCardSelectionsForUserRequest, IApiSaveGiftCardSelectionsForUserResult, IApiSendGiftCardPdfRequest, IApiSendGiftCardPdfResult, apiAddGiftCardForUser, apiDeleteGiftCard, apiGetAvailableGiftCards, apiGetGiftcardsForCurrentSeasonForUser, apiSaveGiftCardSelectionsForUser, apiSendGiftCardPdf } from '@/custom/api';
 import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from '@/components/confirmation-dialog';
@@ -61,6 +61,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         // Call api to save changes if change was made >= 2 seconds ago.
                         // This will prevent repetative api calls when user is modifying textbox content.
                         if (getMoment().diff(getMoment(giftCard?.uiRecipientInfoLastChangeDate), "seconds") >= 2) {
+                            // Only this method should reset uiRecipientInfoLastChangeDate otherwise a pending update will not occur.
                             giftCard.uiRecipientInfoLastChangeDate = undefined;
                             saveGiftCardSelections(giftCard?.oVoucherId, giftCard?.isPurchased, giftCard?.giftcardProductId, giftCard?.recipientLastName, giftCard?.recipientPostal);
                         }
@@ -72,6 +73,8 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         return () => {
             clearInterval(intervalRef);
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -113,8 +116,14 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                         uiIsEditMode: false,
                         uiRecipientInfoLastChangeDate: undefined,
+                        uiIsGiftcardProductIdValid: undefined,
                         uiRecipientLastName: undefined,
-                        uiRecipientPostal: undefined
+                        uiIsRecipientLastNameValid: undefined,
+                        uiRecipientPostal: undefined,
+                        uiIsRecipientPostalValid: undefined,
+                        uiIsRecipientPostalFormatValid: undefined,
+
+                        uiGiftcardProductIdLoading: false
                     }));
 
                     appContext.updater(draft => {
@@ -249,7 +258,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                                     <div className="col-12 col-md-auto d-flex align-items-center">
                                         <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => resendEmailClick(giftCard?.oVoucherId)}>
-                                            <i className="fa-solid fa-envelope"></i> {t("GiftCards.ResendEmail")}
+                                            <i className="fa-solid fa-envelope me-2"></i>{t("GiftCards.ResendEmail")}
                                         </button>
                                     </div>
                                 </div>
@@ -258,48 +267,68 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                         <li className="list-group-item">
                             {!giftCard?.isPurchased && !giftCard?.isRedeemed && (
-                                <div className="form-floating mb-2">
-                                    <select className="form-select" id={`gift-cards-permit-options-${giftCard?.oVoucherId}`} aria-label="Select gift card to purchase" value={getSelectedGiftCardOption(giftCard?.oVoucherId)} onChange={(e: any) => giftCardOptionChange(e, giftCard?.oVoucherId)} disabled={giftCard?.uiGiftcardProductIdLoading || isGiftCardAddedToCart(giftCard?.oVoucherId)}>
-                                        <option value="" disabled>{t("Common.PleaseSelect")}</option>
+                                <div className="input-group has-validation mb-2">
+                                    <div className={`form-floating ${iv(giftCard?.uiIsGiftcardProductIdValid)}`}>
+                                        <select className={`form-select ${iv(giftCard?.uiIsGiftcardProductIdValid)}`} id={`gift-cards-permit-options-${giftCard?.oVoucherId}`} aria-label="Select gift card to purchase" aria-describedby={`gift-cards-permit-options-${giftCard?.oVoucherId}-validation`} value={getSelectedGiftCardOption(giftCard?.oVoucherId)} onChange={(e: any) => giftCardOptionChange(e, giftCard?.oVoucherId)} disabled={giftCard?.uiGiftcardProductIdLoading || isGiftCardAddedToCart(giftCard?.oVoucherId)}>
+                                            <option value="" disabled>{t("Common.PleaseSelect")}</option>
 
-                                        {giftCardTypesData != undefined && giftCardTypesData.length > 0 && getGiftCardTypesData().map(giftCardType => {
-                                            let displayText: string = "";
+                                            {giftCardTypesData != undefined && giftCardTypesData.length > 0 && getGiftCardTypesData().map(giftCardType => {
+                                                let displayText: string = "";
 
-                                            if (appContext.translation.i18n.language === "fr") {
-                                                displayText = getGiftCardTypeName(giftCardType?.giftcardProductId, "fr");
-                                            } else {
-                                                displayText = getGiftCardTypeName(giftCardType?.giftcardProductId);
-                                            }
+                                                if (appContext.translation.i18n.language === "fr") {
+                                                    displayText = getGiftCardTypeName(giftCardType?.giftcardProductId, "fr");
+                                                } else {
+                                                    displayText = getGiftCardTypeName(giftCardType?.giftcardProductId);
+                                                }
 
-                                            displayText += " — " + formatCurrency(getGiftCardTypeAmount(giftCardType?.giftcardProductId));
+                                                displayText += " — " + formatCurrency(getGiftCardTypeAmount(giftCardType?.giftcardProductId));
 
-                                            return (
-                                                <option value={giftCardType?.giftcardProductId} key={giftCardType?.giftcardProductId}>{displayText}</option>
-                                            )
-                                        })}
-                                    </select>
-                                    <label className="required" htmlFor={`gift-cards-permit-options-${giftCard?.oVoucherId}`}>{t("GiftCards.SelectGiftCard")}</label>
+                                                return (
+                                                    <option value={giftCardType?.giftcardProductId} key={giftCardType?.giftcardProductId}>{displayText}</option>
+                                                )
+                                            })}
+                                        </select>
+                                        <label className="required" htmlFor={`gift-cards-permit-options-${giftCard?.oVoucherId}`}>{t("GiftCards.SelectGiftCard")}</label>
 
-                                    {giftCard?.uiGiftcardProductIdLoading && (
-                                        <span className="position-absolute" style={{ left: "50%", top: "30%" }}>
-                                            <i className="fa-solid fa-spinner fa-spin fa-xl"></i>
-                                        </span>
-                                    )}
+                                        {giftCard?.uiGiftcardProductIdLoading && (
+                                            <span className="position-absolute" style={{ left: "50%", top: "30%" }}>
+                                                <i className="fa-solid fa-spinner fa-spin fa-xl"></i>
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div id={`gift-cards-permit-options-${giftCard?.oVoucherId}-validation`} className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
                                 </div>
                             )}
 
                             <div className="row mb-2">
                                 <div className="col-12 col-sm-12 col-md-6 mb-2 mb-md-0">
-                                    <div className="form-floating">
-                                        <input type="text" className="form-control" id={`gift-card-last-name-${giftCard?.oVoucherId}`} placeholder="Recipient's LAST Name ONLY" maxLength={150} value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
-                                        <label className="required" htmlFor={`gift-card-last-name-${giftCard?.oVoucherId}`}>{t("GiftCards.RecipientsLastNameOnly")}</label>
+                                    <div className="input-group has-validation">
+                                        <div className={`form-floating ${iv(giftCard?.uiIsRecipientLastNameValid)}`}>
+                                            <input type="text" className={`form-control ${iv(giftCard?.uiIsRecipientLastNameValid)}`} id={`gift-card-last-name-${giftCard?.oVoucherId}`} placeholder="Recipient's LAST Name ONLY" maxLength={150} aria-describedby="gift-card-last-name-validation" value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
+                                            <label className="required" htmlFor={`gift-card-last-name-${giftCard?.oVoucherId}`}>{t("GiftCards.RecipientsLastName")}</label>
+                                        </div>
+                                        <div id="gift-card-last-name-validation" className="invalid-feedback">{t("GiftCards.RecipientsLastName")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                     </div>
                                 </div>
 
                                 <div className="col-12 col-sm-12 col-md-6">
-                                    <div className="form-floating">
-                                        <input type="text" className="form-control" id={`gift-card-postal-code-${giftCard?.oVoucherId}`} placeholder="Recipient's Postal Code" maxLength={7} value={getGiftCardRecipientPostalCode(giftCard?.oVoucherId)} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardPostalCodeEnabled(giftCard?.oVoucherId)} />
-                                        <label className="required" htmlFor={`gift-card-postal-code-${giftCard?.oVoucherId}`}>{t("GiftCards.RecipientsPostalCode")}</label>
+                                    <div className="input-group has-validation">
+                                        <div className={`form-floating ${iv(giftCard?.uiIsRecipientPostalValid && giftCard?.uiIsRecipientPostalFormatValid)}`}>
+                                            <input type="text" className={`form-control ${iv(giftCard?.uiIsRecipientPostalValid && giftCard?.uiIsRecipientPostalFormatValid)}`} id={`gift-card-postal-code-${giftCard?.oVoucherId}`} placeholder="Recipient's Postal Code" maxLength={7} aria-describedby="gift-card-postal-code-validation" value={getGiftCardRecipientPostalCode(giftCard?.oVoucherId)} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardPostalCodeEnabled(giftCard?.oVoucherId)} />
+                                            <label className="required" htmlFor={`gift-card-postal-code-${giftCard?.oVoucherId}`}>{t("GiftCards.RecipientsPostalCode")}</label>
+                                        </div>
+                                        <div id="gift-card-postal-code-validation" className="invalid-feedback">
+                                            {!giftCard?.uiIsRecipientPostalValid && (
+                                                <>
+                                                    {t("GiftCards.RecipientsPostalCode")} {t("Common.Validation.IsRequiredSuffix")}
+                                                </>
+                                            )}
+                                            {giftCard?.uiIsRecipientPostalValid && !giftCard?.uiIsRecipientPostalFormatValid && (
+                                                <>
+                                                    {t("GiftCards.InvalidPostalCodeFormat")}
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -315,26 +344,26 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         || (giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode)) && (
                             <div className="card-footer">
                                 {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)} disabled={!isAddToCartEnabled(giftCard?.oVoucherId)}>
-                                        <i className="fa-solid fa-plus"></i> {t("GiftCards.AddGiftCardToCart")}
+                                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)}>
+                                        <i className="fa-solid fa-plus me-2"></i>{t("GiftCards.AddGiftCardToCart")}
                                     </button>
                                 )}
 
                                 {!giftCard?.isPurchased && !giftCard?.isRedeemed && isGiftCardAddedToCart(giftCard?.oVoucherId) && (
                                     <button className="btn btn-outline-dark btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>
-                                        <i className="fa-solid fa-xmark"></i> {t("GiftCards.RemoveGiftCardFromCart")}
+                                        <i className="fa-solid fa-xmark me-2"></i>{t("GiftCards.RemoveGiftCardFromCart")}
                                     </button>
                                 )}
 
                                 {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode && (
                                     <button className="btn btn-outline-dark btn-sm me-2" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>
-                                        <i className="fa-solid fa-floppy-disk"></i> {t("GiftCards.SaveChanges")}
+                                        <i className="fa-solid fa-floppy-disk me-2"></i>{t("GiftCards.SaveChanges")}
                                     </button>
                                 )}
 
                                 {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode && (
                                     <button className="btn btn-outline-dark btn-sm" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>
-                                        <i className="fa-solid fa-xmark"></i> {t("GiftCards.CancelChanges")}
+                                        <i className="fa-solid fa-xmark me-2"></i>{t("GiftCards.CancelChanges")}
                                     </button>
                                 )}
                             </div>
@@ -524,6 +553,17 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         amount: result?.data?.amount,
                         displayName: result?.data?.displayName,
                         frenchDisplayName: result?.data?.frenchDisplayName,
+
+                        uiIsEditMode: false,
+                        uiRecipientInfoLastChangeDate: undefined,
+                        uiIsGiftcardProductIdValid: undefined,
+                        uiRecipientLastName: undefined,
+                        uiIsRecipientLastNameValid: undefined,
+                        uiRecipientPostal: undefined,
+                        uiIsRecipientPostalValid: undefined,
+                        uiIsRecipientPostalFormatValid: undefined,
+
+                        uiGiftcardProductIdLoading: undefined
                     };
 
                     appContext.updater(draft => {
@@ -548,10 +588,13 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
 
                 if (draftGiftCard != undefined) {
-                    draftGiftCard.uiRecipientLastName = draftGiftCard?.recipientLastName;
-                    draftGiftCard.uiRecipientPostal = draftGiftCard?.recipientPostal;
-                    draftGiftCard.uiRecipientInfoLastChangeDate = undefined;
                     draftGiftCard.uiIsEditMode = true;
+                    draftGiftCard.uiIsGiftcardProductIdValid = undefined;
+                    draftGiftCard.uiRecipientLastName = draftGiftCard?.recipientLastName;
+                    draftGiftCard.uiIsRecipientLastNameValid = undefined;
+                    draftGiftCard.uiRecipientPostal = draftGiftCard?.recipientPostal;
+                    draftGiftCard.uiIsRecipientPostalValid = undefined;
+                    draftGiftCard.uiIsRecipientPostalFormatValid = undefined;
                 }
             });
         }
@@ -690,6 +733,8 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                 draftGiftCard.oVoucherId = result?.data?.oVoucherId;
                                 draftGiftCard.orderId = result?.data?.orderId;
                                 draftGiftCard.transactionDate = result?.data?.transactionDate;
+                                draftGiftCard.recipientLastName = result?.data?.recipientLastName;
+                                draftGiftCard.recipientPostal = result?.data?.recipientPostal;
                                 draftGiftCard.redemptionCode = result?.data?.redemptionCode;
                                 draftGiftCard.purchaserEmail = result?.data?.purchaserEmail;
                                 draftGiftCard.isRedeemed = result?.data?.isRedeemed;
@@ -704,9 +749,6 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                 draftGiftCard.amount = result?.data?.amount;
                                 draftGiftCard.displayName = result?.data?.displayName;
                                 draftGiftCard.frenchDisplayName = result?.data?.frenchDisplayName;
-
-                                //draftGiftCard.recipientLastName = result?.data?.recipientLastName;
-                                //draftGiftCard.recipientPostal = result?.data?.recipientPostal;
                             }
                         });
                     } else {
@@ -731,24 +773,33 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
     function addGiftCardToCartClick(oVoucherId?: string): void {
         if (oVoucherId != undefined) {
-            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
-
-            if (giftCard != undefined) {
-                console.log(getGiftCardTypeName(giftCard?.giftcardProductId), getGiftCardTypeName(giftCard?.giftcardProductId, "fr"))
-                const cartItem: ICartItem = {
-                    id: getGuid(),
-                    description: getGiftCardTypeName(giftCard?.giftcardProductId) + ` — ${giftCard?.recipientLastName} — ${giftCard?.recipientPostal}`,
-                    descriptionFr: getGiftCardTypeName(giftCard?.giftcardProductId, "fr") + ` — ${giftCard?.recipientLastName} — ${giftCard?.recipientPostal}`,
-                    price: getGiftCardTypeAmount(giftCard?.giftcardProductId),
-                    isPermit: false,
-                    isGiftCard: true,
-                    itemId: giftCard.oVoucherId,
-
-                    uiRedemptionCode: ""
-                };
-
+            if (validateGiftCard(oVoucherId)) {
                 appContext.updater(draft => {
-                    draft.cartItems = draft.cartItems == undefined ? [cartItem] : [...draft.cartItems, cartItem];
+                    const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
+
+                    if (draftGiftCard != undefined) {
+                        const cartItem: ICartItem = {
+                            id: getGuid(),
+                            description: getGiftCardTypeName(draftGiftCard?.giftcardProductId) + ` — ${draftGiftCard?.recipientLastName} — ${draftGiftCard?.recipientPostal}`,
+                            descriptionFr: getGiftCardTypeName(draftGiftCard?.giftcardProductId, "fr") + ` — ${draftGiftCard?.recipientLastName} — ${draftGiftCard?.recipientPostal}`,
+                            price: getGiftCardTypeAmount(draftGiftCard?.giftcardProductId),
+                            isPermit: false,
+                            isGiftCard: true,
+                            itemId: draftGiftCard.oVoucherId,
+
+                            uiRedemptionCode: ""
+                        };
+
+                        draft.cartItems = draft.cartItems == undefined ? [cartItem] : [...draft.cartItems, cartItem];
+
+                        draftGiftCard.uiIsEditMode = false;
+                        draftGiftCard.uiIsGiftcardProductIdValid = undefined;
+                        draftGiftCard.uiRecipientLastName = undefined;
+                        draftGiftCard.uiIsRecipientLastNameValid = undefined;
+                        draftGiftCard.uiRecipientPostal = undefined;
+                        draftGiftCard.uiIsRecipientPostalValid = undefined;
+                        draftGiftCard.uiIsRecipientPostalFormatValid = undefined;
+                    }
                 });
             }
         }
@@ -762,21 +813,101 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
         }
     }
 
-    function saveGiftCardChangesClick(oVoucherId?: string): void {
+    function validateGiftCard(oVoucherId?: string): boolean {
+        let result: boolean = true;
+
         if (oVoucherId != undefined) {
             appContext.updater(draft => {
                 const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
 
                 if (draftGiftCard != undefined) {
-                    draftGiftCard.recipientLastName = draftGiftCard?.uiRecipientLastName;
-                    draftGiftCard.recipientPostal = draftGiftCard?.uiRecipientPostal;
-                    draftGiftCard.uiRecipientInfoLastChangeDate = undefined;
-                    draftGiftCard.uiIsEditMode = false;
+                    if (draftGiftCard?.uiIsEditMode) {
+                        if (draftGiftCard?.giftcardProductId == undefined) {
+                            draftGiftCard.uiIsGiftcardProductIdValid = false;
+                            result = false;
+                        } else {
+                            draftGiftCard.uiIsGiftcardProductIdValid = true;
+                        }
 
-                    // Force api save instead of using interval.
-                    saveGiftCardSelections(oVoucherId, draftGiftCard?.isPurchased, draftGiftCard?.giftcardProductId, draftGiftCard?.recipientLastName, draftGiftCard?.recipientPostal);
+                        if (draftGiftCard?.uiRecipientLastName == undefined || draftGiftCard.uiRecipientLastName.trim() === "") {
+                            draftGiftCard.uiIsRecipientLastNameValid = false;
+                            result = false;
+                        } else {
+                            draftGiftCard.uiIsRecipientLastNameValid = true;
+                        }
+
+                        if (draftGiftCard?.uiRecipientPostal == undefined || draftGiftCard.uiRecipientPostal.trim() === "") {
+                            draftGiftCard.uiIsRecipientPostalValid = false;
+                            result = false;
+                        } else {
+                            draftGiftCard.uiIsRecipientPostalValid = true;
+                        }
+
+                        if (!validatePostalCode(draftGiftCard?.uiRecipientPostal)) {
+                            draftGiftCard.uiIsRecipientPostalFormatValid = false;
+                            result = false;
+                        } else {
+                            draftGiftCard.uiIsRecipientPostalFormatValid = true;
+                        }
+                    } else {
+                        if (draftGiftCard?.giftcardProductId == undefined) {
+                            draftGiftCard.uiIsGiftcardProductIdValid = false;
+                            result = false;
+                        } else {
+                            draftGiftCard.uiIsGiftcardProductIdValid = true;
+                        }
+
+                        if (draftGiftCard?.recipientLastName == undefined || draftGiftCard.recipientLastName.trim() === "") {
+                            draftGiftCard.uiIsRecipientLastNameValid = false;
+                            result = false;
+                        } else {
+                            draftGiftCard.uiIsRecipientLastNameValid = true;
+                        }
+
+                        if (draftGiftCard?.recipientPostal == undefined || draftGiftCard.recipientPostal.trim() === "") {
+                            draftGiftCard.uiIsRecipientPostalValid = false;
+                            result = false;
+                        } else {
+                            draftGiftCard.uiIsRecipientPostalValid = true;
+                        }
+
+                        if (!validatePostalCode(draftGiftCard?.recipientPostal)) {
+                            draftGiftCard.uiIsRecipientPostalFormatValid = false;
+                            result = false;
+                        } else {
+                            draftGiftCard.uiIsRecipientPostalFormatValid = true;
+                        }
+                    }
                 }
             });
+        }
+
+        return result;
+    }
+
+    function saveGiftCardChangesClick(oVoucherId?: string): void {
+        if (oVoucherId != undefined) {
+            if (validateGiftCard(oVoucherId)) {
+                appContext.updater(draft => {
+                    const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
+
+                    if (draftGiftCard != undefined) {
+                        draftGiftCard.recipientLastName = draftGiftCard?.uiRecipientLastName;
+                        draftGiftCard.recipientPostal = draftGiftCard?.uiRecipientPostal;
+
+                        draftGiftCard.uiIsEditMode = false;
+                        draftGiftCard.uiIsGiftcardProductIdValid = undefined;
+                        draftGiftCard.uiRecipientLastName = undefined;
+                        draftGiftCard.uiIsRecipientLastNameValid = undefined;
+                        draftGiftCard.uiRecipientPostal = undefined;
+                        draftGiftCard.uiIsRecipientPostalValid = undefined;
+                        draftGiftCard.uiIsRecipientPostalFormatValid = undefined;
+
+                        // Force api save instead of using interval.
+                        saveGiftCardSelections(oVoucherId, draftGiftCard?.isPurchased, draftGiftCard?.giftcardProductId, draftGiftCard?.recipientLastName, draftGiftCard?.recipientPostal);
+                    }
+                });
+            }
         }
     }
 
@@ -786,29 +917,16 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 const draftGiftCard: IGiftCard | undefined = draft?.giftCards?.filter(x => x?.oVoucherId === oVoucherId)[0];
 
                 if (draftGiftCard != undefined) {
-                    draftGiftCard.uiRecipientLastName = undefined;
-                    draftGiftCard.uiRecipientPostal = undefined;
-                    draftGiftCard.uiRecipientInfoLastChangeDate = undefined;
                     draftGiftCard.uiIsEditMode = false;
+                    draftGiftCard.uiIsGiftcardProductIdValid = undefined;
+                    draftGiftCard.uiRecipientLastName = undefined;
+                    draftGiftCard.uiIsRecipientLastNameValid = undefined;
+                    draftGiftCard.uiRecipientPostal = undefined;
+                    draftGiftCard.uiIsRecipientPostalValid = undefined;
+                    draftGiftCard.uiIsRecipientPostalFormatValid = undefined;
                 }
             });
         }
-    }
-
-    function isAddToCartEnabled(oVoucherId?: string): boolean {
-        let result: boolean = false;
-
-        if (oVoucherId != undefined) {
-            const giftCard: IGiftCard | undefined = getGiftCard(oVoucherId);
-
-            if (giftCard != undefined) {
-                result = giftCard?.giftcardProductId != undefined && giftCard?.giftcardProductId !== 0
-                    && giftCard?.recipientLastName != undefined && giftCard?.recipientLastName?.trim() !== ""
-                    && giftCard?.recipientPostal != undefined && giftCard?.recipientPostal?.trim() !== "";
-            }
-        }
-
-        return result;
     }
 
     function isGiftCardAddedToCart(oVoucherId?: string): boolean {

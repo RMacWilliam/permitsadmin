@@ -37,10 +37,10 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
 
             {showHoverButton?.showHoverButton && (
                 <div id="hover-button" className="dropdown position-fixed bottom-0 end-0 z-10000 me-4 mb-2 bd-mode-toggle">
-                    <button className="btn btn-warning dropdown-toggle py-2" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"
+                    <button className="btn btn-warning dropdown-toggle py-2" style={{ minWidth: "revert" }} type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"
                         aria-label={t("Common.HoverButton")} disabled={!isHoverButtonEnabled()}>
 
-                        <i className="fa-solid fa-plus me-1"></i>
+                        <i className="fa-solid fa-plus me-2"></i>
                         <span className="visually-hidden" id="hover-button-label">{t("Common.HoverButton")}</span>
                     </button>
 

@@ -64,16 +64,13 @@ export default function App({ Component, pageProps }: AppProps) {
     GlobalAppContext.translation = { t, i18n };
     GlobalAppContext.router = router;
 
-    // TODO: For testing. Remove
-    //immerAppContextValues.cart.
-
     // Set language for html tag.
     document.getElementsByTagName("html")[0].lang = immerAppContextValues?.language ?? "en";
 
     if (isLocalStorageLoaded && window.localStorage) {
       window.localStorage.setItem("data", JSON.stringify(immerAppContextValues));
     }
-  }, [isLocalStorageLoaded, immerAppContextValues]);
+  }, [immerAppContextValues, updateImmerAppContextValues, t, i18n, router, isLocalStorageLoaded]);
 
   const appContextProviderValues: IAppContextValues = {
     data: immerAppContextValues as IAppContextData,

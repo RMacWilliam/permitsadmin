@@ -390,13 +390,13 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         <div className="card-footer">
                             {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
                                 <button className="btn btn-outline-dark btn-sm" onClick={() => addPermitToCartClick(snowmobile?.oVehicleId)} disabled={!isAddToCartEnabled(snowmobile?.oVehicleId)}>
-                                    <i className="fa-solid fa-plus"></i> {t("Permits.Vehicle.AddPermitToCart")}
+                                    <i className="fa-solid fa-plus me-2"></i>{t("Permits.Vehicle.AddPermitToCart")}
                                 </button>
                             )}
 
                             {snowmobile?.isEditable && isPermitAddedToCart(snowmobile?.oVehicleId) && (
                                 <button className="btn btn-outline-dark btn-sm" onClick={() => removePermitFromCartClick(snowmobile?.oVehicleId)}>
-                                    <i className="fa-solid fa-xmark"></i> {t("Permits.Vehicle.RemovePermitFromCart")}
+                                    <i className="fa-solid fa-xmark me-2"></i>{t("Permits.Vehicle.RemovePermitFromCart")}
                                 </button>
                             )}
                         </div>

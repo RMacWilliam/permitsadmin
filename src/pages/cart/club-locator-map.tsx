@@ -40,8 +40,6 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
     const t: Function = appContext.translation.t;
 
-    console.log("google: ", typeof google)
-
     if (typeof google === "undefined") {
         $.ajax({
             dataType: "script",
@@ -99,17 +97,17 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                                         <div className="input-group">
                                             <input id="club-locator-map-input" type="text" className="form-control" placeholder={t("Cart.ClubLocatorMapDialog.SearchBoxPlaceholder")} onKeyUp={(e: any) => searchBoxKeyUp(e)} />
 
-                                            <button className="btn btn-outline-dark d-none d-md-block" style={{ minWidth: "70px", borderRight: "none" }} type="button" title={t("Cart.ClubLocatorMapDialog.SearchButtonTitle")} onClick={() => codeAddress()}>
+                                            <button className="btn btn-outline-dark d-none d-md-block" type="button" title={t("Cart.ClubLocatorMapDialog.SearchButtonTitle")} onClick={() => codeAddress()}>
                                                 <i className="fa-solid fa-magnifying-glass"></i>
                                             </button>
-                                            <button className="btn btn-outline-dark d-none d-md-block" style={{ minWidth: "70px" }} type="button" title={t("Cart.ClubLocatorMapDialog.ResetButtonTitle")} onClick={() => initializeIt()}>
+                                            <button className="btn btn-outline-dark d-none d-md-block" type="button" title={t("Cart.ClubLocatorMapDialog.ResetButtonTitle")} onClick={() => initializeIt()}>
                                                 <i className="fa-solid fa-xmark"></i>
                                             </button>
 
-                                            <button className="btn btn-outline-dark d-md-none" style={{ borderRight: "none" }} type="button" title={t("Cart.ClubLocatorMapDialog.SearchButtonTitle")} onClick={() => codeAddress()}>
+                                            <button className="btn btn-outline-dark d-md-none" style={{ minWidth: "40px" }} type="button" title={t("Cart.ClubLocatorMapDialog.SearchButtonTitle")} onClick={() => codeAddress()}>
                                                 <i className="fa-solid fa-magnifying-glass"></i>
                                             </button>
-                                            <button className="btn btn-outline-dark d-md-none" type="button" title={t("Cart.ClubLocatorMapDialog.ResetButtonTitle")} onClick={() => initializeIt()}>
+                                            <button className="btn btn-outline-dark d-md-none" style={{ minWidth: "40px" }} type="button" title={t("Cart.ClubLocatorMapDialog.ResetButtonTitle")} onClick={() => initializeIt()}>
                                                 <i className="fa-solid fa-xmark"></i>
                                             </button>
                                         </div>

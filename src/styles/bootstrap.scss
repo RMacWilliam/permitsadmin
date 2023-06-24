@@ -64,6 +64,14 @@ $form-select-border-color: $gray-500;
 // Utilities
 @import "../../node_modules/bootstrap/scss/utilities/api.scss";
 
+.btn {
+  min-width: 75px;
+}
+
+.btn:has(i.fa-circle-info) {
+  min-width: revert;
+}
+
 .card .list-group-item {
   border-color: $gray-500;
 }

@@ -950,7 +950,7 @@ function Contact({ appContext, router, setShowAlert }
     }
 
     function contactInfoDialogSave(): void {
-        if (validateContactInfoDialog()) {
+        if (validateContactInfo()) {
             const apiSaveUserDetailsRequest: IApiSaveUserDetailsRequest = {
                 addressLine1: addressLine1?.trim()?.substring(0, 30),
                 addressLine2: addressLine2?.trim()?.substring(0, 30),
@@ -1001,7 +1001,7 @@ function Contact({ appContext, router, setShowAlert }
         }
     }
 
-    function validateContactInfoDialog(): boolean {
+    function validateContactInfo(): boolean {
         let result: boolean = true;
 
         if (email.trim() === "") {
@@ -1109,7 +1109,7 @@ function Contact({ appContext, router, setShowAlert }
     }
 
     function accountPreferencesDialogSave(): void {
-        if (validateAccountPreferencesDialog()) {
+        if (validateAccountPreferences()) {
             const apiSaveUserPreferencesRequest: IApiSaveUserPreferencesRequest = {
                 ofscContactPermission: ofscContactPermission,
                 riderAdvantage: riderAdvantage,
@@ -1146,7 +1146,7 @@ function Contact({ appContext, router, setShowAlert }
         }
     }
 
-    function validateAccountPreferencesDialog(): boolean {
+    function validateAccountPreferences(): boolean {
         let result: boolean = true;
 
         if (ofscContactPermission === -1) {
@@ -1185,10 +1185,10 @@ function Contact({ appContext, router, setShowAlert }
     }
 
     function confirmContactInfoClick(): void {
-        const validateContactInfo: boolean = validateContactInfoDialog();
-        const validateAccountPreferences: boolean = validateAccountPreferencesDialog();
+        const contactInfoValid: boolean = validateContactInfo();
+        const accountPreferencesValid: boolean = validateAccountPreferences();
 
-        if (validateContactInfo && validateAccountPreferences) {
+        if (contactInfoValid && accountPreferencesValid) {
             appContext.updater(draft => {
                 draft.isFirstLoginOfSeason = false;
                 draft.isContactInfoVerified = true;

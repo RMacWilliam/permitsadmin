@@ -147,8 +147,12 @@ export interface IGiftCard {
 
     uiIsEditMode?: boolean;
     uiRecipientInfoLastChangeDate?: Date;
+    uiIsGiftcardProductIdValid?: boolean;
     uiRecipientLastName?: string;
+    uiIsRecipientLastNameValid?: boolean;
     uiRecipientPostal?: string;
+    uiIsRecipientPostalValid?: boolean;
+    uiIsRecipientPostalFormatValid?: boolean;
 
     uiGiftcardProductIdLoading?: boolean;
 }
