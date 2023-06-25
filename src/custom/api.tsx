@@ -28,6 +28,7 @@ function httpFetch<T>(method: "GET" | "POST" | "DELETE", url: string, params?: a
         selector: (response: Response) => {
             // Update application token with token received from response header.
             if (GlobalAppContext.updater != undefined) {
+                // Don't update application token if the logout api was called.
                 const newToken: string | undefined = response.headers.get("NewToken") ?? undefined;
 
                 if (newToken != undefined) {

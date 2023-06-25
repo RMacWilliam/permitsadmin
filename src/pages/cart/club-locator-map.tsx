@@ -94,20 +94,24 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                                             {t("Cart.ClubLocatorMapDialog.SearchForTheLocation")}
                                         </label>
 
-                                        <div className="input-group">
+                                        <div className="input-group d-none d-md-flex">
                                             <input id="club-locator-map-input" type="text" className="form-control" placeholder={t("Cart.ClubLocatorMapDialog.SearchBoxPlaceholder")} onKeyUp={(e: any) => searchBoxKeyUp(e)} />
 
-                                            <button className="btn btn-outline-dark d-none d-md-block" type="button" title={t("Cart.ClubLocatorMapDialog.SearchButtonTitle")} onClick={() => codeAddress()}>
+                                            <button className="btn btn-outline-dark" type="button" title={t("Cart.ClubLocatorMapDialog.SearchButtonTitle")} onClick={() => codeAddress()}>
                                                 <i className="fa-solid fa-magnifying-glass"></i>
                                             </button>
-                                            <button className="btn btn-outline-dark d-none d-md-block" type="button" title={t("Cart.ClubLocatorMapDialog.ResetButtonTitle")} onClick={() => initializeIt()}>
+                                            <button className="btn btn-outline-dark" type="button" title={t("Cart.ClubLocatorMapDialog.ResetButtonTitle")} onClick={() => initializeIt()}>
                                                 <i className="fa-solid fa-xmark"></i>
                                             </button>
+                                        </div>
 
-                                            <button className="btn btn-outline-dark d-md-none" style={{ minWidth: "40px" }} type="button" title={t("Cart.ClubLocatorMapDialog.SearchButtonTitle")} onClick={() => codeAddress()}>
+                                        <div className="input-group d-md-none">
+                                            <input id="club-locator-map-input" type="text" className="form-control" placeholder={t("Cart.ClubLocatorMapDialog.SearchBoxPlaceholder")} onKeyUp={(e: any) => searchBoxKeyUp(e)} />
+
+                                            <button className="btn btn-outline-dark" style={{ minWidth: "40px" }} type="button" title={t("Cart.ClubLocatorMapDialog.SearchButtonTitle")} onClick={() => codeAddress()}>
                                                 <i className="fa-solid fa-magnifying-glass"></i>
                                             </button>
-                                            <button className="btn btn-outline-dark d-md-none" style={{ minWidth: "40px" }} type="button" title={t("Cart.ClubLocatorMapDialog.ResetButtonTitle")} onClick={() => initializeIt()}>
+                                            <button className="btn btn-outline-dark" style={{ minWidth: "40px" }} type="button" title={t("Cart.ClubLocatorMapDialog.ResetButtonTitle")} onClick={() => initializeIt()}>
                                                 <i className="fa-solid fa-xmark"></i>
                                             </button>
                                         </div>

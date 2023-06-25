@@ -1,10 +1,10 @@
 import { ReactNode, useContext } from 'react';
 import Head from 'next/head';
 import LanguageToggler from '../language-toggler';
-import { getImagePath } from '@/custom/utilities';
 import { Images } from '../../../global';
 import { AppContext } from '@/custom/app-context';
 import ModalProcessingAlert, { IShowAlert } from '../modal-processing-alert';
+import { useRouter } from 'next/router';
 
 export default function UnauthenticatedPageLayout({ children, showAlert }
     : {
@@ -13,6 +13,7 @@ export default function UnauthenticatedPageLayout({ children, showAlert }
     }) {
 
     const appContext = useContext(AppContext);
+    const router = useRouter();
 
     const t: Function = appContext.translation.t;
 
@@ -29,7 +30,7 @@ export default function UnauthenticatedPageLayout({ children, showAlert }
                     <div className="container-fluid" style={{ minHeight: 70, maxHeight: 70 }}>
                         <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
                             <div className="d-flex flex-fill justify-content-start align-items-center">
-                                <a className="navbar-brand d-none d-md-block" href="#">
+                                <a className="navbar-brand d-none d-md-block" href="" onClick={() => router.push("/")}>
                                     <img src={Images.Ofsc} alt="Logo" width="65" height="70" />
                                 </a>
 

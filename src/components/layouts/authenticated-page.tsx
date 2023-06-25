@@ -59,7 +59,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                     <div className="container-fluid" style={{ minHeight: 70, maxHeight: 70 }}>
                         <div className="d-flex justify-content-between align-items-center w-100" style={{ minHeight: 70, maxHeight: 70 }}>
                             <div className="d-flex flex-fill justify-content-start align-items-center">
-                                <a className="navbar-brand d-none d-md-block" href="#">
+                                <a className="navbar-brand d-none d-md-block" href="" onClick={() => router.push("/home")}>
                                     <img src={Images.Ofsc} alt="Logo" width="65" height="70" />
                                 </a>
 

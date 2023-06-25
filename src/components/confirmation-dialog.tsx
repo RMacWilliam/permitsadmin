@@ -1,7 +1,8 @@
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { ReactNode, useContext } from 'react';
+import { ComponentProps, ElementType, ReactNode, forwardRef, useContext } from 'react';
 import { AppContext } from '@/custom/app-context';
+import classNames from 'classnames';
 
 export enum ConfirmationDialogButtons {
     Ok = 0,

@@ -42,11 +42,11 @@ function Index() {
                 <div className="flex-fill">
                     {appContext.translation.i18n.language === "en" && (
                         <>
-                            <div>
+                            <div className="mb-3">
                                 <h3>Welcome to Ontario Federation of Snowmobile Clubs</h3>
                             </div>
 
-                            <div className="mt-3">
+                            <div className="mb-4">
                                 Permits and Gift Cards are only valid for "motorized snow vehicles":
                                 <br />
                                 <a href="https://www.ontario.ca/laws/statute/90m44" target="_blank">
@@ -54,7 +54,7 @@ function Index() {
                                 </a>
                             </div>
 
-                            <div className="mt-4">
+                            <div className="mb-2">
                                 <b>To purchase a permit you must:</b>
                                 <ul>
                                     <li>Be the registered owner of the vehicle</li>
@@ -62,14 +62,14 @@ function Index() {
                                 </ul>
                             </div>
 
-                            <div className="mt-2">For more information on permits visit:
+                            <div className="mb-4">For more information on permits visit:
                                 <br />
                                 <a href="https://www.ofsc.on.ca/faq" target="_blank">
                                     Permits - Ontario Federation of Snowmobile Clubs
                                 </a>
                             </div>
 
-                            <div className="mt-4">
+                            <div className="mb-2">
                                 <b>Gift Cards are ideal for those who:</b>
                                 <ul>
                                     <li>Do not yet have a VIN and want to take advantage of pre-season fees</li>
@@ -77,7 +77,7 @@ function Index() {
                                 </ul>
                             </div>
 
-                            <div className="mt-2">
+                            <div>
                                 For more information on gift cards visit:
                                 <br />
                                 <a href="https://www.ofsc.on.ca/faq" target="_blank">
@@ -89,18 +89,18 @@ function Index() {
 
                     {appContext.translation.i18n.language === "fr" && (
                         <>
-                            <div>
+                            <div className="mb-3">
                                 <h3>Bienvenue à la Fédération des clubs de motoneigistes de l'Ontario</h3>
                             </div>
 
-                            <div className="mt-3">Les permis et les cartes-cadeaux ne sont valables que pour les «motoneiges»:
+                            <div className="mb-4">Les permis et les cartes-cadeaux ne sont valables que pour les «motoneiges»:
                                 <br />
                                 <a href="https://www.ontario.ca/fr/lois/loi/90m44" target="_blank">
                                     Motoneiges (Loi sur les), L.R.O. 1990, chap. M.44
                                 </a>
                             </div>
 
-                            <div className="mt-4">
+                            <div className="mb-2">
                                 <b>Pour acheter un permis, vous devez:</b>
                                 <ul>
                                     <li>Être le propriétaire enregistré du véhicule</li>
@@ -108,14 +108,14 @@ function Index() {
                                 </ul>
                             </div>
 
-                            <div className="mt-2">Pour plus d'information sur les permis, visitez le site:
+                            <div className="mb-4">Pour plus d'information sur les permis, visitez le site:
                                 <br />
                                 <a href="https://www.ofsc.on.ca/faq" target="_blank">
                                     Permis - Fédération des clubs de motoneigistes de l'Ontario
                                 </a>
                             </div>
 
-                            <div className="mt-4">
+                            <div className="mb-2">
                                 <b>Achetez une carte-cadeau si:</b>
                                 <ul>
                                     <li>Vous n'avez pas encore la propriété du véhicule et vous voulez profiter des frais d'inscription hâtive</li>
@@ -123,7 +123,7 @@ function Index() {
                                 </ul>
                             </div>
 
-                            <div className="mt-2">
+                            <div>
                                 Pour plus d'information sur les cartes-cadeaux, visitez:
                                 <br />
                                 <a href="https://www.ofsc.on.ca/faq" target="_blank">
@@ -141,9 +141,9 @@ function Index() {
                                 <i className="fa-solid fa-right-to-bracket fa-xl"></i>
                             </div>
 
-                            <h5 className="text-center">{t("Index.LoginToMyAccount")}</h5>
+                            <h5 className="text-center mb-4">{t("Index.LoginToMyAccount")}</h5>
 
-                            <div className="mt-4">
+                            <div className="mb-2">
                                 <div className="form-floating mb-2">
                                     <input type="email" className={`form-control ${isEmailValid ? "" : "is-invalid"}`} id="login-email" placeholder={t("Index.EmailAddressLabel")} disabled={loginInProgress} value={email} maxLength={200} onChange={(e: any) => setEmail(e.target.value)} />
                                     <label htmlFor="login-email">{t("Index.EmailAddressLabel")}</label>
@@ -154,7 +154,7 @@ function Index() {
                                 </div>
                             </div>
 
-                            <div className="mt-2">
+                            <div className="mb-4">
                                 <button className="btn btn-primary w-100" disabled={loginInProgress} onClick={() => loginClick()}>
                                     {t("Index.LoginButton")}
 
@@ -170,19 +170,19 @@ function Index() {
                                 )}
                             </div>
 
-                            <div className="text-center mt-4">
+                            <div className="text-center mb-4">
                                 <button className="btn btn-link text-decoration-none" disabled={loginInProgress} onClick={() => router.push("/forgot-password")}>
                                     {t("Index.ForgotPasswordButton")}
                                 </button>
                             </div>
 
-                            <div className="mt-4 mb-2">
+                            <div className="mb-2">
                                 <button className="btn btn-outline-primary w-100" disabled={loginInProgress} onClick={() => router.push("/create-account")}>
                                     {t("Index.CreateAnAccountButton")}
                                 </button>
                             </div>
 
-                            <div className="mb-2">
+                            <div>
                                 <button className="btn btn-outline-primary w-100" disabled={loginInProgress} onClick={() => router.push("/change-email")}>
                                     {t("Index.ChangeMyEmailAddress")}
                                 </button>

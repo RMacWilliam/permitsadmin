@@ -167,8 +167,8 @@ function CreateAccount({ appContext, router, setShowAlert }
 
                 <p>{t("CreateAccount.PleaseCompleteInformationBelow")}</p>
 
-                <div className="row">
-                    <div className="col-12 mb-2">
+                <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                    <div className="col-12">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isEmailValid)}`}>
                                 <input type="email" className={`form-control ${iv(isEmailValid)}`} id="create-account-contact-info-email" placeholder={t("CreateAccount.ContactInfo.EmailAddress")} maxLength={200} aria-describedby="create-account-contact-info-email-validation" value={email} onChange={(e: any) => setEmail(e.target.value)} />
@@ -179,8 +179,8 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row">
-                    <div className="col-12 col-md-6 mb-2 mb-md-0">
+                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isPasswordValid && isPasswordFormatValid)}`}>
                                 <input type="text" className={`form-control ${iv(isPasswordValid && isPasswordFormatValid)}`} id="create-account-contact-info-password" placeholder={t("CreateAccount.ContactInfo.Password")} maxLength={200} aria-describedby="create-account-contact-info-password-validation" value={password} onChange={(e: any) => setPassword(e.target.value)} />
@@ -202,7 +202,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                         </div>
                     </div>
 
-                    <div className="col-12 col-md-6 mb-2">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isConfirmPasswordValid && isConfirmPasswordMatchValid)}`}>
                                 <input type="text" className={`form-control ${iv(isConfirmPasswordValid && isConfirmPasswordMatchValid)}`} id="create-account-contact-info-confirm-password" placeholder={t("CreateAccount.ContactInfo.ConfirmPassword")} maxLength={200} aria-describedby="create-account-contact-info-confirm-password-validation" value={confirmPassword} onChange={(e: any) => setConfirmPassword(e.target.value)} />
@@ -224,8 +224,12 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row mt-3">
-                    <div className="col-12 col-md-4 mb-2">
+                <div className="fs-6 fw-semibold mb-2">
+                    {t("ContactInfo.ContactInfo.Title")}
+                </div>
+
+                <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                    <div className="col-12 col-md-4">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isFirstNameValid)}`}>
                                 <input type="text" className={`form-control ${iv(isFirstNameValid)}`} id="create-account-contact-info-first-name" placeholder={t("CreateAccount.ContactInfo.FirstName")} maxLength={150} aria-describedby="create-account-contact-info-first-name-validation" value={firstName} onChange={(e: any) => setFirstName(e.target.value)} />
@@ -234,7 +238,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                             <div id="create-account-contact-info-first-name-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.FirstName")} {t("Common.Validation.IsRequiredSuffix")}</div>
                         </div>
                     </div>
-                    <div className="col-12 col-md-4 mb-2">
+                    <div className="col-12 col-md-4">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isMiddleInitialValid)}`}>
                                 <input type="text" className={`form-control ${iv(isMiddleInitialValid)}`} id="create-account-contact-info-middle-initial" placeholder={t("CreateAccount.ContactInfo.MiddleInitial")} maxLength={1} aria-describedby="create-account-contact-info-middle-initial-validation" value={middleInitial} onChange={(e: any) => setMiddleInitial(e.target.value)} />
@@ -243,7 +247,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                             <div id="create-account-contact-info-middle-initial-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.MiddleInitial")} {t("Common.Validation.IsRequiredSuffix")}</div>
                         </div>
                     </div>
-                    <div className="col-12 col-md-4 mb-2">
+                    <div className="col-12 col-md-4">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isLastNameValid)}`}>
                                 <input type="text" className={`form-control ${iv(isLastNameValid)}`} id="create-account-contact-info-last-name" placeholder={t("CreateAccount.ContactInfo.LastName")} maxLength={150} aria-describedby="create-account-contact-info-last-name-validation" value={lastName} onChange={(e: any) => setLastName(e.target.value)} />
@@ -254,8 +258,8 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row">
-                    <div className="col-12 col-md-6 mb-2">
+                <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isAddressLine1Valid)}`}>
                                 <input type="text" className={`form-control ${iv(isAddressLine1Valid)}`} id="create-account-contact-info-address-line-1" placeholder={t("CreateAccount.ContactInfo.AddressLine1")} maxLength={30} aria-describedby="create-account-contact-info-address-line-1-validation" value={addressLine1} onChange={(e: any) => setAddressLine1(e.target.value)} />
@@ -264,7 +268,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                             <div id="create-account-contact-info-address-line-1-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.AddressLine1")} {t("Common.Validation.IsRequiredSuffix")}</div>
                         </div>
                     </div>
-                    <div className="col-12 col-md-6 mb-2">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isAddressLine2Valid)}`}>
                                 <input type="text" className={`form-control ${iv(isAddressLine2Valid)}`} id="create-account-contact-info-address-line-2" placeholder={t("CreateAccount.ContactInfo.AddressLine2")} maxLength={30} aria-describedby="create-account-contact-info-address-line-2-validation" value={addressLine2} onChange={(e: any) => setAddressLine2(e.target.value)} />
@@ -275,8 +279,8 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row">
-                    <div className="col-12 col-md-4 mb-2">
+                <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                    <div className="col-12 col-md-4">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isCityValid)}`}>
                                 <input type="text" className={`form-control ${iv(isCityValid)}`} id="create-account-contact-info-city" placeholder={t("CreateAccount.ContactInfo.CityTownOrVillage")} maxLength={30} aria-describedby="create-account-contact-info-city-validation" value={city} onChange={(e: any) => setCity(e.target.value)} />
@@ -285,7 +289,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                             <div id="create-account-contact-info-city-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.CityTownOrVillage")} {t("Common.Validation.IsRequiredSuffix")}</div>
                         </div>
                     </div>
-                    <div className="col-12 col-md-4 mb-2">
+                    <div className="col-12 col-md-4">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isCountryValid)}`}>
                                 <select className={`form-select ${iv(isCountryValid)}`} id="create-account-contact-info-country" aria-label={t("CreateAccount.ContactInfo.Country")} aria-describedby="create-account-contact-info-country-validation" value={country.key} onChange={(e: any) => countryChange(e)}>
@@ -300,7 +304,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                             <div id="create-account-contact-info-country-validation" className="invalid-feedback">{t("CreateAccount.ContactInfo.Country")} {t("Common.Validation.IsRequiredSuffix")}</div>
                         </div>
                     </div>
-                    <div className="col-12 col-md-4 mb-2">
+                    <div className="col-12 col-md-4">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isProvinceValid)}`}>
                                 <select className={`form-select ${iv(isProvinceValid)}`} id="create-account-contact-info-province" aria-label={t("CreateAccount.ContactInfo.ProvinceState")} aria-describedby="create-account-contact-info-province-validation" value={getSelectedProvinceStateOption()} onChange={(e: any) => provinceChange(e)}>
@@ -317,8 +321,8 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row">
-                    <div className="col-12 col-md-6 mb-2 mb-md-0">
+                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`}>
                                 <input type="text" className={`form-control ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`} id="create-account-contact-info-postal-code" placeholder={t("CreateAccount.ContactInfo.PostalZipCode")} maxLength={7} aria-describedby="create-account-contact-info-postal-code-validation" value={postalCode} onChange={(e: any) => setPostalCode(e.target.value)} />
@@ -339,7 +343,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                         </div>
                     </div>
 
-                    <div className="col-12 col-md-6 mb-2">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isTelephoneValid)}`}>
                                 <input type="text" className={`form-control ${iv(isTelephoneValid)}`} id="create-account-contact-info-telephone" placeholder={t("CreateAccount.ContactInfo.Telephone")} maxLength={10} aria-describedby="create-account-contact-info-telephone-validation" value={telephone} onChange={(e: any) => setTelephone(e.target.value)} />
@@ -350,7 +354,11 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row mt-3">
+                <div className="fs-6 fw-semibold mb-2">
+                    {t("ContactInfo.Preferences.Title")}
+                </div>
+
+                <div className="row gap-2 gap-md-0 gx-2 mb-3">
                     <div className="col-12">
                         <label htmlFor="create-account-account-preferences-ofsc-contact-permission" className="form-label required">{t("CreateAccount.Preferences.OfscConsent")}</label>
                         <label htmlFor="create-account-account-preferences-ofsc-contact-permission" className="form-label">{t("CreateAccount.Preferences.OfscConsentMore")}</label>
@@ -363,7 +371,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row mt-3">
+                <div className="row gap-2 gap-md-0 gx-2 mb-3">
                     <div className="col-12">
                         <label htmlFor="create-account-account-preferences-rider-advantage" className="form-label required">{t("CreateAccount.Preferences.RiderAdvantage")}</label>
                         <select className={`form-select ${iv(isRiderAdvantageValid)}`} id="create-account-account-preferences-rider-advantage" aria-label={t("CreateAccount.Preferences.RiderAdvantage")} aria-describedby="create-account-account-preferences-rider-advantage-validation" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
@@ -375,7 +383,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row mt-3">
+                <div className="row gap-2 gap-md-0 gx-2 mb-3">
                     <div className="col-12">
                         <label htmlFor="create-account-account-preferences-volunteering" className="form-label required">{t("CreateAccount.Preferences.Volunteering")}</label>
                         <select className={`form-select ${iv(isVolunteeringValid)}`} id="create-account-account-preferences-volunteering" aria-label={t("CreateAccount.Preferences.Volunteering")} aria-describedby="create-account-account-preferences-volunteering-validation" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
@@ -388,8 +396,8 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row mt-3">
-                    <div className="col-12 mb-2">
+                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                    <div className="col-12">
                         <label htmlFor="create-account-account-preferences-correspondence-language" className="form-label required">{t("CreateAccount.Preferences.CorrespondenceLanguage")}</label>
                         <select className={`form-select ${iv(isCorrespondenceLanguageValid)}`} id="create-account-account-preferences-correspondence-language" aria-label={t("CreateAccount.Preferences.CorrespondenceLanguage")} aria-describedby="create-account-account-preferences-correspondence-language-validation" value={correspondenceLanguage} onChange={(e: any) => setCorrespondenceLanguage(e.target.value)}>
                             <option value="" disabled>{t("Common.PleaseSelect")}</option>
@@ -402,7 +410,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-3">
+                <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 pt-2">
                     <button className="btn btn-primary" onClick={() => createAccountClick()}>
                         {t("CreateAccount.CreateAccount")}
                     </button>

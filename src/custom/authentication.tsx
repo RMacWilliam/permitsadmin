@@ -190,9 +190,9 @@ export function logoutAndCleanupAppContext(): void {
             draft.monerisBaseUrl = undefined;
         });
 
-        if (window.localStorage) {
-            window.localStorage.removeItem("data");
-        }
+        // if (window.localStorage) {
+        //     window.localStorage.removeItem("data");
+        // }
 
         //GlobalAppContext.router.push("/");
 
@@ -208,7 +208,11 @@ export function logoutAndCleanupAppContext(): void {
                 console.log(error);
             },
             complete: () => {
-                //
+                if (GlobalAppContext?.updater != undefined) {
+                    GlobalAppContext.updater(draft => {
+                        draft.token = undefined;
+                    });
+                }
             }
         });
     }

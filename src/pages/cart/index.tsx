@@ -425,18 +425,18 @@ function Cart({ appContext, router, setShowAlert }:
                                     {t("Cart.RegisteredOwnerAddress")}
                                 </label>
                                 <div className="mt-1">
-                                    <div>{`${appContext.data?.contactInfo?.firstName} ${appContext.data?.contactInfo?.initial} ${appContext.data?.contactInfo?.lastName}`}</div>
+                                    <div>{`${appContext.data?.contactInfo?.firstName ?? ""} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName ?? ""}`}</div>
                                     <div>
-                                        <span>{appContext.data?.contactInfo?.addressLine1}</span>
+                                        <span>{appContext.data?.contactInfo?.addressLine1 ?? ""}</span>
 
                                         {appContext.data?.contactInfo?.addressLine2 != undefined && appContext.data?.contactInfo?.addressLine2 !== "" && (
-                                            <span>, {appContext.data?.contactInfo?.addressLine2}</span>
+                                            <span>, {appContext.data?.contactInfo?.addressLine2 ?? ""}</span>
                                         )}
 
-                                        <span>, {appContext.data?.contactInfo?.city}</span>
-                                        <span>, {appContext.data?.contactInfo?.province?.key}</span>
-                                        <span>, {appContext.data?.contactInfo?.country?.key}</span>
-                                        <span>, {appContext.data?.contactInfo?.postalCode}</span>
+                                        <span>, {appContext.data?.contactInfo?.city ?? ""}</span>
+                                        <span>, {appContext.data?.contactInfo?.province?.key ?? ""}</span>
+                                        <span>, {appContext.data?.contactInfo?.postalCode ?? ""}</span>
+                                        <span>, {getLocalizedValue2(appContext.data?.contactInfo?.country?.value, appContext.data?.contactInfo?.country?.valueFr)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -448,9 +448,9 @@ function Cart({ appContext, router, setShowAlert }:
                                 </label>
 
                                 {getShipTo() === ShipTo.Alternate && (
-                                    <div className="container-fluid mt-1">
-                                        <div className="row">
-                                            <div className="col-12 col-sm-12 col-md-6 mb-2">
+                                    <div className="container-fluid mt-2 px-0">
+                                        <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                                            <div className="col-12 col-md-6">
                                                 <div className="input-group has-validation">
                                                     <div className={`form-floating ${iv(isAddressLine1Valid)}`}>
                                                         <input type="text" className={`form-control ${iv(isAddressLine1Valid)}`} id="alternate-address-address-line-1" placeholder={t("Cart.AlternateAddressFields.AddressLine1")} maxLength={30} aria-describedby="alternate-address-address-line-1-validation" value={getAddressLine1()} onChange={(e: any) => updateAddressLine1(e.target.value)} />
@@ -459,7 +459,8 @@ function Cart({ appContext, router, setShowAlert }:
                                                     <div id="alternate-address-address-line-1-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.AddressLine1")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                                 </div>
                                             </div>
-                                            <div className="col-12 col-sm-12 col-md-6 mb-2">
+
+                                            <div className="col-12 col-md-6">
                                                 <div className="input-group has-validation">
                                                     <div className={`form-floating ${iv(isAddressLine2Valid)}`}>
                                                         <input type="text" className={`form-control ${iv(isAddressLine2Valid)}`} id="alternate-address-address-line-2" placeholder={t("Cart.AlternateAddressFields.AddressLine2")} maxLength={30} aria-describedby="alternate-address-address-line-2-validation" value={getAddressLine2()} onChange={(e: any) => updateAddressLine2(e.target.value)} />
@@ -470,8 +471,8 @@ function Cart({ appContext, router, setShowAlert }:
                                             </div>
                                         </div>
 
-                                        <div className="row">
-                                            <div className="col-12 col-sm-12 col-md-3 mb-2">
+                                        <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                                            <div className="col-12 col-md-3">
                                                 <div className="input-group has-validation">
                                                     <div className={`form-floating ${iv(isCityValid)}`}>
                                                         <input type="text" className={`form-control ${iv(isCityValid)}`} id="alternate-address-city" placeholder={t("Cart.AlternateAddressFields.CityTownOrVillage")} maxLength={30} aria-describedby="alternate-address-city-validation" value={getCity()} onChange={(e: any) => updateCity(e.target.value)} />
@@ -480,7 +481,8 @@ function Cart({ appContext, router, setShowAlert }:
                                                     <div id="alternate-address-city-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.CityTownOrVillage")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                                 </div>
                                             </div>
-                                            <div className="col-12 col-sm-12 col-md-3 mb-2">
+
+                                            <div className="col-12 col-md-3">
                                                 <div className="input-group has-validation">
                                                     <div className={`form-floating ${iv(isCountryValid)}`}>
                                                         <select className={`form-select ${iv(isCountryValid)}`} id="alternate-address-country" aria-label={t("Cart.AlternateAddressFields.Country")} aria-describedby="alternate-address-country-validation" value={getCountry()} onChange={(e: any) => updateCountry(e)}>
@@ -495,7 +497,8 @@ function Cart({ appContext, router, setShowAlert }:
                                                     <div id="alternate-address-country-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.Country")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                                 </div>
                                             </div>
-                                            <div className="col-12 col-sm-12 col-md-3 mb-2">
+
+                                            <div className="col-12 col-md-3">
                                                 <div className="input-group has-validation">
                                                     <div className={`form-floating ${iv(isProvinceValid)}`}>
                                                         <select className={`form-select ${iv(isProvinceValid)}`} id="alternate-address-province" aria-label={t("Cart.AlternateAddressFields.ProvinceState")} aria-describedby="alternate-address-province-validation" value={getProvince()} onChange={(e: any) => updateProvince(e)}>
@@ -510,7 +513,8 @@ function Cart({ appContext, router, setShowAlert }:
                                                     <div id="alternate-address-province-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.ProvinceState")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                                 </div>
                                             </div>
-                                            <div className="col-12 col-sm-12 col-md-3 mb-2">
+
+                                            <div className="col-12 col-md-3">
                                                 <div className="input-group has-validation">
                                                     <div className={`form-floating ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`}>
                                                         <input type="text" className={`form-control ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`} id="alternate-address-postal-code" placeholder={t("Cart.AlternateAddressFields.PostalZipCode")} maxLength={7} aria-describedby="alternate-address-postal-code-validation" value={getPostalCode()} onChange={(e: any) => updatePostalCode(e.target.value)} />

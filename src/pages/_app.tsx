@@ -39,12 +39,6 @@ export default function App({ Component, pageProps }: AppProps) {
           // Set UI language.
           i18n.changeLanguage(localStorageDataObj?.language ?? "en");
 
-          // Set GlobalAppContext.
-          // GlobalAppContext.data = undefined;
-          // GlobalAppContext.updater = undefined;
-          // GlobalAppContext.translation = { t, i18n };
-          // GlobalAppContext.router = router;
-
           // Set language for html tag.
           document.getElementsByTagName("html")[0].lang = localStorageDataObj?.language ?? "en";
         }

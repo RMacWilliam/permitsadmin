@@ -297,8 +297,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-auto d-flex align-items-center">
-                                {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
+                            {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
+                                <div className="col-12 col-md-auto d-flex align-items-center">
                                     <>
                                         <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
                                             {t("Common.Buttons.Edit")}
@@ -308,14 +308,16 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                             {t("Common.Buttons.Delete")}
                                         </button>
                                     </>
-                                )}
+                                </div>
+                            )}
 
-                                {!snowmobile?.isEditable && (
+                            {!snowmobile?.isEditable && (
+                                <div className="col-12 col-md-auto d-flex align-items-center">
                                     <button type="button" className="btn btn-link" onClick={() => setShowSnowmobileInfoDialog(true)}>
                                         <i className="fa-solid fa-circle-info fa-lg"></i>
                                     </button>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -368,8 +370,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                     </div>
 
                                     {showDateRangeForSelectedPermit(snowmobile?.oVehicleId) && (
-                                        <div className="row mt-2">
-                                            <div className="col-12 col-sm-12 col-md-6 mb-2 mb-md-0">
+                                        <div className="row gap-2 gap-md-0 gx-2 mt-2">
+                                            <div className="col-12 col-sm-12 col-md-6">
                                                 <DatePicker dateFormat="yyyy-MM-dd" locale={appContext.translation.i18n.language} selected={getPermitDateRangeFromDate(snowmobile?.oVehicleId)} minDate={getDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile?.oVehicleId)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
                                             </div>
 
@@ -446,8 +448,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             </div>
                         )}
-                        <div className="row">
-                            <div className="col-12 col-sm-12 col-md-6 mb-2">
+                        <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                            <div className="col-12 col-sm-12 col-md-6">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isVehicleYearValid)}`}>
                                         <select className={`form-select ${iv(isVehicleYearValid)}`} id="add-edit-snowmobile-year" aria-label={t("Permits.AddEditSnowmobileDialog.Year")} aria-describedby="add-edit-snowmobile-year-validation" value={vehicleYear} onChange={(e: any) => setVehicleYear(e?.target?.value ?? "")}>
@@ -463,7 +465,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             </div>
 
-                            <div className="col-12 col-sm-12 col-md-6 mb-2">
+                            <div className="col-12 col-sm-12 col-md-6">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isMakeValid)}`}>
                                         <select className={`form-select ${iv(isMakeValid)}`} id="add-edit-snowmobile-make" aria-label={t("Permits.AddEditSnowmobileDialog.Make")} aria-describedby="add-edit-snowmobile-make-validation" value={make?.key} onChange={(e: any) => setMake(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
@@ -480,8 +482,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             </div>
                         </div>
 
-                        <div className="row">
-                            <div className="col-12 col-sm-12 col-md-4 mb-2">
+                        <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                            <div className="col-12 col-sm-12 col-md-4">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isModelValid)}`}>
                                         <input type="text" className={`form-control ${iv(isModelValid)}`} id="add-edit-snowmobile-model" placeholder={t("Permits.AddEditSnowmobileDialog.Model")} maxLength={50} aria-describedby="add-edit-snowmobile-model-validation" value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} />
@@ -491,7 +493,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             </div>
 
-                            <div className="col-12 col-sm-12 col-md-4 mb-2">
+                            <div className="col-12 col-sm-12 col-md-4">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isVinValid && isVinFormatValid)}`}>
                                         <input type="text" className={`form-control ${iv(isVinValid && isVinFormatValid)}`} id="add-edit-snowmobile-vin" placeholder={t("Permits.AddEditSnowmobileDialog.Vin")} maxLength={17} aria-describedby="add-edit-snowmobile-vin-validation" value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} />
@@ -512,7 +514,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             </div>
 
-                            <div className="col-12 col-sm-12 col-md-4 mb-2">
+                            <div className="col-12 col-sm-12 col-md-4">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isLicensePlateValid)}`}>
                                         <input type="text" className={`form-control ${iv(isLicensePlateValid)}`} id="add-edit-snowmobile-license-plate" placeholder={t("Permits.AddEditSnowmobileDialog.LicensePlate")} maxLength={10} aria-describedby="add-edit-snowmobile-license-plate-validation" value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} />
@@ -523,9 +525,9 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             </div>
                         </div>
 
-                        <div className="row">
+                        <div className="row mb-2">
                             <div className="col-12">
-                                <div className="form-check mb-2">
+                                <div className="form-check">
                                     <input className={`form-check-input ${iv(isPermitForThisSnowmobileOnlyValid)}`} type="checkbox" value="" id="add-edit-snowmobile-permit-for-this-snowmobile-only" defaultChecked={permitForThisSnowmobileOnly} onChange={(e: any) => { setPermitForThisSnowmobileOnly(e.target.checked) }} />
                                     <label className="form-check-label required" htmlFor="add-edit-snowmobile-permit-for-this-snowmobile-only">{t("Permits.AddEditSnowmobileDialog.PermitForThisSnowmobileOnly")}</label>
                                 </div>

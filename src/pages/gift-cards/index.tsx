@@ -225,19 +225,33 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                 )}
                             </div>
 
-                            <div className="col-12 col-md-auto d-flex align-items-center">
-                                {giftCard?.isPurchased && !giftCard?.isRedeemed && (
+                            {giftCard?.isPurchased && !giftCard?.isRedeemed && !giftCard?.uiIsEditMode && (
+                                <div className="col-12 col-md-auto d-flex align-items-center">
                                     <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsEditMode}>
                                         {t("Common.Buttons.Edit")}
                                     </button>
-                                )}
+                                </div>
+                            )}
 
-                                {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
+                            {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode && (
+                                <div className="col-12 col-md-auto d-flex align-items-center">
+                                    <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>
+                                        <i className="fa-solid fa-floppy-disk me-2"></i>{t("GiftCards.SaveChanges")}
+                                    </button>
+
+                                    <button className="btn btn-outline-dark btn-sm ms-1 w-sm-100" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>
+                                        <i className="fa-solid fa-xmark me-2"></i>{t("GiftCards.CancelChanges")}
+                                    </button>
+                                </div>
+                            )}
+
+                            {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
+                                <div className="col-12 col-md-auto d-flex align-items-center">
                                     <button className="btn btn-outline-dark btn-sm ms-1 w-sm-100" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
                                         {t("Common.Buttons.Delete")}
                                     </button>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -300,8 +314,8 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             )}
 
-                            <div className="row mb-2">
-                                <div className="col-12 col-sm-12 col-md-6 mb-2 mb-md-0">
+                            <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                                <div className="col-12 col-sm-12 col-md-6">
                                     <div className="input-group has-validation">
                                         <div className={`form-floating ${iv(giftCard?.uiIsRecipientLastNameValid)}`}>
                                             <input type="text" className={`form-control ${iv(giftCard?.uiIsRecipientLastNameValid)}`} id={`gift-card-last-name-${giftCard?.oVoucherId}`} placeholder="Recipient's LAST Name ONLY" maxLength={150} aria-describedby="gift-card-last-name-validation" value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
@@ -339,37 +353,24 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                         </li>
                     </ul>
 
-                    {((!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId))
-                        || (!giftCard?.isPurchased && !giftCard?.isRedeemed && isGiftCardAddedToCart(giftCard?.oVoucherId))
-                        || (giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode)) && (
-                            <div className="card-footer">
-                                {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)}>
-                                        <i className="fa-solid fa-plus me-2"></i>{t("GiftCards.AddGiftCardToCart")}
-                                    </button>
-                                )}
+                    {!giftCard?.isPurchased && !giftCard?.isRedeemed && (
+                        <div className="card-footer">
+                            {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
+                                <button className="btn btn-outline-dark btn-sm me-2" onClick={() => addGiftCardToCartClick(giftCard?.oVoucherId)}>
+                                    <i className="fa-solid fa-plus me-2"></i>{t("GiftCards.AddGiftCardToCart")}
+                                </button>
+                            )}
 
-                                {!giftCard?.isPurchased && !giftCard?.isRedeemed && isGiftCardAddedToCart(giftCard?.oVoucherId) && (
-                                    <button className="btn btn-outline-dark btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>
-                                        <i className="fa-solid fa-xmark me-2"></i>{t("GiftCards.RemoveGiftCardFromCart")}
-                                    </button>
-                                )}
-
-                                {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode && (
-                                    <button className="btn btn-outline-dark btn-sm me-2" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>
-                                        <i className="fa-solid fa-floppy-disk me-2"></i>{t("GiftCards.SaveChanges")}
-                                    </button>
-                                )}
-
-                                {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode && (
-                                    <button className="btn btn-outline-dark btn-sm" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>
-                                        <i className="fa-solid fa-xmark me-2"></i>{t("GiftCards.CancelChanges")}
-                                    </button>
-                                )}
-                            </div>
-                        )}
-                </div>
-            ))}
+                            {!giftCard?.isPurchased && !giftCard?.isRedeemed && isGiftCardAddedToCart(giftCard?.oVoucherId) && (
+                                <button className="btn btn-outline-dark btn-sm" onClick={() => removeGiftCardFromCartClick(giftCard?.oVoucherId)}>
+                                    <i className="fa-solid fa-xmark me-2"></i>{t("GiftCards.RemoveGiftCardFromCart")}
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div >
+            ))
+            }
 
             <div className="card">
                 <div className="card-body text-center">
