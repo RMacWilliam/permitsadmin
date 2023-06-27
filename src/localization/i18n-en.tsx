@@ -64,8 +64,12 @@ export const resources_en = {
       "Title": "Forgot Password",
       "Section1": "If you are unable to login to your account, please try resetting your password and an email will be sent to you to change your password.",
       "Section2": "For all other issues, please contact Permit customer service at 705-739-7669 or send an email to permits@ofsc.on.ca.",
-      "EmailAddressLabel": "Enter your email address",
+      "EmailAddress": "E-mail address",
       "ResetPasswordButton": "Reset Password"
+    },
+    "ResetPassword": {
+      "Title": "Reset Password",
+      "ReturnLogin": "Return to Login Page"
     },
     "CreateAccount": {
       "Title": "Create Account",
@@ -104,6 +108,10 @@ export const resources_en = {
       "CreateAccount": "Create Account",
       "ThankYouForCreatingYourAccount": "Thank you for creating your account.",
       "VerificationEmailHasBeenSent": "A verification email has been sent to you. Please click on the link in the email to complete your account set-up. If you are experiencing difficulties, please contact Customer Service at 705-739-7669 or permits@ofsc.on.ca.",
+      "ReturnLogin": "Return to Login Page"
+    },
+    "ConfirmAccount": {
+      "Title": "Confirm Account",
       "ReturnLogin": "Return to Login Page"
     },
     "ChangeEmail": {
@@ -334,8 +342,8 @@ export const resources_en = {
       "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "Last name associated with the redemption code did not correspond to your account information.",
       "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "Postal code associated with the redemption code did not correspond to your account information.",
       "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "Vehicle type of the redemption code did not correspond to this snowmobile.",
-      "API_CREATE_ACCOUNT_EMAIL_EXISTS": "",
-      "API_CREATE_ACCOUNT_EMAIL_MISSING": ""
+      "API_CREATE_ACCOUNT_EMAIL_EXISTS": "Your e-mail already exists in our records. Cannot create account. Please try logging into your account or resetting your password.",
+      "API_CREATE_ACCOUNT_EMAIL_MISSING": "An e-mail is required to create an account. Please try again."
     }
   }
 };

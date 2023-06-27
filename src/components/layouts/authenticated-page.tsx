@@ -11,7 +11,7 @@ import { Images } from '../../../global';
 
 export interface IShowHoverButton {
     showHoverButton?: boolean;
-    getButtonText: Function;
+    getButtonText?: Function;
     action?: Function;
 }
 
@@ -47,7 +47,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                     <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="hover-button-label">
                         <li>
                             <button type="button" className="dropdown-item d-flex align-items-center" aria-pressed="false" onClick={() => hoverButtonItemClick()}>
-                                {showHoverButton.getButtonText()}
+                                {showHoverButton?.getButtonText == undefined ? "" : showHoverButton.getButtonText()}
                             </button>
                         </li>
                     </ul>
@@ -69,7 +69,7 @@ export default function AuthenticatedPageLayout({ children, showAlert, showHover
                                     <h6 className="mb-0 d-sm-none">{t("Common.Ofsc")}</h6>
 
                                     <div className="d-none d-md-block">
-                                        {t("Header.LoggedInAs")} {appContext.data?.contactInfo?.firstName} {appContext.data?.contactInfo?.lastName}.
+                                        {t("Header.LoggedInAs")} {appContext.data?.firstName} {appContext.data?.lastName}.
 
                                         <span className="text-decoration-underline ms-2" style={{ cursor: "pointer" }} onClick={() => logoutClick()}>
                                             {t("Common.Logout")}

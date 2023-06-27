@@ -98,6 +98,7 @@ $form-floating-transition: opacity .1s ease-in-out, transform .1s ease-in-out; /
   }
 }
 
-input > label {
+.form-floating input + label {
   font-size: 14px;
+  color: $input-placeholder-color;
 }

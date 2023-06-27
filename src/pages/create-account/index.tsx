@@ -1,12 +1,14 @@
 import UnauthenticatedPageLayout from "@/components/layouts/unauthenticated-page"
 import { IApiCreateUserRequest, IApiCreateUserResult, IApiGetCorrespondenceLanguagesResult, IApiGetCountriesResult, IApiGetProvincesResult, apiCreateUser, apiGetCorrespondenceLanguages, apiGetCountries, apiGetProvinces } from "@/custom/api";
 import { AppContext, IAppContextValues, IKeyValue, IParentKeyValue } from "@/custom/app-context";
-import { checkResponseStatus, getKeyValueFromSelect, getParentKeyValueFromSelect, validatePostalCode, iv, sortArray, validatePassword, validateZipCode } from "@/custom/utilities";
+import { checkResponseStatus, getKeyValueFromSelect, getParentKeyValueFromSelect, validatePostalCode, iv, sortArray, validatePassword, validateZipCode, getApiErrorMessage } from "@/custom/utilities";
 import { getLocalizedValue } from "@/localization/i18n";
 import Head from "next/head"
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { Observable, Subscription, forkJoin } from "rxjs";
+import ReCAPTCHA from "react-google-recaptcha";
+import { Constants } from "../../../global";
 
 export default function CreateAccountPage() {
     const appContext = useContext(AppContext);
@@ -31,63 +33,68 @@ function CreateAccount({ appContext, router, setShowAlert }
 
     const [step, setStep] = useState(0);
 
+    const [errorMessage, setErrorMessage] = useState("");
+
     const [email, setEmail] = useState("");
-    const [isEmailValid, setIsEmailValid] = useState(undefined as boolean | undefined);
+    const [isEmailValid, setIsEmailValid] = useState<boolean | undefined>(undefined);
 
     const [password, setPassword] = useState("");
-    const [isPasswordValid, setIsPasswordValid] = useState(undefined as boolean | undefined);
-    const [isPasswordFormatValid, setIsPasswordFormatValid] = useState(undefined as boolean | undefined);
+    const [isPasswordValid, setIsPasswordValid] = useState<boolean | undefined>(undefined);
+    const [isPasswordFormatValid, setIsPasswordFormatValid] = useState<boolean | undefined>(undefined);
 
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(undefined as boolean | undefined);
-    const [isConfirmPasswordMatchValid, setIsConfirmPasswordMatchValid] = useState(undefined as boolean | undefined);
+    const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState<boolean | undefined>(undefined);
+    const [isConfirmPasswordMatchValid, setIsConfirmPasswordMatchValid] = useState<boolean | undefined>(undefined);
 
     const [firstName, setFirstName] = useState("");
-    const [isFirstNameValid, setIsFirstNameValid] = useState(undefined as boolean | undefined);
+    const [isFirstNameValid, setIsFirstNameValid] = useState<boolean | undefined>(undefined);
 
     const [middleInitial, setMiddleInitial] = useState("");
-    const [isMiddleInitialValid, setIsMiddleInitialValid] = useState(undefined as boolean | undefined);
+    const [isMiddleInitialValid, setIsMiddleInitialValid] = useState<boolean | undefined>(undefined);
 
     const [lastName, setLastName] = useState("");
-    const [isLastNameValid, setIsLastNameValid] = useState(undefined as boolean | undefined);
+    const [isLastNameValid, setIsLastNameValid] = useState<boolean | undefined>(undefined);
 
     const [addressLine1, setAddressLine1] = useState("");
-    const [isAddressLine1Valid, setIsAddressLine1Valid] = useState(undefined as boolean | undefined);
+    const [isAddressLine1Valid, setIsAddressLine1Valid] = useState<boolean | undefined>(undefined);
 
     const [addressLine2, setAddressLine2] = useState("");
-    const [isAddressLine2Valid, setIsAddressLine2Valid] = useState(undefined as boolean | undefined);
+    const [isAddressLine2Valid, setIsAddressLine2Valid] = useState<boolean | undefined>(undefined);
 
     const [city, setCity] = useState("");
-    const [isCityValid, setIsCityValid] = useState(undefined as boolean | undefined);
+    const [isCityValid, setIsCityValid] = useState<boolean | undefined>(undefined);
 
-    const [province, setProvince] = useState({ parent: "", key: "", value: "" });
-    const [isProvinceValid, setIsProvinceValid] = useState(undefined as boolean | undefined);
+    const [province, setProvince] = useState<IParentKeyValue>({ parent: "CA", key: "ON", value: "Ontario" });
+    const [isProvinceValid, setIsProvinceValid] = useState<boolean | undefined>(undefined);
 
-    const [country, setCountry] = useState({ key: "", value: "" });
-    const [isCountryValid, setIsCountryValid] = useState(undefined as boolean | undefined);
+    const [country, setCountry] = useState<IKeyValue>({ key: "CA", value: "Canada" });
+    const [isCountryValid, setIsCountryValid] = useState<boolean | undefined>(undefined);
 
     const [postalCode, setPostalCode] = useState("");
-    const [isPostalCodeValid, setIsPostalCodeValid] = useState(undefined as boolean | undefined);
-    const [isPostalCodeFormatValid, setIsPostalCodeFormatValid] = useState(undefined as boolean | undefined);
+    const [isPostalCodeValid, setIsPostalCodeValid] = useState<boolean | undefined>(undefined);
+    const [isPostalCodeFormatValid, setIsPostalCodeFormatValid] = useState<boolean | undefined>(undefined);
 
     const [telephone, setTelephone] = useState("");
-    const [isTelephoneValid, setIsTelephoneValid] = useState(undefined as boolean | undefined);
+    const [isTelephoneValid, setIsTelephoneValid] = useState<boolean | undefined>(undefined);
 
     const [ofscContactPermission, setOfscContactPermission] = useState(-1);
-    const [isOfscContactPermissionValid, setIsOfscContactPermissionValid] = useState(undefined as boolean | undefined);
+    const [isOfscContactPermissionValid, setIsOfscContactPermissionValid] = useState<boolean | undefined>(undefined);
 
     const [riderAdvantage, setRiderAdvantage] = useState(-1);
-    const [isRiderAdvantageValid, setIsRiderAdvantageValid] = useState(undefined as boolean | undefined);
+    const [isRiderAdvantageValid, setIsRiderAdvantageValid] = useState<boolean | undefined>(undefined);
 
     const [volunteering, setVolunteering] = useState(-1);
-    const [isVolunteeringValid, setIsVolunteeringValid] = useState(undefined as boolean | undefined);
+    const [isVolunteeringValid, setIsVolunteeringValid] = useState<boolean | undefined>(undefined);
 
     const [correspondenceLanguage, setCorrespondenceLanguage] = useState("");
-    const [isCorrespondenceLanguageValid, setIsCorrespondenceLanguageValid] = useState(undefined as boolean | undefined);
+    const [isCorrespondenceLanguageValid, setIsCorrespondenceLanguageValid] = useState<boolean | undefined>(undefined);
 
-    const [provincesData, setProvincesData] = useState([] as IParentKeyValue[]);
-    const [countriesData, setCountriesData] = useState([] as IKeyValue[]);
-    const [correspondenceLanguagesData, setCorrespondenceLanguagesData] = useState([] as IKeyValue[]);
+    const [provincesData, setProvincesData] = useState<IParentKeyValue[]>([]);
+    const [countriesData, setCountriesData] = useState<IKeyValue[]>([]);
+    const [correspondenceLanguagesData, setCorrespondenceLanguagesData] = useState<IKeyValue[]>([]);
+
+    const [recaptchaState, setRecaptchaState] = useState<string | undefined>(undefined);
+    const [isRecaptchaValid, setIsRecaptchaValid] = useState(true);
 
     const t: Function = appContext.translation.t;
 
@@ -163,7 +170,17 @@ function CreateAccount({ appContext, router, setShowAlert }
                     <title>{t("CreateAccount.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
 
-                <h4 className="mb-3">{t("CreateAccount.Title")}</h4>
+                {errorMessage !== "" && (
+                    <div className="">
+                        <div className="col-12">
+                            <div className="alert alert-danger" role="alert">
+                                {getApiErrorMessage(errorMessage)}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <h3 className="mb-3">{t("CreateAccount.Title")}</h3>{recaptchaState}
 
                 <p>{t("CreateAccount.PleaseCompleteInformationBelow")}</p>
 
@@ -358,7 +375,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     {t("ContactInfo.Preferences.Title")}
                 </div>
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                <div className="row gap-2 gap-md-0 gx-2 mb-4">
                     <div className="col-12">
                         <label htmlFor="create-account-account-preferences-ofsc-contact-permission" className="form-label required">{t("CreateAccount.Preferences.OfscConsent")}</label>
                         <label htmlFor="create-account-account-preferences-ofsc-contact-permission" className="form-label">{t("CreateAccount.Preferences.OfscConsentMore")}</label>
@@ -371,7 +388,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                <div className="row gap-2 gap-md-0 gx-2 mb-4">
                     <div className="col-12">
                         <label htmlFor="create-account-account-preferences-rider-advantage" className="form-label required">{t("CreateAccount.Preferences.RiderAdvantage")}</label>
                         <select className={`form-select ${iv(isRiderAdvantageValid)}`} id="create-account-account-preferences-rider-advantage" aria-label={t("CreateAccount.Preferences.RiderAdvantage")} aria-describedby="create-account-account-preferences-rider-advantage-validation" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
@@ -383,7 +400,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                <div className="row gap-2 gap-md-0 gx-2 mb-4">
                     <div className="col-12">
                         <label htmlFor="create-account-account-preferences-volunteering" className="form-label required">{t("CreateAccount.Preferences.Volunteering")}</label>
                         <select className={`form-select ${iv(isVolunteeringValid)}`} id="create-account-account-preferences-volunteering" aria-label={t("CreateAccount.Preferences.Volunteering")} aria-describedby="create-account-account-preferences-volunteering-validation" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
@@ -396,7 +413,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                <div className="row gap-2 gap-md-0 gx-2 mb-4">
                     <div className="col-12">
                         <label htmlFor="create-account-account-preferences-correspondence-language" className="form-label required">{t("CreateAccount.Preferences.CorrespondenceLanguage")}</label>
                         <select className={`form-select ${iv(isCorrespondenceLanguageValid)}`} id="create-account-account-preferences-correspondence-language" aria-label={t("CreateAccount.Preferences.CorrespondenceLanguage")} aria-describedby="create-account-account-preferences-correspondence-language-validation" value={correspondenceLanguage} onChange={(e: any) => setCorrespondenceLanguage(e.target.value)}>
@@ -407,6 +424,17 @@ function CreateAccount({ appContext, router, setShowAlert }
                             ))}
                         </select>
                         <div id="create-account-account-preferences-correspondence-language-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-12">
+                        <div className="input-group has-validation">
+                            <ReCAPTCHA className={iv(isRecaptchaValid)} sitekey={Constants.CaptchaSiteKey} hl={appContext.data?.language === "fr" ? "fr-CA" : "en"}
+                                onChange={(e: any) => setRecaptchaState(e)}
+                            />
+                            <div id="recaptcha-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
+                        </div>
                     </div>
                 </div>
 
@@ -428,7 +456,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     <title>{t("CreateAccount.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
 
-                <h4 className="mb-3">{t("CreateAccount.Title")}</h4>
+                <h3 className="mb-3">{t("CreateAccount.Title")}</h3>
 
                 <p>{t("CreateAccount.ThankYouForCreatingYourAccount")}</p>
 
@@ -499,6 +527,8 @@ function CreateAccount({ appContext, router, setShowAlert }
     }
 
     function createAccountClick(): void {
+        setErrorMessage("");
+
         const validateContactInfo: boolean = validateContactInfoDialog();
         const validateAccountPreferences: boolean = validateAccountPreferencesDialog();
 
@@ -529,7 +559,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     if (result?.isSuccessful && result?.data != undefined) {
                         setStep(1);
                     } else {
-
+                        setErrorMessage(result?.errorMessage ?? "");
                     }
                 },
                 error: (error: any) => {
@@ -654,6 +684,13 @@ function CreateAccount({ appContext, router, setShowAlert }
             result = false;
         } else {
             setIsTelephoneValid(true);
+        }
+
+        if (recaptchaState == undefined || recaptchaState === "") {
+            setIsRecaptchaValid(false);
+            result = false;
+        } else {
+            setIsRecaptchaValid(true);
         }
 
         return result;

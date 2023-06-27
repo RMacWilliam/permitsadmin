@@ -32,7 +32,7 @@ function PaymentApproved({ appContext, router, setShowAlert }:
         setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
     }) {
 
-    const [orderId, setOrderId] = useState("" as string | undefined);
+    const [orderId, setOrderId] = useState<string | undefined>("");
 
     const t: Function = appContext.translation.t;
 
@@ -48,7 +48,7 @@ function PaymentApproved({ appContext, router, setShowAlert }:
                 <title>{t("PaymentApproved.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4 className="mb-3">{t("PaymentApproved.Title")}</h4>
+            <h3 className="mb-3">{t("PaymentApproved.Title")}</h3>
 
             {appContext.translation.i18n.language === "en" && (
                 <>

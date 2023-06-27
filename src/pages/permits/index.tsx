@@ -23,7 +23,7 @@ export default function PermitsPage() {
     const [showAlert, setShowAlert] = useState(true);
 
     // Display hover button.
-    const [showHoverButton, setShowHoverButton] = useState({} as IShowHoverButton);
+    const [showHoverButton, setShowHoverButton] = useState<IShowHoverButton>({});
 
     useEffect(() => {
         appContext.updater(draft => { draft.navbarPage = "permits" });
@@ -59,26 +59,26 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
     const [editedSnowmobileId, setEditedSnowmobileId] = useState("");
 
     const [vehicleYear, setVehicleYear] = useState("");
-    const [isVehicleYearValid, setIsVehicleYearValid] = useState(undefined as boolean | undefined);
+    const [isVehicleYearValid, setIsVehicleYearValid] = useState<boolean | undefined>(undefined);
 
-    const [make, setMake] = useState({ key: "", value: "" });
-    const [isMakeValid, setIsMakeValid] = useState(undefined as boolean | undefined);
+    const [make, setMake] = useState<IKeyValue>({ key: "", value: "" });
+    const [isMakeValid, setIsMakeValid] = useState<boolean | undefined>(undefined);
 
     const [model, setModel] = useState("");
-    const [isModelValid, setIsModelValid] = useState(undefined as boolean | undefined);
+    const [isModelValid, setIsModelValid] = useState<boolean | undefined>(undefined);
 
     const [vin, setVin] = useState("");
-    const [isVinValid, setIsVinValid] = useState(undefined as boolean | undefined);
-    const [isVinFormatValid, setIsVinFormatValid] = useState(undefined as boolean | undefined);
+    const [isVinValid, setIsVinValid] = useState<boolean | undefined>(undefined);
+    const [isVinFormatValid, setIsVinFormatValid] = useState<boolean | undefined>(undefined);
 
     const [licensePlate, setLicensePlate] = useState("");
-    const [isLicensePlateValid, setIsLicensePlateValid] = useState(undefined as boolean | undefined);
+    const [isLicensePlateValid, setIsLicensePlateValid] = useState<boolean | undefined>(undefined);
 
     const [permitForThisSnowmobileOnly, setPermitForThisSnowmobileOnly] = useState(false);
-    const [isPermitForThisSnowmobileOnlyValid, setIsPermitForThisSnowmobileOnlyValid] = useState(undefined as boolean | undefined);
+    const [isPermitForThisSnowmobileOnlyValid, setIsPermitForThisSnowmobileOnlyValid] = useState<boolean | undefined>(undefined);
 
     const [registeredOwner, setRegisteredOwner] = useState(false);
-    const [isRegisteredOwnerValid, setIsRegisteredOwnerValid] = useState(undefined as boolean | undefined);
+    const [isRegisteredOwnerValid, setIsRegisteredOwnerValid] = useState<boolean | undefined>(undefined);
 
     const [showDeleteSnowmobileDialog, setShowDeleteSnowmobileDialog] = useState(false);
     const [deleteSnowmobileDialogErrorMessage, setDeleteSnowmobileDialogErrorMessage] = useState("");
@@ -89,8 +89,8 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
     const startYear: number = 1960; // TODO: Is this the minimum year?
     const endYear: number = getDate().getFullYear(); // TODO: Is the current year the maximum year?
-    const [yearsData, setYearsData] = useState([] as number[]);
-    const [vehicleMakesData, setVehicleMakesData] = useState([] as IKeyValue[]);
+    const [yearsData, setYearsData] = useState<number[]>([]);
+    const [vehicleMakesData, setVehicleMakesData] = useState<IKeyValue[]>([]);
 
     const DateRangeInput = forwardRef(({ value, snowmobile, onClick }: { value?: Date, snowmobile: ISnowmobile, onClick?: (e: any) => void }, ref: any) => (
         <div className="form-floating">
@@ -252,7 +252,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 <title>{t("Permits.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4 className="mb-3">{t("Permits.Title")}</h4>
+            <h3 className="mb-3">{t("Permits.Title")}</h3>
 
             <CartItemsAlert></CartItemsAlert>
 

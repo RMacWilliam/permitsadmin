@@ -208,8 +208,11 @@ export interface IShippingFee {
 export interface IAppContextData {
     // Authentication
     isAuthenticated: boolean;
-    email?: string;
     token?: string;
+
+    email?: string;
+    firstName?: string;
+    lastName?: string;
 
     language: string;
 
@@ -222,8 +225,9 @@ export interface IAppContextData {
     cartItems?: ICartItem[];
 
     // Navbar selection
-    navbarPage?: "index" | "first-login-of-season" | "home" | "contact" | "permits" | "gift-cards"
-    | "cart" | "checkout" | "payment" | "approved" | "declined" | "admin-home";
+    navbarPage?: "index" | "forgot-password" | "reset-password" | "create-account" | "confirm-account" | "change-email"
+    | "first-login-of-season" | "home" | "contact" | "permits" | "gift-cards" | "cart" | "checkout" | "payment" | "approved" | "declined"
+    | "admin-home";
 
     // Contact Information
     contactInfo?: IContactInfo;

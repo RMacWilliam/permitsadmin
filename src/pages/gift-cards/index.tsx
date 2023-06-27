@@ -17,7 +17,7 @@ export default function GiftCardsPage() {
     const [showAlert, setShowAlert] = useState(true);
 
     // Display hover button.
-    const [showHoverButton, setShowHoverButton] = useState({} as IShowHoverButton);
+    const [showHoverButton, setShowHoverButton] = useState<IShowHoverButton>({});
 
     useEffect(() => {
         appContext.updater(draft => { draft.navbarPage = "gift-cards" });
@@ -47,7 +47,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
     const [showResendGiftCardEmailDialog, setShowResendGiftCardEmailDialog] = useState(false);
     const [resendGiftCardEmailMessage, setResendGiftCardEmailMessage] = useState("");
 
-    const [giftCardTypesData, setGiftCardTypesData] = useState([] as IGiftCardType[]);
+    const [giftCardTypesData, setGiftCardTypesData] = useState<IGiftCardType[]>([]);
 
     const t: Function = appContext.translation.t;
 
@@ -172,7 +172,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                 <title>{t("GiftCards.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4 className="mb-3">{t("GiftCards.Title")}</h4>
+            <h3 className="mb-3">{t("GiftCards.Title")}</h3>
 
             <CartItemsAlert></CartItemsAlert>
 

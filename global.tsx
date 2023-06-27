@@ -63,6 +63,8 @@ export class Constants {
     static AppBasePath: string = "/permitsadmin/";
     static AppMode: "DEV" | "PROD" = "PROD";
 
+    static CaptchaSiteKey: string = "6LdUC1oUAAAAANiFOb2mOZToDkvADppOAYp6HBnf";
+
     static MaxClassicYear: number = 1999;
 
     static MtoWaiverPdf: string = "MTO Waiver ENG-FRE 2022-09-22.pdf";

@@ -41,7 +41,7 @@ function Home({ appContext, router, setShowAlert }:
                 <title>{t("Home.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4 className="mb-3">{t("Home.Title")}</h4>
+            <h3 className="mb-3">{t("Home.Title")}</h3>
 
             <CartItemsAlert></CartItemsAlert>
 

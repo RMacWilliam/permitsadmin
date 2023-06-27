@@ -39,7 +39,11 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
             isAuthorized.current = true;
         } else if (path === "/forgot-password") {
             isAuthorized.current = true;
+        } else if (path === "/reset-password") {
+            isAuthorized.current = true;
         } else if (path === "/create-account") {
+            isAuthorized.current = true;
+        } else if (path === "/confirm-account") {
             isAuthorized.current = true;
         } else if (path === "/change-email") {
             isAuthorized.current = true;
@@ -106,7 +110,7 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
         }
     }
 
-    console.log("isAuthenticated: ", isAuthenticated.current, "isAuthorized: ", isAuthorized.current, "path: ", path, "redirectRoute: ", redirectRoute.current);
+    //console.log("isAuthenticated: ", isAuthenticated.current, "isAuthorized: ", isAuthorized.current, "path: ", path, "redirectRoute: ", redirectRoute.current);
 
     if (redirectRoute.current === "") {
         return (
@@ -132,8 +136,11 @@ export function loginAndInitializeAppContext(apiLoginResult: IApiValidateUserRes
 
         GlobalAppContext.updater(draft => {
             draft.isAuthenticated = true;
-            draft.email = apiLoginResult.email;
-            draft.token = apiLoginResult.token;
+            draft.token = apiLoginResult?.token;
+
+            draft.email = apiLoginResult?.email;
+            draft.firstName = apiLoginResult?.firstName;
+            draft.lastName = apiLoginResult?.lastName;
 
             draft.language = draft.language ?? "en";
 

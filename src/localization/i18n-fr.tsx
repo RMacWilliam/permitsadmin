@@ -64,8 +64,12 @@ export const resources_fr = {
       "Title": "J'ai oublié mon mot de passe",
       "Section1": "Si vous êtes incapable d'accéder à votre compte, veuillez essayer de réinitialiser votre mot de passe. Un courriel vous sera envoyé pour que vous puissiez changer votre mot de passe.",
       "Section2": "Pour tout autre problème, veuillez contacter le service à la clientèle de la délivrance des permis au 705-739-7669 ou écrivez à permits@ofsc.on.ca.",
-      "EmailAddressLabel": "(fr)Enter your email address",
+      "EmailAddress": "(fr)E-mail address",
       "ResetPasswordButton": "Réinitialiser le mot de passe"
+    },
+    "ResetPassword": {
+      "Title": "(fr)Reset Password",
+      "ReturnLogin": "(fr)Return to Login Page"
     },
     "CreateAccount": {
       "Title": "Inscrire un compte",
@@ -104,6 +108,10 @@ export const resources_fr = {
       "CreateAccount": "Create Account",
       "ThankYouForCreatingYourAccount": "Merci d'avoir créé votre compte.",
       "VerificationEmailHasBeenSent": "Un courriel de vérification vous a été envoyé. Veuillez cliquer sur le lien qui se trouve dans ce courriel pour terminer la configuration de votre compte. Si vous rencontrez des difficultés, veuillez contacter le service clientèle au 705-739-7669 ou à l'adresse permits@ofsc.on.ca.",
+      "ReturnLogin": "(fr)Return to Login Page"
+    },
+    "ConfirmAccount": {
+      "Title": "(fr)Confirm Account",
       "ReturnLogin": "(fr)Return to Login Page"
     },
     "ChangeEmail": {
@@ -334,8 +342,8 @@ export const resources_fr = {
       "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "(fr)Last name associated with the redemption code did not correspond to your account information.",
       "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "(fr)Postal code associated with the redemption code did not correspond to your account information.",
       "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "(fr)Vehicle type of the redemption code did not correspond to this snowmobile.",
-      "API_CREATE_ACCOUNT_EMAIL_EXISTS": "",
-      "API_CREATE_ACCOUNT_EMAIL_MISSING": ""
+      "API_CREATE_ACCOUNT_EMAIL_EXISTS": "Votre adresse courriel existe déjà dans nos dossiers. Le compte ne peut pas être créé. Veuillez essayer d'accéder à votre compte ou de réinitialiser votre mot de passe.",
+      "API_CREATE_ACCOUNT_EMAIL_MISSING": "(fr)An e-mail is required to create an account. Please try again."
     }
   }
 };

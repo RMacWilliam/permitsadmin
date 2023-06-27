@@ -50,27 +50,27 @@ function Cart({ appContext, router, setShowAlert }:
     const [showClubLocatorMapDialog, setShowClubLocatorMapDialog] = useState(false);
     const [clubLocatorMapSnowmobileId, setClubLocatorMapSnowmobileId] = useState("");
 
-    const [isShippingValid, setIsShippingValid] = useState(undefined as boolean | undefined);
+    const [isShippingValid, setIsShippingValid] = useState<boolean | undefined>(undefined);
 
     const [standardShippingWarning, setStandardShippingWarning] = useState(false);
-    const [isStandardShippingWarningValid, setIsStandardShippingWarningValid] = useState(undefined as boolean | undefined);
+    const [isStandardShippingWarningValid, setIsStandardShippingWarningValid] = useState<boolean | undefined>(undefined);
 
-    const [isAddressLine1Valid, setIsAddressLine1Valid] = useState(undefined as boolean | undefined);
-    const [isAddressLine2Valid, setIsAddressLine2Valid] = useState(undefined as boolean | undefined);
-    const [isCityValid, setIsCityValid] = useState(undefined as boolean | undefined);
-    const [isProvinceValid, setIsProvinceValid] = useState(undefined as boolean | undefined);
-    const [isCountryValid, setIsCountryValid] = useState(undefined as boolean | undefined);
-    const [isPostalCodeValid, setIsPostalCodeValid] = useState(undefined as boolean | undefined);
-    const [isPostalCodeFormatValid, setIsPostalCodeFormatValid] = useState(undefined as boolean | undefined);
+    const [isAddressLine1Valid, setIsAddressLine1Valid] = useState<boolean | undefined>(undefined);
+    const [isAddressLine2Valid, setIsAddressLine2Valid] = useState<boolean | undefined>(undefined);
+    const [isCityValid, setIsCityValid] = useState<boolean | undefined>(undefined);
+    const [isProvinceValid, setIsProvinceValid] = useState<boolean | undefined>(undefined);
+    const [isCountryValid, setIsCountryValid] = useState<boolean | undefined>(undefined);
+    const [isPostalCodeValid, setIsPostalCodeValid] = useState<boolean | undefined>(undefined);
+    const [isPostalCodeFormatValid, setIsPostalCodeFormatValid] = useState<boolean | undefined>(undefined);
 
     const [processingFee, setProcessingFee] = useState(0);
-    const [shippingFeesData, setShippingFeesData] = useState([] as IShippingFee[]);
-    const [provincesData, setProvincesData] = useState([] as IParentKeyValue[]);
-    const [countriesData, setCountriesData] = useState([] as IKeyValue[]);
-    const [redeemableGiftCards, setRedeemableGiftCards] = useState({} as IRedeemableGiftCards);
-    const [clubsData, setClubsData] = useState([] as IKeyValue[]);
+    const [shippingFeesData, setShippingFeesData] = useState<IShippingFee[]>([]);
+    const [provincesData, setProvincesData] = useState<IParentKeyValue[]>([]);
+    const [countriesData, setCountriesData] = useState<IKeyValue[]>([]);
+    const [redeemableGiftCards, setRedeemableGiftCards] = useState<IRedeemableGiftCards>({});
+    const [clubsData, setClubsData] = useState<IKeyValue[]>([]);
 
-    const [googleMapKey, setGoogleMapKey] = useState(undefined as string | undefined);
+    const [googleMapKey, setGoogleMapKey] = useState<string | undefined>(undefined);
 
     const t: Function = appContext.translation.t;
 
@@ -210,7 +210,7 @@ function Cart({ appContext, router, setShowAlert }:
                 <title>{t("Cart.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4 className="mb-3">{t("Cart.Title")}</h4>
+            <h3 className="mb-3">{t("Cart.Title")}</h3>
 
             {getCartItems() != undefined && getCartItems().length === 0 && (
                 <div>You have not added any items to your cart.</div>
@@ -328,7 +328,7 @@ function Cart({ appContext, router, setShowAlert }:
                                 </li>
                             ))}
 
-                            {getPermitCount() > 0 && (
+                            {isShippingAddressVisible() && (
                                 <li className="list-group-item">
                                     <div className="d-flex">
                                         <div className="fw-semibold me-auto">
@@ -355,7 +355,7 @@ function Cart({ appContext, router, setShowAlert }:
                                 </li>
                             )}
 
-                            {getPermitCount() > 0 && (
+                            {isShippingAddressVisible() && (
                                 <li className="list-group-item">
                                     <div className="fw-semibold mb-2 required">{t("Cart.Shipping")}</div>
 
@@ -415,131 +415,133 @@ function Cart({ appContext, router, setShowAlert }:
                         </div>
                     </div >
 
-                    <div className="card mb-3">
-                        <div className="card-body">
-                            <div className="fw-semibold mb-2">{t("Cart.ShippingAddress")}</div>
+                    {isShippingAddressVisible() && (
+                        <div className="card mb-3">
+                            <div className="card-body">
+                                <div className="fw-semibold mb-2">{t("Cart.ShippingAddress")}</div>
 
-                            <div className="form-check">
-                                <input className="form-check-input" type="radio" name="shipTo" id="shipToRegistered" checked={getShipTo() === ShipTo.Registered} value={ShipTo.Registered} onChange={() => shipToAddressChange(ShipTo.Registered)} />
-                                <label className="form-check-label" htmlFor="shipToRegistered">
-                                    {t("Cart.RegisteredOwnerAddress")}
-                                </label>
-                                <div className="mt-1">
-                                    <div>{`${appContext.data?.contactInfo?.firstName ?? ""} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName ?? ""}`}</div>
-                                    <div>
-                                        <span>{appContext.data?.contactInfo?.addressLine1 ?? ""}</span>
+                                <div className="form-check">
+                                    <input className="form-check-input" type="radio" name="shipTo" id="shipToRegistered" checked={getShipTo() === ShipTo.Registered} value={ShipTo.Registered} onChange={() => shipToAddressChange(ShipTo.Registered)} />
+                                    <label className="form-check-label" htmlFor="shipToRegistered">
+                                        {t("Cart.RegisteredOwnerAddress")}
+                                    </label>
+                                    <div className="mt-1">
+                                        <div>{`${appContext.data?.contactInfo?.firstName ?? ""} ${appContext.data?.contactInfo?.initial ?? ""} ${appContext.data?.contactInfo?.lastName ?? ""}`}</div>
+                                        <div>
+                                            <span>{appContext.data?.contactInfo?.addressLine1 ?? ""}</span>
 
-                                        {appContext.data?.contactInfo?.addressLine2 != undefined && appContext.data?.contactInfo?.addressLine2 !== "" && (
-                                            <span>, {appContext.data?.contactInfo?.addressLine2 ?? ""}</span>
-                                        )}
+                                            {appContext.data?.contactInfo?.addressLine2 != undefined && appContext.data?.contactInfo?.addressLine2 !== "" && (
+                                                <span>, {appContext.data?.contactInfo?.addressLine2 ?? ""}</span>
+                                            )}
 
-                                        <span>, {appContext.data?.contactInfo?.city ?? ""}</span>
-                                        <span>, {appContext.data?.contactInfo?.province?.key ?? ""}</span>
-                                        <span>, {appContext.data?.contactInfo?.postalCode ?? ""}</span>
-                                        <span>, {getLocalizedValue2(appContext.data?.contactInfo?.country?.value, appContext.data?.contactInfo?.country?.valueFr)}</span>
+                                            <span>, {appContext.data?.contactInfo?.city ?? ""}</span>
+                                            <span>, {appContext.data?.contactInfo?.province?.key ?? ""}</span>
+                                            <span>, {appContext.data?.contactInfo?.postalCode ?? ""}</span>
+                                            <span>, {getLocalizedValue2(appContext.data?.contactInfo?.country?.value, appContext.data?.contactInfo?.country?.valueFr)}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="form-check mt-2">
-                                <input className="form-check-input" type="radio" name="shipTo" id="shipToAlternate" checked={getShipTo() === ShipTo.Alternate} value={ShipTo.Alternate} onChange={() => shipToAddressChange(ShipTo.Alternate)} />
-                                <label className="form-check-label" htmlFor="shipToAlternate">
-                                    {t("Cart.AlternateAddress")}
-                                </label>
+                                <div className="form-check mt-2">
+                                    <input className="form-check-input" type="radio" name="shipTo" id="shipToAlternate" checked={getShipTo() === ShipTo.Alternate} value={ShipTo.Alternate} onChange={() => shipToAddressChange(ShipTo.Alternate)} />
+                                    <label className="form-check-label" htmlFor="shipToAlternate">
+                                        {t("Cart.AlternateAddress")}
+                                    </label>
 
-                                {getShipTo() === ShipTo.Alternate && (
-                                    <div className="container-fluid mt-2 px-0">
-                                        <div className="row gap-2 gap-md-0 gx-2 mb-2">
-                                            <div className="col-12 col-md-6">
-                                                <div className="input-group has-validation">
-                                                    <div className={`form-floating ${iv(isAddressLine1Valid)}`}>
-                                                        <input type="text" className={`form-control ${iv(isAddressLine1Valid)}`} id="alternate-address-address-line-1" placeholder={t("Cart.AlternateAddressFields.AddressLine1")} maxLength={30} aria-describedby="alternate-address-address-line-1-validation" value={getAddressLine1()} onChange={(e: any) => updateAddressLine1(e.target.value)} />
-                                                        <label className="required" htmlFor="alternate-address-address-line-1">{t("Cart.AlternateAddressFields.AddressLine1")}</label>
+                                    {getShipTo() === ShipTo.Alternate && (
+                                        <div className="container-fluid mt-2 px-0">
+                                            <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                                                <div className="col-12 col-md-6">
+                                                    <div className="input-group has-validation">
+                                                        <div className={`form-floating ${iv(isAddressLine1Valid)}`}>
+                                                            <input type="text" className={`form-control ${iv(isAddressLine1Valid)}`} id="alternate-address-address-line-1" placeholder={t("Cart.AlternateAddressFields.AddressLine1")} maxLength={30} aria-describedby="alternate-address-address-line-1-validation" value={getAddressLine1()} onChange={(e: any) => updateAddressLine1(e.target.value)} />
+                                                            <label className="required" htmlFor="alternate-address-address-line-1">{t("Cart.AlternateAddressFields.AddressLine1")}</label>
+                                                        </div>
+                                                        <div id="alternate-address-address-line-1-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.AddressLine1")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                                     </div>
-                                                    <div id="alternate-address-address-line-1-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.AddressLine1")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                                                </div>
+
+                                                <div className="col-12 col-md-6">
+                                                    <div className="input-group has-validation">
+                                                        <div className={`form-floating ${iv(isAddressLine2Valid)}`}>
+                                                            <input type="text" className={`form-control ${iv(isAddressLine2Valid)}`} id="alternate-address-address-line-2" placeholder={t("Cart.AlternateAddressFields.AddressLine2")} maxLength={30} aria-describedby="alternate-address-address-line-2-validation" value={getAddressLine2()} onChange={(e: any) => updateAddressLine2(e.target.value)} />
+                                                            <label htmlFor="alternate-address-address-line-2">{t("Cart.AlternateAddressFields.AddressLine2")}</label>
+                                                        </div>
+                                                        <div id="alternate-address-address-line-2-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.AddressLine2")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div className="col-12 col-md-6">
-                                                <div className="input-group has-validation">
-                                                    <div className={`form-floating ${iv(isAddressLine2Valid)}`}>
-                                                        <input type="text" className={`form-control ${iv(isAddressLine2Valid)}`} id="alternate-address-address-line-2" placeholder={t("Cart.AlternateAddressFields.AddressLine2")} maxLength={30} aria-describedby="alternate-address-address-line-2-validation" value={getAddressLine2()} onChange={(e: any) => updateAddressLine2(e.target.value)} />
-                                                        <label htmlFor="alternate-address-address-line-2">{t("Cart.AlternateAddressFields.AddressLine2")}</label>
+                                            <div className="row gap-2 gap-md-0 gx-2 mb-2">
+                                                <div className="col-12 col-md-3">
+                                                    <div className="input-group has-validation">
+                                                        <div className={`form-floating ${iv(isCityValid)}`}>
+                                                            <input type="text" className={`form-control ${iv(isCityValid)}`} id="alternate-address-city" placeholder={t("Cart.AlternateAddressFields.CityTownOrVillage")} maxLength={30} aria-describedby="alternate-address-city-validation" value={getCity()} onChange={(e: any) => updateCity(e.target.value)} />
+                                                            <label className="required" htmlFor="alternate-address-city">{t("Cart.AlternateAddressFields.CityTownOrVillage")}</label>
+                                                        </div>
+                                                        <div id="alternate-address-city-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.CityTownOrVillage")} {t("Common.Validation.IsRequiredSuffix")}</div>
                                                     </div>
-                                                    <div id="alternate-address-address-line-2-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.AddressLine2")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                                                </div>
+
+                                                <div className="col-12 col-md-3">
+                                                    <div className="input-group has-validation">
+                                                        <div className={`form-floating ${iv(isCountryValid)}`}>
+                                                            <select className={`form-select ${iv(isCountryValid)}`} id="alternate-address-country" aria-label={t("Cart.AlternateAddressFields.Country")} aria-describedby="alternate-address-country-validation" value={getCountry()} onChange={(e: any) => updateCountry(e)}>
+                                                                <option value="" disabled>{t("Common.PleaseSelect")}</option>
+
+                                                                {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
+                                                                    <option value={countryData.key} key={countryData.key}>{getLocalizedValue(countryData)}</option>
+                                                                ))}
+                                                            </select>
+                                                            <label className="required" htmlFor="alternate-address-country">{t("Cart.AlternateAddressFields.Country")}</label>
+                                                        </div>
+                                                        <div id="alternate-address-country-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.Country")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="col-12 col-md-3">
+                                                    <div className="input-group has-validation">
+                                                        <div className={`form-floating ${iv(isProvinceValid)}`}>
+                                                            <select className={`form-select ${iv(isProvinceValid)}`} id="alternate-address-province" aria-label={t("Cart.AlternateAddressFields.ProvinceState")} aria-describedby="alternate-address-province-validation" value={getProvince()} onChange={(e: any) => updateProvince(e)}>
+                                                                <option value="" disabled>{t("Common.PleaseSelect")}</option>
+
+                                                                {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
+                                                                    <option value={`${appContext.data?.cart?.alternateAddress?.country?.key}|${provinceData.key}`} key={`${appContext.data?.cart?.alternateAddress?.country?.key}|${provinceData.key}`}>{getLocalizedValue(provinceData)}</option>
+                                                                ))}
+                                                            </select>
+                                                            <label className="required" htmlFor="alternate-address-province">{t("Cart.AlternateAddressFields.ProvinceState")}</label>
+                                                        </div>
+                                                        <div id="alternate-address-province-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.ProvinceState")} {t("Common.Validation.IsRequiredSuffix")}</div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="col-12 col-md-3">
+                                                    <div className="input-group has-validation">
+                                                        <div className={`form-floating ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`}>
+                                                            <input type="text" className={`form-control ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`} id="alternate-address-postal-code" placeholder={t("Cart.AlternateAddressFields.PostalZipCode")} maxLength={7} aria-describedby="alternate-address-postal-code-validation" value={getPostalCode()} onChange={(e: any) => updatePostalCode(e.target.value)} />
+                                                            <label className="required" htmlFor="alternate-address-postal-code">{t("Cart.AlternateAddressFields.PostalZipCode")}</label>
+                                                        </div>
+                                                        <div id="alternate-address-postal-code-validation" className="invalid-feedback">
+                                                            {!isPostalCodeValid && (
+                                                                <>
+                                                                    {t("Cart.AlternateAddressFields.PostalZipCode")} {t("Common.Validation.IsRequiredSuffix")}
+                                                                </>
+                                                            )}
+                                                            {isPostalCodeValid && !isPostalCodeFormatValid && (
+                                                                <>
+                                                                    {t("Cart.AlternateAddressFields.InvalidPostalCodeFormat")}
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div className="row gap-2 gap-md-0 gx-2 mb-2">
-                                            <div className="col-12 col-md-3">
-                                                <div className="input-group has-validation">
-                                                    <div className={`form-floating ${iv(isCityValid)}`}>
-                                                        <input type="text" className={`form-control ${iv(isCityValid)}`} id="alternate-address-city" placeholder={t("Cart.AlternateAddressFields.CityTownOrVillage")} maxLength={30} aria-describedby="alternate-address-city-validation" value={getCity()} onChange={(e: any) => updateCity(e.target.value)} />
-                                                        <label className="required" htmlFor="alternate-address-city">{t("Cart.AlternateAddressFields.CityTownOrVillage")}</label>
-                                                    </div>
-                                                    <div id="alternate-address-city-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.CityTownOrVillage")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                                </div>
-                                            </div>
-
-                                            <div className="col-12 col-md-3">
-                                                <div className="input-group has-validation">
-                                                    <div className={`form-floating ${iv(isCountryValid)}`}>
-                                                        <select className={`form-select ${iv(isCountryValid)}`} id="alternate-address-country" aria-label={t("Cart.AlternateAddressFields.Country")} aria-describedby="alternate-address-country-validation" value={getCountry()} onChange={(e: any) => updateCountry(e)}>
-                                                            <option value="" disabled>{t("Common.PleaseSelect")}</option>
-
-                                                            {countriesData != undefined && countriesData.length > 0 && getCountriesData().map(countryData => (
-                                                                <option value={countryData.key} key={countryData.key}>{getLocalizedValue(countryData)}</option>
-                                                            ))}
-                                                        </select>
-                                                        <label className="required" htmlFor="alternate-address-country">{t("Cart.AlternateAddressFields.Country")}</label>
-                                                    </div>
-                                                    <div id="alternate-address-country-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.Country")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                                </div>
-                                            </div>
-
-                                            <div className="col-12 col-md-3">
-                                                <div className="input-group has-validation">
-                                                    <div className={`form-floating ${iv(isProvinceValid)}`}>
-                                                        <select className={`form-select ${iv(isProvinceValid)}`} id="alternate-address-province" aria-label={t("Cart.AlternateAddressFields.ProvinceState")} aria-describedby="alternate-address-province-validation" value={getProvince()} onChange={(e: any) => updateProvince(e)}>
-                                                            <option value="" disabled>{t("Common.PleaseSelect")}</option>
-
-                                                            {provincesData != undefined && provincesData.length > 0 && getProvinceData().map(provinceData => (
-                                                                <option value={`${appContext.data?.cart?.alternateAddress?.country?.key}|${provinceData.key}`} key={`${appContext.data?.cart?.alternateAddress?.country?.key}|${provinceData.key}`}>{getLocalizedValue(provinceData)}</option>
-                                                            ))}
-                                                        </select>
-                                                        <label className="required" htmlFor="alternate-address-province">{t("Cart.AlternateAddressFields.ProvinceState")}</label>
-                                                    </div>
-                                                    <div id="alternate-address-province-validation" className="invalid-feedback">{t("Cart.AlternateAddressFields.ProvinceState")} {t("Common.Validation.IsRequiredSuffix")}</div>
-                                                </div>
-                                            </div>
-
-                                            <div className="col-12 col-md-3">
-                                                <div className="input-group has-validation">
-                                                    <div className={`form-floating ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`}>
-                                                        <input type="text" className={`form-control ${iv(isPostalCodeValid && isPostalCodeFormatValid)}`} id="alternate-address-postal-code" placeholder={t("Cart.AlternateAddressFields.PostalZipCode")} maxLength={7} aria-describedby="alternate-address-postal-code-validation" value={getPostalCode()} onChange={(e: any) => updatePostalCode(e.target.value)} />
-                                                        <label className="required" htmlFor="alternate-address-postal-code">{t("Cart.AlternateAddressFields.PostalZipCode")}</label>
-                                                    </div>
-                                                    <div id="alternate-address-postal-code-validation" className="invalid-feedback">
-                                                        {!isPostalCodeValid && (
-                                                            <>
-                                                                {t("Cart.AlternateAddressFields.PostalZipCode")} {t("Common.Validation.IsRequiredSuffix")}
-                                                            </>
-                                                        )}
-                                                        {isPostalCodeValid && !isPostalCodeFormatValid && (
-                                                            <>
-                                                                {t("Cart.AlternateAddressFields.InvalidPostalCodeFormat")}
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     <div className="card mb-3">
                         <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
@@ -648,11 +650,7 @@ function Cart({ appContext, router, setShowAlert }:
     }
 
     function getPermitCount(): number {
-        let result: number = 0;
-
-        result = getCartItems()?.filter(x => x.isPermit)?.length ?? 0;
-
-        return result;
+        return getCartItems()?.filter(x => x.isPermit)?.length ?? 0;
     }
 
     function getProcessingFee(): number {
@@ -752,6 +750,10 @@ function Cart({ appContext, router, setShowAlert }:
         return result;
     }
 
+    function isShippingAddressVisible(): boolean {
+        return getPermitCount() > 0;
+    }
+
     function getTrackedShippingCredit(): number {
         let result: number = 0;
 
@@ -806,98 +808,101 @@ function Cart({ appContext, router, setShowAlert }:
     function validateCart(): boolean {
         let result: boolean = true;
 
-        // Validate that all permits has a selected club.
-        let isPermitsValid: boolean = true;
-        appContext.updater(draft => {
-            draft?.cartItems?.filter(x => x.isPermit)?.forEach(ci => {
-                const snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === ci?.itemId)[0];
+        if (getPermitCount() > 0) {
+            // Validate that all permits have a selected club.
+            let isPermitsValid: boolean = true;
 
-                if (snowmobile != undefined) {
-                    ci.uiIsClubValid = snowmobile?.permitSelections?.clubId != undefined;
+            appContext.updater(draft => {
+                draft?.cartItems?.filter(x => x.isPermit)?.forEach(ci => {
+                    const snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === ci?.itemId)[0];
 
-                    isPermitsValid &&= ci.uiIsClubValid;
-                }
+                    if (snowmobile != undefined) {
+                        ci.uiIsClubValid = snowmobile?.permitSelections?.clubId != undefined;
+
+                        isPermitsValid &&= ci.uiIsClubValid;
+                    }
+                });
             });
-        });
 
-        if (!isPermitsValid) {
-            result = false;
-        }
-
-        // Validate that a shipping method is selected.
-        if (appContext.data.cart?.shipping == undefined) {
-            setIsShippingValid(false);
-            result = false;
-        } else {
-            setIsShippingValid(true);
-        }
-
-        // Validate that standard shipping warning is accepted by user.
-        if (isStandardShippingWarningVisible() && standardShippingWarning === false) {
-            setIsStandardShippingWarningValid(false);
-            result = false;
-        } else {
-            setIsStandardShippingWarningValid(true);
-        }
-
-        // Validate that alternate address fields have values if ship to alternate address is selected.
-        if (appContext.data.cart?.shipTo === ShipTo.Alternate) {
-            if (appContext.data.cart?.alternateAddress?.addressLine1 == undefined || appContext.data.cart.alternateAddress.addressLine1.trim() === "") {
-                setIsAddressLine1Valid(false);
+            if (!isPermitsValid) {
                 result = false;
-            } else {
-                setIsAddressLine1Valid(true);
             }
 
-            setIsAddressLine2Valid(true);
-
-            if (appContext.data.cart?.alternateAddress?.city == undefined || appContext.data.cart.alternateAddress.city.trim() === "") {
-                setIsCityValid(false);
+            // Validate that a shipping method is selected.
+            if (appContext.data.cart?.shipping == undefined) {
+                setIsShippingValid(false);
                 result = false;
             } else {
-                setIsCityValid(true);
+                setIsShippingValid(true);
             }
 
-            if (appContext.data.cart?.alternateAddress?.province == undefined
-                || appContext.data.cart.alternateAddress.province?.key == undefined
-                || appContext.data.cart.alternateAddress.province.key === "") {
-
-                setIsProvinceValid(false);
+            // Validate that standard shipping warning is accepted by user.
+            if (isStandardShippingWarningVisible() && standardShippingWarning === false) {
+                setIsStandardShippingWarningValid(false);
                 result = false;
             } else {
-                setIsProvinceValid(true);
+                setIsStandardShippingWarningValid(true);
             }
 
-            if (appContext.data.cart?.alternateAddress?.country == undefined
-                || appContext.data.cart.alternateAddress.country?.key == undefined
-                || appContext.data.cart.alternateAddress.country.key === "") {
-
-                setIsCountryValid(false);
-                result = false;
-            } else {
-                setIsCountryValid(true);
-            }
-
-            if (appContext.data.cart?.alternateAddress?.postalCode == undefined || appContext.data.cart.alternateAddress.postalCode.trim() === "") {
-                setIsPostalCodeValid(false);
-                result = false;
-            } else {
-                setIsPostalCodeValid(true);
-            }
-
-            if (appContext.data.cart?.alternateAddress?.country?.key === "CA") {
-                if (!validatePostalCode(appContext.data.cart?.alternateAddress?.postalCode?.trim())) {
-                    setIsPostalCodeFormatValid(false);
+            // Validate that alternate address fields have values if ship to alternate address is selected.        
+            if (appContext.data.cart?.shipTo === ShipTo.Alternate) {
+                if (appContext.data.cart?.alternateAddress?.addressLine1 == undefined || appContext.data.cart.alternateAddress.addressLine1.trim() === "") {
+                    setIsAddressLine1Valid(false);
                     result = false;
                 } else {
-                    setIsPostalCodeFormatValid(true);
+                    setIsAddressLine1Valid(true);
                 }
-            } else if (appContext.data.cart?.alternateAddress?.country?.key === "US") {
-                if (!validateZipCode(appContext.data.cart?.alternateAddress?.postalCode?.trim())) {
-                    setIsPostalCodeFormatValid(false);
+
+                setIsAddressLine2Valid(true);
+
+                if (appContext.data.cart?.alternateAddress?.city == undefined || appContext.data.cart.alternateAddress.city.trim() === "") {
+                    setIsCityValid(false);
                     result = false;
                 } else {
-                    setIsPostalCodeFormatValid(true);
+                    setIsCityValid(true);
+                }
+
+                if (appContext.data.cart?.alternateAddress?.province == undefined
+                    || appContext.data.cart.alternateAddress.province?.key == undefined
+                    || appContext.data.cart.alternateAddress.province.key === "") {
+
+                    setIsProvinceValid(false);
+                    result = false;
+                } else {
+                    setIsProvinceValid(true);
+                }
+
+                if (appContext.data.cart?.alternateAddress?.country == undefined
+                    || appContext.data.cart.alternateAddress.country?.key == undefined
+                    || appContext.data.cart.alternateAddress.country.key === "") {
+
+                    setIsCountryValid(false);
+                    result = false;
+                } else {
+                    setIsCountryValid(true);
+                }
+
+                if (appContext.data.cart?.alternateAddress?.postalCode == undefined || appContext.data.cart.alternateAddress.postalCode.trim() === "") {
+                    setIsPostalCodeValid(false);
+                    result = false;
+                } else {
+                    setIsPostalCodeValid(true);
+                }
+
+                if (appContext.data.cart?.alternateAddress?.country?.key === "CA") {
+                    if (!validatePostalCode(appContext.data.cart?.alternateAddress?.postalCode?.trim())) {
+                        setIsPostalCodeFormatValid(false);
+                        result = false;
+                    } else {
+                        setIsPostalCodeFormatValid(true);
+                    }
+                } else if (appContext.data.cart?.alternateAddress?.country?.key === "US") {
+                    if (!validateZipCode(appContext.data.cart?.alternateAddress?.postalCode?.trim())) {
+                        setIsPostalCodeFormatValid(false);
+                        result = false;
+                    } else {
+                        setIsPostalCodeFormatValid(true);
+                    }
                 }
             }
         }
@@ -1045,6 +1050,17 @@ function Cart({ appContext, router, setShowAlert }:
 
                 if (country != undefined) {
                     draft.cart!.alternateAddress!.country = country;
+                }
+            }
+
+            if (appContext.data?.cart?.alternateAddress?.province == undefined
+                || appContext.data?.cart?.alternateAddress?.province?.key === undefined
+                || appContext.data?.cart?.alternateAddress?.province.key === "") {
+
+                const province: IParentKeyValue | undefined = appContext.data?.contactInfo?.province ?? { parent: "CA", key: "ON", value: "Ontario" };
+
+                if (province != undefined) {
+                    draft.cart!.alternateAddress!.province = province;
                 }
             }
         });

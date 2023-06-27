@@ -53,57 +53,57 @@ function Contact({ appContext, router, setShowAlert }
     const [contactInfoDialogErrorMessage, setContactInfoDialogErrorMessage] = useState("");
 
     const [firstName, setFirstName] = useState("");
-    const [isFirstNameValid, setIsFirstNameValid] = useState(undefined as boolean | undefined);
+    const [isFirstNameValid, setIsFirstNameValid] = useState<boolean | undefined>(undefined);
 
     const [middleInitial, setMiddleInitial] = useState("");
-    const [isMiddleInitialValid, setIsMiddleInitialValid] = useState(undefined as boolean | undefined);
+    const [isMiddleInitialValid, setIsMiddleInitialValid] = useState<boolean | undefined>(undefined);
 
     const [lastName, setLastName] = useState("");
-    const [isLastNameValid, setIsLastNameValid] = useState(undefined as boolean | undefined);
+    const [isLastNameValid, setIsLastNameValid] = useState<boolean | undefined>(undefined);
 
     const [addressLine1, setAddressLine1] = useState("");
-    const [isAddressLine1Valid, setIsAddressLine1Valid] = useState(undefined as boolean | undefined);
+    const [isAddressLine1Valid, setIsAddressLine1Valid] = useState<boolean | undefined>(undefined);
 
     const [addressLine2, setAddressLine2] = useState("");
-    const [isAddressLine2Valid, setIsAddressLine2Valid] = useState(undefined as boolean | undefined);
+    const [isAddressLine2Valid, setIsAddressLine2Valid] = useState<boolean | undefined>(undefined);
 
     const [city, setCity] = useState("");
-    const [isCityValid, setIsCityValid] = useState(undefined as boolean | undefined);
+    const [isCityValid, setIsCityValid] = useState<boolean | undefined>(undefined);
 
-    const [province, setProvince] = useState({ parent: "", key: "", value: "" });
-    const [isProvinceValid, setIsProvinceValid] = useState(undefined as boolean | undefined);
+    const [province, setProvince] = useState<IParentKeyValue>({ parent: "", key: "", value: "" });
+    const [isProvinceValid, setIsProvinceValid] = useState<boolean | undefined>(undefined);
 
-    const [country, setCountry] = useState({ key: "", value: "" });
-    const [isCountryValid, setIsCountryValid] = useState(undefined as boolean | undefined);
+    const [country, setCountry] = useState<IKeyValue>({ key: "", value: "" });
+    const [isCountryValid, setIsCountryValid] = useState<boolean | undefined>(undefined);
 
     const [postalCode, setPostalCode] = useState("");
-    const [isPostalCodeValid, setIsPostalCodeValid] = useState(undefined as boolean | undefined);
-    const [isPostalCodeFormatValid, setIsPostalCodeFormatValid] = useState(undefined as boolean | undefined);
+    const [isPostalCodeValid, setIsPostalCodeValid] = useState<boolean | undefined>(undefined);
+    const [isPostalCodeFormatValid, setIsPostalCodeFormatValid] = useState<boolean | undefined>(undefined);
 
     const [telephone, setTelephone] = useState("");
-    const [isTelephoneValid, setIsTelephoneValid] = useState(undefined as boolean | undefined);
+    const [isTelephoneValid, setIsTelephoneValid] = useState<boolean | undefined>(undefined);
 
     const [email, setEmail] = useState("");
-    const [isEmailValid, setIsEmailValid] = useState(undefined as boolean | undefined);
+    const [isEmailValid, setIsEmailValid] = useState<boolean | undefined>(undefined);
 
     const [showAccountPreferencesDialog, setShowAccountPreferencesDialog] = useState(false);
     const [accountPreferencesDialogErrorMessage, setAccountPreferencesDialogErrorMessage] = useState("");
 
     const [ofscContactPermission, setOfscContactPermission] = useState(-1);
-    const [isOfscContactPermissionValid, setIsOfscContactPermissionValid] = useState(undefined as boolean | undefined);
+    const [isOfscContactPermissionValid, setIsOfscContactPermissionValid] = useState<boolean | undefined>(undefined);
 
     const [riderAdvantage, setRiderAdvantage] = useState(-1);
-    const [isRiderAdvantageValid, setIsRiderAdvantageValid] = useState(undefined as boolean | undefined);
+    const [isRiderAdvantageValid, setIsRiderAdvantageValid] = useState<boolean | undefined>(undefined);
 
     const [volunteering, setVolunteering] = useState(-1);
-    const [isVolunteeringValid, setIsVolunteeringValid] = useState(undefined as boolean | undefined);
+    const [isVolunteeringValid, setIsVolunteeringValid] = useState<boolean | undefined>(undefined);
 
     const [correspondenceLanguage, setCorrespondenceLanguage] = useState("");
-    const [isCorrespondenceLanguageValid, setIsCorrespondenceLanguageValid] = useState(undefined as boolean | undefined);
+    const [isCorrespondenceLanguageValid, setIsCorrespondenceLanguageValid] = useState<boolean | undefined>(undefined);
 
-    const [provincesData, setProvincesData] = useState([] as IParentKeyValue[]);
-    const [countriesData, setCountriesData] = useState([] as IKeyValue[]);
-    const [correspondenceLanguagesData, setCorrespondenceLanguagesData] = useState([] as IKeyValue[]);
+    const [provincesData, setProvincesData] = useState<IParentKeyValue[]>([]);
+    const [countriesData, setCountriesData] = useState<IKeyValue[]>([]);
+    const [correspondenceLanguagesData, setCorrespondenceLanguagesData] = useState<IKeyValue[]>([]);
 
     const t: Function = appContext.translation.t;
 
@@ -132,9 +132,9 @@ function Contact({ appContext, router, setShowAlert }
             setPostalCode(appContext.data?.contactInfo?.postalCode ?? "");
             setTelephone(appContext.data?.contactInfo?.telephone ?? "");
 
-            setOfscContactPermission(appContext.data?.accountPreferences?.ofscContactPermission ?? -1);
-            setRiderAdvantage(appContext.data?.accountPreferences?.riderAdvantage ?? -1);
-            setVolunteering(appContext.data?.accountPreferences?.volunteering ?? -1);
+            setOfscContactPermission(-1);
+            setRiderAdvantage(-1);
+            setVolunteering(-1);
             setCorrespondenceLanguage(appContext.data?.accountPreferences?.correspondenceLanguage ?? "");
         }
 
@@ -256,7 +256,7 @@ function Contact({ appContext, router, setShowAlert }
                     <title>{t("ContactInfo.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
 
-                <h4 className="mb-3">{t("ContactInfo.Title")}</h4>
+                <h3 className="mb-3">{t("ContactInfo.Title")}</h3>
 
                 <CartItemsAlert></CartItemsAlert>
 
@@ -645,7 +645,7 @@ function Contact({ appContext, router, setShowAlert }
                     <title>{t("ContactInfo.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
 
-                <h4 className="mb-3">{t("ContactInfo.Title")}</h4>
+                <h3 className="mb-3">{t("ContactInfo.Title")}</h3>
 
                 <CartItemsAlert></CartItemsAlert>
 
@@ -795,7 +795,7 @@ function Contact({ appContext, router, setShowAlert }
                     {t("ContactInfo.Preferences.Title")}
                 </div>
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                <div className="row gap-2 gap-md-0 gx-2 mb-4">
                     <div className="col-12">
                         <label htmlFor="account-preferences-ofsc-contact-permission" className="form-label required">{t("ContactInfo.Preferences.OfscConsent")}</label>
                         <label htmlFor="account-preferences-ofsc-contact-permission" className="form-label">{t("ContactInfo.Preferences.OfscConsentMore")}</label>
@@ -808,7 +808,7 @@ function Contact({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                <div className="row gap-2 gap-md-0 gx-2 mb-4">
                     <div className="col-12">
                         <label htmlFor="account-preferences-rider-advantage" className="form-label required">{t("ContactInfo.Preferences.RiderAdvantage")}</label>
                         <select className={`form-select ${iv(isRiderAdvantageValid)}`} id="account-preferences-rider-advantage" aria-label={t("ContactInfo.Preferences.RiderAdvantage")} aria-describedby="account-preferences-rider-advantage-validation" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
@@ -820,7 +820,7 @@ function Contact({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                <div className="row gap-2 gap-md-0 gx-2 mb-4">
                     <div className="col-12">
                         <label htmlFor="account-preferences-volunteering" className="form-label required">{t("ContactInfo.Preferences.Volunteering")}</label>
                         <select className={`form-select ${iv(isVolunteeringValid)}`} id="account-preferences-volunteering" aria-label={t("ContactInfo.Preferences.Volunteering")} aria-describedby="account-preferences-volunteering-validation" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
@@ -833,7 +833,7 @@ function Contact({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                <div className="row gap-2 gap-md-0 gx-2 mb-4">
                     <div className="col-12">
                         <label htmlFor="account-preferences-correspondence-language" className="form-label required">{t("ContactInfo.Preferences.CorrespondenceLanguage")}</label>
                         <select className={`form-select ${iv(isCorrespondenceLanguageValid)}`} id="account-preferences-correspondence-language" aria-label={t("ContactInfo.Preferences.CorrespondenceLanguage")} aria-describedby="account-preferences-correspondence-language-validation" value={correspondenceLanguage} onChange={(e: any) => setCorrespondenceLanguage(e.target.value)}>

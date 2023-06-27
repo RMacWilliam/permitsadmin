@@ -1,11 +1,11 @@
-import AuthenticatedPageLayout from "@/components/layouts/authenticated-page"
+import UnauthenticatedPageLayout from "@/components/layouts/unauthenticated-page";
 import { AppContext, IAppContextValues } from "@/custom/app-context";
 import { getQueryParam } from "@/custom/utilities";
 import Head from "next/head";
 import { NextRouter, useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 
-export default function PaymentDeclinedPage() {
+export default function ResetPasswordPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
@@ -13,31 +13,31 @@ export default function PaymentDeclinedPage() {
     const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
-        appContext.updater(draft => { draft.navbarPage = "declined" });
+        appContext.updater(draft => { draft.navbarPage = "reset-password" });
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
-        <AuthenticatedPageLayout showAlert={showAlert}>
-            <PaymentDeclined appContext={appContext} router={router} setShowAlert={setShowAlert}></PaymentDeclined>
-        </AuthenticatedPageLayout>
+        <UnauthenticatedPageLayout showAlert={showAlert}>
+            <ResetPassword appContext={appContext} router={router} setShowAlert={setShowAlert}></ResetPassword>
+        </UnauthenticatedPageLayout>
     )
 }
 
-function PaymentDeclined({ appContext, router, setShowAlert }:
+function ResetPassword({ appContext, router, setShowAlert }:
     {
         appContext: IAppContextValues,
         router: NextRouter,
         setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
     }) {
 
-    const [orderId, setOrderId] = useState<string | undefined>(undefined);
+    const [code, setCode] = useState<string | undefined>("");
 
     const t: Function = appContext.translation.t;
 
     useEffect(() => {
-        setOrderId(getQueryParam("orderId", router));
+        setCode(getQueryParam("code", router));
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router.query]);
@@ -45,28 +45,27 @@ function PaymentDeclined({ appContext, router, setShowAlert }:
     return (
         <>
             <Head>
-                <title>{t("PaymentDeclined.Title")} | {t("Common.Ofsc")}</title>
+                <title>{t("ResetPassword.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h3 className="mb-3">{t("PaymentDeclined.Title")}</h3>
-
+            <h3 className="mb-3">{t("ResetPassword.Title")}</h3>
 
             {appContext.translation.i18n.language === "en" && (
                 <>
-                    <p>Your credit card was declined. Please try again.</p>
+                    <p>asdf</p>
                 </>
             )}
 
             {appContext.translation.i18n.language === "fr" && (
                 <>
-                    <p>(fr)Votre carte de crédit a été refusée. Please try again.</p>
+                    <p>asdf</p>
                 </>
             )}
 
             <div className="card">
                 <div className="card-body text-center">
-                    <button className="btn btn-primary" onClick={() => router.push("/payment")}>
-                        {t("PaymentDeclined.TryAgain")}
+                    <button className="btn btn-primary" onClick={() => router.push("/")}>
+                        {t("ResetPassword.ReturnLogin")}
                     </button>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import $ from 'jquery';
@@ -40,18 +40,22 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
     const t: Function = appContext.translation.t;
 
-    if (typeof google === "undefined") {
-        $.ajax({
-            dataType: "script",
-            cache: false,
-            url: `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=${googleMapKey}`
-        })
-            .done(function (script, textStatus) {
-                initializeMap();
-            });
-    } else {
-        initializeMap();
-    }
+    useEffect(() => {
+        if (typeof google === "undefined") {
+            $.ajax({
+                dataType: "script",
+                cache: false,
+                url: `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=${googleMapKey}`
+            })
+                .done(function (script, textStatus) {
+                    initializeMap();
+                });
+        } else {
+            initializeMap();
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <>
@@ -67,7 +71,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                             <div className="row">
                                 <div className="col-12">
                                     <div className="alert alert-danger" role="alert">
-                                        {""}
+                                        {errorMessage}
                                     </div>
                                 </div>
                             </div>

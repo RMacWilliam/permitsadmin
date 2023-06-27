@@ -90,6 +90,8 @@ export interface IApiValidateUserResult {
     isValid?: boolean;
     isFirstLoginOfSeason?: boolean;
     token?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
 }
 

@@ -56,7 +56,7 @@ function Checkout({ appContext, router, setShowAlert }
                     <title>{t("Checkout.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
 
-                <h4 className="mb-3">{t("Checkout.Title")}</h4>
+                <h3 className="mb-3">{t("Checkout.Title")}</h3>
 
                 <div className="card mb-3">
                     <div className="card-body">
@@ -128,7 +128,7 @@ function Checkout({ appContext, router, setShowAlert }
                     <title>{t("Checkout.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
 
-                <h4 className="mb-3">{t("Checkout.Title")}</h4>
+                <h3 className="mb-3">{t("Checkout.Title")}</h3>
 
                 <div className="card mb-3">
                     <div className="card-body">

@@ -6,7 +6,6 @@ import { useContext, useEffect, useState } from "react";
 import $ from 'jquery';
 
 declare var YT: any;
-declare var YTConfig: any;
 
 export default function FirstLoginOfSeasonPage() {
     const appContext = useContext(AppContext);
@@ -62,7 +61,7 @@ function FirstLoginOfSeason({ appContext, router, setShowAlert }:
                 <title>{t("FirstLoginOfSeason.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4 className="mb-3">{t("FirstLoginOfSeason.Title")}</h4>
+            <h3 className="mb-3">{t("FirstLoginOfSeason.Title")}</h3>
 
             <p>{t("FirstLoginOfSeason.Message")}</p>
 

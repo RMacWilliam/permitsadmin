@@ -2,23 +2,33 @@ import UnauthenticatedPageLayout from "@/components/layouts/unauthenticated-page
 import { AppContext, IAppContextValues } from "@/custom/app-context";
 import Head from "next/head"
 import { NextRouter, useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export default function ChangeEmailPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
+    // Display loading indicator.
+    const [showAlert, setShowAlert] = useState(true);
+
+    useEffect(() => {
+        appContext.updater(draft => { draft.navbarPage = "change-email" });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
-        <UnauthenticatedPageLayout>
-            <ChangeEmail appContext={appContext} router={router}></ChangeEmail>
+        <UnauthenticatedPageLayout showAlert={showAlert}>
+            <ChangeEmail appContext={appContext} router={router} setShowAlert={setShowAlert}></ChangeEmail>
         </UnauthenticatedPageLayout>
     )
 }
 
-function ChangeEmail({ appContext, router }
+function ChangeEmail({ appContext, router, setShowAlert }
     : {
         appContext: IAppContextValues,
-        router: NextRouter
+        router: NextRouter,
+        setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
     }) {
 
     const t: Function = appContext.translation.t;
@@ -29,7 +39,7 @@ function ChangeEmail({ appContext, router }
                 <title>{t("ChangeEmail.Title")} | {t("Common.Ofsc")}</title>
             </Head>
 
-            <h4 className="mb-3">{t("ChangeEmail.Title")}</h4>
+            <h3 className="mb-3">{t("ChangeEmail.Title")}</h3>
 
 
         </>

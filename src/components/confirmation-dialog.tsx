@@ -88,24 +88,28 @@ export default function ConfirmationDialog({ showDialog, title, message, errorMe
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                {(buttons == undefined || buttons === ConfirmationDialogButtons.Ok || buttons === ConfirmationDialogButtons.OkCancel) && (
-                    <Button variant="outline-dark" onClick={() => dialogOkClick()}>{t("Common.Buttons.Ok")}</Button>
-                )}
+                <div className="row w-100">
+                    <div className="col-12 d-flex justify-content-end align-items-center gap-1">
+                        {(buttons == undefined || buttons === ConfirmationDialogButtons.Ok || buttons === ConfirmationDialogButtons.OkCancel) && (
+                            <button type="button" className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => dialogOkClick()}>{t("Common.Buttons.Ok")}</button>
+                        )}
 
-                {buttons === ConfirmationDialogButtons.YesNo && (
-                    <>
-                        <Button variant="outline-dark" onClick={() => dialogYesClick()}>{t("Common.Buttons.Yes")}</Button>
-                        <Button variant="outline-dark" onClick={() => dialogNoClick()}>{t("Common.Buttons.No")}</Button>
-                    </>
-                )}
+                        {buttons === ConfirmationDialogButtons.YesNo && (
+                            <>
+                                <button type="button" className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => dialogYesClick()}>{t("Common.Buttons.Yes")}</button>
+                                <button type="button" className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => dialogNoClick()}>{t("Common.Buttons.No")}</button>
+                            </>
+                        )}
 
-                {(buttons === ConfirmationDialogButtons.OkCancel || buttons === ConfirmationDialogButtons.YesNoCancel) && (
-                    <Button variant="outline-dark" onClick={() => dialogCancelClick()}>{t("Common.Buttons.Cancel")}</Button>
-                )}
+                        {(buttons === ConfirmationDialogButtons.OkCancel || buttons === ConfirmationDialogButtons.YesNoCancel) && (
+                            <button type="button" className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => dialogCancelClick()}>{t("Common.Buttons.Cancel")}</button>
+                        )}
 
-                {buttons === ConfirmationDialogButtons.Close && (
-                    <Button variant="outline-dark" onClick={() => dialogCloseClick()}>{t("Common.Buttons.Close")}</Button>
-                )}
+                        {buttons === ConfirmationDialogButtons.Close && (
+                            <button type="button" className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => dialogCloseClick()}>{t("Common.Buttons.Close")}</button>
+                        )}
+                    </div>
+                </div>
             </Modal.Footer>
         </Modal>
     )
