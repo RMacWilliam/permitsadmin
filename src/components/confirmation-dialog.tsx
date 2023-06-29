@@ -1,8 +1,6 @@
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import { ComponentProps, ElementType, ReactNode, forwardRef, useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import { AppContext } from '@/custom/app-context';
-import classNames from 'classnames';
 
 export enum ConfirmationDialogButtons {
     Ok = 0,
@@ -91,22 +89,22 @@ export default function ConfirmationDialog({ showDialog, title, message, errorMe
                 <div className="row w-100">
                     <div className="col-12 d-flex justify-content-end align-items-center gap-1">
                         {(buttons == undefined || buttons === ConfirmationDialogButtons.Ok || buttons === ConfirmationDialogButtons.OkCancel) && (
-                            <button type="button" className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => dialogOkClick()}>{t("Common.Buttons.Ok")}</button>
+                            <button type="button" className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={() => dialogOkClick()}>{t("Common.Buttons.Ok")}</button>
                         )}
 
                         {buttons === ConfirmationDialogButtons.YesNo && (
                             <>
-                                <button type="button" className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => dialogYesClick()}>{t("Common.Buttons.Yes")}</button>
-                                <button type="button" className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => dialogNoClick()}>{t("Common.Buttons.No")}</button>
+                                <button type="button" className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={() => dialogYesClick()}>{t("Common.Buttons.Yes")}</button>
+                                <button type="button" className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={() => dialogNoClick()}>{t("Common.Buttons.No")}</button>
                             </>
                         )}
 
                         {(buttons === ConfirmationDialogButtons.OkCancel || buttons === ConfirmationDialogButtons.YesNoCancel) && (
-                            <button type="button" className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => dialogCancelClick()}>{t("Common.Buttons.Cancel")}</button>
+                            <button type="button" className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={() => dialogCancelClick()}>{t("Common.Buttons.Cancel")}</button>
                         )}
 
                         {buttons === ConfirmationDialogButtons.Close && (
-                            <button type="button" className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => dialogCloseClick()}>{t("Common.Buttons.Close")}</button>
+                            <button type="button" className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={() => dialogCloseClick()}>{t("Common.Buttons.Close")}</button>
                         )}
                     </div>
                 </div>

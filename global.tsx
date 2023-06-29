@@ -23,6 +23,9 @@ export class WebApi {
     static SaveUserPreferences: string = WebApi.BaseUrl + "user/saveuserpreferences";
     static GetCorrespondenceLanguages: string = WebApi.BaseUrl + "user/getcorrespondencelanguages";
     static CreateUser: string = WebApi.BaseUrl + "user/createuser";
+    static PasswordReset: string = WebApi.BaseUrl + "user/passwordreset";
+    static VerifyAccount: string = WebApi.BaseUrl + "user/verifyaccount";
+    static UpdatePassword: string = WebApi.BaseUrl + "user/updatepassword";
 
     // Utils
     static GetProvinces: string = WebApi.BaseUrl + "utils/getprovinces";

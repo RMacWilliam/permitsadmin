@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import $ from 'jquery';
 import { IAppContextValues } from '@/custom/app-context';
 
@@ -142,18 +141,18 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
                 </Modal.Body>
                 <Modal.Footer>
                     <div className="container-fluid">
-                        <div className="row">
+                        <div className="row gap-2">
                             <div className="col">
                                 &nbsp;
                             </div>
                             <div className="col d-flex justify-content-end">
-                                <Button className="me-2" variant="outline-dark" onClick={() => selectClick()}>
+                                <button className="btn btn-outline-dark btn-sm min-75 me-1" type="button" onClick={() => selectClick()}>
                                     {t("Common.Buttons.Select")}
-                                </Button>
+                                </button>
 
-                                <Button variant="outline-dark" onClick={() => cancelClick()}>
+                                <button className="btn btn-outline-dark btn-sm min-75" type="button" onClick={() => cancelClick()}>
                                     {t("Common.Buttons.Cancel")}
-                                </Button>
+                                </button>
                             </div>
                         </div>
                     </div>

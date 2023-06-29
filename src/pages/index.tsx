@@ -2,11 +2,10 @@ import UnauthenticatedPageLayout from '@/components/layouts/unauthenticated-page
 import { IApiValidateUserRequest, IApiValidateUserResult, apiValidateUser } from '@/custom/api';
 import { AppContext } from '@/custom/app-context';
 import { loginAndInitializeAppContext } from '@/custom/authentication';
+import { checkResponseStatus, getApiErrorMessage } from '@/custom/utilities';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
-import { Button } from 'react-bootstrap';
-import { GlobalAppContext } from '../../global';
 
 export default function IndexPage() {
     return (
@@ -20,6 +19,8 @@ function Index() {
     const appContext = useContext(AppContext);
     const router = useRouter();
 
+    const [errorMessage, setErrorMessage] = useState("");
+
     const [email, setEmail] = useState("");
     const [isEmailValid, setIsEmailValid] = useState(true);
 
@@ -27,8 +28,6 @@ function Index() {
     const [isPasswordValid, setIsPasswordValid] = useState(true);
 
     const [loginInProgress, setLoginInProgress] = useState(false);
-
-    const [showInvalidLogin, setShowInvalidLogin] = useState(false);
 
     const t: Function = appContext.translation.t;
 
@@ -163,9 +162,9 @@ function Index() {
                                     )}
                                 </button>
 
-                                {showInvalidLogin && (
+                                {errorMessage !== "" && (
                                     <div className="text-danger text-center mt-2">
-                                        {t("Index.InvalidEmailAndOrPassword")}
+                                        {getApiErrorMessage(errorMessage)}
                                     </div>
                                 )}
                             </div>
@@ -177,13 +176,13 @@ function Index() {
                             </div>
 
                             <div className="mb-2">
-                                <button className="btn btn-outline-primary w-100" disabled={loginInProgress} onClick={() => router.push("/create-account")}>
+                                <button className="btn btn-outline-primary btn-sm w-100" disabled={loginInProgress} onClick={() => router.push("/create-account")}>
                                     {t("Index.CreateAnAccountButton")}
                                 </button>
                             </div>
 
                             <div>
-                                <button className="btn btn-outline-primary w-100" disabled={loginInProgress} onClick={() => router.push("/change-email")}>
+                                <button className="btn btn-outline-primary btn-sm w-100" disabled={loginInProgress} onClick={() => router.push("/change-email")}>
                                     {t("Index.ChangeMyEmailAddress")}
                                 </button>
                             </div>
@@ -214,14 +213,18 @@ function Index() {
 
             apiValidateUser(apiLoginRequest).subscribe({
                 next: (apiLoginResult: IApiValidateUserResult) => {
-                    if (apiLoginResult?.isValid) {
-                        loginAndInitializeAppContext(apiLoginResult);
+                    if (apiLoginResult?.isSuccessful && apiLoginResult?.data != undefined) {
+                        if (apiLoginResult?.data?.isValid) {
+                            loginAndInitializeAppContext(apiLoginResult);
+                        } else {
+                            setErrorMessage(apiLoginResult?.data?.message ?? "");
+                        }
                     } else {
-                        setShowInvalidLogin(true);
+                        // TODO: What do we do?
                     }
                 },
                 error: (error: any) => {
-                    console.log(error);
+                    checkResponseStatus(error);
                 },
                 complete: () => {
                     setLoginInProgress(false);

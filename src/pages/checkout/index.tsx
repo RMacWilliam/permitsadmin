@@ -107,17 +107,15 @@ function Checkout({ appContext, router, setShowAlert }
                     </div>
                 </div >
 
-                <div className="card">
-                    <div className="card-body d-flex justify-content-center flex-wrap gap-2">
-                        <button className="btn btn-outline-dark" onClick={() => step1ContinueCheckoutClick()}>
-                            {t("Common.Buttons.Next")}
-                            <i className="fa-solid fa-chevron-right fa-sm ms-2"></i>
-                        </button>
+                <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
+                    <button className="btn btn-primary" onClick={() => step1ContinueCheckoutClick()}>
+                        {t("Common.Buttons.Next")}
+                        <i className="fa-solid fa-chevron-right fa-sm ms-2"></i>
+                    </button>
 
-                        <button className="btn btn-outline-dark" onClick={() => cancelCheckoutClick()}>
-                            Cancel Checkout
-                        </button>
-                    </div>
+                    <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>
+                        Cancel Checkout
+                    </button>
                 </div>
             </>
         )
@@ -396,20 +394,18 @@ function Checkout({ appContext, router, setShowAlert }
                     </div>
                 </div >
 
-                <div className="card">
-                    <div className="card-body d-flex justify-content-center flex-wrap gap-2">
-                        <button className="btn btn-outline-dark" onClick={() => step2GoBackClick()}>
-                            <i className="fa-solid fa-chevron-left fa-sm me-2"></i>
-                            {t("Common.Buttons.Back")}
-                        </button>
+                <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
+                    <button className="btn btn-primary" onClick={() => step2GoBackClick()}>
+                        <i className="fa-solid fa-chevron-left fa-sm me-2"></i>
+                        {t("Common.Buttons.Back")}
+                    </button>
 
-                        <button className="btn btn-outline-dark" onClick={() => step2ContinueCheckoutClick()}>
-                            {t("Common.Buttons.Next")}
-                            <i className="fa-solid fa-chevron-right fa-sm ms-2"></i>
-                        </button>
-                        
-                        <button className="btn btn-outline-dark" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
-                    </div>
+                    <button className="btn btn-primary" onClick={() => step2ContinueCheckoutClick()}>
+                        {t("Common.Buttons.Next")}
+                        <i className="fa-solid fa-chevron-right fa-sm ms-2"></i>
+                    </button>
+
+                    <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
                 </div>
             </>
         )

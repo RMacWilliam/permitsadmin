@@ -95,15 +95,21 @@ export function sortArray(array: any[], sortByFields: string[]): any[] {
     return sortBy(array, sortByFields);
 }
 
-export function getApiErrorMessage(key: string | undefined): string | undefined {
-    let result: string | undefined = undefined;
+export function getApiErrorMessage(key: string | undefined, returnKeyIfLookupUnsuccessful: boolean = true): string {
+    let result: string = "";
 
     if (key != undefined && key !== "") {
         const lookupKey: string = "API." + key;
-        const message: string | undefined = GlobalAppContext?.translation?.i18n?.t(lookupKey);
+        const message: string = GlobalAppContext?.translation?.i18n?.t(lookupKey) ?? "";
 
         if (message !== lookupKey) {
             result = message;
+        } else {
+            // Usually API return resource keys, and sometimes they may return actual error messages.
+            // If an actual error message was returned, then return this since the resource key lookup was unsuccessful.
+            if (returnKeyIfLookupUnsuccessful) {
+                result = key;
+            }
         }
     }
 

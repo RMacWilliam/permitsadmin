@@ -4,7 +4,6 @@ import AuthenticatedPageLayout, { IShowHoverButton } from '@/components/layouts/
 import Head from 'next/head';
 import { checkResponseStatus, formatCurrency, formatShortDate, getApiErrorMessage, getDate, getGuid, getKeyValueFromSelect, getMoment, iv, parseDate, sortArray } from '@/custom/utilities';
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import ConfirmationDialog, { ConfirmationDialogButtons, ConfirmationDialogIcons } from '@/components/confirmation-dialog';
 import { NextRouter, useRouter } from 'next/router';
 import DatePicker, { registerLocale } from 'react-datepicker';
@@ -300,11 +299,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             {snowmobile?.isEditable && !isPermitAddedToCart(snowmobile?.oVehicleId) && (
                                 <div className="col-12 col-md-auto d-flex align-items-center">
                                     <>
-                                        <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
+                                        <button className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={() => addEditSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
                                             {t("Common.Buttons.Edit")}
                                         </button>
 
-                                        <button className="btn btn-outline-dark btn-sm ms-1 w-sm-100" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
+                                        <button className="btn btn-outline-dark btn-sm min-75 ms-1 w-sm-100" onClick={() => deleteSnowmobileDialogShow(snowmobile?.oVehicleId)} disabled={isPermitAddedToCart(snowmobile?.oVehicleId)}>
                                             {t("Common.Buttons.Delete")}
                                         </button>
                                     </>
@@ -313,7 +312,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                             {!snowmobile?.isEditable && (
                                 <div className="col-12 col-md-auto d-flex align-items-center">
-                                    <button type="button" className="btn btn-link" onClick={() => setShowSnowmobileInfoDialog(true)}>
+                                    <button type="button" className="btn btn-link p-0 w-sm-100" onClick={() => setShowSnowmobileInfoDialog(true)}>
                                         <i className="fa-solid fa-circle-info fa-lg"></i>
                                     </button>
                                 </div>
@@ -406,16 +405,14 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 </div>
             ))}
 
-            <div className="card">
-                <div className="card-body text-center">
-                    <button className="btn btn-primary" onClick={() => addEditSnowmobileDialogShow()}>
-                        {t("Permits.Vehicle.AddSnowmobile")}
-                    </button>
+            <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
+                <button className="btn btn-primary" onClick={() => addEditSnowmobileDialogShow()}>
+                    {t("Permits.Vehicle.AddSnowmobile")}
+                </button>
 
-                    <button className="btn btn-primary ms-1" onClick={() => router.push("/cart")}>
-                        {t("GiftCards.ProceedWithPurchase")}
-                    </button>
-                </div>
+                <button className="btn btn-primary ms-1" onClick={() => router.push("/cart")}>
+                    {t("GiftCards.ProceedWithPurchase")}
+                </button>
             </div>
 
             <ConfirmationDialog showDialog={showSnowmobileInfoDialog} title={t("Permits.VehicleCannotBeModifiedDialog.Title")} buttons={ConfirmationDialogButtons.Ok} icon={ConfirmationDialogIcons.Information} width="50"
@@ -423,7 +420,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                 <div>{t("Permits.VehicleCannotBeModifiedDialog.Message")}</div>
             </ConfirmationDialog>
 
-            <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title={t("Permits.DeleteSnowmobileDialog.Title")} errorMessage={deleteSnowmobileDialogErrorMessage} buttons={ConfirmationDialogButtons.YesNo}
+            <ConfirmationDialog showDialog={showDeleteSnowmobileDialog} title={t("Permits.DeleteSnowmobileDialog.Title")} errorMessage={getApiErrorMessage(deleteSnowmobileDialogErrorMessage)} buttons={ConfirmationDialogButtons.YesNo}
                 icon={ConfirmationDialogIcons.Question} width="50" yesClick={() => deleteSnowmobileDialogYesClick()} noClick={() => deleteSnowmobileDialogNoClick()}
                 closeClick={() => deleteSnowmobileDialogNoClick()}>
                 <div className="fw-bold mb-2">{snowmobileNameToDelete}</div>
@@ -443,7 +440,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             <div className="row">
                                 <div className="col-12">
                                     <div className="alert alert-danger" role="alert">
-                                        {addEditSnowmobileDialogErrorMessage}
+                                        {getApiErrorMessage(addEditSnowmobileDialogErrorMessage)}
                                     </div>
                                 </div>
                             </div>
@@ -552,14 +549,15 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                     <span className="text-danger me-1">*</span>{t("Permits.AddEditSnowmobileDialog.MandatoryField")}
                                 </div>
                             </div>
-                            <div className="col d-flex justify-content-center justify-content-sm-end align-items-center">
-                                <Button className="me-2" variant="outline-dark" onClick={() => addEditSnowmobileDialogSave()}>
-                                    {t("Common.Buttons.Save")}
-                                </Button>
 
-                                <Button variant="outline-dark" onClick={() => addEditSnowmobileDialogHide()}>
+                            <div className="col col-md-auto d-flex justify-content-center justify-content-sm-end align-items-center">
+                                <button className="btn btn-outline-dark btn-sm min-75 me-1 w-sm-100" type="button" onClick={() => addEditSnowmobileDialogSave()}>
+                                    {t("Common.Buttons.Save")}
+                                </button>
+
+                                <button className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={() => addEditSnowmobileDialogHide()}>
                                     {t("Common.Buttons.Cancel")}
-                                </Button>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -734,7 +732,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                             setHoverButtonVisibility(true);
                         } else {
-                            setAddEditSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
+                            setAddEditSnowmobileDialogErrorMessage(result?.errorMessage ?? "");
                         }
                     },
                     error: (error: any) => {
@@ -775,7 +773,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                             setHoverButtonVisibility(true);
                         } else {
-                            setAddEditSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
+                            setAddEditSnowmobileDialogErrorMessage(result?.errorMessage ?? "");
                         }
                     },
                     error: (error: any) => {
@@ -904,7 +902,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                     setHoverButtonVisibility(true);
                 } else {
-                    setDeleteSnowmobileDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
+                    setDeleteSnowmobileDialogErrorMessage(result?.errorMessage ?? "");
                 }
             },
             error: (error: any) => {

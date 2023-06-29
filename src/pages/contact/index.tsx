@@ -1,10 +1,9 @@
 import { useContext, useEffect, useState } from 'react'
-import { AppContext, IAppContextValues, IContactInfo, IKeyValue, IParentKeyValue } from '@/custom/app-context';
+import { AppContext, IAppContextValues, IKeyValue, IParentKeyValue } from '@/custom/app-context';
 import AuthenticatedPageLayout from '@/components/layouts/authenticated-page';
 import Head from 'next/head';
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import { checkResponseStatus, getApiErrorMessage, getKeyValueFromSelect, getParentKeyValueFromSelect, iv, sortArray, validatePassword, validatePostalCode, validateZipCode } from '@/custom/utilities';
+import { checkResponseStatus, getApiErrorMessage, getGuid, getKeyValueFromSelect, getParentKeyValueFromSelect, iv, sortArray, validatePostalCode, validateZipCode } from '@/custom/utilities';
 import { NextRouter, useRouter } from 'next/router';
 import CartItemsAlert from '@/components/cart-items-alert';
 import { Observable, Subscription, forkJoin } from 'rxjs';
@@ -51,6 +50,8 @@ function Contact({ appContext, router, setShowAlert }
 
     const [showContactInfoDialog, setShowContactInfoDialog] = useState(false);
     const [contactInfoDialogErrorMessage, setContactInfoDialogErrorMessage] = useState("");
+
+    const [firstLoginOfSeasonErrorMessages, setFirstLoginOfSeasonErrorMessages] = useState<string[]>([]);
 
     const [firstName, setFirstName] = useState("");
     const [isFirstNameValid, setIsFirstNameValid] = useState<boolean | undefined>(undefined);
@@ -260,16 +261,24 @@ function Contact({ appContext, router, setShowAlert }
 
                 <CartItemsAlert></CartItemsAlert>
 
-                <div className="card mb-3 w-100">
-                    <div className="card-header d-flex justify-content-between align-items-center bg-success-subtle fs-5 fw-semibold">
-                        <div>
-                            {t("ContactInfo.ContactInfo.Title")}
-                        </div>
+                <div className="card mb-3">
+                    <div className="card-header bg-success-subtle">
+                        <div className="row gap-3">
+                            <div className="col d-flex justify-content-center justify-content-md-start align-items-center">
+                                <div className="d-none d-md-block fs-5 fw-semibold">
+                                    {t("ContactInfo.ContactInfo.Title")}
+                                </div>
 
-                        <div>
-                            <button className="btn btn-outline-dark btn-sm" onClick={contactInfoDialogShow}>
-                                {t("Common.Buttons.Edit")}
-                            </button>
+                                <div className="d-flex d-md-none text-center fw-semibold">
+                                    {t("ContactInfo.ContactInfo.Title")}
+                                </div>
+                            </div>
+
+                            <div className="col-12 col-md-auto d-flex align-items-center">
+                                <button className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={contactInfoDialogShow}>
+                                    {t("Common.Buttons.Edit")}
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div className="card-body">
@@ -299,16 +308,24 @@ function Contact({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="card mb-3 w-100">
-                    <div className="card-header d-flex justify-content-between align-items-center bg-success-subtle fs-5 fw-semibold">
-                        <div>
-                            {t("ContactInfo.Preferences.Title")}
-                        </div>
+                <div className="card mb-3">
+                    <div className="card-header bg-success-subtle">
+                        <div className="row gap-3">
+                            <div className="col d-flex justify-content-center justify-content-md-start align-items-center">
+                                <div className="d-none d-md-block fs-5 fw-semibold">
+                                    {t("ContactInfo.Preferences.Title")}
+                                </div>
 
-                        <div>
-                            <button className="btn btn-outline-dark btn-sm" onClick={accountPreferencesDialogShow}>
-                                {t("Common.Buttons.Edit")}
-                            </button>
+                                <div className="d-flex d-md-none text-center fw-semibold">
+                                    {t("ContactInfo.Preferences.Title")}
+                                </div>
+                            </div>
+
+                            <div className="col-12 col-md-auto d-flex align-items-center">
+                                <button className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={accountPreferencesDialogShow}>
+                                    {t("Common.Buttons.Edit")}
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div className="card-body">
@@ -381,7 +398,7 @@ function Contact({ appContext, router, setShowAlert }
                                 <div className="row">
                                     <div className="col-12">
                                         <div className="alert alert-danger" role="alert">
-                                            {contactInfoDialogErrorMessage}
+                                            {getApiErrorMessage(contactInfoDialogErrorMessage)}
                                         </div>
                                     </div>
                                 </div>
@@ -534,13 +551,13 @@ function Contact({ appContext, router, setShowAlert }
                                 </div>
 
                                 <div className="col d-flex justify-content-center justify-content-sm-end align-items-center">
-                                    <Button className="me-2" variant="outline-dark" onClick={() => contactInfoDialogSave()}>
+                                    <button className="btn btn-outline-dark btn-sm min-75 me-1" type="button" onClick={() => contactInfoDialogSaveClick()}>
                                         {t("Common.Buttons.Save")}
-                                    </Button>
+                                    </button>
 
-                                    <Button variant="outline-dark" onClick={() => contactInfoDialogHide()}>
+                                    <button className="btn btn-outline-dark btn-sm min-75" type="button" onClick={() => contactInfoDialogHide()}>
                                         {t("Common.Buttons.Cancel")}
-                                    </Button>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -557,12 +574,12 @@ function Contact({ appContext, router, setShowAlert }
                                 <div className="row">
                                     <div className="col-12">
                                         <div className="alert alert-danger" role="alert">
-                                            {accountPreferencesDialogErrorMessage}
+                                            {getApiErrorMessage(accountPreferencesDialogErrorMessage)}
                                         </div>
                                     </div>
                                 </div>
                             )}
-                            <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                            <div className="row gap-2 gap-md-0 gx-2 mb-4">
                                 <div className="col-12">
                                     <label htmlFor="account-preferences-ofsc-contact-permission" className="form-label required">{t("ContactInfo.PreferencesEditDialog.OfscConsent")}</label>
                                     <label htmlFor="account-preferences-ofsc-contact-permission" className="form-label">{t("ContactInfo.PreferencesEditDialog.OfscConsentMore")}</label>
@@ -575,7 +592,7 @@ function Contact({ appContext, router, setShowAlert }
                                 </div>
                             </div>
 
-                            <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                            <div className="row gap-2 gap-md-0 gx-2 mb-4">
                                 <div className="col-12">
                                     <label htmlFor="account-preferences-rider-advantage" className="form-label required">{t("ContactInfo.PreferencesEditDialog.RiderAdvantage")}</label>
                                     <select className={`form-select ${iv(isRiderAdvantageValid)}`} id="account-preferences-rider-advantage" aria-label={t("ContactInfo.PreferencesEditDialog.RiderAdvantage")} aria-describedby="account-preferences-rider-advantage-validation" value={riderAdvantage.toString()} onChange={(e: any) => setRiderAdvantage(Number(e.target.value))}>
@@ -587,7 +604,7 @@ function Contact({ appContext, router, setShowAlert }
                                 </div>
                             </div>
 
-                            <div className="row gap-2 gap-md-0 gx-2 mb-3">
+                            <div className="row gap-2 gap-md-0 gx-2 mb-4">
                                 <div className="col-12">
                                     <label htmlFor="account-preferences-volunteering" className="form-label required">{t("ContactInfo.PreferencesEditDialog.Volunteering")}</label>
                                     <select className={`form-select ${iv(isVolunteeringValid)}`} id="account-preferences-volunteering" aria-label={t("ContactInfo.PreferencesEditDialog.Volunteering")} aria-describedby="account-preferences-volunteering-validation" value={volunteering.toString()} onChange={(e: any) => setVolunteering(Number(e.target.value))}>
@@ -624,13 +641,13 @@ function Contact({ appContext, router, setShowAlert }
                                     </div>
                                 </div>
                                 <div className="col d-flex justify-content-center justify-content-sm-end align-items-center">
-                                    <Button className="me-2" variant="outline-dark" onClick={() => accountPreferencesDialogSave()}>
+                                    <button className="btn btn-outline-dark btn-sm min-75 me-2" type="button" onClick={() => accountPreferencesDialogSaveClick()}>
                                         {t("Common.Buttons.Save")}
-                                    </Button>
+                                    </button>
 
-                                    <Button variant="outline-dark" onClick={() => accountPreferencesDialogHide()}>
+                                    <button className="btn btn-outline-dark btn-sm min-75" type="button" onClick={() => accountPreferencesDialogHide()}>
                                         {t("Common.Buttons.Cancel")}
-                                    </Button>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -644,6 +661,18 @@ function Contact({ appContext, router, setShowAlert }
                 <Head>
                     <title>{t("ContactInfo.Title")} | {t("Common.Ofsc")}</title>
                 </Head>
+
+                {firstLoginOfSeasonErrorMessages != undefined && firstLoginOfSeasonErrorMessages.length > 0 && (
+                    <div className="">
+                        <div className="col-12">
+                            <div className="alert alert-danger" role="alert">
+                                {firstLoginOfSeasonErrorMessages.map(errorMessage => (
+                                    <div key={getGuid()}>{getApiErrorMessage(errorMessage)}</div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 <h3 className="mb-3">{t("ContactInfo.Title")}</h3>
 
@@ -939,56 +968,60 @@ function Contact({ appContext, router, setShowAlert }
         setShowContactInfoDialog(true);
     }
 
-    function contactInfoDialogSave(): void {
+    function contactInfoDialogSaveClick(): void {
         if (validateContactInfo()) {
-            const apiSaveUserDetailsRequest: IApiSaveUserDetailsRequest = {
-                addressLine1: addressLine1?.trim()?.substring(0, 30),
-                addressLine2: addressLine2?.trim()?.substring(0, 30),
-                city: city?.trim()?.substring(0, 30),
-                countryId: country?.key,
-                email: email?.trim()?.substring(0, 200),
-                postalCode: postalCode?.trim()?.substring(0, 7),
-                provinceId: province?.key,
-                telephone: telephone?.trim()?.substring(0, 10),
-            };
-
-            setShowAlert(true);
-
-            apiSaveUserDetails(apiSaveUserDetailsRequest).subscribe({
-                next: (result: IApiSaveUserDetailsResult) => {
-                    if (result?.isSuccessful && result?.data != undefined) {
-                        appContext.updater(draft => {
-                            draft.contactInfo = {
-                                personId: result?.data?.personId,
-                                firstName: result?.data?.firstName,
-                                initial: result?.data?.initial,
-                                lastName: result?.data?.lastName,
-                                addressLine1: result?.data?.addressLine1,
-                                addressLine2: result?.data?.addressLine2,
-                                city: result?.data?.city,
-                                province: result?.data?.province,
-                                postalCode: result?.data?.postalCode,
-                                country: result?.data?.country,
-                                telephone: result?.data?.telephone,
-                                email: result?.data?.email,
-                                adminUser: result?.data?.adminUser ?? false,
-                                verified: result?.data?.verified ?? false,
-                            };
-                        });
-
-                        setShowContactInfoDialog(false);
-                    } else {
-                        setContactInfoDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
-                    }
-                },
-                error: (error: any) => {
-                    checkResponseStatus(error);
-                },
-                complete: () => {
-                    setShowAlert(false);
-                }
-            });
+            contactInfoSave();
         }
+    }
+
+    function contactInfoSave(): void {
+        const apiSaveUserDetailsRequest: IApiSaveUserDetailsRequest = {
+            addressLine1: addressLine1?.trim()?.substring(0, 30),
+            addressLine2: addressLine2?.trim()?.substring(0, 30),
+            city: city?.trim()?.substring(0, 30),
+            countryId: country?.key,
+            email: email?.trim()?.substring(0, 200),
+            postalCode: postalCode?.trim()?.substring(0, 7),
+            provinceId: province?.key,
+            telephone: telephone?.trim()?.substring(0, 10),
+        };
+
+        setShowAlert(true);
+
+        apiSaveUserDetails(apiSaveUserDetailsRequest).subscribe({
+            next: (result: IApiSaveUserDetailsResult) => {
+                if (result?.isSuccessful && result?.data != undefined) {
+                    appContext.updater(draft => {
+                        draft.contactInfo = {
+                            personId: result?.data?.personId,
+                            firstName: result?.data?.firstName,
+                            initial: result?.data?.initial,
+                            lastName: result?.data?.lastName,
+                            addressLine1: result?.data?.addressLine1,
+                            addressLine2: result?.data?.addressLine2,
+                            city: result?.data?.city,
+                            province: result?.data?.province,
+                            postalCode: result?.data?.postalCode,
+                            country: result?.data?.country,
+                            telephone: result?.data?.telephone,
+                            email: result?.data?.email,
+                            adminUser: result?.data?.adminUser ?? false,
+                            verified: result?.data?.verified ?? false,
+                        };
+                    });
+
+                    setShowContactInfoDialog(false);
+                } else {
+                    setContactInfoDialogErrorMessage(result?.errorMessage ?? "");
+                }
+            },
+            error: (error: any) => {
+                checkResponseStatus(error);
+            },
+            complete: () => {
+                setShowAlert(false);
+            }
+        });
     }
 
     function validateContactInfo(): boolean {
@@ -1098,42 +1131,46 @@ function Contact({ appContext, router, setShowAlert }
         setShowAccountPreferencesDialog(true);
     }
 
-    function accountPreferencesDialogSave(): void {
+    function accountPreferencesDialogSaveClick(): void {
         if (validateAccountPreferences()) {
-            const apiSaveUserPreferencesRequest: IApiSaveUserPreferencesRequest = {
-                ofscContactPermission: ofscContactPermission,
-                riderAdvantage: riderAdvantage,
-                volunteering: volunteering,
-                correspondenceLanguage: correspondenceLanguage
-            };
-
-            setShowAlert(true);
-
-            apiSaveUserPreferences(apiSaveUserPreferencesRequest).subscribe({
-                next: (result: IApiSaveUserPreferencesResult) => {
-                    if (result?.isSuccessful && result?.data != undefined) {
-                        appContext.updater(draft => {
-                            draft.accountPreferences = {
-                                ofscContactPermission: result?.data?.ofscContactPermission ?? -1,
-                                riderAdvantage: result?.data?.riderAdvantage ?? -1,
-                                volunteering: result?.data?.volunteering ?? -1,
-                                correspondenceLanguage: result?.data?.correspondenceLanguage ?? ""
-                            };
-                        });
-
-                        setShowAccountPreferencesDialog(false);
-                    } else {
-                        setAccountPreferencesDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
-                    }
-                },
-                error: (error: any) => {
-                    checkResponseStatus(error);
-                },
-                complete: () => {
-                    setShowAlert(false);
-                }
-            });
+            accountPreferencesSave();
         }
+    }
+
+    function accountPreferencesSave(): void {
+        const apiSaveUserPreferencesRequest: IApiSaveUserPreferencesRequest = {
+            ofscContactPermission: ofscContactPermission,
+            riderAdvantage: riderAdvantage,
+            volunteering: volunteering,
+            correspondenceLanguage: correspondenceLanguage
+        };
+
+        setShowAlert(true);
+
+        apiSaveUserPreferences(apiSaveUserPreferencesRequest).subscribe({
+            next: (result: IApiSaveUserPreferencesResult) => {
+                if (result?.isSuccessful && result?.data != undefined) {
+                    appContext.updater(draft => {
+                        draft.accountPreferences = {
+                            ofscContactPermission: result?.data?.ofscContactPermission ?? -1,
+                            riderAdvantage: result?.data?.riderAdvantage ?? -1,
+                            volunteering: result?.data?.volunteering ?? -1,
+                            correspondenceLanguage: result?.data?.correspondenceLanguage ?? ""
+                        };
+                    });
+
+                    setShowAccountPreferencesDialog(false);
+                } else {
+                    setAccountPreferencesDialogErrorMessage(result?.errorMessage ?? "");
+                }
+            },
+            error: (error: any) => {
+                checkResponseStatus(error);
+            },
+            complete: () => {
+                setShowAlert(false);
+            }
+        });
     }
 
     function validateAccountPreferences(): boolean {
@@ -1179,12 +1216,72 @@ function Contact({ appContext, router, setShowAlert }
         const accountPreferencesValid: boolean = validateAccountPreferences();
 
         if (contactInfoValid && accountPreferencesValid) {
-            appContext.updater(draft => {
-                draft.isFirstLoginOfSeason = false;
-                draft.isContactInfoVerified = true;
-            });
+            const apiSaveUserDetailsRequest: IApiSaveUserDetailsRequest = {
+                addressLine1: addressLine1?.trim()?.substring(0, 30),
+                addressLine2: addressLine2?.trim()?.substring(0, 30),
+                city: city?.trim()?.substring(0, 30),
+                countryId: country?.key,
+                email: email?.trim()?.substring(0, 200),
+                postalCode: postalCode?.trim()?.substring(0, 7),
+                provinceId: province?.key,
+                telephone: telephone?.trim()?.substring(0, 10),
+            };
 
-            router.push("/home");
+            const apiSaveUserPreferencesRequest: IApiSaveUserPreferencesRequest = {
+                ofscContactPermission: ofscContactPermission,
+                riderAdvantage: riderAdvantage,
+                volunteering: volunteering,
+                correspondenceLanguage: correspondenceLanguage
+            };
+
+            // Get data from api.
+            const batchApi: Observable<any>[] = [
+                apiSaveUserDetails(apiSaveUserDetailsRequest),
+                apiSaveUserPreferences(apiSaveUserPreferencesRequest)
+            ];
+
+            const errorMessages: string[] = [];
+
+            setShowAlert(true);
+
+            const subscription: Subscription = forkJoin(batchApi).subscribe({
+                next: (results: any[]) => {
+                    // apiSaveUserDetails
+                    const apiSaveUserDetailsResult: IApiSaveUserDetailsResult = results[0] as IApiSaveUserDetailsResult;
+
+                    if (apiSaveUserDetailsResult != undefined && apiSaveUserDetailsResult?.isSuccessful) {
+                        //
+                    } else {
+                        errorMessages.push(apiSaveUserDetailsResult?.errorMessage ?? "");
+                    }
+
+                    // apiSaveUserPreferences
+                    const apiSaveUserPreferencesResult: IApiSaveUserPreferencesResult = results[1] as IApiSaveUserPreferencesResult;
+
+                    if (apiSaveUserPreferencesResult != undefined && apiSaveUserPreferencesResult?.isSuccessful) {
+                        //
+                    } else {
+                        errorMessages.push(apiSaveUserPreferencesResult?.errorMessage ?? "");
+                    }
+
+                    if (apiSaveUserDetailsResult?.isSuccessful && apiSaveUserPreferencesResult?.isSuccessful) {
+                        appContext.updater(draft => {
+                            draft.isFirstLoginOfSeason = false;
+                            draft.isContactInfoVerified = true;
+                        });
+
+                        router.push("/home");
+                    }
+                },
+                error: (error: any) => {
+                    checkResponseStatus(error);
+                },
+                complete: () => {
+                    setFirstLoginOfSeasonErrorMessages(errorMessages.filter(x => x != undefined && x.trim() !== ""));
+
+                    setShowAlert(false);
+                }
+            });
         }
     }
 }

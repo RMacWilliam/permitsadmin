@@ -180,7 +180,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 )}
 
-                <h3 className="mb-3">{t("CreateAccount.Title")}</h3>{recaptchaState}
+                <h3 className="mb-3">{t("CreateAccount.Title")}</h3>
 
                 <p>{t("CreateAccount.PleaseCompleteInformationBelow")}</p>
 
@@ -431,14 +431,13 @@ function CreateAccount({ appContext, router, setShowAlert }
                     <div className="col-12">
                         <div className="input-group has-validation">
                             <ReCAPTCHA className={iv(isRecaptchaValid)} sitekey={Constants.CaptchaSiteKey} hl={appContext.data?.language === "fr" ? "fr-CA" : "en"}
-                                onChange={(e: any) => setRecaptchaState(e)}
-                            />
-                            <div id="recaptcha-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
+                                aria-describedby="create-account-recaptcha-validation" onChange={(e: any) => setRecaptchaState(e)} />
+                            <div id="create-account-recaptcha-validation" className="invalid-feedback">{t("Common.Validation.SelectionIsRequired")}</div>
                         </div>
                     </div>
                 </div>
 
-                <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 pt-2">
+                <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 pt-4">
                     <button className="btn btn-primary" onClick={() => createAccountClick()}>
                         {t("CreateAccount.CreateAccount")}
                     </button>
@@ -461,6 +460,8 @@ function CreateAccount({ appContext, router, setShowAlert }
                 <p>{t("CreateAccount.ThankYouForCreatingYourAccount")}</p>
 
                 <p>{t("CreateAccount.VerificationEmailHasBeenSent")}</p>
+
+                <p>{t("Common.ContactCustomerService")}</p>
 
                 <div className="card">
                     <div className="card-body text-center">
@@ -529,11 +530,11 @@ function CreateAccount({ appContext, router, setShowAlert }
     function createAccountClick(): void {
         setErrorMessage("");
 
-        const validateContactInfo: boolean = validateContactInfoDialog();
-        const validateAccountPreferences: boolean = validateAccountPreferencesDialog();
+        const isContactInfoValid: boolean = validateContactInfo();
+        const isAccountPreferencesValid: boolean = validateAccountPreferences();
 
-        if (validateContactInfo && validateAccountPreferences) {
-            const apiCreateAccountRequest: IApiCreateUserRequest = {
+        if (isContactInfoValid && isAccountPreferencesValid) {
+            const apiCreateUserRequest: IApiCreateUserRequest = {
                 email: email?.trim()?.substring(0, 200),
                 password: password?.trim()?.substring(0, 200),
                 firstName: firstName?.trim()?.substring(0, 150),
@@ -549,30 +550,35 @@ function CreateAccount({ appContext, router, setShowAlert }
                 ofscContactPermission: ofscContactPermission ?? -1,
                 riderAdvantage: riderAdvantage ?? -1,
                 volunteering: volunteering ?? -1,
-                correspondenceLanguage: correspondenceLanguage ?? ""
+                correspondenceLanguage: correspondenceLanguage ?? "",
+                recaptcha: recaptchaState
             };
+
+            let errorMessage: string = "";
 
             setShowAlert(true);
 
-            apiCreateUser(apiCreateAccountRequest).subscribe({
+            apiCreateUser(apiCreateUserRequest).subscribe({
                 next: (result: IApiCreateUserResult) => {
                     if (result?.isSuccessful && result?.data != undefined) {
                         setStep(1);
                     } else {
-                        setErrorMessage(result?.errorMessage ?? "");
+                        errorMessage = result?.errorMessage ?? "";
                     }
                 },
                 error: (error: any) => {
                     checkResponseStatus(error);
                 },
                 complete: () => {
+                    setErrorMessage(errorMessage);
+
                     setShowAlert(false);
                 }
             });
         }
     }
 
-    function validateContactInfoDialog(): boolean {
+    function validateContactInfo(): boolean {
         let result: boolean = true;
 
         if (email.trim() === "") {
@@ -696,7 +702,7 @@ function CreateAccount({ appContext, router, setShowAlert }
         return result;
     }
 
-    function validateAccountPreferencesDialog(): boolean {
+    function validateAccountPreferences(): boolean {
         let result: boolean = true;
 
         if (ofscContactPermission === -1) {

@@ -86,13 +86,21 @@ export interface IApiValidateUserRequest {
     password: string;
 }
 
-export interface IApiValidateUserResult {
+export interface IApiValidateUserResultData {
     isValid?: boolean;
     isFirstLoginOfSeason?: boolean;
     token?: string;
-    firstName?: string;
-    lastName?: string;
     email?: string;
+    firstName?: string;
+    initial?: string;
+    lastName?: string;
+    message?: string;
+}
+
+export interface IApiValidateUserResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiValidateUserResultData;
 }
 
 export function apiValidateUser(body?: any, params: any = undefined): Observable<IApiValidateUserResult> {
@@ -304,6 +312,7 @@ export interface IApiCreateUserRequest {
     riderAdvantage?: number;
     volunteering?: number;
     correspondenceLanguage?: string;
+    recaptcha?: string;
 }
 
 export interface IApiCreateUserResult {
@@ -314,6 +323,73 @@ export interface IApiCreateUserResult {
 
 export function apiCreateUser(body?: any, params?: any): Observable<IApiCreateUserResult> {
     return httpPost<IApiCreateUserResult>(WebApi.CreateUser, params, body, false);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiPasswordReset
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiPasswordResetRequest {
+    email?: string;
+    recaptcha?: string;
+}
+
+export interface IApiPasswordResetResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: any;
+}
+
+export function apiPasswordReset(body?: any, params?: any): Observable<IApiPasswordResetResult> {
+    return httpPost<IApiPasswordResetResult>(WebApi.PasswordReset, params, body, false);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiVerifyAccount
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiVerifyAccountRequest {
+    code?: string;
+}
+
+export interface IApiVerifyAccountResultData {
+    isValid?: boolean;
+    message?: string;
+}
+
+export interface IApiVerifyAccountResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiVerifyAccountResultData;
+}
+
+export function apiVerifyAccount(body?: any, params?: any): Observable<IApiVerifyAccountResult> {
+    return httpPost<IApiVerifyAccountResult>(WebApi.VerifyAccount, params, body, false);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// apiUpdatePassword
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IApiUpdatePasswordRequest {
+    code?: string;
+    password?: string;
+    recaptcha?: string;
+}
+
+export interface IApiUpdatePasswordResultData {
+    isValid?: boolean;
+    message?: string;
+}
+
+export interface IApiUpdatePasswordResult {
+    isSuccessful?: boolean;
+    errorMessage?: string;
+    data?: IApiUpdatePasswordResultData;
+}
+
+export function apiUpdatePassword(body?: any, params?: any): Observable<IApiUpdatePasswordResult> {
+    return httpPost<IApiUpdatePasswordResult>(WebApi.UpdatePassword, params, body, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

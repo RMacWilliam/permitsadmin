@@ -212,6 +212,7 @@ export interface IAppContextData {
 
     email?: string;
     firstName?: string;
+    initial?: string;
     lastName?: string;
 
     language: string;

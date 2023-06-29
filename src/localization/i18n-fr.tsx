@@ -21,11 +21,12 @@ export const resources_fr = {
         "IsRequiredSuffix": "est requis."
       },
       "PleaseSelect": "Veuillez sélectionner",
-      "Logout": "Se déconnecter",
-      "HoverButton": "(fr)Show Context Menu"
+      "HoverButton": "(fr)Show Context Menu",
+      "ContactCustomerService": "Si vous rencontrez des difficultés, veuillez contacter le service clientèle au 705-739-7669 ou à l'adresse permits@ofsc.on.ca."
     },
     "Header": {
-      "LoggedInAs": "Connecté en tant que"
+      "LoggedInAs": "Connecté en tant que",
+      "Logout": "Se déconnecter"
     },
     "Footer": {
       "Message": "Besoin d'aide? Contactez la FCMO au 705-739-7669 ou permits@ofsc.on.ca"
@@ -57,18 +58,24 @@ export const resources_fr = {
       "LoginButton": "Se connecter",
       "ForgotPasswordButton": "J'ai oublié mon mot de passe",
       "CreateAnAccountButton": "Je veux inscrire un compte",
-      "ChangeMyEmailAddress": "Changer mon adresse courriel",
-      "InvalidEmailAndOrPassword": "Courriel non trouvé et/ou mot de passe erroné"
+      "ChangeMyEmailAddress": "Changer mon adresse courriel"
     },
     "ForgotPassword": {
       "Title": "J'ai oublié mon mot de passe",
       "Section1": "Si vous êtes incapable d'accéder à votre compte, veuillez essayer de réinitialiser votre mot de passe. Un courriel vous sera envoyé pour que vous puissiez changer votre mot de passe.",
       "Section2": "Pour tout autre problème, veuillez contacter le service à la clientèle de la délivrance des permis au 705-739-7669 ou écrivez à permits@ofsc.on.ca.",
+      "RequestSubmitted": "(fr)A request to reset your password has been submitted. If the specified account is valid, then an e-mail will be sent with instructions to reset your password.",
       "EmailAddress": "(fr)E-mail address",
-      "ResetPasswordButton": "Réinitialiser le mot de passe"
+      "ResetPasswordButton": "Réinitialiser le mot de passe",
+      "ReturnLogin": "Return to Login Page"
     },
     "ResetPassword": {
       "Title": "(fr)Reset Password",
+      "Password": "mot de passe",
+      "ConfirmPassword": "confirmez le mot de passe",
+      "InvalidPassword": "Le mot de passe doit comporter une ou plusieurs lettres majuscules et minuscules, un ou plusieurs chiffres et être constitué d'au moins 6 caractères.",
+      "InvalidPasswordMatch": "(fr)Confirm Password does not match Password.",
+      "SavePassword": "(fr)Save Password",
       "ReturnLogin": "(fr)Return to Login Page"
     },
     "CreateAccount": {
@@ -107,7 +114,7 @@ export const resources_fr = {
       },
       "CreateAccount": "Create Account",
       "ThankYouForCreatingYourAccount": "Merci d'avoir créé votre compte.",
-      "VerificationEmailHasBeenSent": "Un courriel de vérification vous a été envoyé. Veuillez cliquer sur le lien qui se trouve dans ce courriel pour terminer la configuration de votre compte. Si vous rencontrez des difficultés, veuillez contacter le service clientèle au 705-739-7669 ou à l'adresse permits@ofsc.on.ca.",
+      "VerificationEmailHasBeenSent": "Un courriel de vérification vous a été envoyé. Veuillez cliquer sur le lien qui se trouve dans ce courriel pour terminer la configuration de votre compte.",
       "ReturnLogin": "(fr)Return to Login Page"
     },
     "ConfirmAccount": {
@@ -334,16 +341,23 @@ export const resources_fr = {
       "TryAgain": "(fr)Try Payment Again"
     },
     "API": {
+      "API_UNEXPECTED_ERROR": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+      "API_LOGIN_INVALID_CREDENTIALS": "Courriel non trouvé et/ou mot de passe erroné",
+      "API_LOGIN_UNVERIFIED_ACCOUNT": "Compte non vérifié - veuillez suivre les instructions dans le courriel de vérification de compte OFSC",
+      "API_CREATE_ACCOUNT_EMAIL_EXISTS": "Votre adresse courriel existe déjà dans nos dossiers. Le compte ne peut pas être créé. Veuillez essayer d'accéder à votre compte ou de réinitialiser votre mot de passe.",
+      "API_CREATE_ACCOUNT_EMAIL_MISSING": "(fr)An e-mail is required to create an account. Please try again.",
+      "API_CONFIRM_ACCOUNT_INVALID_CODE": "Le compte a déjà été vérifié ou le code spécifié était invalide.",
+      "API_CONFIRM_ACCOUNT_ALREADY_VERIFIED": "Le code spécifié correspondait à un compte déjà vérifié.",
+      "API_CONFIRM_ACCOUNT_ACCOUNT_NOT_FOUND": "Le code spécifié ne correspondait pas à un compte existant.",
+      "API_RESET_PASSWORD_INVALID_CODE": "Le code spécifié a expiré ou était invalide.",
+      "API_RESET_PASSWORD_ACCOUNT_NOT_FOUND": "",
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "(fr)VIN assigned to another vehicle on account.",
       "API_INVALID_VIN_FORMAT": "(fr)Invalid VIN format.",
-      "API_UNEXPECTED_ERROR": "(fr)An unexpected error occured. Please try again later.",
       "API_REDEMPTION_CODE_INVALID": "(fr)Redemption code was invalid.",
       "API_REDEMPTION_CODE_REDEEMED": "(fr)Redemption code has already been redeemed.",
       "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "(fr)Last name associated with the redemption code did not correspond to your account information.",
       "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "(fr)Postal code associated with the redemption code did not correspond to your account information.",
-      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "(fr)Vehicle type of the redemption code did not correspond to this snowmobile.",
-      "API_CREATE_ACCOUNT_EMAIL_EXISTS": "Votre adresse courriel existe déjà dans nos dossiers. Le compte ne peut pas être créé. Veuillez essayer d'accéder à votre compte ou de réinitialiser votre mot de passe.",
-      "API_CREATE_ACCOUNT_EMAIL_MISSING": "(fr)An e-mail is required to create an account. Please try again."
+      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "(fr)Vehicle type of the redemption code did not correspond to this snowmobile."
     }
   }
 };

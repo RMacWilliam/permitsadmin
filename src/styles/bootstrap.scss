@@ -21,10 +21,17 @@ $grid-breakpoints: (
   xxl: 1400px
 );
 
+// Card properties
 $card-border-color: $gray-500;
+$list-group-border-color: $gray-500;
+$list-group-item-padding-y: $spacer;
+$card-cap-padding-y: $card-spacer-y;
+
+// Control properties
 $input-border-color: $gray-500;
 $form-select-border-color: $gray-500;
 
+// Change size of floating controls and adjust content positions
 $form-floating-height: add(2.875rem, $input-height-border); // add(3.5rem, $input-height-border);
 $form-floating-line-height: 1.25; // 1.25;
 $form-floating-padding-x: $input-padding-x;
@@ -73,32 +80,3 @@ $form-floating-transition: opacity .1s ease-in-out, transform .1s ease-in-out; /
 
 // Utilities
 @import "../../node_modules/bootstrap/scss/utilities/api.scss";
-
-.btn {
-  min-width: 75px;
-}
-
-.btn:has(i.fa-circle-info) {
-  min-width: revert;
-}
-
-.card .list-group-item {
-  border-color: $gray-500;
-}
-
-@media (max-width: 449.98px) {
-  .w-xs-100 {
-    width: 100% !important;
-  }
-}
-
-@media (max-width: 767.98px) {
-  .w-sm-100 {
-    width: 100% !important;
-  }
-}
-
-.form-floating input + label {
-  font-size: 14px;
-  color: $input-placeholder-color;
-}

@@ -131,20 +131,21 @@ export default function RouteGuard({ children }: { children: ReactNode }): any {
 export function loginAndInitializeAppContext(apiLoginResult: IApiValidateUserResult): void {
     if (GlobalAppContext != undefined && GlobalAppContext?.updater != undefined && GlobalAppContext?.router != undefined) {
         // TODO: Remove
-        apiLoginResult.isFirstLoginOfSeason = true;
+        apiLoginResult.data!.isFirstLoginOfSeason = true;
         //////////////////////////////////////////////////////////////////////
 
         GlobalAppContext.updater(draft => {
             draft.isAuthenticated = true;
-            draft.token = apiLoginResult?.token;
+            draft.token = apiLoginResult?.data?.token;
 
-            draft.email = apiLoginResult?.email;
-            draft.firstName = apiLoginResult?.firstName;
-            draft.lastName = apiLoginResult?.lastName;
+            draft.email = apiLoginResult?.data?.email;
+            draft.firstName = apiLoginResult?.data?.firstName;
+            draft.initial = apiLoginResult?.data?.initial;
+            draft.lastName = apiLoginResult?.data?.lastName;
 
             draft.language = draft.language ?? "en";
 
-            draft.isFirstLoginOfSeason = apiLoginResult?.isFirstLoginOfSeason;
+            draft.isFirstLoginOfSeason = apiLoginResult?.data?.isFirstLoginOfSeason;
             draft.videoWatched = false;
             draft.isContactInfoVerified = false;
 
@@ -163,7 +164,7 @@ export function loginAndInitializeAppContext(apiLoginResult: IApiValidateUserRes
             draft.monerisBaseUrl = WebApi.MonerisComplete;
         });
 
-        if (apiLoginResult?.isFirstLoginOfSeason) {
+        if (apiLoginResult?.data?.isFirstLoginOfSeason) {
             GlobalAppContext.router.push("/first-login-of-season");
         } else {
             GlobalAppContext.router.push("/contact");
@@ -175,8 +176,12 @@ export function logoutAndCleanupAppContext(): void {
     if (GlobalAppContext != undefined && GlobalAppContext?.updater != undefined && GlobalAppContext?.router != undefined) {
         GlobalAppContext.updater(draft => {
             draft.isAuthenticated = false;
-            draft.email = undefined;
             draft.token = undefined;
+            
+            draft.email = undefined;
+            draft.firstName = undefined;
+            draft.initial = undefined;
+            draft.lastName = undefined;
 
             draft.isFirstLoginOfSeason = undefined;
             draft.videoWatched = undefined;
@@ -201,7 +206,7 @@ export function logoutAndCleanupAppContext(): void {
         //     window.localStorage.removeItem("data");
         // }
 
-        //GlobalAppContext.router.push("/");
+        GlobalAppContext.router.push("/");
 
         apiLogout().subscribe({
             next: (apiLogoutResult: IApiLogoutResult) => {

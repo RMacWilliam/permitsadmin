@@ -285,7 +285,7 @@ function Cart({ appContext, router, setShowAlert }:
                                                                             </button>
 
                                                                             {cartItem?.uiShowRedemptionCodeNotFound && (
-                                                                                <div className="text-danger">{cartItem?.uiRedemptionCodeErrorMessage}</div>
+                                                                                <div className="text-danger">{getApiErrorMessage(cartItem?.uiRedemptionCodeErrorMessage)}</div>
                                                                             )}
                                                                         </div>
                                                                     </>
@@ -543,20 +543,18 @@ function Cart({ appContext, router, setShowAlert }:
                         </div>
                     )}
 
-                    <div className="card mb-3">
-                        <div className="card-body d-flex justify-content-center align-items-center flex-wrap gap-2">
-                            <button className="btn btn-primary" onClick={() => checkoutClick()}>
-                                {t("Cart.ProceedToCheckout")}
-                            </button>
-
-                            <button className="btn btn-primary" onClick={() => continueShoppingClick()}>
-                                {t("Cart.ContinueShopping")}
-                            </button>
-                        </div>
-                    </div>
-
                     <div className="d-flex justify-content-center">
                         <span className="text-danger me-1">*</span>= {t("Cart.MandatoryField")}
+                    </div>
+
+                    <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
+                        <button className="btn btn-primary" onClick={() => checkoutClick()}>
+                            {t("Cart.ProceedToCheckout")}
+                        </button>
+
+                        <button className="btn btn-primary" onClick={() => continueShoppingClick()}>
+                            {t("Cart.ContinueShopping")}
+                        </button>
                     </div>
                 </>
             )}
@@ -812,16 +810,20 @@ function Cart({ appContext, router, setShowAlert }:
             // Validate that all permits have a selected club.
             let isPermitsValid: boolean = true;
 
-            appContext.updater(draft => {
-                draft?.cartItems?.filter(x => x.isPermit)?.forEach(ci => {
-                    const snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === ci?.itemId)[0];
+            appContext.data?.cartItems?.filter(x => x.isPermit)?.forEach(ci => {
+                const snowmobile: ISnowmobile | undefined = appContext.data?.snowmobiles?.filter(x => x?.oVehicleId === ci?.itemId)[0];
 
-                    if (snowmobile != undefined) {
-                        ci.uiIsClubValid = snowmobile?.permitSelections?.clubId != undefined;
+                if (snowmobile != undefined) {
+                    isPermitsValid &&= (snowmobile?.permitSelections?.clubId != undefined);
 
-                        isPermitsValid &&= ci.uiIsClubValid;
-                    }
-                });
+                    appContext.updater(draft => {
+                        const draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === ci.id)[0];
+
+                        if (draftCartItem != undefined) {
+                            draftCartItem.uiIsClubValid = snowmobile?.permitSelections?.clubId != undefined;
+                        }
+                    });
+                }
             });
 
             if (!isPermitsValid) {
@@ -1015,7 +1017,7 @@ function Cart({ appContext, router, setShowAlert }:
                                         draftCartItem.giftCardTrackedShippingAmount = undefined;
 
                                         draftCartItem.uiShowRedemptionCodeNotFound = true;
-                                        draftCartItem.uiRedemptionCodeErrorMessage = getApiErrorMessage(result?.data?.message);
+                                        draftCartItem.uiRedemptionCodeErrorMessage = result?.data?.message;
                                     }
                                 });
                             }

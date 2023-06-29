@@ -7,7 +7,7 @@
 html,
 body {
   height: 100%;
-  overflow-x: hidden;
+  //overflow-x: hidden;
 }
 
 body {
@@ -23,7 +23,6 @@ body {
   flex-direction: column;
   width: 100%;
   height: 100%;
-  //position: absolute;
 }
 
 .nav-scroller .nav {
@@ -123,6 +122,10 @@ body {
   --bs-bg-opacity: 0.20;
 }
 
+.light-green-background {
+  background-color: rgb(209, 231, 221);
+}
+
 .z-10000 {
   z-index: 10000 !important;
 }
@@ -139,7 +142,7 @@ body {
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-.react-select .react-select-control.is-valid  {
+.react-select .react-select-control.is-valid {
   padding-right: 25px;
   border-color: $form-feedback-valid-color;
 }
@@ -153,7 +156,7 @@ body {
   box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
 }
 
-.react-select .react-select-control.is-invalid  {
+.react-select .react-select-control.is-invalid {
   padding-right: 25px;
   border-color: $form-feedback-invalid-color;
 }
@@ -179,14 +182,6 @@ body {
   padding: 0px 14px 0px;
 }
 
-.footer-color {
-  background-color: rgba(0, 0, 0, 0.03);
-}
-
-.light-green-background {
-  background-color: rgb(209, 231, 221);
-}
-
 .floating-info-label {
   font-size: 13px;
   opacity: 0.65;
@@ -198,4 +193,25 @@ body {
 
 .react-datepicker-wrapper {
   width: 100%;
+}
+
+.min-75 {
+  min-width: 75px;
+}
+
+@media (max-width: 449.98px) {
+  .w-xs-100 {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .w-sm-100 {
+    width: 100% !important;
+  }
+}
+
+.form-floating input+label {
+  font-size: 14px;
+  color: $input-placeholder-color;
 }

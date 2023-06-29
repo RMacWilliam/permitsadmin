@@ -227,19 +227,19 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                             {giftCard?.isPurchased && !giftCard?.isRedeemed && !giftCard?.uiIsEditMode && (
                                 <div className="col-12 col-md-auto d-flex align-items-center">
-                                    <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsEditMode}>
+                                    <button className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={() => editGiftCardClick(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId) || giftCard?.uiIsEditMode}>
                                         {t("Common.Buttons.Edit")}
                                     </button>
                                 </div>
                             )}
 
                             {giftCard?.isPurchased && !giftCard?.isRedeemed && giftCard?.uiIsEditMode && (
-                                <div className="col-12 col-md-auto d-flex align-items-center">
-                                    <button className="btn btn-outline-dark btn-sm w-sm-100" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>
+                                <div className="col-12 col-md-auto d-flex align-items-stretch">
+                                    <button className="btn btn-outline-dark btn-sm min-75 w-sm-100" onClick={() => saveGiftCardChangesClick(giftCard?.oVoucherId)}>
                                         <i className="fa-solid fa-floppy-disk me-2"></i>{t("GiftCards.SaveChanges")}
                                     </button>
 
-                                    <button className="btn btn-outline-dark btn-sm ms-1 w-sm-100" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>
+                                    <button className="btn btn-outline-dark btn-sm min-75 ms-1 w-sm-100" onClick={() => cancelGiftCardChangesClick(giftCard?.oVoucherId)}>
                                         <i className="fa-solid fa-xmark me-2"></i>{t("GiftCards.CancelChanges")}
                                     </button>
                                 </div>
@@ -247,7 +247,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                             {!giftCard?.isPurchased && !giftCard?.isRedeemed && !isGiftCardAddedToCart(giftCard?.oVoucherId) && (
                                 <div className="col-12 col-md-auto d-flex align-items-center">
-                                    <button className="btn btn-outline-dark btn-sm ms-1 w-sm-100" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
+                                    <button className="btn btn-outline-dark btn-sm min-75 ms-1 w-sm-100" onClick={() => deleteGiftCardDialogShow(giftCard?.oVoucherId)} disabled={isGiftCardAddedToCart(giftCard?.oVoucherId)}>
                                         {t("Common.Buttons.Delete")}
                                     </button>
                                 </div>
@@ -263,7 +263,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                         {/* <label htmlFor={`redemption-code-${giftCard?.oVoucherId}`} className="form-label fw-semibold mb-0">{t("GiftCards.RedemptionCode")}</label> */}
                                         {/* <input id={`redemption-code-${giftCard?.oVoucherId}`} type="text" readOnly={true} className="form-control-plaintext font-monospace mb-0 pb-0" value={giftCard?.redemptionCode} /> */}
 
-                                        <div className="d-flex justify-content-around align-items-center flex-wrap flex-sm-nowrap position-relative mt-2 mb-1 p-2" style={{ border: "black dashed 2px" }}>
+                                        <div className="d-flex justify-content-evenly align-items-center flex-wrap flex-sm-nowrap position-relative w-sm-100 p-2" style={{ border: "black dashed 2px" }}>
                                             <i className="fa-solid fa-scissors position-absolute" style={{ top: "-9px", right: "11px", backgroundColor: "white" }}></i>
                                             <div className="fw-semibold mx-3 my-1">{t("GiftCards.RedemptionCode")}:</div>
                                             <div className="mx-3 my-1">{giftCard?.redemptionCode}</div>
@@ -372,19 +372,17 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
             ))
             }
 
-            <div className="card">
-                <div className="card-body text-center">
-                    <button className="btn btn-primary" onClick={() => addGiftCardClick()}>
-                        {t("GiftCards.AddGiftCard")}
-                    </button>
+            <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
+                <button className="btn btn-primary" onClick={() => addGiftCardClick()}>
+                    {t("GiftCards.AddGiftCard")}
+                </button>
 
-                    <button className="btn btn-primary ms-1" onClick={() => router.push("/cart")}>
-                        {t("GiftCards.ProceedWithPurchase")}
-                    </button>
-                </div>
+                <button className="btn btn-primary ms-1" onClick={() => router.push("/cart")}>
+                    {t("GiftCards.ProceedWithPurchase")}
+                </button>
             </div>
 
-            <ConfirmationDialog showDialog={showDeleteGiftCardDialog} title={t("GiftCards.DeleteGiftCardDialog.Title")} errorMessage={deleteGiftCardDialogErrorMessage} buttons={ConfirmationDialogButtons.YesNo} icon={ConfirmationDialogIcons.Question} width="50"
+            <ConfirmationDialog showDialog={showDeleteGiftCardDialog} title={t("GiftCards.DeleteGiftCardDialog.Title")} errorMessage={getApiErrorMessage(deleteGiftCardDialogErrorMessage)} buttons={ConfirmationDialogButtons.YesNo} icon={ConfirmationDialogIcons.Question} width="50"
                 yesClick={() => deleteGiftCardDialogYesClick()} noClick={() => deleteGiftCardDialogNoClick()} closeClick={() => deleteGiftCardDialogNoClick()}>
                 <div>{t("GiftCards.DeleteGiftCardDialog.Message")}</div>
             </ConfirmationDialog>
@@ -971,7 +969,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
 
                     setHoverButtonVisibility(true);
                 } else {
-                    setDeleteGiftCardDialogErrorMessage(getApiErrorMessage(result?.errorMessage) ?? result?.errorMessage ?? "");
+                    setDeleteGiftCardDialogErrorMessage(result?.errorMessage ?? "");
                 }
             },
             error: (error: any) => {

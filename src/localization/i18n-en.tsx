@@ -21,11 +21,12 @@ export const resources_en = {
         "IsRequiredSuffix": "is required."
       },
       "PleaseSelect": "Please select",
-      "Logout": "Logout",
-      "HoverButton": "Show Context Menu"
+      "HoverButton": "Show Context Menu",
+      "ContactCustomerService": "If you are experiencing difficulties, please contact Customer Service at 705-739-7669 or permits@ofsc.on.ca."
     },
     "Header": {
-      "LoggedInAs": "Logged in as"
+      "LoggedInAs": "Logged in as",
+      "Logout": "Logout"
     },
     "Footer": {
       "Message": "Need help? Contact OFSC at 705-739-7669 or permits@ofsc.on.ca"
@@ -57,18 +58,24 @@ export const resources_en = {
       "LoginButton": "Login",
       "ForgotPasswordButton": "Forgot your password?",
       "CreateAnAccountButton": "Create an account",
-      "ChangeMyEmailAddress": "Change my e-mail address",
-      "InvalidEmailAndOrPassword": "Invalid e-mail and/or password"
+      "ChangeMyEmailAddress": "Change my e-mail address"
     },
     "ForgotPassword": {
       "Title": "Forgot Password",
-      "Section1": "If you are unable to login to your account, please try resetting your password and an email will be sent to you to change your password.",
-      "Section2": "For all other issues, please contact Permit customer service at 705-739-7669 or send an email to permits@ofsc.on.ca.",
+      "Section1": "If you are unable to login to your account, please try resetting your password. An e-mail will be sent to you to change your password.",
+      "Section2": "For all other issues, please contact Permit customer service at 705-739-7669 or send an e-mail to permits@ofsc.on.ca.",
+      "RequestSubmitted": "A request to reset your password has been submitted. If the specified account is valid, then an e-mail will be sent with instructions to reset your password.",
       "EmailAddress": "E-mail address",
-      "ResetPasswordButton": "Reset Password"
+      "ResetPasswordButton": "Reset Password",
+      "ReturnLogin": "Return to Login Page"
     },
     "ResetPassword": {
       "Title": "Reset Password",
+      "Password": "Password",
+      "ConfirmPassword": "Confirm Password",
+      "InvalidPassword": "Password must have one or more uppercase and lowercase letters, one or more numbers, and be at least 6 characters long.",
+      "InvalidPasswordMatch": "Confirm Password does not match Password.",
+      "SavePassword": "Save Password",
       "ReturnLogin": "Return to Login Page"
     },
     "CreateAccount": {
@@ -102,12 +109,12 @@ export const resources_en = {
         "NoIAmNotInterestedInVolunteering": "No, I am not interested in volunteering",
         "YesIAlreadyVolunteer": "Yes, I already volunteer",
         "YesIdLikeToVolunteer": "Yes, I want to volunteer",
-        "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or email?",
+        "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or e-mail?",
         "CorrespondenceLanguage": "What is your prefered correspondence language with OFSC?"
       },
       "CreateAccount": "Create Account",
       "ThankYouForCreatingYourAccount": "Thank you for creating your account.",
-      "VerificationEmailHasBeenSent": "A verification email has been sent to you. Please click on the link in the email to complete your account set-up. If you are experiencing difficulties, please contact Customer Service at 705-739-7669 or permits@ofsc.on.ca.",
+      "VerificationEmailHasBeenSent": "A verification e-mail has been sent to you. Please click on the link in the e-mail to complete your account set-up.",
       "ReturnLogin": "Return to Login Page"
     },
     "ConfirmAccount": {
@@ -115,7 +122,7 @@ export const resources_en = {
       "ReturnLogin": "Return to Login Page"
     },
     "ChangeEmail": {
-      "Title": "Change My Email Address"
+      "Title": "Change My E-mail Address"
     },
     "FirstLoginOfSeason": {
       "MenuTitle": "First Login of Season",
@@ -161,7 +168,7 @@ export const resources_en = {
         "NoIAmNotInterestedInVolunteering": "No, I am not interested in volunteering",
         "YesIAlreadyVolunteer": "Yes, I already volunteer",
         "YesIdLikeToVolunteer": "Yes, I want to volunteer",
-        "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or email?",
+        "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or e-mail?",
         "CorrespondenceLanguage": "What is your prefered correspondence language with OFSC?"
       },
       "ConfirmButton": "I Confirm",
@@ -191,7 +198,7 @@ export const resources_en = {
         "NoIAmNotInterestedInVolunteering": "No, I am not interested in volunteering",
         "YesIAlreadyVolunteer": "Yes, I already volunteer",
         "YesIdLikeToVolunteer": "Yes, I want to volunteer",
-        "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or email?",
+        "Volunteering": "Do you want to volunteer to support your local snowmobile club and consent to the club contacting you by phone and/or e-mail?",
         "CorrespondenceLanguage": "What is your prefered correspondence language with OFSC?"
       }
     },
@@ -334,16 +341,23 @@ export const resources_en = {
       "TryAgain": "Try Payment Again"
     },
     "API": {
+      "API_UNEXPECTED_ERROR": "An unexpected error occured. Please try again later.",
+      "API_LOGIN_INVALID_CREDENTIALS": "Invalid e-mail and/or password",
+      "API_LOGIN_UNVERIFIED_ACCOUNT": "Account not verified — please follow instructions in OFSC Account Verification email",
+      "API_CREATE_ACCOUNT_EMAIL_EXISTS": "Your e-mail already exists in our records. Cannot create account. Please try logging into your account or resetting your password.",
+      "API_CREATE_ACCOUNT_EMAIL_MISSING": "An e-mail is required to create an account. Please try again.",
+      "API_CONFIRM_ACCOUNT_INVALID_CODE": "The account has already been verified or the specified code was invalid.",
+      "API_CONFIRM_ACCOUNT_ALREADY_VERIFIED": "The specified code corresponded with an account that has already been verified.",
+      "API_CONFIRM_ACCOUNT_ACCOUNT_NOT_FOUND": "The specified code did not correspond with an existing account.",
+      "API_RESET_PASSWORD_INVALID_CODE": "The specified code was expired or was invalid.",
+      "API_RESET_PASSWORD_ACCOUNT_NOT_FOUND": "",
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "VIN assigned to another vehicle on account.",
       "API_INVALID_VIN_FORMAT": "Invalid VIN format.",
-      "API_UNEXPECTED_ERROR": "An unexpected error occured. Please try again later.",
       "API_REDEMPTION_CODE_INVALID": "Redemption code was invalid.",
       "API_REDEMPTION_CODE_REDEEMED": "Redemption code has already been redeemed.",
       "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "Last name associated with the redemption code did not correspond to your account information.",
       "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "Postal code associated with the redemption code did not correspond to your account information.",
-      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "Vehicle type of the redemption code did not correspond to this snowmobile.",
-      "API_CREATE_ACCOUNT_EMAIL_EXISTS": "Your e-mail already exists in our records. Cannot create account. Please try logging into your account or resetting your password.",
-      "API_CREATE_ACCOUNT_EMAIL_MISSING": "An e-mail is required to create an account. Please try again."
+      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "Vehicle type of the redemption code did not correspond to this snowmobile."
     }
   }
 };
