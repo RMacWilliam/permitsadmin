@@ -987,7 +987,7 @@ function Cart({ appContext, router, setShowAlert }:
 
                 apiGetIsValidRedemptionCodeForVehicle(apiGetIsValidRedemptionCodeForVehicleRequest).subscribe({
                     next: (result: IApiGetIsValidRedemptionCodeForVehicleResult) => {
-                        if (result?.isSuccessful) {
+                        if (result?.isSuccessful && result?.data != undefined) {
                             if (result?.data?.isValid) {
                                 appContext.updater(draft => {
                                     const draftCartItem: ICartItem | undefined = draft?.cartItems?.filter(x => x.id === cartItemId)[0];

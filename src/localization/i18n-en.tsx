@@ -62,9 +62,6 @@ export const resources_en = {
     },
     "ForgotPassword": {
       "Title": "Forgot Password",
-      "Section1": "If you are unable to login to your account, please try resetting your password. An e-mail will be sent to you to change your password.",
-      "Section2": "For all other issues, please contact Permit customer service at 705-739-7669 or send an e-mail to permits@ofsc.on.ca.",
-      "RequestSubmitted": "A request to reset your password has been submitted. If the specified account is valid, then an e-mail will be sent with instructions to reset your password.",
       "EmailAddress": "E-mail address",
       "ResetPasswordButton": "Reset Password",
       "ReturnLogin": "Return to Login Page"
@@ -122,7 +119,12 @@ export const resources_en = {
       "ReturnLogin": "Return to Login Page"
     },
     "ChangeEmail": {
-      "Title": "Change My E-mail Address"
+      "Title": "Change My E-mail Address",
+      "OldEmailAddress": "Old E-mail Address",
+      "NewEmailAddress": "New E-mail Address",
+      "Vin": "VIN",
+      "PermitType": "Permit Type",
+      "ChangeEmailWithoutPassword": "Change My E-mail Without Password"
     },
     "FirstLoginOfSeason": {
       "MenuTitle": "First Login of Season",
@@ -320,7 +322,8 @@ export const resources_en = {
         "SorryCouldNotFindLocation": "Sorry, we couldn't find the location you entered.",
         "SorryThereWasAProblem": "Sorry, there was a problem searching for your location."
       },
-      "ProceedToCheckout": "Proceed to Checkout",
+      "ProceedToCheckout": "Begin Checkout",
+      "CancelCheckout": "Cancel Checkout",
       "ContinueShopping": "Continue Shopping",
       "MandatoryField": "mandatory field"
     },
@@ -350,7 +353,8 @@ export const resources_en = {
       "API_CONFIRM_ACCOUNT_ALREADY_VERIFIED": "The specified code corresponded with an account that has already been verified.",
       "API_CONFIRM_ACCOUNT_ACCOUNT_NOT_FOUND": "The specified code did not correspond with an existing account.",
       "API_RESET_PASSWORD_INVALID_CODE": "The specified code was expired or was invalid.",
-      "API_RESET_PASSWORD_ACCOUNT_NOT_FOUND": "",
+      "API_RESET_PASSWORD_ACCOUNT_NOT_FOUND": "The specified code did not correspond with an existing account.",
+      "API_CHANGE_EMAIL_CANNOT_VERIFY": "We could not verify your account with the provided information.",
       "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "VIN assigned to another vehicle on account.",
       "API_INVALID_VIN_FORMAT": "Invalid VIN format.",
       "API_REDEMPTION_CODE_INVALID": "Redemption code was invalid.",

@@ -10,6 +10,11 @@ import { Observable, Subscription, forkJoin } from "rxjs";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Constants } from "../../../global";
 
+enum CreateAccountMode {
+    Initial = 0,
+    Success = 1
+}
+
 export default function CreateAccountPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
@@ -31,7 +36,7 @@ function CreateAccount({ appContext, router, setShowAlert }
         setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
     }) {
 
-    const [step, setStep] = useState(0);
+    const [mode, setMode] = useState<CreateAccountMode>(CreateAccountMode.Initial);
 
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -163,7 +168,7 @@ function CreateAccount({ appContext, router, setShowAlert }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    if (step === 0) {
+    if (mode === CreateAccountMode.Initial) {
         return (
             <>
                 <Head>
@@ -427,7 +432,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                     </div>
                 </div>
 
-                <div className="row">
+                <div className="row justify-content-center gap-2 gap-md-0 gx-2">
                     <div className="col-12">
                         <div className="input-group has-validation">
                             <ReCAPTCHA className={iv(isRecaptchaValid)} sitekey={Constants.CaptchaSiteKey} hl={appContext.data?.language === "fr" ? "fr-CA" : "en"}
@@ -448,7 +453,7 @@ function CreateAccount({ appContext, router, setShowAlert }
                 </div>
             </>
         )
-    } else if (step === 1) {
+    } else if (mode === CreateAccountMode.Success) {
         return (
             <>
                 <Head>
@@ -517,16 +522,6 @@ function CreateAccount({ appContext, router, setShowAlert }
         return correspondenceLanguagesData;
     }
 
-    function getCorrespondenceLanguage(key?: string): IKeyValue | undefined {
-        let result: IKeyValue | undefined = undefined;
-
-        if (key != undefined) {
-            result = correspondenceLanguagesData?.filter(x => x?.key === key)[0];
-        }
-
-        return result;
-    }
-
     function createAccountClick(): void {
         setErrorMessage("");
 
@@ -561,7 +556,7 @@ function CreateAccount({ appContext, router, setShowAlert }
             apiCreateUser(apiCreateUserRequest).subscribe({
                 next: (result: IApiCreateUserResult) => {
                     if (result?.isSuccessful && result?.data != undefined) {
-                        setStep(1);
+                        setMode(1);
                     } else {
                         errorMessage = result?.errorMessage ?? "";
                     }

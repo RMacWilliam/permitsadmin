@@ -114,7 +114,7 @@ function Checkout({ appContext, router, setShowAlert }
                     </button>
 
                     <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>
-                        Cancel Checkout
+                        {t("Cart.CancelCheckout")}
                     </button>
                 </div>
             </>
@@ -405,7 +405,7 @@ function Checkout({ appContext, router, setShowAlert }
                         <i className="fa-solid fa-chevron-right fa-sm ms-2"></i>
                     </button>
 
-                    <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>Cancel Checkout</button>
+                    <button className="btn btn-danger" onClick={() => cancelCheckoutClick()}>{t("Cart.CancelCheckout")}</button>
                 </div>
             </>
         )

@@ -8,6 +8,11 @@ import { Constants } from "../../../global";
 import { checkResponseStatus, getApiErrorMessage, iv } from "@/custom/utilities";
 import { IApiPasswordResetRequest, IApiPasswordResetResult, apiPasswordReset } from "@/custom/api";
 
+enum ForgotPasswordMode {
+    Initial = 0,
+    Success = 1
+}
+
 export default function ForgotPasswordPage() {
     const appContext = useContext(AppContext);
     const router = useRouter();
@@ -35,7 +40,7 @@ function ForgotPassword({ appContext, router, setShowAlert }:
         setShowAlert: React.Dispatch<React.SetStateAction<boolean>>
     }) {
 
-    const [step, setStep] = useState(0);
+    const [mode, setMode] = useState<ForgotPasswordMode>(ForgotPasswordMode.Initial);
 
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -47,7 +52,7 @@ function ForgotPassword({ appContext, router, setShowAlert }:
 
     const t: Function = appContext.translation.t;
 
-    if (step === 0) {
+    if (mode === ForgotPasswordMode.Initial) {
         return (
             <>
                 <Head>
@@ -66,12 +71,24 @@ function ForgotPassword({ appContext, router, setShowAlert }:
 
                 <h3 className="mb-3">{t("ForgotPassword.Title")}</h3>
 
-                <p>{t("ForgotPassword.Section1")}</p>
+                {appContext.translation.i18n.language === "en" && (
+                    <>
+                        <p>If you are unable to login to your account, please try resetting your password. An e-mail will be sent to you to change your password.</p>
 
-                <p>{t("ForgotPassword.Section2")}</p>
+                        <p>{t("Common.ContactCustomerService")}</p>
+                    </>
+                )}
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-4">
-                    <div className="col-12">
+                {appContext.translation.i18n.language === "fr" && (
+                    <>
+                        <p>Si vous êtes incapable d'accéder à votre compte, veuillez essayer de réinitialiser votre mot de passe. Un courriel vous sera envoyé pour que vous puissiez changer votre mot de passe.</p>
+
+                        <p>{t("Common.ContactCustomerService")}</p>
+                    </>
+                )}
+
+                <div className="row justify-content-center gap-2 gap-md-0 gx-2 mb-2">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isEmailValid)}`}>
                                 <input type="email" className={`form-control ${iv(isEmailValid)}`} id="forgot-password-email" placeholder={t("ForgotPassword.EmailAddress")} maxLength={200} aria-describedby="forgot-password-email-validation" value={email} onChange={(e: any) => setEmail(e.target.value)} />
@@ -82,8 +99,8 @@ function ForgotPassword({ appContext, router, setShowAlert }:
                     </div>
                 </div>
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-2">
-                    <div className="col-12">
+                <div className="row justify-content-center gap-2 gap-md-0 gx-2">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <ReCAPTCHA className={iv(isRecaptchaValid)} sitekey={Constants.CaptchaSiteKey} hl={appContext.data?.language === "fr" ? "fr-CA" : "en"}
                                 aria-describedby="forgot-password-recaptcha-validation" onChange={(e: any) => setRecaptchaState(e)} />
@@ -103,7 +120,7 @@ function ForgotPassword({ appContext, router, setShowAlert }:
                 </div>
             </>
         )
-    } else if (step === 1) {
+    } else if (mode === ForgotPasswordMode.Success) {
         return (
             <>
                 <Head>
@@ -112,7 +129,22 @@ function ForgotPassword({ appContext, router, setShowAlert }:
 
                 <h3 className="mb-3">{t("ForgotPassword.Title")}</h3>
 
-                <p>{t("ForgotPassword.RequestSubmitted")}</p>
+                {appContext.translation.i18n.language === "en" && (
+                    <>
+                        <p>A request to reset your password was submitted successfully.</p>
+
+                        <p>If the specified account is valid, then an e-mail will be sent with
+                            instructions to reset your password.</p>
+                    </>
+                )}
+
+                {appContext.translation.i18n.language === "fr" && (
+                    <>
+                        <p>Une demande de réinitialisation de votre mot de passe a été soumise avec succès.</p>
+
+                        <p>Si le compte spécifié est valide, un e-mail sera envoyé avec des instructions pour réinitialiser votre mot de passe.</p>
+                    </>
+                )}
 
                 <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
                     <button className="btn btn-primary" onClick={() => router.push("/")}>
@@ -137,7 +169,7 @@ function ForgotPassword({ appContext, router, setShowAlert }:
             apiPasswordReset(apiPasswordResetRequest).subscribe({
                 next: (result: IApiPasswordResetResult) => {
                     if (result?.isSuccessful) {
-                        setStep(1);
+                        setMode(1);
                     } else {
                         setErrorMessage(result?.errorMessage ?? "");
                     }

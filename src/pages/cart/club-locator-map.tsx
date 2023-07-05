@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import $ from 'jquery';
 import { IAppContextValues } from '@/custom/app-context';
+import { Constants } from '../../../global';
 
 export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapSnowmobileId, googleMapKey, appContext, selectClubFromClubLocatorMapSelection }
     : {
@@ -188,7 +189,7 @@ export default function ClubLocatorMap({ showDialog, closeClick, clubLocatorMapS
 
     function parseKML(): void {
         // Get kml file in json form, parse it, draw club poly data.
-        $.getJSON("./map_data_093015_for2022.txt", function (json: any) {
+        $.getJSON(`./${Constants.MapDataFile}`, function (json: any) {
             const placemarks = json.Document.Folder.Placemark;
 
             mapData = {};

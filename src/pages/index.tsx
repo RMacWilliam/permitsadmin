@@ -147,6 +147,7 @@ function Index() {
                                     <input type="email" className={`form-control ${isEmailValid ? "" : "is-invalid"}`} id="login-email" placeholder={t("Index.EmailAddressLabel")} disabled={loginInProgress} value={email} maxLength={200} onChange={(e: any) => setEmail(e.target.value)} />
                                     <label htmlFor="login-email">{t("Index.EmailAddressLabel")}</label>
                                 </div>
+
                                 <div className="form-floating">
                                     <input type="password" className={`form-control ${isPasswordValid ? "" : "is-invalid"}`} id="login-password" placeholder={t("Index.PasswordLabel")} disabled={loginInProgress} value={password} maxLength={200} onChange={(e: any) => setPassword(e.target.value)} />
                                     <label htmlFor="login-password">{t("Index.PasswordLabel")}</label>
@@ -163,7 +164,7 @@ function Index() {
                                 </button>
 
                                 {errorMessage !== "" && (
-                                    <div className="text-danger text-center mt-2">
+                                    <div className="validation-error-text text-center mt-2">
                                         {getApiErrorMessage(errorMessage)}
                                     </div>
                                 )}

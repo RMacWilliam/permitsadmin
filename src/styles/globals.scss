@@ -215,3 +215,8 @@ body {
   font-size: 14px;
   color: $input-placeholder-color;
 }
+
+.validation-error-text {
+  color: red;
+  font-size: 0.875em;
+}

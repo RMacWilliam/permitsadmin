@@ -370,11 +370,11 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
 
                                     {showDateRangeForSelectedPermit(snowmobile?.oVehicleId) && (
                                         <div className="row gap-2 gap-md-0 gx-2 mt-2">
-                                            <div className="col-12 col-sm-12 col-md-6">
+                                            <div className="col-12 col-md-6">
                                                 <DatePicker dateFormat="yyyy-MM-dd" locale={appContext.translation.i18n.language} selected={getPermitDateRangeFromDate(snowmobile?.oVehicleId)} minDate={getDate()} onChange={(date: Date) => permitDateRangeChange(date, snowmobile?.oVehicleId)} customInput={<DateRangeInput value={undefined} snowmobile={snowmobile} onClick={undefined} />} />
                                             </div>
 
-                                            <div className="col-12 col-sm-12 col-md-6">
+                                            <div className="col-12 col-md-6">
                                                 <div className="form-floating">
                                                     <input type="text" className="form-control" id={`permit-to-${snowmobile?.oVehicleId}`} placeholder={t("Permits.Vehicle.PermitValidUntil")} value={getPermitDateRangeToDate(snowmobile?.oVehicleId)} onChange={() => null} disabled={true} />
                                                     <label className="" htmlFor={`permit-to-${snowmobile?.oVehicleId}`}>{t("Permits.Vehicle.PermitValidUntil")}</label>
@@ -446,7 +446,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                             </div>
                         )}
                         <div className="row gap-2 gap-md-0 gx-2 mb-2">
-                            <div className="col-12 col-sm-12 col-md-6">
+                            <div className="col-12 col-md-6">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isVehicleYearValid)}`}>
                                         <select className={`form-select ${iv(isVehicleYearValid)}`} id="add-edit-snowmobile-year" aria-label={t("Permits.AddEditSnowmobileDialog.Year")} aria-describedby="add-edit-snowmobile-year-validation" value={vehicleYear} onChange={(e: any) => setVehicleYear(e?.target?.value ?? "")}>
@@ -462,7 +462,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             </div>
 
-                            <div className="col-12 col-sm-12 col-md-6">
+                            <div className="col-12 col-md-6">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isMakeValid)}`}>
                                         <select className={`form-select ${iv(isMakeValid)}`} id="add-edit-snowmobile-make" aria-label={t("Permits.AddEditSnowmobileDialog.Make")} aria-describedby="add-edit-snowmobile-make-validation" value={make?.key} onChange={(e: any) => setMake(getKeyValueFromSelect(e) ?? { key: "", value: "" })}>
@@ -480,7 +480,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                         </div>
 
                         <div className="row gap-2 gap-md-0 gx-2 mb-2">
-                            <div className="col-12 col-sm-12 col-md-4">
+                            <div className="col-12 col-md-4">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isModelValid)}`}>
                                         <input type="text" className={`form-control ${iv(isModelValid)}`} id="add-edit-snowmobile-model" placeholder={t("Permits.AddEditSnowmobileDialog.Model")} maxLength={50} aria-describedby="add-edit-snowmobile-model-validation" value={model} onChange={(e: any) => setModel(e?.target?.value ?? "")} />
@@ -490,7 +490,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             </div>
 
-                            <div className="col-12 col-sm-12 col-md-4">
+                            <div className="col-12 col-md-4">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isVinValid && isVinFormatValid)}`}>
                                         <input type="text" className={`form-control ${iv(isVinValid && isVinFormatValid)}`} id="add-edit-snowmobile-vin" placeholder={t("Permits.AddEditSnowmobileDialog.Vin")} maxLength={17} aria-describedby="add-edit-snowmobile-vin-validation" value={vin} onChange={(e: any) => setVin(e?.target?.value ?? "")} />
@@ -511,7 +511,7 @@ function Permits({ appContext, router, setShowAlert, setShowHoverButton }
                                 </div>
                             </div>
 
-                            <div className="col-12 col-sm-12 col-md-4">
+                            <div className="col-12 col-md-4">
                                 <div className="input-group has-validation">
                                     <div className={`form-floating ${iv(isLicensePlateValid)}`}>
                                         <input type="text" className={`form-control ${iv(isLicensePlateValid)}`} id="add-edit-snowmobile-license-plate" placeholder={t("Permits.AddEditSnowmobileDialog.LicensePlate")} maxLength={10} aria-describedby="add-edit-snowmobile-license-plate-validation" value={licensePlate} onChange={(e: any) => setLicensePlate(e?.target?.value ?? "")} />

@@ -147,7 +147,7 @@ function ConfirmAccount({ appContext, router, setShowAlert }:
 
                 {appContext.translation.i18n.language === "en" && (
                     <>
-                        <p>An error occurred when verifying your account.</p>
+                        <p>An error occurred while verifying your account.</p>
 
                         <p>{getApiErrorMessage(errorMessage)}</p>
 
@@ -157,7 +157,7 @@ function ConfirmAccount({ appContext, router, setShowAlert }:
 
                 {appContext.translation.i18n.language === "fr" && (
                     <>
-                        <p>Une erreur est survenue durant la vérification de votre compte.</p>
+                        <p>Une erreur est survenue lors de la vérification de votre compte.</p>
 
                         <p>{getApiErrorMessage(errorMessage)}</p>
 

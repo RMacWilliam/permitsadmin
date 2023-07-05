@@ -26,6 +26,7 @@ export class WebApi {
     static PasswordReset: string = WebApi.BaseUrl + "user/passwordreset";
     static VerifyAccount: string = WebApi.BaseUrl + "user/verifyaccount";
     static UpdatePassword: string = WebApi.BaseUrl + "user/updatepassword";
+    static UpdateEmail: string = WebApi.BaseUrl + "user/updateemail";
 
     // Utils
     static GetProvinces: string = WebApi.BaseUrl + "utils/getprovinces";
@@ -54,6 +55,7 @@ export class WebApi {
     static GetShippingFees: string = WebApi.BaseUrl + "permit/getshippingfees";
     static GetGoogleMapKey: string = WebApi.BaseUrl + "permit/getgooglemapkey";
     static SavePrePurchaseData: string = WebApi.BaseUrl + "permit/savePrePurchaseData";
+    static GetPermitTypes: string = WebApi.BaseUrl + "permit/getpermittypes";
 
     // Documents
     static SendGiftCardPdf: string = WebApi.BaseUrl + "documents/sendgiftcardpdf";
@@ -69,6 +71,8 @@ export class Constants {
     static CaptchaSiteKey: string = "6LdUC1oUAAAAANiFOb2mOZToDkvADppOAYp6HBnf";
 
     static MaxClassicYear: number = 1999;
+
+    static MapDataFile: string = "map_data_093015_Edited20230626.txt";
 
     static MtoWaiverPdf: string = "MTO Waiver ENG-FRE 2022-09-22.pdf";
     static OfscWaiverPdfEn: string = "OFSC PS Waiver July 2022-23.pdf";

@@ -21,7 +21,7 @@ export const resources_fr = {
         "IsRequiredSuffix": "est requis."
       },
       "PleaseSelect": "Veuillez sélectionner",
-      "HoverButton": "(fr)Show Context Menu",
+      "HoverButton": "Afficher le menu contextuel",
       "ContactCustomerService": "Si vous rencontrez des difficultés, veuillez contacter le service clientèle au 705-739-7669 ou à l'adresse permits@ofsc.on.ca."
     },
     "Header": {
@@ -35,8 +35,8 @@ export const resources_fr = {
       "YouHave": "Vouz avez",
       "Permit": "permis",
       "Permits": "permis",
-      "GiftCard": "carte cadeau",
-      "GiftCards": "cartes cadeaux",
+      "GiftCard": "carte-cadeau",
+      "GiftCards": "cartes-cadeaux",
       "InYourCart": "dans votre panier.",
       "And": "et",
       "GoToCartButton": "Aller au panier"
@@ -48,7 +48,7 @@ export const resources_fr = {
       "FrenchFr": "Français"
     },
     "ModalProcessingAlert": {
-      "ProcessingRequestPleaseWait": "(fr)Processing request. Please wait.",
+      "ProcessingRequestPleaseWait": "Demande de traitement. S'il vous plaît, attendez.",
     },
     "Index": {
       "Title": "Bienvenue à la Fédération des clubs de motoneigistes de l'Ontario",
@@ -62,21 +62,18 @@ export const resources_fr = {
     },
     "ForgotPassword": {
       "Title": "J'ai oublié mon mot de passe",
-      "Section1": "Si vous êtes incapable d'accéder à votre compte, veuillez essayer de réinitialiser votre mot de passe. Un courriel vous sera envoyé pour que vous puissiez changer votre mot de passe.",
-      "Section2": "Pour tout autre problème, veuillez contacter le service à la clientèle de la délivrance des permis au 705-739-7669 ou écrivez à permits@ofsc.on.ca.",
-      "RequestSubmitted": "(fr)A request to reset your password has been submitted. If the specified account is valid, then an e-mail will be sent with instructions to reset your password.",
-      "EmailAddress": "(fr)E-mail address",
+      "EmailAddress": "adresse courriel",
       "ResetPasswordButton": "Réinitialiser le mot de passe",
       "ReturnLogin": "Return to Login Page"
     },
     "ResetPassword": {
-      "Title": "(fr)Reset Password",
+      "Title": "Réinitialiser le mot de passe",
       "Password": "mot de passe",
       "ConfirmPassword": "confirmez le mot de passe",
       "InvalidPassword": "Le mot de passe doit comporter une ou plusieurs lettres majuscules et minuscules, un ou plusieurs chiffres et être constitué d'au moins 6 caractères.",
-      "InvalidPasswordMatch": "(fr)Confirm Password does not match Password.",
-      "SavePassword": "(fr)Save Password",
-      "ReturnLogin": "(fr)Return to Login Page"
+      "InvalidPasswordMatch": "La confirmation du mot de passe ne correspond pas au mot de passe.",
+      "SavePassword": "Enregistrer le mot de passe",
+      "ReturnLogin": "Retour à la page de connexion"
     },
     "CreateAccount": {
       "Title": "Inscrire un compte",
@@ -98,8 +95,8 @@ export const resources_fr = {
         "ConfirmPassword": "confirmez le mot de passe",
         "MandatoryField": "champ obligatoire",
         "InvalidPassword": "Le mot de passe doit comporter une ou plusieurs lettres majuscules et minuscules, un ou plusieurs chiffres et être constitué d'au moins 6 caractères.",
-        "InvalidPasswordMatch": "(fr)Confirm Password does not match Password.",
-        "InvalidPostalCodeFormat": "(fr)Postal/Zip Code format is not valid."
+        "InvalidPasswordMatch": "La confirmation du mot de passe ne correspond pas au mot de passe.",
+        "InvalidPostalCodeFormat": "Le format du code postal n'est pas valide."
       },
       "Preferences": {
         "Title": "Préférences du compte",
@@ -115,23 +112,28 @@ export const resources_fr = {
       "CreateAccount": "Create Account",
       "ThankYouForCreatingYourAccount": "Merci d'avoir créé votre compte.",
       "VerificationEmailHasBeenSent": "Un courriel de vérification vous a été envoyé. Veuillez cliquer sur le lien qui se trouve dans ce courriel pour terminer la configuration de votre compte.",
-      "ReturnLogin": "(fr)Return to Login Page"
+      "ReturnLogin": "Retour à la page de connexion"
     },
     "ConfirmAccount": {
-      "Title": "(fr)Confirm Account",
-      "ReturnLogin": "(fr)Return to Login Page"
+      "Title": "Confirmer le compte",
+      "ReturnLogin": "Retour à la page de connexion"
     },
     "ChangeEmail": {
-      "Title": "Changer mon adresse courriel"
+      "Title": "Changer mon adresse courriel",
+      "OldEmailAddress": "ancienne adresse courriel",
+      "NewEmailAddress": "nouvelle adresse courriel",
+      "Vin": "N˚ d'identification du véhicule (NIV)",
+      "PermitType": "Type de permis",
+      "ChangeEmailWithoutPassword": "Changer mon courriel sans mot de passe"
     },
     "FirstLoginOfSeason": {
-      "MenuTitle": "(fr)First Login of Season",
-      "Title": "(fr)First Login of Season",
-      "Message": "(fr)Please take a moment to watch this important video message."
+      "MenuTitle": "Première connexion de la saison",
+      "Title": "Première connexion de la saison",
+      "Message": "Veuillez prendre un moment pour regarder cet important message vidéo."
     },
     "Home": {
-      "MenuTitle": "(fr)Home",
-      "Title": "(fr)Welcome to Ontario Federation of Snowmobile Clubs"
+      "MenuTitle": "Page d'accueil",
+      "Title": "Bienvenue à la fédération des clubs de motoneigistes de l'Ontario"
     },
     "ContactInfo": {
       "MenuTitle": "Propriétaire enregistré",
@@ -153,8 +155,8 @@ export const resources_fr = {
         "ConfirmPassword": "confirmez le mot de passe",
         "MandatoryField": "champ obligatoire",
         "InvalidPassword": "Le mot de passe doit comporter une ou plusieurs lettres majuscules et minuscules, un ou plusieurs chiffres et être constitué d'au moins 6 caractères.",
-        "InvalidPasswordMatch": "(fr)Confirm Password does not match Password.",
-        "InvalidPostalCodeFormat": "(fr)Postal/Zip Code format is not valid."
+        "InvalidPasswordMatch": "La confirmation du mot de passe ne correspond pas au mot de passe.",
+        "InvalidPostalCodeFormat": "Le format du code postal n'est pas valide."
       },
       "Preferences": {
         "Title": "Préférences",
@@ -173,7 +175,7 @@ export const resources_fr = {
       },
       "ConfirmButton": "Je confirme",
       "ContactInfoEditDialog": {
-        "Title": "(fr)Edit Contact Information",
+        "Title": "Modifier le profil du compte",
         "FirstName": "prénom",
         "MiddleInitial": "initiale du deuxième prénom",
         "LastName": "nom de famille",
@@ -185,13 +187,13 @@ export const resources_fr = {
         "PostalZipCode": "code postal/code zip",
         "Telephone": "N˚ de téléphone",
         "EmailAddress": "adresse courriel",
-        "Password": "(fr)Password",
-        "ConfirmPassword": "(fr)Confirm Password",
+        "Password": "mot de passe",
+        "ConfirmPassword": "confirmez le mot de passe",
         "MandatoryField": "champ obligatoire",
-        "InvalidPostalCodeFormat": "(fr)Postal/Zip Code format is not valid."
+        "InvalidPostalCodeFormat": "Le format du code postal n'est pas valide."
       },
       "PreferencesEditDialog": {
-        "Title": "(fr)Edit Account Preferences",
+        "Title": "Modifier les préférences",
         "OfscConsent": "Consentez-vous à ce que la FCMO communique avec vous pour vous fournir des renseignements sur les permis, les avantages pour les motoneigistes, et d'autres renseignements relatifs à la motoneige?",
         "OfscConsentMore": "Je comprends que ma vie privée et la protection de mes renseignements personnels sont importantes pour la FCMO, mais en autorisant la divulgation de mes nom et adresse, je consens à ce que la FCMO utilise ces renseignements à des fins liées au mandat de la FCMO (www.ofsc.on.ca). Je réitère en outre que toute information fournie à la FCMO échappe à la garde et au contrôle du ministère des Transports et que la FCMO sera seule responsable de cette information.",
         "RiderAdvantage": "(fr)Do you want to participate in eligible Rider Advantage programs as offered and/or available?",
@@ -221,7 +223,7 @@ export const resources_fr = {
         "AddPermitToCart": "Ajouter le permis au panier",
         "RemovePermitFromCart": "Supprimer le permis du panier",
         "AddSnowmobile": "Ajouter une motoneige",
-        "ProceedWithPurchase": "(fr)Proceed With Purchase"
+        "ProceedWithPurchase": "Procéder à l'achat"
       },
       "HoverButtons": {
         "AddSnowmobile": "Ajouter une motoneige"
@@ -237,7 +239,7 @@ export const resources_fr = {
         "PermitForThisSnowmobileOnly": "Je comprends que le permis de sentier pour lequel je fais une demande ne s'applique qu'à la motoneige indiquée dans la présente demande et n'est valide que lorsque l'autocollant (permis) émis conformément à la présente demande est appliqué de façon permanente à l'endroit requis sur cette motoneige. J'atteste que les renseignements contenus dans la présente demande sont exacts et je reconnais et j'accepte les responsabilités imposées par la loi.",
         "RegisteredOwner": "Je confirme que je suis le propriétaire enregistré de ce véhicule.",
         "MandatoryField": "champ obligatoire",
-        "InvalidVin": "(fr)Invalid VIN number."
+        "InvalidVin": "Format NIV invalide."
       },
       "DeleteSnowmobileDialog": {
         "Title": "Supprimer la motoneige",
@@ -245,55 +247,55 @@ export const resources_fr = {
       },
       "VehicleCannotBeModifiedDialog": {
         "Title": "Information",
-        "Message": "(fr)This vehicle cannot be modified as a Ministry of Transportation Ontario Snowmobile Trail Permit has been registered to it."
+        "Message": "Ce véhicule ne peut pas être modifié puisqu'un permis de pratique de la motoneige sur sentiers du ministère des Transports de l'Ontario a déjà été enregistré pour lui."
       }
     },
     "GiftCards": {
       "MenuTitle": "Cartes cadeaux",
       "Title": "Cartes cadeaux",
       "Purchased": "achetée",
-      "GiftCard": "Carte cadeau",
+      "GiftCard": "Carte-cadeau",
       "WithTracking": "avec suivi",
       "WithoutTracking": "sans suivi",
       "BuyNewGiftCard": "Acheter une nouvelle carte-cadeau",
       "RedemptionCode": "Code d'échange",
       "ResendEmail": "Renvoyer le courriel",
-      "SelectGiftCard": "sélectionner la carte cadeau",
+      "SelectGiftCard": "sélectionner la carte-cadeau",
       "RecipientsLastNameOnly": "Nom de famille du bénéficiaire UNIQUEMENT",
       "RecipientsPostalCode": "Code postal du bénéficiaire",
-      "InvalidPostalCodeFormat": "(fr)Postal/Zip Code format is not valid.",
+      "InvalidPostalCodeFormat": "Le format du code postal n'est pas valide.",
       "MandatoryFieldMustMatch": "champ obligatoire et doit correspondre au compte du bénéficiaire à la FCMO",
-      "AddGiftCardToCart": "Ajouter la carte cadeau au panier",
-      "RemoveGiftCardFromCart": "Supprimer la carte cadeau du panier",
+      "AddGiftCardToCart": "Ajouter la carte-cadeau au panier",
+      "RemoveGiftCardFromCart": "Supprimer la carte-cadeau du panier",
       "SaveChanges": "Sauvegarder les modifications",
       "CancelChanges": "Annuler les modifications",
-      "AddGiftCard": "Ajouter une carte cadeau",
-      "ProceedWithPurchase": "(fr)Proceed With Purchase",
+      "AddGiftCard": "Ajouter une carte-cadeau",
+      "ProceedWithPurchase": "Procéder à l'achat",
       "HoverButtons": {
-        "AddGiftCard": "Ajouter une carte cadeau",
+        "AddGiftCard": "Ajouter une carte-cadeau",
       },
       "DeleteGiftCardDialog": {
-        "Title": "Supprimer la carte cadeau",
+        "Title": "Supprimer la carte-cadeau",
         "Message": "Voulez-vous vraiment supprimer cette carte-cadeau?"
       },
       "ResendGiftCardEmailDialog": {
-        "Title": "(fr)Resend Gift Card E-mail",
-        "Successful": "(fr)Gift card e-mail was sent successfully. Please check your e-mail.",
-        "Unsuccessful": "(fr)Sorry, there was a problem sending the gift card e-mail. Please try again later."
+        "Title": "Renvoyer le courriel de la carte-cadeau",
+        "Successful": "Le courriel de la carte-cadeau a été envoyé avec succès. S'il vous plaît, vérifiez votre courriel.",
+        "Unsuccessful": "Désolé, un problème est survenu lors de l'envoi du courriel de la carte-cadeau. Veuillez réessayer plus tard."
       }
     },
     "Cart": {
       "Title": "Panier",
-      "RedeemGiftCard": "(fr)Redeem Gift Card",
-      "GiftCardRedemption": "(fr)Gift card redemption",
-      "EnterGiftCardRedemptionCode": "(fr)Enter gift card redemption code",
+      "RedeemGiftCard": "Échanger une carte-cadeau",
+      "GiftCardRedemption": "Échange de carte-cadeau",
+      "EnterGiftCardRedemptionCode": "Entrez le code d'utilisation de la carte-cadeau",
       "Validate": "Valider",
       "SelectClub": "Sélectionner un club",
       "UseClubLocatorMap": "Utiliser la carte de localisation des clubs",
       "TransactionAndAdminFee": "Frais de transaction et d'administration",
       "TransactionAndAdminFeeCredit": "Crédit pour les frais de transaction et d'administration",
       "Shipping": "Expédition",
-      "StandardShippingAcceptTerms": "(fr)By selecting standard delivery for my permit, I assume all responsibility should my permit get lost or stolen in the mail, or for any other reason that it is not received in the mail, and therefore agree to adhere to all Ministry of Transportation rules for the issuance of a replacement permit.",
+      "StandardShippingAcceptTerms": "En sélectionnant la livraison standard, vous assumez l'entière responsabilité en cas de perte ou de vol de votre permis dans le courrier, ou pour toute autre raison si vous ne le recevez pas, et acceptez par conséquent de respecter toutes les règles du ministère des Transports en lien avec la délivrance d'un permis de remplacement.",
       "TrackedShippingCredit": "Crédit d'expédition suivi",
       "TotalAmount": "Montant total",
       "ShippingAddress": "Adresse d'expédition",
@@ -306,26 +308,27 @@ export const resources_fr = {
         "ProvinceState": "province/état",
         "Country": "pays",
         "PostalZipCode": "code postal/code zip",
-        "InvalidPostalCodeFormat": "(fr)Postal/Zip Code format is not valid."
+        "InvalidPostalCodeFormat": "Le format du code postal n'est pas valide."
       },
       "ClubLocatorMapDialog": {
         "Title": "Carte de localisation des clubs",
-        "SearchForTheLocation": "(fr)Search for the location where you plan on doing most of your riding this season.",
+        "SearchForTheLocation": "Rechercher l'endroit où vous prévoyez de faire le plus souvent plaisir à rouler.",
         "LoadingMapPleaseWait": "Chargement de la carte. S'il vous plaît, attendez.",
         "SearchBoxPlaceholder": "Entrez la ville, le village, le code postal, ou l'adresse",
         "SearchButtonTitle": "Rechercher",
         "ResetButtonTitle": "Réinitialiser",
         "SelectedClub": "Club sélectionné",
         "PleaseSelectClub": "Veuillez sélectionner un club sur la carte ci-dessus",
-        "SorryCouldNotFindLocation": "(fr)Sorry, we couldn't find the location you entered.",
-        "SorryThereWasAProblem": "(fr)Sorry, there was a problem searching for your location."
+        "SorryCouldNotFindLocation": "Désolé, nous n'avons pas pu trouver l'emplacement que vous avez entré.",
+        "SorryThereWasAProblem": "Désolé, un problème est survenu lors de la recherche de votre emplacement."
       },
-      "ProceedToCheckout": "Passer à la caisse",
+      "ProceedToCheckout": "Débuter l'achat",
+      "CancelCheckout": "Annuler la commande",
       "ContinueShopping": "Continuer vos achats",
       "MandatoryField": "champ obligatoire"
     },
     "Checkout": {
-      "Title": "(fr)Checkout",
+      "Title": "Commande",
       "ReadAndAgree": "J'ai lu les modalités ci-dessus et je les accepte",
       "ClickToAgree": "Cliquez pour accepter"
     },
@@ -333,31 +336,32 @@ export const resources_fr = {
       "Title": "Paiement"
     },
     "PaymentApproved": {
-      "Title": "(fr)Payment Approved",
-      "ReturnHome": "(fr)Return to Home Page"
+      "Title": "Paiement approuvé",
+      "ReturnHome": "Retour à la page d'accueil"
     },
     "PaymentDeclined": {
-      "Title": "(fr)Payment Declined",
-      "TryAgain": "(fr)Try Payment Again"
+      "Title": "Paiement refusé",
+      "TryAgain": "Réessayez le paiement"
     },
     "API": {
       "API_UNEXPECTED_ERROR": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
       "API_LOGIN_INVALID_CREDENTIALS": "Courriel non trouvé et/ou mot de passe erroné",
       "API_LOGIN_UNVERIFIED_ACCOUNT": "Compte non vérifié - veuillez suivre les instructions dans le courriel de vérification de compte OFSC",
       "API_CREATE_ACCOUNT_EMAIL_EXISTS": "Votre adresse courriel existe déjà dans nos dossiers. Le compte ne peut pas être créé. Veuillez essayer d'accéder à votre compte ou de réinitialiser votre mot de passe.",
-      "API_CREATE_ACCOUNT_EMAIL_MISSING": "(fr)An e-mail is required to create an account. Please try again.",
+      "API_CREATE_ACCOUNT_EMAIL_MISSING": "Un courriel est obligatoire pour créer un compte. Veuillez réessayer.",
       "API_CONFIRM_ACCOUNT_INVALID_CODE": "Le compte a déjà été vérifié ou le code spécifié était invalide.",
       "API_CONFIRM_ACCOUNT_ALREADY_VERIFIED": "Le code spécifié correspondait à un compte déjà vérifié.",
       "API_CONFIRM_ACCOUNT_ACCOUNT_NOT_FOUND": "Le code spécifié ne correspondait pas à un compte existant.",
       "API_RESET_PASSWORD_INVALID_CODE": "Le code spécifié a expiré ou était invalide.",
-      "API_RESET_PASSWORD_ACCOUNT_NOT_FOUND": "",
-      "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "(fr)VIN assigned to another vehicle on account.",
-      "API_INVALID_VIN_FORMAT": "(fr)Invalid VIN format.",
-      "API_REDEMPTION_CODE_INVALID": "(fr)Redemption code was invalid.",
-      "API_REDEMPTION_CODE_REDEEMED": "(fr)Redemption code has already been redeemed.",
-      "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "(fr)Last name associated with the redemption code did not correspond to your account information.",
-      "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "(fr)Postal code associated with the redemption code did not correspond to your account information.",
-      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "(fr)Vehicle type of the redemption code did not correspond to this snowmobile."
+      "API_RESET_PASSWORD_ACCOUNT_NOT_FOUND": "Le code spécifié ne correspondait pas à un compte existant.",
+      "API_CHANGE_EMAIL_CANNOT_VERIFY": "Nous n'avons pas pu vérifier votre compte avec les informations fournies.",
+      "API_VIN_ASSIGNED_ANOTHER_VEHICLE": "NIV attribué à un autre véhicule sur le compte.",
+      "API_INVALID_VIN_FORMAT": "Format NIV invalide.",
+      "API_REDEMPTION_CODE_INVALID": "Le code de remboursement n'était pas valide.",
+      "API_REDEMPTION_CODE_REDEEMED": "Le code de remboursement a déjà été utilisé.",
+      "API_REDEMPTION_CODE_LAST_NAME_MISMATCH": "Le nom de famille associé au code de remboursement ne correspondait pas aux informations de votre compte.",
+      "API_REDEMPTION_CODE_POSTAL_CODE_MISMATCH": "Le code postal associé au code de remboursement ne correspondait pas aux informations de votre compte.",
+      "API_REDEMPTION_CODE_VEHICLE_TYPE_MISMATCH": "Le type de véhicule du code d'échange ne correspondait pas à cette motoneige."
     }
   }
 };

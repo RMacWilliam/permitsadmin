@@ -87,8 +87,8 @@ function ResetPassword({ appContext, router, setShowAlert }:
                     </>
                 )}
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-3">
-                    <div className="col-12">
+                <div className="row justify-content-center gap-2 gap-md-0 gx-2 mb-2">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isPasswordValid && isPasswordFormatValid)}`}>
                                 <input type="text" className={`form-control ${iv(isPasswordValid && isPasswordFormatValid)}`} id="reset-password-password" placeholder={t("ResetPassword.Password")} maxLength={200} aria-describedby="reset-password-password-validation" value={password} onChange={(e: any) => setPassword(e.target.value)} />
@@ -111,8 +111,8 @@ function ResetPassword({ appContext, router, setShowAlert }:
                     </div>
                 </div>
 
-                <div className="row gap-2 gap-md-0 gx-2 mb-3">
-                    <div className="col-12">
+                <div className="row justify-content-center gap-2 gap-md-0 gx-2 mb-2">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <div className={`form-floating ${iv(isConfirmPasswordValid && isConfirmPasswordMatchValid)}`}>
                                 <input type="text" className={`form-control ${iv(isConfirmPasswordValid && isConfirmPasswordMatchValid)}`} id="reset-password-confirm-password" placeholder={t("ResetPassword.ConfirmPassword")} maxLength={200} aria-describedby="reset-password-confirm-password-validation" value={confirmPassword} onChange={(e: any) => setConfirmPassword(e.target.value)} />
@@ -134,8 +134,8 @@ function ResetPassword({ appContext, router, setShowAlert }:
                     </div>
                 </div>
 
-                <div className="row">
-                    <div className="col-12">
+                <div className="row justify-content-center gap-2 gap-md-0 gx-2">
+                    <div className="col-12 col-md-6">
                         <div className="input-group has-validation">
                             <ReCAPTCHA className={iv(isRecaptchaValid)} sitekey={Constants.CaptchaSiteKey} hl={appContext.data?.language === "fr" ? "fr-CA" : "en"}
                                 aria-describedby="reset-password-recaptcha-validation" onChange={(e: any) => setRecaptchaState(e)} />

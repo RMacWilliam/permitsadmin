@@ -315,7 +315,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                             )}
 
                             <div className="row gap-2 gap-md-0 gx-2 mb-2">
-                                <div className="col-12 col-sm-12 col-md-6">
+                                <div className="col-12 col-md-6">
                                     <div className="input-group has-validation">
                                         <div className={`form-floating ${iv(giftCard?.uiIsRecipientLastNameValid)}`}>
                                             <input type="text" className={`form-control ${iv(giftCard?.uiIsRecipientLastNameValid)}`} id={`gift-card-last-name-${giftCard?.oVoucherId}`} placeholder="Recipient's LAST Name ONLY" maxLength={150} aria-describedby="gift-card-last-name-validation" value={getGiftCardRecipientLastName(giftCard?.oVoucherId)} onChange={(e: any) => giftCardLastNameChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardLastNameEnabled(giftCard?.oVoucherId)} />
@@ -325,7 +325,7 @@ function GiftCards({ appContext, router, setShowAlert, setShowHoverButton }
                                     </div>
                                 </div>
 
-                                <div className="col-12 col-sm-12 col-md-6">
+                                <div className="col-12 col-md-6">
                                     <div className="input-group has-validation">
                                         <div className={`form-floating ${iv(giftCard?.uiIsRecipientPostalValid && giftCard?.uiIsRecipientPostalFormatValid)}`}>
                                             <input type="text" className={`form-control ${iv(giftCard?.uiIsRecipientPostalValid && giftCard?.uiIsRecipientPostalFormatValid)}`} id={`gift-card-postal-code-${giftCard?.oVoucherId}`} placeholder="Recipient's Postal Code" maxLength={7} aria-describedby="gift-card-postal-code-validation" value={getGiftCardRecipientPostalCode(giftCard?.oVoucherId)} onChange={(e: any) => giftCardPostalCodeChange(e, giftCard?.oVoucherId)} disabled={!isGiftCardPostalCodeEnabled(giftCard?.oVoucherId)} />
